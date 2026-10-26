@@ -125,6 +125,123 @@ Diseñada específicamente para debriefings y explicaciones tácticas en pantall
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.2.4] - Viento del Track en Grande (Naranja), TWA Entrada vs Salida en Gráfico de Maniobras y Doble Eje Angular
+* **Prioridad Visual al Viento Analizado por el Track**:
+  * Invertida la jerarquía en la tarjeta KPI superior de viento:
+    * En **número grande naranja** se muestra el viento calculado a partir del track con la etiqueta **`TRACK`** (ej. `116° TRACK`).
+    * En la línea secundaria en tamaño reducido se indica la referencia del entrenador y la desviación neta (ej. `Entrenador: 120° (desviación -4°) · Optimist`), manteniendo el cálculo de delta $\Delta$.
+* **Evolución y Variación de Ángulo en Maniobras (TWA Entrada vs Salida)**:
+  * Incorporado un eje secundario derecho en violeta para el ángulo respecto al viento (`TWA (°)`) en el gráfico de diagnóstico de maniobras.
+  * **Curva de evolución de ángulo $|TWA|$ (violeta punteada)**: Muestra de forma continua cómo el barco orza desde la ceñida inicial ($TWA_{\text{entrada}}$ a $-5\text{s}$), pasa por el eje del viento en el ápex ($0\text{s}$) y arriba a la nueva amura de ceñida ($TWA_{\text{salida}}$ a $+5\text{s}$).
+  * Rótulos flotantes automáticos en la gráfica indicando **`TWA In: XX.X°`** y **`TWA Out: YY.Y°`**.
+  * Cuadro resumen ampliado con tarjetas de **TWA Entrada (-5s)** y **TWA Salida (+5s)** con su desviación angular ($\Delta TWA$), permitiendo detectar de inmediato salidas sobreviradas (arribadas excesivas) o barcos que salen atrancados contra el viento.
+  * Tooltips interactivos actualizados mostrando en cada segundo la velocidad media, mín-máx y el ángulo TWA exacto.
+
+### [v1.2.3] - Comparación Dual de Viento (Entrenador vs Track), Gráfico Polar del Regatista y Curva Temporal de Maniobras (-5s a +5s)
+* **Visualización Dual de Viento de Regata (Entrenador vs Track)**:
+  * La tarjeta KPI de viento ahora muestra de forma explícita y simultánea:
+    * El **Viento fijado por el entrenador** (fuente de verdad maestra de la sesión, ej. `120° Entrenador`).
+    * El **Viento calculado por el track** mediante bisectriz circular de los bordos estables de ceñida a estribor y babor, mostrando la desviación angular exacta (ej. `Track: 118° (Δ -2°)`).
+* **Gráfico Polar Empírico del Regatista (Estilo SailTimerApp)**:
+  * Nuevo diagrama polar interactivo de alta resolución:
+    * Flecha violeta y rótulo de «True Wind» en la parte superior central ($0^\circ$).
+    * Círculos concéntricos de velocidad de $1$ a $6\text{ nudos}$ en cian con números en ámbar en el eje vertical.
+    * Rayos radiales cada $15^\circ$ delimitando las amuras de Estribor (derecha) y Babor (izquierda).
+    * **Polar teórica de referencia de Optimist (IOD95)** en línea discontinua azul (`#0284c7`).
+    * **Curva real del regatista** en rojo sólido (`#ef4444`), calculada por sectores de TWA a 1 Hz, acompañada por la nube de puntos GPS.
+    * Indicador de eficiencia polar general (`XX% Rendimiento Polar`) y tooltip interactivo al pasar el cursor (TWA, amura, SOG real, polar teórica y segundos navegados).
+* **Gráfico de Pérdida de Velocidad en Maniobras (Perfil Temporal de $-5\text{s}$ a $+5\text{s}$)**:
+  * Gráfico temporal de evolución de velocidad en las viradas y trasluchadas:
+    * Eje X: Tiempo relativo segundo a segundo desde la aproximación ($-5\text{s}$), cruce del eje del viento / ápex ($0\text{s}$) y relanzamiento a velocidad de crucero ($+5\text{s}$).
+    * Eje Y: Velocidad en nudos ($0$ a $5+\text{ kn}$).
+    * **Verde (`#10b981`)**: Velocidad Máxima en cada segundo (la maniobra óptima / mejor ejecutada).
+    * **Azul (`#0284c7`)**: Velocidad Media (promedio del regatista con etiquetas de valor en $-5\text{s}$, $0\text{s}$ y $+5\text{s}$).
+    * **Rojo (`#ef4444`)**: Velocidad Mínima (la maniobra más lenta / frenazo con timón).
+    * Banda sombreada de dispersión entre curvas máximas y mínimas.
+    * Selector interactivo para alternar entre **Viradas (Ceñida)** y **Trasluchadas (Popa)**.
+    * Cuadro resumen con $V_{\text{entrada}}$, $V_{\min}$ en ápex, $V_{\text{salida}}$ y caída neta ($\Delta V$ y $\%$ recuperado).
+    * Tooltips flotantes con fase de la maniobra, media, rango mín-máx y total de maniobras evaluadas.
+* **Integración Completa con la Impresión de Informes**:
+  * Ambos gráficos se formatean automáticamente en `@media print` para exportar informes individuales completos en papel o PDF con calidad de debriefing profesional.
+
+### [v1.2.2] - Corrección de Clasificación de Maniobras, Geometría de Laylines, Pérdida Neta (Tack Loss) e Informe Táctico Imprimible
+* **Corrección de Clasificación de Maniobras (Viradas vs Trasluchadas)**:
+  * Resuelto el problema por el cual las viradas en ceñida se clasificaban erróneamente como trasluchadas.
+  * **Causa y solución**: El algoritmo anterior intentaba adivinar el viento mediante bisectriz de rumbos GPS automáticos; si el track contenía rumbos dominantes de popa o pre-salida, invertía el viento $180^\circ$ y veía los giros de proa como si fueran de popa. Ahora el motor utiliza el viento de referencia fijado por el entrenador (`D.windRef`) como fuente de verdad canónica. Además, el clasificador incorpora conocimiento del tramo: en ceñida (`UPWIND`) cualquier cambio de amura se clasifica como virada (*Tack*); en popa (`DOWNWIND`) siempre como trasluchada (*Jibe*). Se filtra además el guiñado por olas ($< 40^\circ$).
+* **Cálculo Geométrico Preciso de Desviación de Laylines (Overstanding)**:
+  * Sustituida la fórmula anterior por la distancia ortogonal exacta hacia el cono de laylines: $d_{\perp} = R \cdot \sin(\Delta \theta - 43^\circ)$ respecto a la baliza de barlovento o meta.
+  * Registra los metros máximos navegados por fuera del cono óptimo de $43^\circ$ de Optimist y los segundos perdidos en "overstanding" (ej. `+24 m (18s)` o `✓ 0 m (Óptimo)`).
+* **Diagnóstico de Pérdida en Maniobras (Tack / Jibe Loss)**:
+  * Cálculo de pérdida neta en metros frente a la VMG teórica óptima de la polar de Optimist (valores realistas de $6\,\text{m}$ a $14\,\text{m}$ por virada en Optimist).
+  * En la tabla de tramos IODA, la columna de maniobras detalla con claridad el conteo y los metros perdidos: ej. `4 viradas (-34 m)` en ceñida o `2 trasluchadas (-18 m)` en popa.
+* **Limpieza de Interfaz Táctica**:
+  * Eliminada la columna «Ver en mapa» de la tabla táctica por tramo (ahora basta con hacer clic en cualquier fila de la tabla para resaltar su traza en el mapa Canvas).
+* **Botón «🖨️ Imprimir Análisis Táctico» (sustituye a «Descargar JSON»)**:
+  * Sustituido el botón de descarga de JSON por un botón directo de impresión optimizado para papel o PDF con cabecera oficial del club, datos del regatista, fecha, viento, tabla de tramos IODA y resumen de maniobras.
+* **Verificación de Telemetría GPS vs Viento Real**:
+  * Confirmación técnica de que los relojes GPS de pulsera no disponen de sensores de viento (veleta / anemómetro), por lo que la dirección e intensidad deben ser validadas siempre por el entrenador mediante los controles manuales de la aplicación.
+
+### [v1.2.1] - Ventana de Regata Estricta (Salida a Meta), Cruce Geométrico de Línea y Polares Empíricas Optimist
+* **Filtro Estricto de Regata («Start to Finish»)**:
+  * Todas las métricas de la pestaña «Métricas avanzadas» (velocidad media, velocidad máxima sostenida en 5s, distancia navegada, conteo de viradas, tiempo navegado y desglose por tramos IODA) se calculan de forma exclusiva **desde que el barco cruza la línea de salida hasta que corta la línea de llegada**.
+  * Se descartan automáticamente las esperas previas, maniobras de calentamiento y el traslado de vuelta al club o remolque.
+  * La tabla de la flota muestra claramente el estado de cada barco (`✓ Meta: hh:mm:ss` o `⛵ En regata`) y la hora de corte de salida (`Salida: hh:mm:ss (+Xs)`).
+* **Detección Geométrica de Paso por Meta (Corte de Línea)**:
+  * El algoritmo analiza segundo a segundo la intersección vectorial entre el desplazamiento del barco $[P_{s-1}, P_s]$ y el segmento entre el Pin y el Comité de llegada.
+  * Al cortar la línea en dirección a barlovento, se fija de inmediato su timestamp exacto de llegada (`finishT`).
+* **Modelo de Polares Empíricas de Referencia para la Clase Optimist (IOD95)**:
+  * Explicación y parametrización basada en las referencias de alto rendimiento para Optimist (ante la ausencia de archivo ORC VPP rígido debido a la variación de peso del regatista de 35 a 52 kg y dinámica con ola):
+    * **Ceñida (TWA 42°-44°)**: SOG objetivo de 3.25 kn (6 kn TWS), 3.85 kn (10 kn TWS), 4.20 kn (14 kn TWS) y 4.35 kn (18+ kn TWS). VMG objetivo a barlovento de 2.35 kn a 3.18 kn.
+    * **Través (TWA 85°-95°)**: SOG objetivo de 3.80 kn (6 kn TWS) a 6.10 kn (18+ kn TWS).
+    * **Popa (TWA 146°-152°)**: SOG objetivo de 3.50 kn (6 kn TWS) a 5.80 kn (18+ kn TWS). VMG objetivo a sotavento de 2.90 kn a 4.90 kn.
+* **Modal Interactivo de Consulta («📖 Polares Optimist»)**:
+  * Nuevo botón y modal en la cabecera de «Métricas avanzadas» con la tabla completa de polares de referencia y directrices de medición para entrenadores.
+* **Aviso Visual de Filtro Activo**:
+  * Banner informativo en la parte superior del panel de telemetría confirmando que los datos se calculan únicamente en tiempo de regata.
+
+### [v1.2.0] - Motor Cinemático Avanzado, Análisis Táctico de Recorrido IODA, Diagnóstico de Maniobras y Exportación JSON
+* **Motor Cinemático y Filtrado de Telemetría (EMA)**:
+  * Interpolación uniforme a frecuencia de 1 Hz.
+  * Suavizado continuo de velocidad sobre el fondo (SOG) y rumbo (COG) mediante Media Móvil Exponencial ($\tau = 1.5\,\text{s}$, $\alpha \approx 0.486$), con descomposición cartesiana vectorial ($X = \sin, Y = \cos$) para eliminar cualquier salto o discontinuidad en $0^\circ / 360^\circ$.
+* **Estimación Automática de Viento (TWD) y Métricas Vectoriales**:
+  * Algoritmo de bisectriz de rumbos circulares promedios en bordos estables ($|\frac{d\text{COG}}{dt}| < 1.5^\circ/\text{s}$ y $\text{SOG} \ge 2.8\,\text{kt}$).
+  * Cálculo en tiempo real de Ángulo de Viento Real (TWA), ganancia a barlovento/sotavento (VMG) y aproximación a boya (VMC).
+* **Diagnóstico Micro-Telemétrico de Maniobras (Viradas y Trasluchadas)**:
+  * Detección algorítmica de puntos críticos de cada giro: entrada $t_{\text{entry}}$ (caída al 95% de velocidad), ápex $t_{\text{apex}}$ (cruce del rumbo por el viento / velocidad mínima $V_{\min}$) y recuperación $t_{\text{recovery}}$ (retorno al 90% de velocidad).
+  * Métricas calculadas: ratio de frenado de timón ($V_{\min} / V_{\text{target\_pre}}$, con alerta visual si es $< 0.35$), duración neta en segundos y pérdida métrica agregada (*Tack Loss* neto en metros frente a la VMG óptima teórica).
+* **Tabla Independiente: «Métricas Tácticas por Tramo (Recorrido IODA)»**:
+  * Segmentación cinemática por balizas oficiales: Ceñida 1, Través, Popa a Puerta 3 y Ceñida a Llegada (o segmentación angular automática si no se han fijado balizas).
+  * Columnas calculadas por tramo:
+    * **Duración y Distancia**: Tiempo neto navegado (`mm:ss`) y distancia real recorrida (`m`).
+    * **Eficiencia de Derrota (% Rhumbline)**: Relación entre la distancia directa a la boya y la distancia real navegada.
+    * **Desglose de Maniobras**: Conteo exacto de viradas y trasluchadas por tramo y pérdida agregada en metros ($\Delta d$).
+    * **Polar Target %**: Comparación porcentual entre la velocidad/VMG real y la polar teórica de referencia de Optimist según la intensidad del viento.
+    * **Bordo Favorecido (% VMC)**: Porcentaje del tiempo que el regatista navegó en la amura de mayor velocidad de aproximación a la baliza.
+    * **Desviación de Laylines**: Metros y segundos navegados en "overstanding" fuera del cono de 42°.
+* **Conexión Interactiva con el Mapa Canvas**:
+  * Al hacer clic en cualquier tramo o pulsar «🎯 Ver en mapa», el mapa resalta la traza con un halo brillante naranja y dibuja sobre el mapa los puntos de viradas y trasluchadas con sus metros de pérdida.
+* **Descarga de Informe JSON `TelemetryPerformanceReport`**:
+  * Botón para exportar el informe completo de telemetría conforme al estándar formal de ingeniería naval de `performance_knowledge.md` (metadatos, viento estimado, métricas globales, detalle de maniobras y tramos).
+
+### [v1.1.0] - Inicio V2: Navegación por pestañas («Visualizar el track» / «Métricas avanzadas»), Tabla de Telemetría e Impresión de Informes
+* **Sistema de navegación principal por pestañas**:
+  * Dos vistas principales en la parte superior: **«Visualizar el track»** y **«Métricas avanzadas»**, con indicador de pestaña activa subrayada en naranja e integración con el tema visual del club.
+  * Vista «Visualizar el track»: Conserva el mapa interactivo, la línea de tiempo, el reproductor y el panel lateral de clasificación, barcos, recorrido y táctica.
+  * Vista «Métricas avanzadas»: Nuevo espacio dedicado al análisis cuantitativo, tablas comparativas y telemetría de rendimiento de la flota de Optimist.
+* **Tabla de Métricas Avanzadas**:
+  * **Posición**: Puesto en la regata o sesión con distintivo visual (`1º`, `2º`, `3º`...).
+  * **Nombre del barco**: Vela real del regatista con su muestra/barrita de color distintivo y nombre secundario.
+  * **Velocidad media**: En nudos con dos decimales de precisión, calculada durante los períodos de navegación activa.
+  * **Velocidad máxima (5s)**: Pico de velocidad sostenido en ventana móvil de 5 segundos para suprimir ruidos del GPS.
+  * **Distancia navegada**: Distancia ortodrómica total recorrida en metros y su equivalencia en millas náuticas (NM).
+  * **Número de viradas**: Total de viradas computadas en ceñida mediante cambio de amuras respecto al viento.
+  * **Tiempo navegado**: Duración total en el agua en formato claro de horas, minutos y segundos (ej. `1h 05m 48s`).
+* **Ordenación interactiva por columnas**: Posibilidad de hacer clic en cualquier columna de la tabla para ordenar la flota de forma ascendente o descendente según la métrica deseada.
+* **Resumen rápido con tarjetas KPI**: Bloques superiores con barcos analizados, viento de la sesión, velocidad media de la flota, velocidad punta y total de viradas registradas.
+* **🖨️ Impresión y exportación de informes**:
+  * Botón «🖨️ Imprimir informe» con estilos optimizados `@media print` para papel A4 o guardar en PDF, con cabecera oficial del club, fecha, tarjetas de resumen, tabla formateada y zona de observaciones/firma del entrenador.
+  * Botón «📋 Copiar para Excel» para pegar directamente los datos en hojas de cálculo.
+
 ### [v1.0.11] - Inversión de amuras en ceñida, Borrador táctico selectivo y Colores individuales
 * **Corrección de amuras de barcos tácticos en ceñida**: Invertida la orientación para barcos en ceñida («Estribor» y «Babor»). Ahora «Estribor (ceñida)» sitúa el barco con el viento entrando por su costado de estribor (rumbo `w − 45°`) con la botavara a babor, y «Babor (ceñida)» con el viento entrando por babor (rumbo `w + 45°`) con la botavara a estribor, reflejando con exactitud la física de navegación. La popa se mantiene inalterada.
 * **Herramienta de Borrador táctico selectivo (`🧽 Borrador`)**:

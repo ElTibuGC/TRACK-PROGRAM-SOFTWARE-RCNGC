@@ -233,9 +233,405 @@ tr.qsep th{padding-top:4px}
   .clock{font-size:28px}
 }
 @media (prefers-reduced-motion: reduce){ .row{transition:none} }
+
+/* ---------- Pestañas principales de navegación superior ---------- */
+.main-tabs{
+  grid-column:1/-1;
+  display:flex;
+  align-items:center;
+  gap:24px;
+  border-bottom:1px solid var(--line);
+  padding:0 4px;
+  margin-bottom:4px;
+}
+.main-tab-btn{
+  background:transparent;
+  border:none;
+  border-bottom:3px solid transparent;
+  color:var(--muted);
+  font-family:var(--f-display);
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:.02em;
+  padding:8px 6px 10px;
+  cursor:pointer;
+  transition:color .15s, border-color .15s;
+}
+.main-tab-btn:hover{color:var(--ink)}
+.main-tab-btn.is-active{color:var(--ink);border-bottom-color:var(--accent)}
+
+/* ---------- Vista de Métricas Avanzadas ---------- */
+.advanced-metrics-view{
+  grid-column:1/-1;
+  padding:20px 24px;
+}
+.app.view-metrics .map,
+.app.view-metrics .side,
+.app.view-metrics .tl,
+.app.view-metrics .summary,
+.app.view-metrics .import{
+  display:none!important;
+}
+.app:not(.view-metrics) .advanced-metrics-view{
+  display:none!important;
+}
+
+.metrics-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:16px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+.metrics-head h2{
+  font-family:var(--f-display);
+  font-size:24px;
+  margin:0;
+  font-weight:700;
+  color:var(--ink);
+}
+.metrics-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+/* Tarjetas KPI de métricas */
+.metrics-kpis{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(170px, 1fr));
+  gap:12px;
+  margin-bottom:20px;
+}
+.kpi-card{
+  background:var(--bg);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px 14px;
+}
+.kpi-lbl{
+  font-size:10.5px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-weight:600;
+  margin-bottom:4px;
+}
+.kpi-val{
+  font-family:var(--f-display);
+  font-size:22px;
+  font-weight:700;
+  line-height:1.1;
+  color:var(--ink);
+}
+.kpi-sub{
+  font-size:11.5px;
+  color:var(--muted);
+  margin-top:2px;
+}
+
+/* Tabla de Métricas Avanzadas */
+.metrics-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13.5px;
+}
+.metrics-table th{
+  background:var(--panel);
+  cursor:pointer;
+  user-select:none;
+  transition:background .15s, color .15s;
+  padding:8px 12px;
+}
+.metrics-table th:hover{
+  background:var(--sel-soft);
+  color:var(--ink);
+}
+.metrics-table th.sorted{
+  color:var(--accent);
+}
+.metrics-table td{
+  padding:9px 12px;
+  vertical-align:middle;
+}
+.metrics-table tbody tr:hover{
+  background:var(--sel-soft);
+}
+.badge-pos{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:28px;
+  height:24px;
+  padding:0 6px;
+  border-radius:6px;
+  font-family:var(--f-mono);
+  font-weight:700;
+  font-size:12px;
+  background:var(--bg);
+  border:1px solid var(--line);
+}
+.badge-pos.pos-1{
+  background:rgba(234,179,8,.15);
+  border-color:#eab308;
+  color:#ca8a04;
+}
+.badge-pos.pos-2{
+  background:rgba(148,163,184,.18);
+  border-color:#94a3b8;
+  color:#64748b;
+}
+.badge-pos.pos-3{
+  background:rgba(217,119,6,.15);
+  border-color:#d97706;
+  color:#b45309;
+}
+.unit-sub{
+  font-size:11px;
+  color:var(--muted);
+  margin-left:4px;
+}
+.metrics-empty-state{
+  text-align:center;
+  padding:48px 16px;
+}
+.metrics-section-title{
+  margin:28px 0 10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.metrics-section-title h3{
+  margin:0;
+  font-family:var(--f-display);
+  font-size:18px;
+  font-weight:700;
+  color:var(--ink);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.table-selectable tbody tr{
+  cursor:pointer;
+  transition:background .15s;
+}
+.table-selectable tbody tr.is-selected{
+  background:var(--sel-soft)!important;
+  outline:2px solid var(--accent);
+  outline-offset:-2px;
+}
+.chip-alert{
+  background:#fee2e2;
+  color:#b91c1c;
+  font-size:11px;
+  font-weight:700;
+  padding:2px 6px;
+  border-radius:4px;
+  display:inline-block;
+  margin-left:4px;
+}
+.chip-good{
+  background:rgba(16,185,129,.15);
+  color:#059669;
+  font-size:11px;
+  font-weight:700;
+  padding:2px 6px;
+  border-radius:4px;
+  display:inline-block;
+}
+.badge-maneuver{
+  font-size:11px;
+  font-weight:700;
+  padding:2px 7px;
+  border-radius:4px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.badge-maneuver.tack{
+  background:rgba(2,132,199,.15);
+  color:#0284c7;
+  border:1px solid rgba(2,132,199,.3);
+}
+.badge-maneuver.jibe{
+  background:rgba(245,158,11,.15);
+  color:#d97706;
+  border:1px solid rgba(245,158,11,.3);
+}
+.perf-charts-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(440px, 1fr));
+  gap:20px;
+  margin-bottom:28px;
+}
+.perf-chart-card{
+  background:var(--bg);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:16px;
+  box-shadow:0 1px 3px rgba(0,0,0,0.05);
+  position:relative;
+}
+.print-footer{display:none}
+
+/* Estilos de Impresión (@media print) */
+@media print{
+  body{
+    background:#ffffff!important;
+    color:#111827!important;
+    font-size:11pt!important;
+  }
+  .main-tabs,
+  .top-right,
+  .tools,
+  .placing-msg,
+  .tl,
+  .import,
+  .summary,
+  .side,
+  .map,
+  #btnHelp,
+  #newSessionBtn,
+  .metrics-actions,
+  .modal-overlay{
+    display:none!important;
+  }
+  .app{
+    display:block!important;
+    max-width:100%!important;
+    padding:0!important;
+    margin:0!important;
+  }
+  .top{
+    display:block!important;
+    border-bottom:2px solid #111827!important;
+    padding-bottom:10px!important;
+    margin-bottom:14px!important;
+  }
+  .eyebrow{
+    color:#374151!important;
+    font-size:10pt!important;
+    font-weight:700!important;
+  }
+  h1{
+    color:#000000!important;
+    font-size:18pt!important;
+  }
+  .meta{
+    color:#4b5563!important;
+    font-size:9.5pt!important;
+  }
+  .advanced-metrics-view{
+    display:block!important;
+    background:#ffffff!important;
+    border:none!important;
+    box-shadow:none!important;
+    padding:0!important;
+  }
+  .metrics-kpis{
+    display:grid!important;
+    grid-template-columns:repeat(5,1fr)!important;
+    gap:8px!important;
+    margin-bottom:16px!important;
+  }
+  .kpi-card{
+    border:1px solid #d1d5db!important;
+    background:#fdfdfd!important;
+    color:#111827!important;
+    padding:8px!important;
+  }
+  .kpi-lbl{
+    color:#4b5563!important;
+    font-size:8pt!important;
+  }
+  .kpi-val{
+    color:#000000!important;
+    font-size:13pt!important;
+  }
+  .perf-charts-grid{
+    display:flex!important;
+    flex-direction:row!important;
+    justify-content:space-between!important;
+    gap:12px!important;
+    margin-bottom:16px!important;
+    page-break-inside:avoid!important;
+  }
+  .perf-chart-card{
+    flex:1 1 48%!important;
+    max-width:48%!important;
+    border:1px solid #d1d5db!important;
+    background:#ffffff!important;
+    padding:8px!important;
+    box-shadow:none!important;
+    page-break-inside:avoid!important;
+  }
+  .perf-chart-card canvas{
+    max-width:100%!important;
+    height:auto!important;
+  }
+  .metrics-table{
+    width:100%!important;
+    border-collapse:collapse!important;
+    font-size:9.5pt!important;
+  }
+  .metrics-table th{
+    background:#f3f4f6!important;
+    color:#000000!important;
+    border-bottom:2px solid #111827!important;
+    padding:6px 8px!important;
+  }
+  .metrics-table td{
+    border-bottom:1px solid #e5e7eb!important;
+    padding:6px 8px!important;
+    color:#111827!important;
+  }
+  .metrics-table tbody tr:nth-child(even){
+    background:#f9fafb!important;
+  }
+  .sw{
+    -webkit-print-color-adjust:exact!important;
+    print-color-adjust:exact!important;
+  }
+  .print-footer{
+    display:block!important;
+    margin-top:28px!important;
+    padding-top:12px!important;
+    border-top:1px solid #9ca3af!important;
+    font-size:9pt!important;
+    color:#374151!important;
+  }
+  body.print-tactical-report .metrics-head,
+  body.print-tactical-report .race-window-notice,
+  body.print-tactical-report #metricsKpis,
+  body.print-tactical-report #fleetTableWrap,
+  body.print-tactical-report #advancedMetricsTable,
+  body.print-tactical-report #tacticalAnalysisModule > div:first-child {
+    display:none!important;
+  }
+  body.print-tactical-report .print-tactical-header {
+    display:block!important;
+  }
+  body.print-tactical-report #tacticalAnalysisModule {
+    margin-top:0!important;
+    border-top:none!important;
+    padding-top:0!important;
+  }
+  @page{
+    size:A4 portrait;
+    margin:1.4cm;
+  }
+}
 </style>
 
 <div class="app is-empty">
+  <nav class="main-tabs" role="tablist" aria-label="Modo de visualización">
+    <button class="main-tab-btn is-active" id="mainTabTrack" role="tab" aria-selected="true">Visualizar el track</button>
+    <button class="main-tab-btn" id="mainTabMetrics" role="tab" aria-selected="false">Métricas avanzadas</button>
+  </nav>
+
   <header class="top">
     <div>
       <div class="eyebrow" id="eyebrow">Equipo de Regatas RCNGC · Optimist</div>
@@ -327,6 +723,226 @@ tr.qsep th{padding-top:4px}
     </div>
     <div class="table-wrap"><table id="sumTable"></table></div>
   </section>
+
+  <section class="card advanced-metrics-view" id="advancedMetricsView" hidden aria-labelledby="adv-metrics-h">
+    <div class="metrics-head">
+      <div>
+        <h2 id="adv-metrics-h">📊 Métricas Avanzadas de Rendimiento</h2>
+        <div class="hint" id="metricsSubtitle">Análisis cinemático y telemetría de la flota · Clase Optimist</div>
+      </div>
+      <div class="metrics-actions">
+        <button class="btn" id="btnShowPolarModal" type="button" title="Consultar tabla de polares teóricas de la clase Optimist y reglas de cálculo">📖 Polares Optimist</button>
+        <button class="btn" id="btnCopyMetricsTable" type="button" title="Copiar tabla para pegar en Excel">📋 Copiar para Excel</button>
+        <button class="btn primary" id="btnPrintMetricsReport" type="button" title="Imprimir informe o guardar en PDF">🖨️ Imprimir informe</button>
+      </div>
+    </div>
+
+    <div class="race-window-notice" style="background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:8px;padding:9px 14px;margin:10px 0 16px 0;font-size:12.5px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:18px">⏱️</span>
+      <div><strong>Filtro Estricto de Regata Activado:</strong> Todas las métricas avanzadas (velocidad media, máxima 5s, distancia, viradas y rendimiento por tramo) se computan <strong>exclusivamente desde que el barco cruza la línea de salida hasta que corta la meta</strong>. Se descartan automáticamente calentamientos previos y el regreso al club / remolque.</div>
+    </div>
+
+    <div class="metrics-kpis" id="metricsKpis"></div>
+
+    <div class="table-wrap" id="fleetTableWrap">
+      <table class="metrics-table" id="advancedMetricsTable">
+        <thead>
+          <tr id="advMetricsTheadRow">
+            <th data-sort="pos" style="width:75px;text-align:center" title="Ordenar por posición">Posición ⬍</th>
+            <th data-sort="sail" style="text-align:left" title="Ordenar por número de vela">Barco / Vela ⬍</th>
+            <th data-sort="avg" title="Ordenar por velocidad media en nudos">Velocidad media ⬍</th>
+            <th data-sort="max" title="Ordenar por velocidad máxima sostenida en 5 segundos">Velocidad máxima (5s) ⬍</th>
+            <th data-sort="dist" title="Ordenar por distancia navegada">Distancia navegada ⬍</th>
+            <th data-sort="tacks" title="Ordenar por número de viradas">Número de viradas ⬍</th>
+            <th data-sort="dur" title="Ordenar por tiempo navegado">Tiempo navegado ⬍</th>
+          </tr>
+        </thead>
+        <tbody id="advancedMetricsTbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Módulo específico de Análisis Táctico de Recorrido IODA y Telemetría -->
+    <div id="tacticalAnalysisModule" style="margin-top:28px;border-top:1px solid var(--line);padding-top:20px">
+      <!-- Cabecera exclusiva para impresión del informe táctico -->
+      <div class="print-tactical-header" id="printTacticalHeader" style="display:none">
+        <div style="display:flex;justify-content:space-between;border-bottom:2px solid #111827;padding-bottom:10px;margin-bottom:16px">
+          <div>
+            <div style="font-weight:700;font-size:11pt;color:#4b5563">Equipo de Regatas RCNGC · Optimist</div>
+            <div style="font-size:16pt;font-weight:800;color:#111827" id="printTacBoatTitle">Informe Táctico Individual</div>
+          </div>
+          <div style="text-align:right;font-size:9.5pt;color:#4b5563">
+            <div id="printTacDate"></div>
+            <div id="printTacWind"></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <label for="selTacticalBoat" style="font-weight:700;font-size:13.5px;color:var(--ink)">⛵ Barco para análisis táctico detallado:</label>
+          <select id="selTacticalBoat" class="num" style="width:auto;min-width:200px;font-weight:600;padding:6px 10px"></select>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="btn primary" id="btnPrintTacticalReport" type="button" title="Imprimir informe táctico completo del barco o guardar en PDF">🖨️ Imprimir Análisis Táctico</button>
+        </div>
+      </div>
+
+      <!-- KPIs vectoriales del barco seleccionado -->
+      <div class="metrics-kpis" id="tacticalKpis"></div>
+
+      <!-- Gráficos de Rendimiento y Análisis Dinámico -->
+      <div class="metrics-section-title" style="margin-top:24px">
+        <h3>📊 Gráficos de Rendimiento y Dinámica de Regata</h3>
+        <div class="hint">Curva polar empírica del regatista vs polar teórica Optimist y perfil de pérdida de velocidad en maniobras (-5s a +5s)</div>
+      </div>
+
+      <div class="perf-charts-grid">
+        <!-- Tarjeta 1: Gráfico Polar del Regatista (Estilo SailTimerApp) -->
+        <div class="perf-chart-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+            <div>
+              <h4 style="margin:0;font-size:15px;color:var(--ink);display:flex;align-items:center;gap:6px">
+                <span>🧭 Polares Calculadas del Regatista</span>
+              </h4>
+              <div style="font-size:11.5px;color:var(--muted)">Velocidad real por ángulo TWA (Babor / Estribor) vs Polar Optimist IOD95</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <span class="chip-good" id="polarEfficiencyBadge" style="font-size:11px">--% Rendimiento</span>
+            </div>
+          </div>
+          
+          <div style="position:relative;width:100%;height:430px;display:flex;justify-content:center;align-items:center">
+            <canvas id="sailorPolarCanvas" width="460" height="430" style="max-width:100%;max-height:100%"></canvas>
+            <div id="polarTooltip" style="position:absolute;display:none;background:rgba(17,24,39,0.92);color:#fff;padding:6px 10px;border-radius:6px;font-size:11.5px;pointer-events:none;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,0.25);line-height:1.4"></div>
+          </div>
+
+          <div style="margin-top:10px;display:flex;justify-content:space-around;font-size:11.5px;border-top:1px solid var(--line);padding-top:10px;flex-wrap:wrap;gap:6px">
+            <span style="display:flex;align-items:center;gap:5px">
+              <span style="display:inline-block;width:12px;height:3px;background:#ef4444;border-radius:2px"></span>
+              <strong>Curva real del regatista</strong>
+            </span>
+            <span style="display:flex;align-items:center;gap:5px">
+              <span style="display:inline-block;width:12px;height:2px;background:#0284c7;border-top:1px dashed #0284c7"></span>
+              <span style="color:var(--muted)">Polar teórica Optimist</span>
+            </span>
+            <span style="display:flex;align-items:center;gap:5px">
+              <span style="display:inline-block;width:6px;height:6px;background:rgba(239,68,68,0.5);border-radius:50%"></span>
+              <span style="color:var(--muted)">Puntos GPS (1 Hz)</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Tarjeta 2: Perfil de Velocidad y Variación de Ángulo en Maniobras (-5s a +5s) -->
+        <div class="perf-chart-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+            <div>
+              <h4 style="margin:0;font-size:15px;color:var(--ink);display:flex;align-items:center;gap:6px">
+                <span>🔄 Pérdida de Velocidad y Ángulo en Maniobras</span>
+              </h4>
+              <div style="font-size:11.5px;color:var(--muted)">SOG y variación angular (TWA entrada vs salida: -5s, ápex 0s, +5s)</div>
+            </div>
+            <div style="display:flex;gap:4px">
+              <button class="btn btn-sm primary" id="btnChartModeTacks" type="button" style="padding:3px 8px;font-size:11.5px">Viradas</button>
+              <button class="btn btn-sm" id="btnChartModeJibes" type="button" style="padding:3px 8px;font-size:11.5px">Trasluchadas</button>
+            </div>
+          </div>
+
+          <div style="position:relative;width:100%;height:350px">
+            <canvas id="maneuverSpeedCanvas" width="480" height="350" style="width:100%;height:100%"></canvas>
+            <div id="maneuverTooltip" style="position:absolute;display:none;background:rgba(17,24,39,0.92);color:#fff;padding:6px 10px;border-radius:6px;font-size:11.5px;pointer-events:none;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,0.25);line-height:1.4"></div>
+          </div>
+
+          <div id="maneuverKpiStrip" style="margin-top:10px;display:grid;grid-template-columns:repeat(auto-fit, minmax(105px, 1fr));gap:6px;text-align:center;border-top:1px solid var(--line);padding-top:10px"></div>
+
+          <div style="margin-top:10px;display:flex;justify-content:space-around;font-size:11.5px;border-top:1px dashed var(--line);padding-top:8px;flex-wrap:wrap;gap:6px">
+            <span style="display:flex;align-items:center;gap:5px">
+              <span style="display:inline-block;width:12px;height:3px;background:#10b981;border-radius:2px"></span>
+              <span style="color:#059669;font-weight:600">Velocidad Máxima</span>
+            </span>
+            <span style="display:flex;align-items:center;gap:5px">
+              <span style="display:inline-block;width:12px;height:4px;background:#0284c7;border-radius:2px"></span>
+              <span style="color:#0284c7;font-weight:700">Velocidad Media</span>
+            </span>
+            <span style="display:flex;align-items:center;gap:5px">
+              <span style="display:inline-block;width:12px;height:3px;background:#ef4444;border-radius:2px"></span>
+              <span style="color:#dc2626;font-weight:600">Velocidad Mínima</span>
+            </span>
+            <span style="display:flex;align-items:center;gap:5px">
+              <span style="display:inline-block;width:12px;height:2px;background:#8b5cf6;border-top:2px dashed #8b5cf6"></span>
+              <span style="color:#7c3aed;font-weight:700">Ángulo TWA (|TWA|)</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla independiente: Métricas Tácticas por Tramo (Recorrido IODA) -->
+      <div class="metrics-section-title">
+        <h3>⛵ Métricas Tácticas por Tramo (Recorrido IODA)</h3>
+        <div class="hint">Desglose de tramos oficiales del recorrido IODA con duraciones, maniobras y rendimiento frente a polares</div>
+      </div>
+      <div class="table-wrap">
+        <table class="metrics-table table-selectable" id="iodaLegsMetricsTable">
+          <thead>
+            <tr>
+              <th style="text-align:left">Tramo del Recorrido</th>
+              <th>Duración</th>
+              <th>Distancia Real</th>
+              <th>Efic. Derrota (Rhumbline)</th>
+              <th>Maniobras y Pérdida</th>
+              <th>Polar Target %</th>
+              <th>Bordo Favorecido (VMC)</th>
+              <th>Desviación Laylines</th>
+            </tr>
+          </thead>
+          <tbody id="iodaLegsMetricsTbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Diagnóstico de Maniobras -->
+      <div class="metrics-section-title" style="margin-top:24px">
+        <h3>🔄 Diagnóstico Micro-Telemétrico de Maniobras (Viradas y Trasluchadas)</h3>
+        <div class="hint">Detección cinemática: t_entry (95% SOG), t_apex (cruce de viento / Vmin) y t_recovery (90% SOG)</div>
+      </div>
+      <div class="table-wrap">
+        <table class="metrics-table" id="maneuversMetricsTable">
+          <thead>
+            <tr>
+              <th style="width:40px;text-align:center">#</th>
+              <th style="text-align:left">Tipo</th>
+              <th>Momento</th>
+              <th>Vel. Previa (Vtarget)</th>
+              <th>Vel. Mínima (Vmin)</th>
+              <th>Ratio Frenado (Vmin/Vpre)</th>
+              <th>Duración</th>
+              <th>Pérdida Métrica (Tack Loss)</th>
+            </tr>
+          </thead>
+          <tbody id="maneuversMetricsTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="metrics-empty-state" id="metricsEmptyState" hidden>
+      <div style="font-size:36px;margin-bottom:8px">⛵</div>
+      <h3 style="margin:0 0 6px">No hay entrenamiento cargado todavía</h3>
+      <p style="color:var(--muted);max-width:480px;margin:0 auto 16px">Carga los archivos GPX en la pestaña <strong>«Visualizar el track»</strong> para calcular automáticamente la tabla de telemetría y generar el informe.</p>
+      <button class="btn primary" id="btnGoToTrackView" type="button">Ir a «Visualizar el track»</button>
+    </div>
+
+    <div class="metrics-technical-note" style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)">
+      <p style="margin:0"><strong>ℹ️ Metodología cinemática:</strong> Velocidades calculadas a 1 Hz y filtradas mediante ventana móvil de 5 segundos para suprimir fluctuaciones del GPS. Viradas computadas en ceñida por inversión de amuras respecto al eje del viento.</p>
+    </div>
+
+    <div class="print-footer">
+      <div style="display:flex;justify-content:space-between;margin-bottom:20px">
+        <span><strong>Equipo de Regatas RCNGC</strong> · Optimist</span>
+        <span id="printDateSpan"></span>
+      </div>
+      <div><strong>Observaciones y debriefing del entrenador:</strong></div>
+      <div style="border-bottom:1px solid #999;height:24px;margin-top:12px"></div>
+      <div style="border-bottom:1px solid #999;height:24px;margin-top:12px"></div>
+    </div>
+  </section>
 </div>
 
 <div class="modal-overlay" id="helpModal" hidden>
@@ -379,10 +995,105 @@ tr.qsep th{padding-top:4px}
         <li><strong>Pestaña Resumen:</strong> Métricas completas de cada regatista (distancia navegada, velocidad media y máxima, viradas y trasluchadas) con botón para copiar directo a Excel.</li>
       </ul>
 
-      <h3>💾 6. Memoria Automática y Nueva Sesión</h3>
+      <h3>📊 6. Métricas Avanzadas e Informes de Rendimiento</h3>
+      <ul>
+        <li><strong>Pestaña «Métricas avanzadas»:</strong> Accede desde las pestañas de navegación superior para ver el panel de telemetría cinemática y rendimiento de toda la flota.</li>
+        <li><strong>Tabla comparativa:</strong> Visualiza posición, vela y color del barco, velocidad media, velocidad máxima sostenida en 5 segundos (filtrando picos del GPS), distancia navegada (en metros y millas náuticas), número de viradas y tiempo total en el agua.</li>
+        <li><strong>Ordenación por columnas:</strong> Haz clic en cualquier encabezado de la tabla (Posición, Vel. media, Viradas, etc.) para ordenar a la flota según ese parámetro.</li>
+        <li><strong>🖨️ Imprimir informe:</strong> Pulsa el botón de imprimir para generar un informe oficial limpio en PDF o en papel para el club, regatistas o padres.</li>
+        <li><strong>📋 Copiar para Excel:</strong> Exporta los datos con un clic para pegarlos directamente en una hoja de cálculo.</li>
+      </ul>
+
+      <h3>💾 7. Memoria Automática y Nueva Sesión</h3>
       <ul>
         <li><strong>A prueba de F5:</strong> Todo se guarda automáticamente en la memoria privada de tu navegador. Si actualizas con <kbd>F5</kbd> o cierras la pestaña, recuperarás tus barcos, balizas y dibujos al instante.</li>
         <li><strong>Nueva sesión:</strong> Para limpiar los datos y empezar un nuevo entrenamiento desde cero, pulsa el botón <strong>«Nueva sesión»</strong> arriba a la derecha.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="polarModal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="polarModalTitle" style="max-width:840px">
+    <div class="modal-head">
+      <h2 id="polarModalTitle">⛵ Guía de Polares y Reglas de Medición · Optimist IOD95</h2>
+      <button class="modal-close" id="btnClosePolar" type="button" aria-label="Cerrar guía de polares">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px">
+        <strong>⏱️ Regla de Medición Activa (Salida a Meta):</strong><br>
+        Todas las métricas de rendimiento (velocidad media, velocidad máxima 5s, distancia navegada, viradas, duración y eficiencia de tramos IODA) se calculan <strong>estrictamente desde que cada regatista cruza la línea de salida hasta que corta la línea de llegada</strong>. Se descartan de forma automática los períodos de espera previos a la salida, calentamientos y el regreso a puerto / remolque.
+      </div>
+
+      <h3>📊 Polares Teóricas de Referencia de la Clase Optimist</h3>
+      <p style="font-size:13px;color:var(--ink);line-height:1.5">
+        En la clase Optimist (IOD95) <strong>no existe un archivo VPP oficial rígido publicado por IODA u ORC</strong>, dado que el peso del regatista (de 35 a 52 kg), la caída de palo (<em>mast rake</em> 2.80–2.83 m), el cazado y la dinámica corporal con ola varían enormemente el rendimiento. No obstante, para el análisis telemétrico de competición se utilizan las siguientes <strong>Polares Empíricas Calibradas</strong> de alto rendimiento:
+      </p>
+
+      <div class="table-wrap" style="margin:14px 0">
+        <table class="metrics-table" style="font-size:12.5px">
+          <thead>
+            <tr>
+              <th style="text-align:left">Viento Real (TWS)</th>
+              <th>Ceñida: TWA Óptimo</th>
+              <th>Ceñida: SOG Obj.</th>
+              <th>Ceñida: VMG Obj.</th>
+              <th>Través: SOG Obj. (85°-95°)</th>
+              <th>Popa: TWA Óptimo</th>
+              <th>Popa: SOG Obj.</th>
+              <th>Popa: VMG Obj.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>6 nudos</strong> (Brisa suave)</td>
+              <td>43°</td>
+              <td>3.25 kn</td>
+              <td><strong>2.35 kn</strong></td>
+              <td>3.80 kn</td>
+              <td>152°</td>
+              <td>3.50 kn</td>
+              <td><strong>2.90 kn</strong></td>
+            </tr>
+            <tr>
+              <td><strong>10 nudos</strong> (Viento medio)</td>
+              <td>43°</td>
+              <td>3.85 kn</td>
+              <td><strong>2.82 kn</strong></td>
+              <td>4.90 kn</td>
+              <td>150°</td>
+              <td>4.60 kn</td>
+              <td><strong>3.85 kn</strong></td>
+            </tr>
+            <tr>
+              <td><strong>14 nudos</strong> (Brisa fresca)</td>
+              <td>42°</td>
+              <td>4.20 kn</td>
+              <td><strong>3.07 kn</strong></td>
+              <td>5.60 kn</td>
+              <td>148°</td>
+              <td>5.30 kn</td>
+              <td><strong>4.45 kn</strong></td>
+            </tr>
+            <tr>
+              <td><strong>18+ nudos</strong> (Viento duro)</td>
+              <td>42°</td>
+              <td>4.35 kn</td>
+              <td><strong>3.18 kn</strong></td>
+              <td>6.10 kn</td>
+              <td>146°</td>
+              <td>5.80 kn</td>
+              <td><strong>4.90 kn</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>🏁 Detección Telemétrica de Salida y Llegada</h3>
+      <ul>
+        <li><strong>Línea de Salida:</strong> Se define mediante el segmento entre la boya de Pin y el Barco de Comité (marcado en la pestaña «Táctica» o en «Recorrido IODA»). El visor analiza la trayectoria de cada barco y detecta el segundo exacto en el que cruza la línea hacia el campo de regatas.</li>
+        <li><strong>Línea de Llegada:</strong> Se define entre la boya de meta y el Comité de Llegada. En cada segundo, el algoritmo de intersección de segmentos vectoriales comprueba el cruce de meta. Cuando un barco pasa la línea, se fija su tiempo de llegada (Meta) y finaliza el intervalo de cómputo de sus métricas.</li>
+        <li><strong>Eficiencia Polar Target (%):</strong> En cada tramo de ceñida o empopada se compara la velocidad real obtenida frente al objetivo polar para ese ángulo y rango de viento: un valor &ge; 90% indica rendimiento óptimo de navegación.</li>
       </ul>
     </div>
   </div>
@@ -801,6 +1512,51 @@ function draw(now){
     ctx.stroke();
   }
   ctx.globalAlpha=1;
+
+  // Resalte interactivo de tramo táctico IODA seleccionado
+  if(state.highlightedLeg && D.boats[state.highlightedLeg.boatId]){
+    const hl=state.highlightedLeg;
+    const base=hl.boatId*D.stride;
+    ctx.save();
+    ctx.strokeStyle='rgba(255, 122, 46, 0.45)';
+    ctx.lineWidth=7;
+    ctx.beginPath();
+    let pen=false;
+    for(let k=hl.tIn; k<=hl.tOut; k++){
+      if(!ok(hl.boatId,k)){pen=false;continue;}
+      const px=sx(D.X[base+k]),py=sy(D.Y[base+k]);
+      if(pen)ctx.lineTo(px,py);else{ctx.moveTo(px,py);pen=true;}
+    }
+    ctx.stroke();
+
+    ctx.strokeStyle='#ff7a2e';
+    ctx.lineWidth=2.8;
+    ctx.stroke();
+
+    if(hl.maneuvers && hl.maneuvers.length){
+      hl.maneuvers.forEach(m=>{
+        if(m.apexS>=hl.tIn && m.apexS<=hl.tOut){
+          const mx=sx(D.X[base+m.apexS]), my=sy(D.Y[base+m.apexS]);
+          ctx.beginPath();
+          ctx.arc(mx,my,6,0,7);
+          ctx.fillStyle=m.vMinRatio<0.35?'#ef4444':'#10b981';
+          ctx.fill();
+          ctx.strokeStyle='#ffffff';
+          ctx.lineWidth=1.5;
+          ctx.stroke();
+
+          ctx.font=`700 10.5px ${C.mono}`;
+          ctx.lineWidth=2.5;
+          ctx.strokeStyle=C.halo;
+          const lab=(m.type==='TACK'?'Virada ':'Trasluchada ')+m.tackLossMeters+'m';
+          ctx.strokeText(lab,mx+8,my+3);
+          ctx.fillStyle=m.vMinRatio<0.35?'#ef4444':C.ink;
+          ctx.fillText(lab,mx+8,my+3);
+        }
+      });
+    }
+    ctx.restore();
+  }
 
   // barcos
   const L=Math.max(11,2.3*sc),Bw=L*.55;
@@ -1430,6 +2186,8 @@ function handleTacticsClick(x, y, px, py){
       state.tactics.startLine={pin:state.toolDraft.pin,rc:{x,y}};
       state.toolDraft=null;
       setTacticsTool(null);
+      boatKinematicsCache.clear();
+      if(D&&hasCourse())computeCourse();
       renderTacticsPane();
       saveCurrentSession();
     }
@@ -1535,7 +2293,7 @@ function renderTacticsPane(){
   tacticsEl.querySelector('#btnThreeLengths').addEventListener('click',()=>{tac.threeLengths=!tac.threeLengths;renderTacticsPane();saveCurrentSession();});
   tacticsEl.querySelector('#btnDrawStart').addEventListener('click',()=>setTacticsTool(state.activeTool==='start'?null:'start'));
   const btnClrSt=tacticsEl.querySelector('#btnClearStartLine');
-  if(btnClrSt)btnClrSt.addEventListener('click',()=>{tac.startLine=null;renderTacticsPane();saveCurrentSession();});
+  if(btnClrSt)btnClrSt.addEventListener('click',()=>{tac.startLine=null;boatKinematicsCache.clear();if(D&&hasCourse())computeCourse();renderTacticsPane();saveCurrentSession();});
   const chkGrid=tacticsEl.querySelector('#chkStartGrid');
   if(chkGrid)chkGrid.addEventListener('change',e=>{tac.showStartGrid=e.target.checked;saveCurrentSession();});
   tacticsEl.querySelector('#btnDrawLine').addEventListener('click',()=>setTacticsTool(state.activeTool==='line'?null:'line'));
@@ -1569,7 +2327,34 @@ function renderTacticsPane(){
 
 
 
-/* ---------- recorrido: trapecio IODA manual y libre ---------- */
+/* ---------- geometría y recorrido: trapecio IODA manual y libre ---------- */
+function segmentCrossesLine(p1, p2, pin, rc, margin){
+  if(!p1||!p2||!pin||!rc)return false;
+  const dx=rc.x-pin.x;
+  const dy=rc.y-pin.y;
+  const len=Math.hypot(dx,dy);
+  if(len<1e-4)return false;
+
+  const m=margin!=null?margin:12;
+  const ux=dx/len;
+  const uy=dy/len;
+  const ax=pin.x-ux*m;
+  const ay=pin.y-uy*m;
+  const bx=rc.x+ux*m;
+  const by=rc.y+uy*m;
+
+  function ccw(x1,y1,x2,y2,x3,y3){
+    return (y3-y1)*(x2-x1)-(x3-x1)*(y2-y1);
+  }
+
+  const c1=ccw(ax,ay,bx,by,p1.x,p1.y);
+  const c2=ccw(ax,ay,bx,by,p2.x,p2.y);
+  const c3=ccw(p1.x,p1.y,p2.x,p2.y,ax,ay);
+  const c4=ccw(p1.x,p1.y,p2.x,p2.y,bx,by);
+
+  return (c1*c2<=0)&&(c3*c4<=0);
+}
+
 function computeIODACourse(){
   const C=D.course, io=C.ioda;
   if(!io) return;
@@ -1652,13 +2437,25 @@ function computeIODACourse(){
                 // Tramo 3: Ceñida a Llegada
                 if(finishCenter&&nL>=4){
                   let bestS4=-1, bestD4=Infinity;
+                  const finPin=io.finish&&io.finish.pin;
+                  const finRc=io.finish&&io.finish.rc;
                   for(let s=currentS;s<D.T;s++){
                     const ix=base+s;if(!D.OK[ix])continue;
-                    const d=Math.hypot(D.X[ix]-finishCenter.x, D.Y[ix]-finishCenter.y);
+                    const prevIx=base+Math.max(0,s-1);
+                    const pt={x:D.X[ix],y:D.Y[ix]};
+                    const prevPt=D.OK[prevIx]?{x:D.X[prevIx],y:D.Y[prevIx]}:pt;
+
+                    // 1. Cruce geométrico del segmento Pin - Comité de Llegada
+                    if(finPin&&finRc&&segmentCrossesLine(prevPt,pt,finPin,finRc,15)){
+                      bestS4=s;
+                      break;
+                    }
+                    // 2. Proximidad al centro de la línea si no cortó el segmento estricto
+                    const d=Math.hypot(pt.x-finishCenter.x, pt.y-finishCenter.y);
                     if(d<bestD4){bestD4=d;bestS4=s;}
                     if(bestD4<R&&(d>bestD4+35))break;
                   }
-                  if(bestD4<R&&bestS4>=currentS){
+                  if(bestS4>=currentS){
                     for(let s=currentS;s<=bestS4;s++)D.LG[base+s]=3;
                     currentS=bestS4+1;
                     D.boats[i].finishT=bestS4;
@@ -1816,7 +2613,7 @@ function renderCoursePane(){
   const rad=courseEl.querySelector('#radius');if(rad)rad.addEventListener('change',e=>{D.radius=+e.target.value;courseChanged();});
 }
 
-function courseChanged(){computeCourse();renderCoursePane();renderTicks();renderSummary();updateUI();saveCurrentSession();}
+function courseChanged(){boatKinematicsCache.clear();computeCourse();renderCoursePane();renderTicks();renderSummary();updateUI();saveCurrentSession();}
 
 function setPlacing(v){
   if(v)setTacticsTool(null);
@@ -2151,6 +2948,7 @@ function renderSummary(){
   tb.innerHTML=`<thead><tr><th>Barco</th>${course?'<th>Pos.</th><th>Tiempo</th>':''}<th>Navegado</th><th>Vel. media</th><th>Vel. máx (5 s)</th><th>Viradas</th><th class="q">Pos./min</th><th>Hueco máx.</th><th>Cobertura</th></tr></thead><tbody>${
     sumRows.map(r=>`<tr><td><span class="sw" style="background:${r.b.color}"></span>${esc(r.b.sail)}</td>${course?`<td>${r.fin!=null?r.pos+'º':'—'}</td><td>${r.fin!=null?mmss(r.fin):'no llega'}</td>`:''}<td>${distTxt(r.dist)}</td><td>${fmt1(r.avg)} kn</td><td>${fmt1(r.max)} kn</td><td>${r.tacks}</td><td class="q${r.q.ppm<20?' bad':''}">${Math.round(r.q.ppm)}</td><td class="${r.q.maxGap>15?'bad':''}">${Math.round(r.q.maxGap)} s</td><td class="${r.q.cov<.9?'bad':''}">${Math.round(r.q.cov*100)} %</td></tr>`).join('')}</tbody>`;
   document.getElementById('sumHint').textContent=(D.startT!=null?'Desde la salida':'Toda la sesión')+(course?' · clasificación según el recorrido marcado':'')+'. En naranja, la calidad de datos que conviene revisar: menos de 20 posiciones por minuto, huecos de más de 15 s o cobertura por debajo del 90 %.';
+  if(currentMainView==='metrics') renderAdvancedMetrics();
 }
 document.getElementById('copySum').addEventListener('click',e=>{
   const course=hasCourse();
@@ -2161,6 +2959,1880 @@ document.getElementById('copySum').addEventListener('click',e=>{
   const fallback=()=>{const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let okc=false;try{okc=document.execCommand('copy');}catch(_){}ta.remove();done(okc?'Copiado':'No se pudo copiar');};
   try{navigator.clipboard.writeText(txt).then(()=>done('Copiado: pégalo en Excel'),fallback);}catch(_){fallback();}
 });
+
+/* ---------- Vistas principales: Visualizar el track / Métricas avanzadas ---------- */
+let currentMainView='track';
+let advSort={col:'pos',asc:true};
+let selectedTacticalBoatId=0;
+
+function switchMainView(view){
+  currentMainView=view;
+  const btnTrack=document.getElementById('mainTabTrack');
+  const btnMetrics=document.getElementById('mainTabMetrics');
+  const appEl=document.querySelector('.app');
+  const advView=document.getElementById('advancedMetricsView');
+
+  if(btnTrack){
+    btnTrack.classList.toggle('is-active',view==='track');
+    btnTrack.setAttribute('aria-selected',String(view==='track'));
+  }
+  if(btnMetrics){
+    btnMetrics.classList.toggle('is-active',view==='metrics');
+    btnMetrics.setAttribute('aria-selected',String(view==='metrics'));
+  }
+
+  if(appEl){
+    appEl.classList.toggle('view-metrics',view==='metrics');
+  }
+  if(advView){
+    advView.hidden=(view!=='metrics');
+  }
+
+  if(view==='metrics'){
+    renderAdvancedMetrics();
+  }else{
+    if(typeof drawMap==='function')requestAnimationFrame(drawMap);
+  }
+}
+
+function fmtDuration(s){
+  s=Math.max(0,Math.floor(s));
+  const h=Math.floor(s/3600);
+  const m=Math.floor((s%3600)/60);
+  const ss=s%60;
+  if(h>0)return `${h}h ${String(m).padStart(2,'0')}m ${String(ss).padStart(2,'0')}s`;
+  return `${m}m ${String(ss).padStart(2,'0')}s`;
+}
+
+/* ---------- Motor de Análisis Cinemático y Telemetría Avanzada (Optimist) ---------- */
+const boatKinematicsCache=new Map();
+
+function getActiveStartLine(){
+  if(D&&D.course&&D.course.ioda&&D.course.ioda.start&&D.course.ioda.start.pin&&D.course.ioda.start.rc){
+    return D.course.ioda.start;
+  }
+  if(state.tactics&&state.tactics.startLine&&state.tactics.startLine.pin&&state.tactics.startLine.rc){
+    return state.tactics.startLine;
+  }
+  return null;
+}
+
+function getActiveFinishLine(){
+  if(D&&D.course&&D.course.ioda&&D.course.ioda.finish&&D.course.ioda.finish.pin&&D.course.ioda.finish.rc){
+    return D.course.ioda.finish;
+  }
+  return null;
+}
+
+function getOptimistPolarTarget(legType, twsKnots){
+  const tws=clamp(twsKnots||10, 5, 22);
+
+  function interp(table, w){
+    if(w<=6) return table[0];
+    if(w<=10) return table[0] + (table[1]-table[0]) * ((w-6)/4);
+    if(w<=14) return table[1] + (table[2]-table[1]) * ((w-10)/4);
+    if(w<=18) return table[2] + (table[3]-table[2]) * ((w-14)/4);
+    return table[3] + 0.02 * (w-18);
+  }
+
+  if(legType==='UPWIND'){
+    const sogTarget=interp([3.25, 3.85, 4.20, 4.35], tws);
+    const vmgTarget=interp([2.35, 2.82, 3.07, 3.18], tws);
+    return { targetSog:Number(sogTarget.toFixed(2)), targetVmg:Number(vmgTarget.toFixed(2)), optimalTwa:43 };
+  }else if(legType==='DOWNWIND'){
+    const sogTarget=interp([3.50, 4.60, 5.30, 5.80], tws);
+    const vmgTarget=interp([2.90, 3.85, 4.45, 4.90], tws);
+    return { targetSog:Number(sogTarget.toFixed(2)), targetVmg:Number(vmgTarget.toFixed(2)), optimalTwa:150 };
+  }else{
+    const sogTarget=interp([3.80, 4.90, 5.60, 6.10], tws);
+    return { targetSog:Number(sogTarget.toFixed(2)), targetVmg:0, optimalTwa:90 };
+  }
+}
+
+function getBoatRaceInterval(boatIndex){
+  if(!D||!D.boats||!D.boats[boatIndex]){
+    return { sStart:0, sEnd:0, crossedStart:false, finished:false, startTimeSec:null, finishTimeSec:null, startDelaySec:0 };
+  }
+  const i=boatIndex;
+  const base=i*D.stride;
+  const s0=D.startT!=null?Math.round(D.startT):0;
+  const stLine=getActiveStartLine();
+  const finLine=getActiveFinishLine();
+
+  // 1. Detección de salida: primer cruce de la línea hacia el campo de regatas
+  let sStart=s0;
+  let crossedStart=false;
+
+  if(stLine&&stLine.pin&&stLine.rc){
+    const scanFrom=Math.max(1, s0-45);
+    const scanTo=Math.min(D.T-1, s0+360);
+    for(let s=scanFrom;s<=scanTo;s++){
+      const ix=base+s;
+      const prevIx=base+(s-1);
+      if(!D.OK[ix]||!D.OK[prevIx])continue;
+      const p1={x:D.X[prevIx], y:D.Y[prevIx]};
+      const p2={x:D.X[ix], y:D.Y[ix]};
+      if(segmentCrossesLine(p1,p2,stLine.pin,stLine.rc,15)){
+        sStart=s;
+        crossedStart=true;
+        break;
+      }
+    }
+  }
+
+  // 2. Detección de llegada: cruce de la línea de llegada
+  let sEnd=D.T-1;
+  let finished=false;
+
+  if(D.boats[i].finishT!=null&&D.boats[i].finishT<Infinity){
+    sEnd=Math.max(sStart+1, D.boats[i].finishT);
+    finished=true;
+  }else if(finLine&&finLine.pin&&finLine.rc){
+    const scanFrom=Math.max(sStart+15, s0+30);
+    for(let s=scanFrom;s<D.T;s++){
+      const ix=base+s;
+      const prevIx=base+(s-1);
+      if(!D.OK[ix]||!D.OK[prevIx])continue;
+      const p1={x:D.X[prevIx], y:D.Y[prevIx]};
+      const p2={x:D.X[ix], y:D.Y[ix]};
+      if(segmentCrossesLine(p1,p2,finLine.pin,finLine.rc,15)){
+        sEnd=s;
+        finished=true;
+        D.boats[i].finishT=s;
+        break;
+      }
+    }
+  }
+
+  sStart=Math.max(0, Math.min(sStart, D.T-1));
+  sEnd=Math.max(sStart, Math.min(sEnd, D.T-1));
+
+  const startDelaySec=sStart-s0;
+  const startTimeSec=D.t0?D.t0+sStart*1000:null;
+  const finishTimeSec=(finished&&D.t0)?D.t0+sEnd*1000:null;
+
+  return{
+    sStart,
+    sEnd,
+    crossedStart,
+    finished,
+    startTimeSec,
+    finishTimeSec,
+    startDelaySec
+  };
+}
+
+function getBoatKinematics(i){
+  if(!D||!D.boats||!D.boats[i])return null;
+  if(boatKinematicsCache.has(i))return boatKinematicsCache.get(i);
+
+  const base=i*D.stride;
+  const T=D.T;
+  const tau=1.5;
+  const alpha=1-Math.exp(-1.0/tau); // ~0.48658
+
+  const sogEma=new Float32Array(T);
+  const cogEma=new Float32Array(T);
+  const twa=new Float32Array(T);
+  const vmg=new Float32Array(T);
+
+  let prevSog=0, prevX=0, prevY=0;
+  let initialized=false;
+
+  for(let s=0;s<T;s++){
+    if(!ok(i,s)){
+      sogEma[s]=0; cogEma[s]=0; twa[s]=0; vmg[s]=0;
+      initialized=false;
+      continue;
+    }
+    const rawSogKn=D.S[base+s]*KN;
+    const rawCogDeg=((D.H[base+s]%360)+360)%360;
+
+    if(!initialized){
+      sogEma[s]=rawSogKn;
+      cogEma[s]=rawCogDeg;
+      prevSog=rawSogKn;
+      const rad=rawCogDeg*D2R;
+      prevX=Math.sin(rad); prevY=Math.cos(rad);
+      initialized=true;
+    }else{
+      const sEma=alpha*rawSogKn+(1-alpha)*prevSog;
+      prevSog=sEma;
+      sogEma[s]=sEma;
+
+      const rad=rawCogDeg*D2R;
+      const sinC=Math.sin(rad), cosC=Math.cos(rad);
+      const xEma=alpha*sinC+(1-alpha)*prevX;
+      const yEma=alpha*cosC+(1-alpha)*prevY;
+      prevX=xEma; prevY=yEma;
+
+      const cEma=((Math.atan2(xEma,yEma)*180/Math.PI)+360)%360;
+      cogEma[s]=cEma;
+    }
+
+    const wind=windAt(s);
+    const twaDeg=((cogEma[s]-wind+540)%360)-180;
+    twa[s]=twaDeg;
+    vmg[s]=sogEma[s]*Math.cos(twaDeg*D2R);
+  }
+
+  const res={sogEma,cogEma,twa,vmg};
+  boatKinematicsCache.set(i,res);
+  return res;
+}
+
+function circularMean(angles){
+  let sinSum=0, cosSum=0;
+  for(let a of angles){
+    sinSum+=Math.sin(a*D2R);
+    cosSum+=Math.cos(a*D2R);
+  }
+  return ((Math.atan2(sinSum,cosSum)*180/Math.PI)+360)%360;
+}
+
+function computeTrackEstimatedWind(boatIndex){
+  if(!D||!D.boats||!D.boats[boatIndex])return {available:false, twd:0, delta:0};
+  const kine=getBoatKinematics(boatIndex);
+  if(!kine)return {available:false, twd:0, delta:0};
+  const rInt=getBoatRaceInterval(boatIndex);
+  const coachWind=((D.windRef%360)+360)%360;
+
+  const stbdCogs=[];
+  const portCogs=[];
+
+  const sStart=Math.max(0,rInt.sStart);
+  const sEnd=Math.min(D.T-1,rInt.sEnd);
+
+  for(let s=sStart;s<=sEnd;s++){
+    if(!ok(boatIndex,s))continue;
+    const sog=kine.sogEma[s];
+    if(sog<2.0)continue;
+    const cog=kine.cogEma[s];
+    const diff=((cog-coachWind+540)%360)-180;
+    if(diff>=28&&diff<=68){
+      portCogs.push(cog);
+    }else if(diff<=-28&&diff>=-68){
+      stbdCogs.push(cog);
+    }
+  }
+
+  // Si faltan muestras en ventana estricta, ampliar margen a 22°-78°
+  if(stbdCogs.length<6||portCogs.length<6){
+    stbdCogs.length=0; portCogs.length=0;
+    for(let s=sStart;s<=sEnd;s++){
+      if(!ok(boatIndex,s))continue;
+      const sog=kine.sogEma[s];
+      if(sog<1.8)continue;
+      const cog=kine.cogEma[s];
+      const diff=((cog-coachWind+540)%360)-180;
+      if(diff>=22&&diff<=78){
+        portCogs.push(cog);
+      }else if(diff<=-22&&diff>=-78){
+        stbdCogs.push(cog);
+      }
+    }
+  }
+
+  if(stbdCogs.length<4||portCogs.length<4){
+    return {
+      available:false,
+      twd:coachWind,
+      delta:0,
+      reason:'Muestras insuficientes en ambos bordos'
+    };
+  }
+
+  const meanStbd=circularMean(stbdCogs);
+  const meanPort=circularMean(portCogs);
+
+  const diffStbdToPort=((meanPort-meanStbd+360)%360);
+  const trackTwd=Math.round(((meanStbd+diffStbdToPort/2)%360+360)%360);
+  const delta=Math.round(((trackTwd-coachWind+540)%360)-180);
+
+  return {
+    available:true,
+    twd:trackTwd,
+    delta:delta,
+    tackingAngle:Math.round(diffStbdToPort),
+    stbdSamples:stbdCogs.length,
+    portSamples:portCogs.length
+  };
+}
+
+function estimateTWD(boatIndex){
+  const wind=(D&&D.windRef!=null)?Math.round(((D.windRef%360)+360)%360):0;
+  return{twd:wind,twaBase:43,confidence:'Fijado por entrenador'};
+}
+
+function detectManeuvers(boatIndex, twd){
+  const kine=getBoatKinematics(boatIndex);
+  if(!kine)return[];
+  const rInt=getBoatRaceInterval(boatIndex);
+  const maneuvers=[];
+  const sStart=Math.max(2, rInt.sStart);
+  const sEnd=Math.min(D.T-2, rInt.sEnd);
+  let inManeuver=false;
+  let entryIdx=0;
+
+  for(let s=sStart;s<sEnd;s++){
+    if(!ok(boatIndex,s)||!ok(boatIndex,s+1)||!ok(boatIndex,s-1))continue;
+    const diff=((kine.cogEma[s+1]-kine.cogEma[s-1]+540)%360)-180;
+    const rotRate=Math.abs(diff)/2.0;
+
+    if(!inManeuver&&rotRate>=4.5){
+      inManeuver=true;
+      entryIdx=Math.max(0,s-2);
+    }else if(inManeuver&&rotRate<1.5){
+      const exitIdx=s+2;
+      const m=analyzeManeuver(boatIndex,kine,entryIdx,exitIdx,twd);
+      if(m&&m.apexS>=rInt.sStart&&m.apexS<=rInt.sEnd)maneuvers.push(m);
+      inManeuver=false;
+      s=exitIdx;
+    }
+  }
+  return maneuvers;
+}
+
+function analyzeManeuver(boatIndex, kine, entryIdx, exitIdx, twd){
+  const maxIdx=Math.min(D.T-1,exitIdx+12);
+  const len=maxIdx-entryIdx;
+  if(len<4)return null;
+
+  let minSog=Infinity;
+  let apexIdx=entryIdx;
+  const vTargetPre=Math.max(1.5,kine.sogEma[entryIdx]||3.2);
+
+  for(let k=entryIdx;k<=exitIdx;k++){
+    if(kine.sogEma[k]<minSog){
+      minSog=kine.sogEma[k];
+      apexIdx=k;
+    }
+  }
+
+  // Filtrar pequeñas guiñadas de ola: una maniobra real de Optimist implica cambio neto de rumbo >= 40°
+  const headingChange=Math.abs(((kine.cogEma[exitIdx]-kine.cogEma[entryIdx]+540)%360)-180);
+  if(headingChange<40)return null;
+
+  // Determinar tramo IODA en el que ocurre la maniobra
+  const base=boatIndex*D.stride;
+  const leg=(D.course&&D.course.legs&&D.LG)?D.LG[base+apexIdx]:-1;
+  let legType='REACH';
+  if(D.course&&D.course.legs&&leg>=0&&D.course.legs[leg]){
+    const lname=D.course.legs[leg].name||'';
+    if(/Ceñida|B1|Barlovento|Llegada/i.test(lname))legType='UPWIND';
+    else if(/Popa|Puerta 3/i.test(lname))legType='DOWNWIND';
+    else if(/Través|B2/i.test(lname))legType='REACH';
+  }
+
+  // Viento oficial fijado por el entrenador
+  const wind=Math.round(((D.windRef%360)+360)%360);
+  const apexAngleDiff=Math.abs(((kine.cogEma[apexIdx]-wind+540)%360)-180);
+
+  let type='TACK';
+  if(legType==='UPWIND'){
+    type='TACK'; // En ceñida siempre es Virada por avante
+  }else if(legType==='DOWNWIND'){
+    type='JIBE'; // En popa siempre es Trasluchada
+  }else{
+    type=apexAngleDiff<=90?'TACK':'JIBE';
+  }
+
+  let recoveryIdx=maxIdx;
+  for(let k=apexIdx;k<=maxIdx;k++){
+    if(kine.sogEma[k]>=0.90*vTargetPre){
+      recoveryIdx=k;
+      break;
+    }
+  }
+
+  const durationSec=Math.max(1,recoveryIdx-entryIdx);
+  const polarRef=getOptimistPolarTarget(type==='TACK'?'UPWIND':'DOWNWIND',(D.windKn?D.windKn(apexIdx):10)||10);
+
+  let dTeorico=0, dReal=0;
+  if(type==='TACK'){
+    const vmgTargetMs=(polarRef.targetVmg||2.8)*0.514444;
+    dTeorico=vmgTargetMs*durationSec;
+    for(let k=entryIdx;k<=recoveryIdx;k++){
+      const sogMs=kine.sogEma[k]*0.514444;
+      const twaRad=kine.twa[k]*D2R;
+      dReal+=sogMs*Math.cos(twaRad)*1.0;
+    }
+  }else{
+    const vmgTargetMs=(polarRef.targetVmg||3.8)*0.514444;
+    dTeorico=vmgTargetMs*durationSec;
+    for(let k=entryIdx;k<=recoveryIdx;k++){
+      const sogMs=kine.sogEma[k]*0.514444;
+      const twaRad=kine.twa[k]*D2R;
+      dReal+=sogMs*(-Math.cos(twaRad))*1.0;
+    }
+  }
+
+  const tackLossMeters=Math.max(0,Number((dTeorico-dReal).toFixed(1)));
+  const vMinRatio=vTargetPre>0?Number((minSog/vTargetPre).toFixed(2)):0;
+  const t0=D.t0||0;
+
+  return{
+    type,
+    entryS:entryIdx,
+    apexS:apexIdx,
+    recoveryS:recoveryIdx,
+    timestampEntry:t0+entryIdx*1000,
+    timestampApex:t0+apexIdx*1000,
+    timestampRecovery:t0+recoveryIdx*1000,
+    vTargetPre:Number(vTargetPre.toFixed(2)),
+    vMin:Number(minSog.toFixed(2)),
+    vMinRatio,
+    durationSec:Number(durationSec.toFixed(1)),
+    tackLossMeters
+  };
+}
+
+function analyzeIODALegs(boatIndex, twd, maneuvers){
+  const kine=getBoatKinematics(boatIndex);
+  if(!kine)return[];
+  const base=boatIndex*D.stride;
+  const C=D.course;
+  const io=C?C.ioda:null;
+  const rInt=getBoatRaceInterval(boatIndex);
+  const s0=rInt.sStart;
+  const endT=rInt.sEnd;
+
+  const legsData=[];
+
+  // Caso 1: Hay recorrido IODA o marcas definidas
+  if(C&&C.legs&&C.legs.length>0){
+    const nL=C.legs.length;
+    for(let l=0;l<nL;l++){
+      let tIn=-1, tOut=-1;
+      for(let s=s0;s<=endT;s++){
+        if(D.LG[base+s]===l){
+          if(tIn<0)tIn=s;
+          tOut=s;
+        }
+      }
+      if(tIn<0||tOut<=tIn)continue;
+
+      const legDef=C.legs[l];
+      const legName=legDef.name||('Tramo '+(l+1));
+      let legType='REACH';
+      if(/Ceñida|B1|Barlovento/i.test(legName))legType='UPWIND';
+      else if(/Popa|Puerta 3/i.test(legName))legType='DOWNWIND';
+      else if(/Través|B2/i.test(legName))legType='REACH';
+
+      // Posición de la baliza objetivo
+      let targetMark=null;
+      if(io){
+        if(l===0&&io.b1)targetMark=io.b1;
+        else if(l===1&&io.b2)targetMark=io.b2;
+        else if(l===2){
+          targetMark=(io.gate3s&&io.gate3p)?{x:(io.gate3s.x+io.gate3p.x)/2,y:(io.gate3s.y+io.gate3p.y)/2}:(io.gate3s||io.gate3p);
+        }else if(l===3&&io.finish&&io.finish.pin&&io.finish.rc){
+          targetMark={x:(io.finish.pin.x+io.finish.rc.x)/2,y:(io.finish.pin.y+io.finish.rc.y)/2};
+        }
+      }
+      if(!targetMark&&C.marks&&C.marks[l]){
+        targetMark=C.marks[l];
+      }
+
+      // Distancia y Rhumbline
+      const distReal=Math.max(1,D.CD[base+tOut]-D.CD[base+tIn]);
+      let distRhumb=distReal;
+      if(targetMark){
+        distRhumb=Math.hypot(D.X[base+tIn]-targetMark.x, D.Y[base+tIn]-targetMark.y);
+      }
+      const rhumbEff=Math.min(100,Number(((distRhumb/distReal)*100).toFixed(1)));
+
+      // Maniobras en este tramo
+      const legManeuvers=maneuvers.filter(m=>m.apexS>=tIn&&m.apexS<=tOut);
+      const tacks=legManeuvers.filter(m=>m.type==='TACK');
+      const jibes=legManeuvers.filter(m=>m.type==='JIBE');
+      const totalLoss=legManeuvers.reduce((a,m)=>a+m.tackLossMeters,0);
+
+      // Velocidades y Polar Target %
+      let sumSog=0, sumVmg=0, count=0;
+      let favoredCount=0;
+      let maxOverstandMeters=0, overstandingSec=0;
+      const windRef=Math.round(((D.windRef%360)+360)%360);
+
+      for(let s=tIn;s<=tOut;s++){
+        if(!ok(boatIndex,s))continue;
+        sumSog+=kine.sogEma[s];
+        sumVmg+=kine.vmg[s];
+        count++;
+
+        // Bordo favorecido (% VMC)
+        if(targetMark&&(legType==='UPWIND'||legType==='DOWNWIND')){
+          const bx=D.X[base+s], by=D.Y[base+s];
+          const brg=((Math.atan2(targetMark.x-bx,targetMark.y-by)*180/Math.PI)+360)%360;
+          const cog=kine.cogEma[s];
+          const vmcAct=kine.sogEma[s]*Math.cos((cog-brg)*D2R);
+
+          const twaAct=cog-windRef;
+          const cogAlt=windRef-twaAct;
+          const vmcAlt=kine.sogEma[s]*Math.cos((cogAlt-brg)*D2R);
+
+          if(vmcAct>=vmcAlt-0.08)favoredCount++;
+        }
+
+        // Desviación Laylines (Overstanding en ceñida)
+        if(targetMark&&legType==='UPWIND'){
+          const dx=D.X[base+s]-targetMark.x, dy=D.Y[base+s]-targetMark.y;
+          const R=Math.hypot(dx,dy);
+          const brgMarkToBoat=((Math.atan2(dx,dy)*180/Math.PI)+360)%360;
+          const leewardAxis=((windRef+180)%360);
+          const diff=Math.abs(((brgMarkToBoat-leewardAxis+540)%360)-180);
+          if(diff>43&&R>15){
+            const dOver=R*Math.sin((diff-43)*D2R);
+            if(dOver>6){
+              overstandingSec++;
+              if(dOver>maxOverstandMeters) maxOverstandMeters=dOver;
+            }
+          }
+        }
+      }
+
+      const avgSog=count?(sumSog/count):0;
+      const avgVmg=count?(sumVmg/count):0;
+      const favoredPct=count?Math.min(100,Number((favoredCount/count*100).toFixed(1))):100;
+
+      // Polar target reference utilizando el modelo empírico de la clase Optimist
+      const tws=(D.windKn?D.windKn((tIn+tOut)/2):10)||10;
+      const polarRef=getOptimistPolarTarget(legType, tws);
+      let polarTargetPct=100;
+      if(legType==='UPWIND'&&polarRef.targetVmg>0){
+        polarTargetPct=Number((avgVmg/polarRef.targetVmg*100).toFixed(1));
+      }else if(legType==='DOWNWIND'&&polarRef.targetVmg>0){
+        polarTargetPct=Number((Math.abs(avgVmg)/polarRef.targetVmg*100).toFixed(1));
+      }else if(polarRef.targetSog>0){
+        polarTargetPct=Number((avgSog/polarRef.targetSog*100).toFixed(1));
+      }
+      polarTargetPct=Math.min(130, Math.max(20, polarTargetPct));
+
+      legsData.push({
+        legIndex:l,
+        name:legName,
+        type:legType,
+        tIn,
+        tOut,
+        durationSec:tOut-tIn,
+        distanceReal:Math.round(distReal),
+        distanceRhumb:Math.round(distRhumb),
+        rhumblineEfficiencyPct:rhumbEff,
+        tacksCount:tacks.length,
+        jibesCount:jibes.length,
+        totalManeuverLossMeters:Number(totalLoss.toFixed(1)),
+        avgSogKnots:Number(avgSog.toFixed(2)),
+        avgVmgKnots:Number(avgVmg.toFixed(2)),
+        polarTargetPct,
+        favoredTackPct:favoredPct,
+        overstandingMeters:Math.round(maxOverstandMeters),
+        overstandingSec
+      });
+    }
+  }else{
+    // Caso 2: Sin marcas definidas, segmentación automática cinemática (UPWIND / DOWNWIND / REACH)
+    let curType=null, tStart=s0;
+    for(let s=s0;s<=endT;s++){
+      if(!ok(boatIndex,s))continue;
+      const twaAbs=Math.abs(kine.twa[s]);
+      let type='REACH';
+      if(twaAbs>=30&&twaAbs<=60)type='UPWIND';
+      else if(twaAbs>=130&&twaAbs<=180)type='DOWNWIND';
+
+      if(curType===null){curType=type;tStart=s;}
+      else if(curType!==type&&s-tStart>15){
+        const legName=(curType==='UPWIND'?'Ceñida libre':(curType==='DOWNWIND'?'Popa libre':'Través libre'))+` (${legsData.length+1})`;
+        const distReal=Math.max(1,D.CD[base+s]-D.CD[base+tStart]);
+        const legManeuvers=maneuvers.filter(m=>m.apexS>=tStart&&m.apexS<=s);
+        const tacks=legManeuvers.filter(m=>m.type==='TACK');
+        const jibes=legManeuvers.filter(m=>m.type==='JIBE');
+        const totalLoss=legManeuvers.reduce((a,m)=>a+m.tackLossMeters,0);
+
+        let sumSog=0, sumVmg=0, cnt=0;
+        for(let k=tStart;k<=s;k++){
+          if(ok(boatIndex,k)){sumSog+=kine.sogEma[k];sumVmg+=kine.vmg[k];cnt++;}
+        }
+        const avgSog=cnt?(sumSog/cnt):0;
+        const avgVmg=cnt?(sumVmg/cnt):0;
+
+        const twsFree=(D.windKn?D.windKn((tStart+s)/2):10)||10;
+        const polarRefFree=getOptimistPolarTarget(curType, twsFree);
+        let polarTargetPctFree=100;
+        if(curType==='UPWIND'&&polarRefFree.targetVmg>0)polarTargetPctFree=Number((avgVmg/polarRefFree.targetVmg*100).toFixed(1));
+        else if(curType==='DOWNWIND'&&polarRefFree.targetVmg>0)polarTargetPctFree=Number((Math.abs(avgVmg)/polarRefFree.targetVmg*100).toFixed(1));
+        else if(polarRefFree.targetSog>0)polarTargetPctFree=Number((avgSog/polarRefFree.targetSog*100).toFixed(1));
+        polarTargetPctFree=Math.min(130, Math.max(20, polarTargetPctFree));
+
+        legsData.push({
+          legIndex:legsData.length,
+          name:legName,
+          type:curType,
+          tIn:tStart,
+          tOut:s,
+          durationSec:s-tStart,
+          distanceReal:Math.round(distReal),
+          distanceRhumb:Math.round(distReal*0.9),
+          rhumblineEfficiencyPct:90.0,
+          tacksCount:tacks.length,
+          jibesCount:jibes.length,
+          totalManeuverLossMeters:Number(totalLoss.toFixed(1)),
+          avgSogKnots:Number(avgSog.toFixed(2)),
+          avgVmgKnots:Number(avgVmg.toFixed(2)),
+          polarTargetPct:polarTargetPctFree,
+          favoredTackPct:85.0,
+          overstandingMeters:0,
+          overstandingSec:0
+        });
+        curType=type;tStart=s;
+      }
+    }
+  }
+
+  return legsData;
+}
+
+let currentTacticalData=null;
+
+function renderTacticalAnalysis(){
+  if(!D||!D.boats||!D.boats.length)return;
+  const selEl=document.getElementById('selTacticalBoat');
+  if(!selEl)return;
+
+  // Poblar selector de barcos
+  const prevSel=selectedTacticalBoatId;
+  selEl.innerHTML=D.boats.map((b,idx)=>`
+    <option value="${idx}" ${idx===prevSel?'selected':''}>${esc(b.sail)} ${b.sub?`(${esc(b.sub)})`:''}</option>
+  `).join('');
+
+  const boatIdx=Math.min(D.N-1,Math.max(0,parseInt(selEl.value,10)||0));
+  selectedTacticalBoatId=boatIdx;
+  const boat=D.boats[boatIdx];
+  const kine=getBoatKinematics(boatIdx);
+  const twd=Math.round(((D.windRef%360)+360)%360);
+  const maneuvers=detectManeuvers(boatIdx,twd);
+  const legs=analyzeIODALegs(boatIdx,twd,maneuvers);
+
+  currentTacticalData={boat,boatIdx,kine,twd,maneuvers,legs};
+
+  // 1. KPIs vectoriales del barco seleccionado
+  const tacKpisEl=document.getElementById('tacticalKpis');
+  if(tacKpisEl){
+    const rInt=getBoatRaceInterval(boatIdx);
+    let upwindSogSum=0, upwindSogN=0, downwindSogSum=0, downwindSogN=0;
+    let upwindVmgSum=0, upwindVmgN=0, downwindVmgSum=0, downwindVmgN=0;
+    let maxSog=0;
+
+    for(let s=rInt.sStart;s<=rInt.sEnd;s++){
+      if(!ok(boatIdx,s))continue;
+      const sKn=kine.sogEma[s];
+      if(sKn>maxSog)maxSog=sKn;
+      const twaAbs=Math.abs(kine.twa[s]);
+      if(twaAbs>=30&&twaAbs<=60){
+        upwindSogSum+=sKn; upwindVmgSum+=kine.vmg[s]; upwindSogN++;
+      }else if(twaAbs>=130&&twaAbs<=180){
+        downwindSogSum+=sKn; downwindVmgSum+=Math.abs(kine.vmg[s]); downwindSogN++;
+      }
+    }
+
+    const avgUpwindSog=upwindSogN?(upwindSogSum/upwindSogN):0;
+    const avgUpwindVmg=upwindSogN?(upwindVmgSum/upwindSogN):0;
+    const avgDownwindSog=downwindSogN?(downwindSogSum/downwindSogN):0;
+    const avgDownwindVmg=downwindSogN?(downwindVmgSum/downwindSogN):0;
+
+    const tacksOnly=maneuvers.filter(m=>m.type==='TACK');
+    const avgTackLoss=tacksOnly.length?(tacksOnly.reduce((a,m)=>a+m.tackLossMeters,0)/tacksOnly.length):0;
+    const avgVminRatio=maneuvers.length?(maneuvers.reduce((a,m)=>a+m.vMinRatio,0)/maneuvers.length):0;
+
+    const raceDurText=fmtDuration(rInt.sEnd-rInt.sStart);
+    const raceStatusText=rInt.finished
+      ? `<span style="color:#16a34a;font-weight:600">✓ Meta: ${rInt.finishTimeSec?hhmmss(rInt.finishTimeSec):mmss(rInt.sEnd)}</span>`
+      : `<span style="color:#d97706;font-weight:600">⛵ En regata</span>`;
+
+    const trackWind=computeTrackEstimatedWind(boatIdx);
+    const hasTrack=trackWind&&trackWind.available;
+    const bigTwdVal=hasTrack ? deg3(trackWind.twd) : deg3(twd);
+    const bigTwdLabel=hasTrack ? 'TRACK' : 'ENTRENADOR';
+    const deltaSign=(hasTrack && trackWind.delta>0)?'+':'';
+    const subTwdText=hasTrack
+      ? `Entrenador: <strong style="color:var(--ink)">${deg3(twd)}</strong> <span style="font-size:11px;color:var(--muted)">(desviación ${deltaSign}${trackWind.delta}°)</span>`
+      : `Track: <span style="color:var(--muted);font-size:11px">Muestras insuficientes</span>`;
+
+    tacKpisEl.innerHTML=`
+      <div class="kpi-card" style="min-width:215px">
+        <div class="kpi-lbl">Viento de Regata (TWD)</div>
+        <div class="kpi-val" style="color:var(--accent);display:flex;align-items:baseline;justify-content:space-between">
+          <span>${bigTwdVal}</span>
+          <span style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase">${bigTwdLabel}</span>
+        </div>
+        <div class="kpi-sub" style="margin-top:4px;display:flex;align-items:center;justify-content:space-between">
+          <span>${subTwdText}</span>
+          <span style="font-size:11px;color:var(--muted)">${D.windKn?fmt1(D.windKn(state.t))+' kn':'Optimist'}</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">SOG Máx / Ceñida</div>
+        <div class="kpi-val">${fmt2(maxSog)} <span style="font-size:13px;color:var(--muted)">/ ${fmt2(avgUpwindSog)} kn</span></div>
+        <div class="kpi-sub">En regata (salida a llegada)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">VMG Ceñida / Popa</div>
+        <div class="kpi-val">${fmt2(avgUpwindVmg)} <span style="font-size:13px;color:var(--muted)">/ ${fmt2(avgDownwindVmg)} kn</span></div>
+        <div class="kpi-sub">Ganancia barlovento / sotavento</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Pérdida Media en Viradas</div>
+        <div class="kpi-val" style="color:${avgTackLoss>16?'#ef4444':'var(--ink)'}">${fmt1(avgTackLoss)} <span style="font-size:13px;color:var(--muted)">m</span></div>
+        <div class="kpi-sub">Tack Loss neto por virada</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Ratio Frenado Timón</div>
+        <div class="kpi-val" style="color:${avgVminRatio<0.35?'#ef4444':'#10b981'}">${fmt2(avgVminRatio)}</div>
+        <div class="kpi-sub">${avgVminRatio<0.35?'⚠️ Freno excesivo (<0.35)':'✓ Fluidez óptima (≥0.35)'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Ventana de Regata</div>
+        <div class="kpi-val" style="font-size:18px">${raceDurText}</div>
+        <div class="kpi-sub">${raceStatusText}</div>
+      </div>
+    `;
+  }
+
+  // 2. Tabla de Métricas Tácticas por Tramo (Recorrido IODA)
+  const legsTb=document.getElementById('iodaLegsMetricsTbody');
+  if(legsTb){
+    if(!legs.length){
+      legsTb.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted)">No se detectaron tramos navegados para este barco en el intervalo actual.</td></tr>`;
+    }else{
+      legsTb.innerHTML=legs.map((l,idx)=>`
+        <tr data-legidx="${idx}">
+          <td style="text-align:left">
+            <span class="badge-maneuver ${l.type==='UPWIND'?'tack':(l.type==='DOWNWIND'?'jibe':'')}">${l.type==='UPWIND'?'CEÑIDA':(l.type==='DOWNWIND'?'POPA':'TRAVÉS')}</span>
+            <strong style="margin-left:6px;font-size:13.5px">${esc(l.name)}</strong>
+          </td>
+          <td>${fmtDuration(l.durationSec)}</td>
+          <td>${l.distanceReal} m</td>
+          <td><strong>${l.rhumblineEfficiencyPct}%</strong></td>
+          <td>
+            ${l.type==='UPWIND'
+              ? `<strong>${l.tacksCount} viradas</strong> <span style="font-size:11px;color:${l.totalManeuverLossMeters>25?'#ef4444':'var(--muted)'};margin-left:4px">(-${Math.round(l.totalManeuverLossMeters)}m)</span>`
+              : (l.type==='DOWNWIND'
+                ? `<strong>${l.jibesCount} trasluchadas</strong> <span style="font-size:11px;color:${l.totalManeuverLossMeters>25?'#ef4444':'var(--muted)'};margin-left:4px">(-${Math.round(l.totalManeuverLossMeters)}m)</span>`
+                : `<span>${l.tacksCount} vir. / ${l.jibesCount} tras.</span> <span style="font-size:11px;color:var(--muted)">(-${Math.round(l.totalManeuverLossMeters)}m)</span>`
+              )
+            }
+          </td>
+          <td>
+            <span class="${l.polarTargetPct>=90?'chip-good':(l.polarTargetPct>=75?'':'chip-alert')}">${l.polarTargetPct}%</span>
+          </td>
+          <td><strong>${l.favoredTackPct}%</strong></td>
+          <td>${l.overstandingMeters>0?`<span style="color:#ef4444;font-weight:600">+${l.overstandingMeters} m (${l.overstandingSec}s)</span>`:'<span class="chip-good">✓ 0 m (Óptimo)</span>'}</td>
+        </tr>
+      `).join('');
+    }
+  }
+
+  // 3. Tabla de Diagnóstico Detallado de Maniobras
+  const manTb=document.getElementById('maneuversMetricsTbody');
+  if(manTb){
+    if(!maneuvers.length){
+      manTb.innerHTML=`<tr><td colspan="8" style="text-align:center;padding:16px;color:var(--muted)">No se detectaron viradas ni trasluchadas en el registro de este barco.</td></tr>`;
+    }else{
+      manTb.innerHTML=maneuvers.map((m,idx)=>`
+        <tr>
+          <td style="text-align:center;font-weight:700">${idx+1}</td>
+          <td style="text-align:left">
+            <span class="badge-maneuver ${m.type==='TACK'?'tack':'jibe'}">${m.type==='TACK'?'VIRADA':'TRASLUCHADA'}</span>
+          </td>
+          <td>${D.t0?hhmmss(m.timestampApex):mmss(m.apexS)}</td>
+          <td>${m.vTargetPre} kn</td>
+          <td><strong>${m.vMin}</strong> kn</td>
+          <td>
+            <strong style="color:${m.vMinRatio<0.35?'#ef4444':'#10b981'}">${m.vMinRatio}</strong>
+            ${m.vMinRatio<0.35?'<span class="chip-alert">Freno</span>':''}
+          </td>
+          <td>${m.durationSec} s</td>
+          <td style="color:${m.tackLossMeters>18?'#ef4444':'var(--ink)'}"><strong>-${m.tackLossMeters}</strong> m</td>
+        </tr>
+      `).join('');
+    }
+  }
+
+  // 4. Renderizar Gráficos Dinámicos de Rendimiento y Maniobras
+  renderSailorPolarChart(boatIdx, twd);
+  renderManeuverSpeedChart(boatIdx, currentManeuverChartMode);
+}
+
+function renderSailorPolarChart(boatIdx, twd){
+  const canvas=document.getElementById('sailorPolarCanvas');
+  if(!canvas||!D||!D.boats||!D.boats[boatIdx])return;
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  const w=rect.width||460;
+  const h=rect.height||430;
+
+  canvas.width=w*dpr;
+  canvas.height=h*dpr;
+  ctx.save();
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+
+  const cx=w/2;
+  const cy=h*0.44;
+  const maxKnots=6.0;
+  const maxR=Math.min(w*0.42, h*0.39);
+
+  // 1. Círculos concéntricos de velocidad (1 a 6 kn)
+  ctx.lineWidth=1;
+  for(let kn=1;kn<=maxKnots;kn++){
+    const r=(kn/maxKnots)*maxR;
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,0,2*Math.PI);
+    ctx.strokeStyle=(kn===maxKnots)?'rgba(56,189,248,0.7)':'rgba(56,189,248,0.35)';
+    ctx.stroke();
+
+    // Etiqueta del nudo a lo largo del eje central vertical (hacia abajo)
+    ctx.fillStyle='#b45309';
+    ctx.font='bold 11px system-ui, sans-serif';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(kn.toString(),cx,cy+r-8);
+  }
+
+  // 2. Ejes principales y rayos radiales
+  ctx.strokeStyle='rgba(17,24,39,0.75)';
+  ctx.lineWidth=1.5;
+  // Eje vertical (0° - 180°)
+  ctx.beginPath();
+  ctx.moveTo(cx,cy-maxR);
+  ctx.lineTo(cx,cy+maxR);
+  ctx.stroke();
+  // Eje horizontal (90° babor / 90° estribor)
+  ctx.beginPath();
+  ctx.moveTo(cx-maxR,cy);
+  ctx.lineTo(cx+maxR,cy);
+  ctx.stroke();
+
+  // Rayos radiales cada 15°
+  ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(56,189,248,0.45)';
+  const angles=[15,30,45,60,75,105,120,135,150,165];
+  angles.forEach(deg=>{
+    const rad=deg*Math.PI/180;
+    const xStbd=cx+maxR*Math.sin(rad);
+    const yStbd=cy-maxR*Math.cos(rad);
+    const xPort=cx-maxR*Math.sin(rad);
+    const yPort=cy-maxR*Math.cos(rad);
+
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(xStbd,yStbd);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(xPort,yPort);
+    ctx.stroke();
+  });
+
+  // Etiquetas de grados en la periferia
+  ctx.fillStyle='var(--ink, #1f2937)';
+  ctx.font='600 10.5px system-ui, sans-serif';
+  const allLabels=[15,30,45,60,75,90,105,120,135,150,165,180];
+  allLabels.forEach(deg=>{
+    const rad=deg*Math.PI/180;
+    const labelR=maxR+14;
+    if(deg<180){
+      const xs=cx+labelR*Math.sin(rad);
+      const ys=cy-labelR*Math.cos(rad);
+      ctx.textAlign='left';
+      ctx.textBaseline='middle';
+      ctx.fillText(`${deg}°`,xs-3,ys);
+    }
+    const xp=cx-labelR*Math.sin(rad);
+    const yp=cy-labelR*Math.cos(rad);
+    ctx.textAlign='right';
+    ctx.textBaseline='middle';
+    ctx.fillText(`${deg}°`,xp+3,yp);
+  });
+
+  // Rótulo "True Wind" y flecha violeta hacia abajo en la parte superior central
+  ctx.fillStyle='#7c3aed';
+  ctx.font='bold 12px system-ui, sans-serif';
+  ctx.textAlign='center';
+  ctx.textBaseline='bottom';
+  ctx.fillText('True Wind',cx,cy-maxR-16);
+
+  ctx.strokeStyle='#7c3aed';
+  ctx.fillStyle='#7c3aed';
+  ctx.lineWidth=2.5;
+  ctx.beginPath();
+  ctx.moveTo(cx,cy-maxR-14);
+  ctx.lineTo(cx,cy-maxR-2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx-4,cy-maxR-6);
+  ctx.lineTo(cx+4,cy-maxR-6);
+  ctx.lineTo(cx,cy-maxR-1);
+  ctx.closePath();
+  ctx.fill();
+
+  // Texto "Boat speed in knots" abajo a la izquierda
+  ctx.fillStyle='#b45309';
+  ctx.font='bold 11px system-ui, sans-serif';
+  ctx.textAlign='left';
+  ctx.textBaseline='bottom';
+  ctx.fillText('Boat speed in knots',14,h-10);
+
+  // 3. Polar Teórica de Referencia de Optimist (línea discontinua azul)
+  const targetPolar=[
+    {twa:36,kn:0.5},
+    {twa:43,kn:3.85},
+    {twa:55,kn:4.25},
+    {twa:70,kn:4.60},
+    {twa:90,kn:4.90},
+    {twa:110,kn:4.75},
+    {twa:130,kn:4.45},
+    {twa:145,kn:4.15},
+    {twa:160,kn:3.80},
+    {twa:180,kn:3.45}
+  ];
+
+  ctx.setLineDash([4,4]);
+  ctx.strokeStyle='#0284c7';
+  ctx.lineWidth=2;
+
+  // Teórica en Estribor
+  ctx.beginPath();
+  targetPolar.forEach((pt,idx)=>{
+    const rad=pt.twa*Math.PI/180;
+    const r=(pt.kn/maxKnots)*maxR;
+    const px=cx+r*Math.sin(rad);
+    const py=cy-r*Math.cos(rad);
+    if(idx===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  });
+  ctx.stroke();
+
+  // Teórica en Babor
+  ctx.beginPath();
+  targetPolar.forEach((pt,idx)=>{
+    const rad=pt.twa*Math.PI/180;
+    const r=(pt.kn/maxKnots)*maxR;
+    const px=cx-r*Math.sin(rad);
+    const py=cy-r*Math.cos(rad);
+    if(idx===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  });
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // 4. Datos del Regatista: Nube de puntos y Curva Empírica Polar (Rojo sólido)
+  const kine=getBoatKinematics(boatIdx);
+  const rInt=getBoatRaceInterval(boatIdx);
+  if(!kine){ctx.restore();return;}
+
+  const stbdBins={};
+  const portBins={};
+  for(let a=35;a<=180;a+=5){
+    stbdBins[a]={sum:0,max:0,count:0};
+    portBins[a]={sum:0,max:0,count:0};
+  }
+
+  let totalSogReal=0, totalSogTarget=0, nEval=0;
+  for(let s=rInt.sStart;s<=rInt.sEnd;s++){
+    if(!ok(boatIdx,s))continue;
+    const sog=kine.sogEma[s];
+    if(sog<0.8)continue;
+    const twaSigned=((kine.cogEma[s]-twd+540)%360)-180;
+    const twaAbs=Math.abs(twaSigned);
+    if(twaAbs<30)continue;
+
+    const binKey=Math.min(180,Math.max(35,Math.round(twaAbs/5)*5));
+    const targetObj=twaSigned>=0?stbdBins[binKey]:portBins[binKey];
+    if(targetObj){
+      targetObj.sum+=sog;
+      if(sog>targetObj.max)targetObj.max=sog;
+      targetObj.count++;
+    }
+
+    // Scatter tenue
+    const rScatter=(Math.min(maxKnots,sog)/maxKnots)*maxR;
+    const radScatter=twaAbs*Math.PI/180;
+    const sign=twaSigned>=0?1:-1;
+    const sx=cx+sign*rScatter*Math.sin(radScatter);
+    const sy=cy-rScatter*Math.cos(radScatter);
+    ctx.fillStyle='rgba(239,68,68,0.18)';
+    ctx.beginPath();
+    ctx.arc(sx,sy,2,0,2*Math.PI);
+    ctx.fill();
+
+    const tgt=targetPolar.find(tp=>Math.abs(tp.twa-twaAbs)<=7);
+    if(tgt){
+      totalSogReal+=sog;
+      totalSogTarget+=tgt.kn;
+      nEval++;
+    }
+  }
+
+  const effBadge=document.getElementById('polarEfficiencyBadge');
+  if(effBadge){
+    if(nEval>15){
+      const eff=Math.round((totalSogReal/totalSogTarget)*100);
+      effBadge.textContent=`${eff}% Rendimiento Polar`;
+      effBadge.className=eff>=90?'chip-good':(eff>=80?'':'chip-alert');
+    }else{
+      effBadge.textContent='Evaluando...';
+    }
+  }
+
+  function drawPolarCurve(bins,isStbd){
+    const pts=[];
+    pts.push({x:cx,y:cy-0.08*maxR,twa:32,sog:0.5});
+
+    for(let a=35;a<=180;a+=5){
+      const b=bins[a];
+      if(b&&b.count>=2){
+        const avgSog=b.sum/b.count;
+        const rad=a*Math.PI/180;
+        const r=(Math.min(maxKnots,avgSog)/maxKnots)*maxR;
+        const sign=isStbd?1:-1;
+        pts.push({
+          x:cx+sign*r*Math.sin(rad),
+          y:cy-r*Math.cos(rad),
+          twa:a,
+          sog:avgSog,
+          count:b.count,
+          max:b.max
+        });
+      }
+    }
+
+    if(pts.length<3)return pts;
+
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x,pts[0].y);
+    for(let i=1;i<pts.length;i++){
+      const xc=(pts[i-1].x+pts[i].x)/2;
+      const yc=(pts[i-1].y+pts[i].y)/2;
+      ctx.quadraticCurveTo(pts[i-1].x,pts[i-1].y,xc,yc);
+    }
+    ctx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);
+    ctx.stroke();
+
+    pts.slice(1).forEach(p=>{
+      ctx.fillStyle='#ef4444';
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,3,0,2*Math.PI);
+      ctx.fill();
+    });
+
+    return pts;
+  }
+
+  ctx.strokeStyle='#ef4444';
+  ctx.lineWidth=2.8;
+  const stbdPts=drawPolarCurve(stbdBins,true);
+  const portPts=drawPolarCurve(portBins,false);
+
+  canvas._polarData={cx,cy,maxR,maxKnots,stbdPts,portPts,targetPolar};
+  ctx.restore();
+}
+
+let currentManeuverChartMode='TACK';
+
+function renderManeuverSpeedChart(boatIdx,mode=currentManeuverChartMode){
+  currentManeuverChartMode=mode;
+  const canvas=document.getElementById('maneuverSpeedCanvas');
+  if(!canvas||!D||!D.boats||!D.boats[boatIdx])return;
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  const w=rect.width||480;
+  const h=rect.height||350;
+
+  canvas.width=w*dpr;
+  canvas.height=h*dpr;
+  ctx.save();
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+
+  const kine=getBoatKinematics(boatIdx);
+  const twd=Math.round(((D.windRef%360)+360)%360);
+  const allManeuvers=detectManeuvers(boatIdx,twd);
+  const maneuvers=allManeuvers.filter(m=>m.type===mode);
+
+  const btnTacks=document.getElementById('btnChartModeTacks');
+  const btnJibes=document.getElementById('btnChartModeJibes');
+  if(btnTacks&&btnJibes){
+    if(mode==='TACK'){
+      btnTacks.className='btn btn-sm primary';
+      btnJibes.className='btn btn-sm';
+    }else{
+      btnTacks.className='btn btn-sm';
+      btnJibes.className='btn btn-sm primary';
+    }
+  }
+
+  const kpiStrip=document.getElementById('maneuverKpiStrip');
+
+  if(!maneuvers.length||!kine){
+    ctx.fillStyle='var(--muted, #6b7280)';
+    ctx.font='14px system-ui, sans-serif';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(mode==='TACK'?'No se registraron viradas en la regata':'No se registraron trasluchadas en la regata',w/2,h/2);
+    if(kpiStrip)kpiStrip.innerHTML='';
+    ctx.restore();
+    return;
+  }
+
+  // 1. Calcular perfil temporal [-5s, +5s] de velocidad y ángulo TWA
+  const profile=[];
+  for(let k=-5;k<=5;k++){
+    const vals=[];
+    const twaVals=[];
+    maneuvers.forEach(m=>{
+      const idx=m.apexS+k;
+      if(idx>=0&&idx<D.T&&ok(boatIdx,idx)){
+        vals.push(kine.sogEma[idx]);
+        twaVals.push(Math.abs(kine.twa[idx]));
+      }
+    });
+    if(vals.length){
+      const min=Math.min(...vals);
+      const max=Math.max(...vals);
+      const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
+      const avgTwa=twaVals.reduce((a,b)=>a+b,0)/twaVals.length;
+      profile.push({k,min,avg,max,avgTwa,count:vals.length});
+    }else{
+      profile.push({k,min:0,avg:0,max:0,avgTwa:0,count:0});
+    }
+  }
+
+  const pEntry=profile.find(p=>p.k===-5)||{avg:0,avgTwa:0};
+  const pApex=profile.find(p=>p.k===0)||{avg:0,avgTwa:0};
+  const pExit=profile.find(p=>p.k===5)||{avg:0,avgTwa:0};
+  const deltaV=pApex.avg-pEntry.avg;
+  const recoveryPct=pEntry.avg>0?Math.round((pExit.avg/pEntry.avg)*100):0;
+  const deltaTwa=pExit.avgTwa-pEntry.avgTwa;
+  const deltaTwaSign=deltaTwa>0?'+':'';
+
+  if(kpiStrip){
+    kpiStrip.style.gridTemplateColumns='repeat(auto-fit, minmax(105px, 1fr))';
+    kpiStrip.innerHTML=`
+      <div style="background:rgba(2,132,199,0.06);padding:6px;border-radius:6px">
+        <div style="font-size:10px;color:var(--muted)">V. Entrada (-5s)</div>
+        <div style="font-size:13px;font-weight:700;color:var(--ink)">${fmt2(pEntry.avg)} kn</div>
+      </div>
+      <div style="background:rgba(239,68,68,0.08);padding:6px;border-radius:6px">
+        <div style="font-size:10px;color:#dc2626">V. Mín Ápex (0s)</div>
+        <div style="font-size:13px;font-weight:700;color:#dc2626">${fmt2(pApex.avg)} kn</div>
+      </div>
+      <div style="background:rgba(16,185,129,0.08);padding:6px;border-radius:6px">
+        <div style="font-size:10px;color:#059669">V. Salida (+5s)</div>
+        <div style="font-size:13px;font-weight:700;color:#059669">${fmt2(pExit.avg)} kn</div>
+      </div>
+      <div style="background:rgba(245,158,11,0.08);padding:6px;border-radius:6px">
+        <div style="font-size:10px;color:#d97706">Caída / Recup.</div>
+        <div style="font-size:13px;font-weight:700;color:#d97706">${fmt2(deltaV)} kn <span style="font-size:10px">(${recoveryPct}%)</span></div>
+      </div>
+      <div style="background:rgba(139,92,246,0.08);padding:6px;border-radius:6px">
+        <div style="font-size:10px;color:#7c3aed">TWA Entrada (-5s)</div>
+        <div style="font-size:13px;font-weight:700;color:#7c3aed">${fmt1(pEntry.avgTwa)}°</div>
+      </div>
+      <div style="background:rgba(139,92,246,0.08);padding:6px;border-radius:6px">
+        <div style="font-size:10px;color:#7c3aed">TWA Salida (+5s)</div>
+        <div style="font-size:13px;font-weight:700;color:#7c3aed">${fmt1(pExit.avgTwa)}° <span style="font-size:10px">(Δ ${deltaTwaSign}${fmt1(deltaTwa)}°)</span></div>
+      </div>
+    `;
+  }
+
+  const padL=46, padR=48, padT=28, padB=38;
+  const plotW=w-padL-padR;
+  const plotH=h-padT-padB;
+
+  let maxSpeedY=5.0;
+  profile.forEach(p=>{if(p.max>maxSpeedY)maxSpeedY=p.max;});
+  maxSpeedY=Math.ceil(maxSpeedY*1.1);
+
+  let maxTwaY=60.0;
+  profile.forEach(p=>{if(p.avgTwa>maxTwaY)maxTwaY=p.avgTwa;});
+  maxTwaY=Math.max(60, Math.ceil(maxTwaY*1.1/10)*10);
+
+  function toX(k){
+    return padL+((k+5)/10)*plotW;
+  }
+  function toY(speed){
+    return padT+plotH-(speed/maxSpeedY)*plotH;
+  }
+  function toTwaY(deg){
+    return padT+plotH-(deg/maxTwaY)*plotH;
+  }
+
+  // Cuadrícula horizontal de velocidad (Eje izquierdo)
+  ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(156,163,175,0.2)';
+  for(let kn=0;kn<=maxSpeedY;kn+=1){
+    const y=toY(kn);
+    ctx.beginPath();
+    ctx.moveTo(padL,y);
+    ctx.lineTo(padL+plotW,y);
+    ctx.stroke();
+
+    ctx.fillStyle='var(--muted, #6b7280)';
+    ctx.font='11px system-ui, sans-serif';
+    ctx.textAlign='right';
+    ctx.textBaseline='middle';
+    ctx.fillText(`${kn} kn`,padL-8,y);
+  }
+
+  // Eje derecho TWA en violeta
+  ctx.fillStyle='#8b5cf6';
+  ctx.font='bold 10px system-ui, sans-serif';
+  ctx.textAlign='left';
+  ctx.textBaseline='bottom';
+  ctx.fillText('TWA (°)',padL+plotW+4,padT-6);
+
+  const stepTwa = maxTwaY <= 80 ? 20 : (maxTwaY <= 140 ? 30 : 45);
+  for(let deg=0; deg<=maxTwaY; deg+=stepTwa){
+    const y=toTwaY(deg);
+    ctx.fillStyle='#8b5cf6';
+    ctx.font='10px system-ui, sans-serif';
+    ctx.textAlign='left';
+    ctx.textBaseline='middle';
+    ctx.fillText(`${deg}°`,padL+plotW+6,y);
+  }
+
+  // Cuadrícula vertical (-5s a +5s)
+  for(let k=-5;k<=5;k++){
+    const x=toX(k);
+    ctx.beginPath();
+    ctx.moveTo(x,padT);
+    ctx.lineTo(x,padT+plotH);
+    ctx.strokeStyle=(k===0)?'rgba(239,68,68,0.45)':'rgba(156,163,175,0.2)';
+    ctx.stroke();
+
+    ctx.fillStyle=(k===0)?'#ef4444':'var(--muted, #6b7280)';
+    ctx.font=(k===0)?'bold 11px system-ui, sans-serif':'10.5px system-ui, sans-serif';
+    ctx.textAlign='center';
+    ctx.textBaseline='top';
+    const lbl=(k===0)?'0s (Ápex)':(k>0?`+${k}s`:`${k}s`);
+    ctx.fillText(lbl,x,padT+plotH+8);
+  }
+
+  // Zona ápex sombreada (-1s a +1s)
+  const xM1=toX(-1), xP1=toX(1);
+  ctx.fillStyle='rgba(239,68,68,0.04)';
+  ctx.fillRect(xM1,padT,xP1-xM1,plotH);
+
+  // Banda de dispersión de velocidad entre Max y Min
+  ctx.beginPath();
+  profile.forEach((p,idx)=>{
+    const x=toX(p.k);
+    const yMax=toY(p.max);
+    if(idx===0)ctx.moveTo(x,yMax);else ctx.lineTo(x,yMax);
+  });
+  for(let i=profile.length-1;i>=0;i--){
+    const p=profile[i];
+    const x=toX(p.k);
+    const yMin=toY(p.min);
+    ctx.lineTo(x,yMin);
+  }
+  ctx.closePath();
+  ctx.fillStyle='rgba(2,132,199,0.07)';
+  ctx.fill();
+
+  // Curva de evolución angular TWA (violeta punteada)
+  ctx.strokeStyle='#8b5cf6';
+  ctx.lineWidth=2.2;
+  ctx.setLineDash([4,3]);
+  ctx.beginPath();
+  profile.forEach((p,idx)=>{
+    const x=toX(p.k);
+    const y=toTwaY(p.avgTwa);
+    if(idx===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  profile.forEach(p=>{
+    const x=toX(p.k);
+    const y=toTwaY(p.avgTwa);
+    ctx.fillStyle='#ffffff';
+    ctx.beginPath();
+    ctx.arc(x,y,3.5,0,2*Math.PI);
+    ctx.fill();
+    ctx.strokeStyle='#8b5cf6';
+    ctx.lineWidth=2;
+    ctx.stroke();
+
+    // Rótulos flotantes de TWA en entrada (-5s) y salida (+5s)
+    if(p.k===-5||p.k===5){
+      ctx.fillStyle='#8b5cf6';
+      ctx.font='bold 10.5px system-ui, sans-serif';
+      ctx.textAlign=p.k===-5?'left':'right';
+      ctx.textBaseline='top';
+      const tag=p.k===-5?`TWA In: ${fmt1(p.avgTwa)}°`:`TWA Out: ${fmt1(p.avgTwa)}°`;
+      ctx.fillText(tag,p.k===-5?x+4:x-4,y+5);
+    }
+  });
+
+  // Curva de Velocidad Máxima (Verde)
+  ctx.strokeStyle='#10b981';
+  ctx.lineWidth=2.2;
+  ctx.beginPath();
+  profile.forEach((p,idx)=>{
+    const x=toX(p.k);
+    const y=toY(p.max);
+    if(idx===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  profile.forEach(p=>{
+    ctx.fillStyle='#10b981';
+    ctx.beginPath();
+    ctx.arc(toX(p.k),toY(p.max),3,0,2*Math.PI);
+    ctx.fill();
+  });
+
+  // Curva de Velocidad Mínima (Roja)
+  ctx.strokeStyle='#ef4444';
+  ctx.lineWidth=2.2;
+  ctx.beginPath();
+  profile.forEach((p,idx)=>{
+    const x=toX(p.k);
+    const y=toY(p.min);
+    if(idx===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  profile.forEach(p=>{
+    ctx.fillStyle='#ef4444';
+    ctx.beginPath();
+    ctx.arc(toX(p.k),toY(p.min),3,0,2*Math.PI);
+    ctx.fill();
+  });
+
+  // Curva de Velocidad Media (Azul principal destacada)
+  ctx.strokeStyle='#0284c7';
+  ctx.lineWidth=3.5;
+  ctx.beginPath();
+  profile.forEach((p,idx)=>{
+    const x=toX(p.k);
+    const y=toY(p.avg);
+    if(idx===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  profile.forEach(p=>{
+    const x=toX(p.k);
+    const y=toY(p.avg);
+    ctx.fillStyle='#ffffff';
+    ctx.beginPath();
+    ctx.arc(x,y,4.5,0,2*Math.PI);
+    ctx.fill();
+    ctx.strokeStyle='#0284c7';
+    ctx.lineWidth=2.5;
+    ctx.stroke();
+
+    if(p.k===-5||p.k===0||p.k===5){
+      ctx.fillStyle='#0284c7';
+      ctx.font='bold 11px system-ui, sans-serif';
+      ctx.textAlign='center';
+      ctx.textBaseline='bottom';
+      ctx.fillText(`${fmt2(p.avg)} kn`,x,y-8);
+    }
+  });
+
+  canvas._maneuverData={padL,padR,padT,padB,plotW,plotH,maxSpeedY,maxTwaY,profile,mode,maneuversCount:maneuvers.length};
+  ctx.restore();
+}
+
+function exportTelemetryReportJson(boatIdx){
+  if(!D||!D.boats||!D.boats[boatIdx])return;
+  const boat=D.boats[boatIdx];
+  const rInt=getBoatRaceInterval(boatIdx);
+  const kine=getBoatKinematics(boatIdx);
+  const twd=Math.round(((D.windRef%360)+360)%360);
+  const maneuvers=detectManeuvers(boatIdx,twd);
+  const legs=analyzeIODALegs(boatIdx,twd,maneuvers);
+
+  let upwindSogSum=0, upwindSogN=0, downwindSogSum=0, downwindSogN=0;
+  let upwindVmgSum=0, upwindVmgN=0, downwindVmgSum=0, downwindVmgN=0;
+  let maxSog=0;
+
+  for(let s=rInt.sStart;s<=rInt.sEnd;s++){
+    if(!ok(boatIdx,s))continue;
+    const sKn=kine.sogEma[s];
+    if(sKn>maxSog)maxSog=sKn;
+    const twaAbs=Math.abs(kine.twa[s]);
+    if(twaAbs>=30&&twaAbs<=60){
+      upwindSogSum+=sKn; upwindVmgSum+=kine.vmg[s]; upwindSogN++;
+    }else if(twaAbs>=130&&twaAbs<=180){
+      downwindSogSum+=sKn; downwindVmgSum+=Math.abs(kine.vmg[s]); downwindSogN++;
+    }
+  }
+
+  const tacksList=maneuvers.filter(m=>m.type==='TACK');
+  const jibesList=maneuvers.filter(m=>m.type==='JIBE');
+  const avgTackDur=tacksList.length?(tacksList.reduce((a,m)=>a+m.durationSec,0)/tacksList.length):0;
+  const avgTackLoss=tacksList.length?(tacksList.reduce((a,m)=>a+m.tackLossMeters,0)/tacksList.length):0;
+  const avgVminRatio=maneuvers.length?(maneuvers.reduce((a,m)=>a+m.vMinRatio,0)/maneuvers.length):0;
+
+  const report={
+    $schema:"http://json-schema.org/draft-07/schema#",
+    title:"TelemetryPerformanceReport",
+    metadata:{
+      class:"Optimist IOD95",
+      sailorSail:boat.sail,
+      subName:boat.sub||'',
+      sessionTitle:document.getElementById('title')?document.getElementById('title').textContent:'Entrenamiento Optimist',
+      raceWindow:{
+        filter:"STRICT_START_TO_FINISH",
+        raceStartSec:rInt.sStart,
+        raceFinishSec:rInt.sEnd,
+        durationSec:rInt.sEnd-rInt.sStart,
+        crossedStartLine:rInt.crossedStart,
+        finishedRace:rInt.finished,
+        startDelayVsGunSec:rInt.startDelaySec
+      },
+      sampleRateHz:1.0,
+      generatedAt:new Date().toISOString()
+    },
+    windEnvironment:{
+      sessionWindDeg:twd,
+      windSpeedKnots:D.windKn?Number(D.windKn(state.t).toFixed(1)):null
+    },
+    overallMetrics:{
+      maxSogKnots:Number(maxSog.toFixed(2)),
+      avgUpwindSogKnots:Number((upwindSogN?upwindSogSum/upwindSogN:0).toFixed(2)),
+      avgUpwindVmgKnots:Number((upwindSogN?upwindVmgSum/upwindSogN:0).toFixed(2)),
+      avgDownwindSogKnots:Number((downwindSogN?downwindSogSum/downwindSogN:0).toFixed(2)),
+      avgDownwindVmgKnots:Number((downwindSogN?downwindVmgSum/downwindSogN:0).toFixed(2))
+    },
+    maneuversSummary:{
+      totalTacks:tacksList.length,
+      totalJibes:jibesList.length,
+      avgTackDurationSec:Number(avgTackDur.toFixed(1)),
+      avgTackLossMeters:Number(avgTackLoss.toFixed(1)),
+      avgVMinRatio:Number(avgVminRatio.toFixed(2))
+    },
+    maneuversDetail:maneuvers.map(m=>({
+      type:m.type,
+      timestampEntry:m.timestampEntry,
+      timestampApex:m.timestampApex,
+      timestampRecovery:m.timestampRecovery,
+      vTargetPre:m.vTargetPre,
+      vMin:m.vMin,
+      vMinRatio:m.vMinRatio,
+      durationSec:m.durationSec,
+      tackLossMeters:m.tackLossMeters
+    })),
+    legsDetail:legs.map(l=>({
+      legIndex:l.legIndex,
+      name:l.name,
+      type:l.type,
+      durationSec:l.durationSec,
+      distanceTraveledMeters:l.distanceReal,
+      rhumblineEfficiencyPct:l.rhumblineEfficiencyPct,
+      tacksCount:l.tacksCount,
+      jibesCount:l.jibesCount,
+      totalManeuverLossMeters:l.totalManeuverLossMeters,
+      polarTargetPct:l.polarTargetPct,
+      favoredTackPct:l.favoredTackPct,
+      overstandingMeters:l.overstandingMeters,
+      overstandingSec:l.overstandingSec
+    }))
+  };
+
+  const jsonStr=JSON.stringify(report,null,2);
+  const blob=new Blob([jsonStr],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`TelemetryPerformanceReport_${boat.sail.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},200);
+}
+
+let advMetricsRows=[];
+
+function renderAdvancedMetrics(){
+  const advView=document.getElementById('advancedMetricsView');
+  if(!advView)return;
+  const emptyState=document.getElementById('metricsEmptyState');
+  const tableWrap=advView.querySelector('.table-wrap');
+  const kpisEl=document.getElementById('metricsKpis');
+  const tb=document.getElementById('advancedMetricsTbody');
+  const tacMod=document.getElementById('tacticalAnalysisModule');
+
+  if(!D||!D.boats||!D.boats.length){
+    if(emptyState)emptyState.hidden=false;
+    if(tableWrap)tableWrap.hidden=true;
+    if(kpisEl)kpisEl.innerHTML='';
+    if(tacMod)tacMod.hidden=true;
+    return;
+  }
+
+  if(emptyState)emptyState.hidden=true;
+  if(tableWrap)tableWrap.hidden=false;
+  if(tacMod)tacMod.hidden=false;
+
+  const course=hasCourse();
+  const s0=D.startT!=null?Math.round(D.startT):0;
+  const rk=course?ranking(D.T-1):null;
+
+  advMetricsRows=D.boats.map((b,idx)=>{
+    const i=b.id;
+    const base=i*D.stride;
+    const rInt=getBoatRaceInterval(i);
+    const sStart=rInt.sStart;
+    const sEnd=rInt.sEnd;
+    let sum=0,n=0,maxv=0;
+    const win=[];let ws=0;
+    for(let s=sStart;s<=sEnd;s++){
+      if(!ok(i,s)){win.length=0;ws=0;continue;}
+      const v=D.S[base+s];
+      if(v>0.4){sum+=v;n++;}
+      win.push(v);ws+=v;
+      if(win.length>5)ws-=win.shift();
+      if(win.length===5)maxv=Math.max(maxv,ws/5);
+    }
+    const dist=Math.max(0,D.CD[base+sEnd]-D.CD[base+sStart]);
+    const avg=n?(sum/n*KN):0;
+    const max=maxv*KN;
+    const tacks=countTacks(i,sStart,sEnd);
+    const dur=Math.max(0,sEnd-sStart);
+
+    let pos=idx+1;
+    if(course&&rk){
+      const p=rk.findIndex(r=>r.id===i);
+      if(p>=0)pos=p+1;
+    }
+
+    return{
+      b,
+      id:i,
+      sail:b.sail||('Barco '+(idx+1)),
+      sub:b.sub||'',
+      color:b.color||'#ef4444',
+      dist,
+      avg,
+      max,
+      tacks,
+      dur,
+      pos,
+      fin:rInt.finished,
+      rInt
+    };
+  });
+
+  if(!course&&advSort.col==='pos'){
+    advMetricsRows.sort((a,b)=>b.dist-a.dist);
+    advMetricsRows.forEach((r,idx)=>{r.pos=idx+1;});
+  }
+
+  const col=advSort.col;
+  const dir=advSort.asc?1:-1;
+  advMetricsRows.sort((a,b)=>{
+    if(col==='pos')return (a.pos-b.pos)*dir;
+    if(col==='sail')return a.sail.localeCompare(b.sail,undefined,{numeric:true,sensitivity:'base'})*dir;
+    if(col==='avg')return (a.avg-b.avg)*dir;
+    if(col==='max')return (a.max-b.max)*dir;
+    if(col==='dist')return (a.dist-b.dist)*dir;
+    if(col==='tacks')return (a.tacks-b.tacks)*dir;
+    if(col==='dur')return (a.dur-b.dur)*dir;
+    return 0;
+  });
+
+  if(kpisEl){
+    const fleetAvgSpd=advMetricsRows.length?(advMetricsRows.reduce((a,r)=>a+r.avg,0)/advMetricsRows.length):0;
+    const fleetMaxSpd=advMetricsRows.length?Math.max(...advMetricsRows.map(r=>r.max)):0;
+    const fleetAvgDist=advMetricsRows.length?(advMetricsRows.reduce((a,r)=>a+r.dist,0)/advMetricsRows.length):0;
+    const fleetTotalTacks=advMetricsRows.reduce((a,r)=>a+r.tacks,0);
+    const w=windAt(state.t);
+
+    kpisEl.innerHTML=`
+      <div class="kpi-card">
+        <div class="kpi-lbl">Flota Analizada</div>
+        <div class="kpi-val">${D.N} <span style="font-size:14px;color:var(--muted)">${D.N===1?'barco':'barcos'}</span></div>
+        <div class="kpi-sub">${D.together?'Sesión simultánea':'Tracks alineados'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Viento de Sesión</div>
+        <div class="kpi-val">${deg3(w)}</div>
+        <div class="kpi-sub">${D.windKn?fmt1(D.windKn(state.t))+' kn medidos':'Indicado por entrenador'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Vel. Media Flota</div>
+        <div class="kpi-val">${fmt2(fleetAvgSpd)} <span style="font-size:14px;color:var(--muted)">kn</span></div>
+        <div class="kpi-sub">Promedio en navegación</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Vel. Máx Flota (5s)</div>
+        <div class="kpi-val" style="color:var(--accent)">${fmt2(fleetMaxSpd)} <span style="font-size:14px;color:var(--muted)">kn</span></div>
+        <div class="kpi-sub">Pico sostenido 5 s</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Total Viradas</div>
+        <div class="kpi-val">${fleetTotalTacks}</div>
+        <div class="kpi-sub">Media: ${advMetricsRows.length?Math.round(fleetTotalTacks/advMetricsRows.length):0} por barco</div>
+      </div>
+    `;
+  }
+
+  if(tb){
+    tb.innerHTML=advMetricsRows.map(r=>{
+      const rInt=r.rInt;
+      const finBadge=rInt.finished
+        ? `<div style="font-size:11px;color:#16a34a;font-weight:600;margin-top:2px">✓ Meta: ${rInt.finishTimeSec?hhmmss(rInt.finishTimeSec):mmss(rInt.sEnd)}</div>`
+        : `<div style="font-size:11px;color:#d97706;font-weight:600;margin-top:2px">⛵ En regata</div>`;
+      const startBadge=rInt.crossedStart
+        ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">Salida: ${rInt.startTimeSec?hhmmss(rInt.startTimeSec):mmss(rInt.sStart)}${rInt.startDelaySec>0?` (+${rInt.startDelaySec}s)`:''}</div>`
+        : `<div style="font-size:11px;color:var(--muted);margin-top:2px">Inicio: ${rInt.startTimeSec?hhmmss(rInt.startTimeSec):mmss(rInt.sStart)}</div>`;
+
+      return `
+      <tr>
+        <td style="text-align:center">
+          <span class="badge-pos pos-${r.pos}">${r.pos}º</span>
+          ${finBadge}
+        </td>
+        <td style="text-align:left">
+          <span class="sw" style="background:${r.color};width:8px;height:14px;border-radius:2px;display:inline-block;vertical-align:middle;margin-right:8px"></span>
+          <strong style="font-size:14px;color:var(--ink)">${esc(r.sail)}</strong>
+          ${r.sub?`<span style="font-size:11.5px;color:var(--muted);margin-left:6px">${esc(r.sub)}</span>`:''}
+        </td>
+        <td><strong>${fmt2(r.avg)}</strong> <span style="font-size:11px;color:var(--muted)">kn</span></td>
+        <td><strong>${fmt2(r.max)}</strong> <span style="font-size:11px;color:var(--muted)">kn</span></td>
+        <td>${distTxt(r.dist)} <span class="unit-sub">(${fmt2(r.dist/1852)} NM)</span></td>
+        <td><strong>${r.tacks}</strong> <span style="font-size:11px;color:var(--muted)">viradas</span></td>
+        <td>
+          <strong>${fmtDuration(r.dur)}</strong>
+          ${startBadge}
+        </td>
+      </tr>
+    `}).join('');
+  }
+
+  const theadRow=document.getElementById('advMetricsTheadRow');
+  if(theadRow){
+    theadRow.querySelectorAll('th[data-sort]').forEach(th=>{
+      const isSorted=th.dataset.sort===advSort.col;
+      th.classList.toggle('sorted',isSorted);
+      const baseLabel=th.getAttribute('data-base-label')||th.textContent.replace(/[ ▲▼⬍]/g,'').trim();
+      th.setAttribute('data-base-label',baseLabel);
+      th.textContent=baseLabel+(isSorted?(advSort.asc?' ▲':' ▼'):' ⬍');
+    });
+  }
+
+  // Renderizar análisis táctico IODA del barco seleccionado
+  renderTacticalAnalysis();
+}
+
+const mainTabTrack=document.getElementById('mainTabTrack');
+const mainTabMetrics=document.getElementById('mainTabMetrics');
+const btnGoToTrack=document.getElementById('btnGoToTrackView');
+
+if(mainTabTrack)mainTabTrack.addEventListener('click',()=>switchMainView('track'));
+if(mainTabMetrics)mainTabMetrics.addEventListener('click',()=>switchMainView('metrics'));
+if(btnGoToTrack)btnGoToTrack.addEventListener('click',()=>switchMainView('track'));
+
+const theadRowAdv=document.getElementById('advMetricsTheadRow');
+if(theadRowAdv){
+  theadRowAdv.querySelectorAll('th[data-sort]').forEach(th=>{
+    th.addEventListener('click',()=>{
+      const col=th.dataset.sort;
+      if(advSort.col===col){
+        advSort.asc=!advSort.asc;
+      }else{
+        advSort.col=col;
+        advSort.asc=(col==='pos'||col==='sail');
+      }
+      renderAdvancedMetrics();
+    });
+  });
+}
+
+const selTacBoatEl=document.getElementById('selTacticalBoat');
+if(selTacBoatEl){
+  selTacBoatEl.addEventListener('change',e=>{
+    selectedTacticalBoatId=parseInt(e.target.value,10)||0;
+    renderTacticalAnalysis();
+  });
+}
+
+const btnPrintTac=document.getElementById('btnPrintTacticalReport');
+if(btnPrintTac){
+  btnPrintTac.addEventListener('click',()=>{
+    const b=D&&D.boats&&D.boats[selectedTacticalBoatId];
+    if(!b)return;
+    const pTitle=document.getElementById('printTacBoatTitle');
+    if(pTitle)pTitle.textContent=`${b.sail} ${b.sub?'— '+b.sub:''} · Análisis Táctico`;
+    const pDate=document.getElementById('printTacDate');
+    if(pDate)pDate.textContent='Fecha: '+new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const pWind=document.getElementById('printTacWind');
+    const trackWind=computeTrackEstimatedWind(selectedTacticalBoatId);
+    if(pWind){
+      if(trackWind&&trackWind.available){
+        const dSign=trackWind.delta>0?'+':'';
+        pWind.textContent=`Viento: ${deg3(trackWind.twd)} (Track) / ${deg3(D.windRef)} (Entrenador, Δ ${dSign}${trackWind.delta}°)`+(D.windKn?` (${fmt1(D.windKn(state.t))} kn)`:'');
+      }else{
+        pWind.textContent=`Viento: ${deg3(D.windRef)} (Entrenador)`+(D.windKn?` (${fmt1(D.windKn(state.t))} kn)`:'');
+      }
+    }
+    const printDateSpan=document.getElementById('printDateSpan');
+    if(printDateSpan)printDateSpan.textContent='Informe generado: '+new Date().toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+
+    document.body.classList.add('print-tactical-report');
+    window.print();
+    setTimeout(()=>{document.body.classList.remove('print-tactical-report');},800);
+  });
+}
+
+const btnChartTacks=document.getElementById('btnChartModeTacks');
+const btnChartJibes=document.getElementById('btnChartModeJibes');
+if(btnChartTacks){
+  btnChartTacks.addEventListener('click',()=>{
+    currentManeuverChartMode='TACK';
+    renderManeuverSpeedChart(selectedTacticalBoatId,'TACK');
+  });
+}
+if(btnChartJibes){
+  btnChartJibes.addEventListener('click',()=>{
+    currentManeuverChartMode='JIBE';
+    renderManeuverSpeedChart(selectedTacticalBoatId,'JIBE');
+  });
+}
+
+// Tooltips interactivos para los gráficos de rendimiento
+const polarCvs=document.getElementById('sailorPolarCanvas');
+const polarTip=document.getElementById('polarTooltip');
+if(polarCvs&&polarTip){
+  polarCvs.addEventListener('mousemove',e=>{
+    const data=polarCvs._polarData;
+    if(!data)return;
+    const rect=polarCvs.getBoundingClientRect();
+    const mx=e.clientX-rect.left;
+    const my=e.clientY-rect.top;
+    const dx=mx-data.cx;
+    const dy=my-data.cy;
+    const dist=Math.hypot(dx,dy);
+
+    let deg=Math.atan2(dx,-dy)*180/Math.PI;
+    const isStbd=deg>=0;
+    const twaAbs=Math.round(Math.abs(deg));
+
+    if(dist>data.maxR+25||dist<10||twaAbs<30||twaAbs>180){
+      polarTip.style.display='none';
+      return;
+    }
+
+    const speedKn=(dist/data.maxR)*data.maxKnots;
+    const pts=isStbd?data.stbdPts:data.portPts;
+    const nearestPt=pts?pts.find(p=>Math.abs(p.twa-twaAbs)<=5):null;
+    const target=data.targetPolar.find(tp=>Math.abs(tp.twa-twaAbs)<=7);
+
+    polarTip.style.display='block';
+    polarTip.style.left=Math.min(rect.width-180,Math.max(10,mx+12))+'px';
+    polarTip.style.top=Math.max(10,my-15)+'px';
+    polarTip.innerHTML=`
+      <div style="font-weight:700;color:#38bdf8">${twaAbs}° ${isStbd?'Estribor':'Babor'}</div>
+      <div>Cursor: <strong>${fmt2(speedKn)} kn</strong></div>
+      ${nearestPt?`<div>Real Regatista: <strong style="color:#ef4444">${fmt2(nearestPt.sog)} kn</strong> <span style="font-size:10px">(${nearestPt.count}s)</span></div>`:''}
+      ${target?`<div>Polar Teórica: <strong style="color:#0284c7">${fmt2(target.kn)} kn</strong></div>`:''}
+    `;
+  });
+  polarCvs.addEventListener('mouseleave',()=>{
+    polarTip.style.display='none';
+  });
+}
+
+const manCvs=document.getElementById('maneuverSpeedCanvas');
+const manTip=document.getElementById('maneuverTooltip');
+if(manCvs&&manTip){
+  manCvs.addEventListener('mousemove',e=>{
+    const data=manCvs._maneuverData;
+    if(!data||!data.profile||!data.profile.length)return;
+    const rect=manCvs.getBoundingClientRect();
+    const mx=e.clientX-rect.left;
+    const my=e.clientY-rect.top;
+
+    if(mx<data.padL-10||mx>data.padL+data.plotW+10||my<data.padT-10||my>data.padT+data.plotH+20){
+      manTip.style.display='none';
+      return;
+    }
+
+    const ratio=(mx-data.padL)/data.plotW;
+    const k=Math.min(5,Math.max(-5,Math.round(ratio*10-5)));
+    const p=data.profile.find(item=>item.k===k);
+    if(!p){manTip.style.display='none';return;}
+
+    const phase=(k===0)?'Ápex (Cruce del viento / Giro)':(k<0?`Entrada (${k}s)`:`Relanzamiento (+${k}s)`);
+
+    manTip.style.display='block';
+    manTip.style.left=Math.min(rect.width-170,Math.max(10,mx+12))+'px';
+    manTip.style.top=Math.max(10,my-30)+'px';
+    manTip.innerHTML=`
+      <div style="font-weight:700;color:#f59e0b">${phase}</div>
+      <div>Vel. Media: <strong style="color:#0284c7">${fmt2(p.avg)} kn</strong></div>
+      <div style="font-size:10.5px;color:#9ca3af">Rango: <span style="color:#ef4444">${fmt2(p.min)}</span> — <span style="color:#10b981">${fmt2(p.max)} kn</span></div>
+      <div style="color:#8b5cf6;font-weight:600;font-size:11px">Ángulo TWA: <strong>${fmt1(p.avgTwa)}°</strong></div>
+      <div style="font-size:10px;color:#9ca3af">${data.mode==='TACK'?'Viradas':'Trasluchadas'} analizadas: ${data.maneuversCount}</div>
+    `;
+  });
+  manCvs.addEventListener('mouseleave',()=>{
+    manTip.style.display='none';
+  });
+}
+
+window.addEventListener('resize',()=>{
+  if(currentTacticalData){
+    renderSailorPolarChart(currentTacticalData.boatIdx,currentTacticalData.twd);
+    renderManeuverSpeedChart(currentTacticalData.boatIdx,currentManeuverChartMode);
+  }
+});
+
+const btnPrintAdv=document.getElementById('btnPrintMetricsReport');
+if(btnPrintAdv){
+  btnPrintAdv.addEventListener('click',()=>{
+    const printDate=document.getElementById('printDateSpan');
+    if(printDate){
+      printDate.textContent='Fecha de impresión: '+new Date().toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    }
+    window.print();
+  });
+}
+
+const btnCopyAdv=document.getElementById('btnCopyMetricsTable');
+if(btnCopyAdv){
+  btnCopyAdv.addEventListener('click',e=>{
+    if(!advMetricsRows.length)return;
+    const head=['Posición','Barco / Vela','Velocidad media (kn)','Velocidad máxima 5s (kn)','Distancia navegada (m)','Distancia (NM)','Número de viradas','Tiempo navegado (segundos)','Tiempo navegado (formato)'];
+    const lines=[
+      head.join('\t'),
+      ...advMetricsRows.map(r=>[
+        r.pos,
+        r.sail+(r.sub?' ('+r.sub+')':''),
+        fmt2(r.avg),
+        fmt2(r.max),
+        Math.round(r.dist),
+        fmt2(r.dist/1852),
+        r.tacks,
+        r.dur,
+        fmtDuration(r.dur)
+      ].join('\t'))
+    ];
+    const txt=lines.join('\n');
+    const btn=e.currentTarget;
+    const done=m=>{btn.textContent=m;setTimeout(()=>btn.textContent='📋 Copiar para Excel',1800);};
+    const fallback=()=>{
+      const ta=document.createElement('textarea');
+      ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.select();
+      let okc=false;try{okc=document.execCommand('copy');}catch(_){}
+      ta.remove();done(okc?'Copiado':'No se pudo copiar');
+    };
+    try{navigator.clipboard.writeText(txt).then(()=>done('Copiado: pégalo en Excel'),fallback);}catch(_){fallback();}
+  });
+}
 
 /* ---------- línea de tiempo y controles ---------- */
 const playBtn=document.getElementById('play'),scrub=document.getElementById('scrub');
@@ -2302,6 +4974,9 @@ drop.addEventListener('drop',async e=>{handleFiles(await filesFromDrop(e.dataTra
 /* ---------- cargar un conjunto de datos ---------- */
 function loadDataset(nd){
   D=nd;
+  boatKinematicsCache.clear();
+  state.highlightedLeg=null;
+  selectedTacticalBoatId=0;
   setPlacing(false);
   D.boats.forEach(b=>b.color=`hsl(${b.hue} 72% ${C.boatL||'44%'})`);
   document.getElementById('eyebrow').textContent=D.eyebrow;
@@ -2400,9 +5075,14 @@ function clearSession(){
     state.activeTool=null;
     state.placing=false;
     state.tactics={lines:[],arrows:[],boats:[],startLine:null,showStartGrid:true,laylines:false,threeLengths:false,manualZones:[]};
+    state.highlightedLeg=null;
+    boatKinematicsCache.clear();
+    selectedTacticalBoatId=0;
     renderCoursePane();
     renderTacticsPane();
     fileIn.value='';
+    switchMainView('track');
+    renderAdvancedMetrics();
   }
 }
 
@@ -2435,6 +5115,11 @@ const helpModal=document.getElementById('helpModal'),btnHelp=document.getElement
 if(btnHelp&&helpModal)btnHelp.addEventListener('click',()=>{helpModal.hidden=false;});
 if(btnCloseHelp&&helpModal)btnCloseHelp.addEventListener('click',()=>{helpModal.hidden=true;});
 if(helpModal)helpModal.addEventListener('click',e=>{if(e.target===helpModal)helpModal.hidden=true;});
+
+const polarModal=document.getElementById('polarModal'),btnShowPolar=document.getElementById('btnShowPolarModal'),btnClosePolar=document.getElementById('btnClosePolar');
+if(btnShowPolar&&polarModal)btnShowPolar.addEventListener('click',()=>{polarModal.hidden=false;});
+if(btnClosePolar&&polarModal)btnClosePolar.addEventListener('click',()=>{polarModal.hidden=true;});
+if(polarModal)polarModal.addEventListener('click',e=>{if(e.target===polarModal)polarModal.hidden=true;});
 
 readTokens();
 requestAnimationFrame(loop);
