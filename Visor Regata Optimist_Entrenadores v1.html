@@ -47,6 +47,7 @@ h1{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1;mar
 .map{position:relative;border-radius:10px;overflow:hidden;background:var(--sea);border:1px solid var(--line);touch-action:none;cursor:grab}
 .map.dragging{cursor:grabbing}
 .map.placing{cursor:crosshair}
+.map.eraser{cursor:pointer}
 .map canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .tools{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:6px}
 .tool{background:var(--panel);border:1px solid var(--line);border-radius:7px;min-width:36px;height:36px;padding:0 10px;display:grid;place-items:center;cursor:pointer;font-size:13px;font-weight:500}
@@ -364,9 +365,10 @@ tr.qsep th{padding-top:4px}
         <li><strong>Laylines a 45°:</strong> Pulsa <em>«📐 Laylines de barlovento»</em> para proyectar automáticamente las líneas tácticas a barlovento en B1 y en la Llegada.</li>
         <li><strong>Zona de 3 esloras:</strong> Pulsa <em>«⭕ 3 esloras (7,08 m)»</em> para trazar al instante el círculo reglamentario de 3 esloras de Optimist en todas las balizas.</li>
         <li><strong>Línea de salida con parrilla:</strong> Pulsa <em>«🚩 Trazar línea de salida»</em>, marca el Pin y el Comité. Aparecerá la parrilla de aproximación a sotavento con marcas cada 10 metros (hasta 75 m).</li>
-        <li><strong>Regla de Rumbo y Distancia:</strong> Pulsa <em>«📏 Línea recta»</em> y haz 2 clics para medir la distancia exacta en metros y el rumbo en grados.</li>
-        <li><strong>Flechas:</strong> Pulsa <em>«➡️ Flecha táctica»</em> para indicar rachas, roles o corrientes sobre el mapa.</li>
-        <li><strong>Barcos tácticos:</strong> Añade barcos adicionales con su vela, color y amura (a estribor o babor) para explicar situaciones del reglamento o táctica.</li>
+        <li><strong>Regla de Rumbo y Distancia:</strong> Pulsa <em>«📏 Línea (rumbo y dist.)»</em> y haz 2 clics para medir la distancia exacta en metros y el rumbo en grados. Puedes elegir su color.</li>
+        <li><strong>Flechas:</strong> Pulsa <em>«➡️ Flecha táctica»</em> para indicar rachas, roles o corrientes sobre el mapa. Puedes elegir su color.</li>
+        <li><strong>Barcos tácticos:</strong> Añade barcos adicionales con su número de vela, color individual a elegir y amura (a estribor o babor) para explicar situaciones del reglamento o táctica.</li>
+        <li><strong>Borrador selectivo:</strong> Pulsa <em>«🧽 Borrador»</em> y haz clic sobre cualquier figura o barco para borrar únicamente ese elemento sin reiniciar la pizarra.</li>
         <li><strong>Cancelar o salir de una herramienta:</strong> Pulsa la tecla <kbd>Escape (Esc)</kbd> o el botón blanco inferior <strong>«✕ Cancelar / Salir (Esc)»</strong>.</li>
       </ul>
 
@@ -1142,10 +1144,10 @@ function drawTacticalDraft(w, sc){
   if(!tool||!d)return;
   ctx.save();
   if(tool==='line'){
-    ctx.strokeStyle='#0284c7';ctx.lineWidth=1.8;ctx.setLineDash([4,4]);
+    ctx.strokeStyle=tacLineConfig.color||'#0284c7';ctx.lineWidth=1.8;ctx.setLineDash([4,4]);
     ctx.beginPath();ctx.moveTo(sx(d.x1),sy(d.y1));ctx.lineTo(sx(d.curX),sy(d.curY));ctx.stroke();
   }else if(tool==='arrow'){
-    ctx.strokeStyle='#10b981';ctx.lineWidth=2;ctx.setLineDash([4,4]);
+    ctx.strokeStyle=tacArrowConfig.color||'#10b981';ctx.lineWidth=2;ctx.setLineDash([4,4]);
     ctx.beginPath();ctx.moveTo(sx(d.x1),sy(d.y1));ctx.lineTo(sx(d.curX),sy(d.curY));ctx.stroke();
   }else if(tool==='start'){
     ctx.strokeStyle='#ef4444';ctx.lineWidth=2;ctx.setLineDash([4,4]);
@@ -1162,6 +1164,8 @@ function drawTacticalDraft(w, sc){
 /* ---------- pestaña táctica ---------- */
 const tacticsEl=document.getElementById('pane-tactics');
 const tacBoatConfig={sail:'1',color:'#ef4444',tack:'stbd_up',hdg:45};
+const tacLineConfig={color:'#0284c7'};
+const tacArrowConfig={color:'#10b981'};
 
 function hasAnyDrawings(){
   const tac=state.tactics;
@@ -1202,6 +1206,7 @@ function setTacticsTool(tool){
     state.toolDraft=null;
     if(state.placing)state.placing=false;
     mapEl.classList.add('placing');
+    mapEl.classList.toggle('eraser', tool==='eraser');
     
     let msg='Haz clic en el mapa';
     if(tool==='line')msg='Haz clic en el inicio de la línea y luego en el final';
@@ -1209,6 +1214,7 @@ function setTacticsTool(tool){
     else if(tool==='boat')msg='Haz clic en el mapa donde quieras colocar el barco';
     else if(tool==='start')msg='Haz clic en el Pin (boya izquierda de salida)';
     else if(tool==='zone')msg='Haz clic en el centro de la zona y luego fija el radio';
+    else if(tool==='eraser')msg='Toca sobre cualquier elemento táctico para borrarlo (barco, línea, flecha o zona) · Esc para terminar';
     else if(tool==='ioda_b1')msg=(state.iodaWizard?'📍 Paso 1/6: ':'')+'Haz clic en el mapa para situar la Baliza 1 (B1 - Barlovento)';
     else if(tool==='ioda_b2')msg=(state.iodaWizard?'📍 Paso 2/6: ':'')+'Haz clic en el mapa para situar la Baliza 2 (B2 - Desmarque)';
     else if(tool==='ioda_gate3s')msg=(state.iodaWizard?'📍 Paso 3/6: ':'')+'Haz clic en el mapa para situar la Baliza 3s de la Puerta (Estribor)';
@@ -1227,6 +1233,78 @@ function setTacticsTool(tool){
 function handleTacticsClick(x, y, px, py){
   const tool=state.activeTool;
   if(!tool)return;
+
+  // Borrador selectivo de elementos tácticos
+  if(tool==='eraser'){
+    const tac=state.tactics;
+    function dSeg(px, py, x1, y1, x2, y2){
+      const dx=x2-x1, dy=y2-y1, l2=dx*dx+dy*dy;
+      if(l2===0)return Math.hypot(px-x1,py-y1);
+      let t=((px-x1)*dx+(py-y1)*dy)/l2;
+      t=Math.max(0,Math.min(1,t));
+      return Math.hypot(px-(x1+t*dx),py-(y1+t*dy));
+    }
+
+    let bestHit=null, minDist=24;
+
+    // 1. Barcos tácticos
+    if(tac.boats){
+      tac.boats.forEach((b,i)=>{
+        const d=Math.hypot(sx(b.x)-px,sy(b.y)-py);
+        if(d<minDist){minDist=d;bestHit={type:'boat',index:i,desc:`Barco ${b.sail}`};}
+      });
+    }
+
+    // 2. Líneas
+    if(tac.lines){
+      tac.lines.forEach((l,i)=>{
+        const d=dSeg(px,py,sx(l.x1),sy(l.y1),sx(l.x2),sy(l.y2));
+        if(d<minDist){minDist=d;bestHit={type:'line',index:i,desc:'Línea'};}
+      });
+    }
+
+    // 3. Flechas
+    if(tac.arrows){
+      tac.arrows.forEach((a,i)=>{
+        const d=dSeg(px,py,sx(a.x1),sy(a.y1),sx(a.x2),sy(a.y2));
+        if(d<minDist){minDist=d;bestHit={type:'arrow',index:i,desc:'Flecha'};}
+      });
+    }
+
+    // 4. Zonas manuales
+    if(tac.manualZones){
+      tac.manualZones.forEach((z,i)=>{
+        const zx=sx(z.x),zy=sy(z.y),r=z.radius*state.cam.scale;
+        const dC=Math.hypot(zx-px,zy-py);
+        const dEdge=Math.abs(dC-r);
+        const dTxt=Math.hypot(zx-px,(zy+r+12)-py);
+        const dEff=Math.min(dEdge,dC<22?dC:Infinity,dTxt);
+        if(dEff<minDist){minDist=dEff;bestHit={type:'zone',index:i,desc:'Zona'};}
+      });
+    }
+
+    // 5. Línea de salida
+    if(tac.startLine&&tac.startLine.pin&&tac.startLine.rc){
+      const d=dSeg(px,py,sx(tac.startLine.pin.x),sy(tac.startLine.pin.y),sx(tac.startLine.rc.x),sy(tac.startLine.rc.y));
+      if(d<minDist){minDist=d;bestHit={type:'start',desc:'Línea de salida'};}
+    }
+
+    if(bestHit){
+      if(bestHit.type==='boat')tac.boats.splice(bestHit.index,1);
+      else if(bestHit.type==='line')tac.lines.splice(bestHit.index,1);
+      else if(bestHit.type==='arrow')tac.arrows.splice(bestHit.index,1);
+      else if(bestHit.type==='zone')tac.manualZones.splice(bestHit.index,1);
+      else if(bestHit.type==='start')tac.startLine=null;
+
+      showPlacingMsg(`${bestHit.desc} borrado · Toca otro elemento para borrarlo o Esc para salir`);
+      renderTacticsPane();
+      saveCurrentSession();
+      return;
+    }else{
+      showPlacingMsg('No se tocó ningún elemento táctico · Toca sobre un barco, línea, flecha o zona');
+      return;
+    }
+  }
 
   // Pasos de colocación manual del recorrido IODA
   if(tool==='ioda_b1'){
@@ -1300,8 +1378,8 @@ function handleTacticsClick(x, y, px, py){
   if(tool==='boat'){
     const w=windAt(state.t);
     let hdg=tacBoatConfig.hdg||45,tack='stbd';
-    if(tacBoatConfig.tack==='stbd_up'){hdg=(w+45)%360;tack='stbd';}
-    else if(tacBoatConfig.tack==='port_up'){hdg=((w-45)%360+360)%360;tack='port';}
+    if(tacBoatConfig.tack==='stbd_up'){hdg=((w-45)%360+360)%360;tack='stbd';}
+    else if(tacBoatConfig.tack==='port_up'){hdg=(w+45)%360;tack='port';}
     else if(tacBoatConfig.tack==='stbd_down'){hdg=(w+140)%360;tack='stbd';}
     else if(tacBoatConfig.tack==='port_down'){hdg=((w-140)%360+360)%360;tack='port';}
     else{tack=norm(hdg-w)>0?'stbd':'port';}
@@ -1319,7 +1397,7 @@ function handleTacticsClick(x, y, px, py){
       state.toolDraft={x1:x,y1:y,curX:x,curY:y};
       showPlacingMsg('Haz clic en el punto final de la línea');
     }else{
-      state.tactics.lines.push({x1:state.toolDraft.x1,y1:state.toolDraft.y1,x2:x,y2:y,color:'#0284c7'});
+      state.tactics.lines.push({x1:state.toolDraft.x1,y1:state.toolDraft.y1,x2:x,y2:y,color:tacLineConfig.color||'#0284c7'});
       state.toolDraft=null;
       showPlacingMsg('Línea añadida · Clic para otra línea');
       renderTacticsPane();
@@ -1334,7 +1412,7 @@ function handleTacticsClick(x, y, px, py){
       state.toolDraft={x1:x,y1:y,curX:x,curY:y};
       showPlacingMsg('Haz clic donde debe apuntar la flecha');
     }else{
-      state.tactics.arrows.push({x1:state.toolDraft.x1,y1:state.toolDraft.y1,x2:x,y2:y,color:'#10b981'});
+      state.tactics.arrows.push({x1:state.toolDraft.x1,y1:state.toolDraft.y1,x2:x,y2:y,color:tacArrowConfig.color||'#10b981'});
       state.toolDraft=null;
       showPlacingMsg('Flecha añadida · Clic para otra flecha');
       renderTacticsPane();
@@ -1401,18 +1479,28 @@ function renderTacticsPane(){
 
     <div class="field">
       <span class="lbl">Dibujo táctico en el mapa</span>
-      <div class="inline">
-        <button class="btn" id="btnDrawLine" aria-pressed="${state.activeTool==='line'}">📏 ${state.activeTool==='line'?'Terminar regla':'Línea (rumbo y dist.)'}</button>
-        <button class="btn" id="btnDrawArrow" aria-pressed="${state.activeTool==='arrow'}">➔ ${state.activeTool==='arrow'?'Terminar flecha':'Flecha táctica'}</button>
+      <div class="inline" style="gap:8px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn" id="btnDrawLine" aria-pressed="${state.activeTool==='line'}">📏 ${state.activeTool==='line'?'Terminar regla':'Línea (rumbo y dist.)'}</button>
+          <input type="color" id="tacLineColor" value="${tacLineConfig.color||'#0284c7'}" title="Color de la línea" style="width:26px;height:26px;padding:1px;border:1px solid var(--line);border-radius:4px;cursor:pointer;background:none">
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="btn" id="btnDrawArrow" aria-pressed="${state.activeTool==='arrow'}">➔ ${state.activeTool==='arrow'?'Terminar flecha':'Flecha táctica'}</button>
+          <input type="color" id="tacArrowColor" value="${tacArrowConfig.color||'#10b981'}" title="Color de la flecha" style="width:26px;height:26px;padding:1px;border:1px solid var(--line);border-radius:4px;cursor:pointer;background:none">
+        </div>
         <button class="btn" id="btnDrawZone" aria-pressed="${state.activeTool==='zone'}">⭕ ${state.activeTool==='zone'?'Terminar zona':'Zona manual'}</button>
+        <button class="btn" id="btnEraser" aria-pressed="${state.activeTool==='eraser'}" style="${state.activeTool==='eraser'?'background:rgba(239,68,68,0.15);border-color:#ef4444;color:#ef4444;font-weight:600':''}" title="Haz clic sobre cualquier figura o barco para borrarlo individualmente">🧽 Borrador</button>
       </div>
     </div>
 
     <div class="field">
       <span class="lbl">Barcos de apoyo táctico</span>
-      <div class="inline" style="gap:8px">
+      <div class="inline" style="gap:8px;flex-wrap:wrap">
         <label style="font-size:12px;display:flex;align-items:center;gap:4px">Vela:
           <input class="num" id="tacSail" value="${esc(tacBoatConfig.sail)}" style="width:50px">
+        </label>
+        <label style="font-size:12px;display:flex;align-items:center;gap:4px" title="Color del barco">Color:
+          <input type="color" id="tacBoatColor" value="${tacBoatConfig.color||'#ef4444'}" style="width:26px;height:26px;padding:1px;border:1px solid var(--line);border-radius:4px;cursor:pointer;background:none">
         </label>
         <label style="font-size:12px;display:flex;align-items:center;gap:4px">Amuras:
           <select class="num" id="tacTack" style="width:130px">
@@ -1428,7 +1516,12 @@ function renderTacticsPane(){
       <div class="inline" style="margin-top:6px">
         <button class="btn primary" id="btnPlaceBoat" aria-pressed="${state.activeTool==='boat'}">⛵ ${state.activeTool==='boat'?'Terminar de colocar':'Colocar barco en el mapa'}</button>
       </div>
-      ${tac.boats.length?`<ul class="marks" style="margin-top:8px">${tac.boats.map((b,idx)=>`<li><span class="sw" style="background:${b.color}"></span><b>${esc(b.sail)}</b><span style="font-size:11.5px;color:var(--muted)">${b.tack==='stbd'?'Estribor':'Babor'} · ${Math.round(b.heading)}°</span><button class="x" data-deltacboat="${idx}" title="Eliminar barco">✕</button></li>`).join('')}</ul>`:''}
+      ${tac.boats.length?`<ul class="marks" style="margin-top:8px">${tac.boats.map((b,idx)=>`<li>
+        <input type="color" class="tac-boat-color-edit" data-boatidx="${idx}" value="${b.color||'#ef4444'}" style="width:18px;height:18px;padding:0;border:0;border-radius:3px;cursor:pointer;background:none" title="Cambiar color de este barco">
+        <b>${esc(b.sail)}</b>
+        <span style="font-size:11.5px;color:var(--muted)">${b.tack==='stbd'?'Estribor':'Babor'} · ${Math.round(b.heading)}°</span>
+        <button class="x" data-deltacboat="${idx}" title="Eliminar barco">✕</button>
+      </li>`).join('')}</ul>`:''}
     </div>
 
     <div class="field" style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
@@ -1446,15 +1539,29 @@ function renderTacticsPane(){
   const chkGrid=tacticsEl.querySelector('#chkStartGrid');
   if(chkGrid)chkGrid.addEventListener('change',e=>{tac.showStartGrid=e.target.checked;saveCurrentSession();});
   tacticsEl.querySelector('#btnDrawLine').addEventListener('click',()=>setTacticsTool(state.activeTool==='line'?null:'line'));
+  const lineCol=tacticsEl.querySelector('#tacLineColor');
+  if(lineCol)lineCol.addEventListener('input',e=>{tacLineConfig.color=e.target.value;});
   tacticsEl.querySelector('#btnDrawArrow').addEventListener('click',()=>setTacticsTool(state.activeTool==='arrow'?null:'arrow'));
+  const arrCol=tacticsEl.querySelector('#tacArrowColor');
+  if(arrCol)arrCol.addEventListener('input',e=>{tacArrowConfig.color=e.target.value;});
   tacticsEl.querySelector('#btnDrawZone').addEventListener('click',()=>setTacticsTool(state.activeTool==='zone'?null:'zone'));
+  const btnEraser=tacticsEl.querySelector('#btnEraser');
+  if(btnEraser)btnEraser.addEventListener('click',()=>setTacticsTool(state.activeTool==='eraser'?null:'eraser'));
   tacticsEl.querySelector('#btnPlaceBoat').addEventListener('click',()=>setTacticsTool(state.activeTool==='boat'?null:'boat'));
+  const boatCol=tacticsEl.querySelector('#tacBoatColor');
+  if(boatCol)boatCol.addEventListener('input',e=>{tacBoatConfig.color=e.target.value;});
   const sailIn=tacticsEl.querySelector('#tacSail');
   if(sailIn)sailIn.addEventListener('input',e=>{tacBoatConfig.sail=e.target.value;});
   const tackSel=tacticsEl.querySelector('#tacTack');
   if(tackSel)tackSel.addEventListener('change',e=>{tacBoatConfig.tack=e.target.value;renderTacticsPane();});
   const hdgIn=tacticsEl.querySelector('#tacHdg');
   if(hdgIn)hdgIn.addEventListener('input',e=>{tacBoatConfig.hdg=+e.target.value||0;});
+  tacticsEl.querySelectorAll('.tac-boat-color-edit').forEach(inp=>{
+    inp.addEventListener('input',e=>{
+      const idx=+inp.dataset.boatidx;
+      if(tac.boats[idx]){tac.boats[idx].color=e.target.value;drawMap();saveCurrentSession();}
+    });
+  });
   tacticsEl.querySelectorAll('[data-deltacboat]').forEach(b=>{b.addEventListener('click',()=>{tac.boats.splice(+b.dataset.deltacboat,1);renderTacticsPane();saveCurrentSession();});});
   tacticsEl.querySelector('#btnUndoTac').addEventListener('click',undoTactics);
   tacticsEl.querySelector('#btnClearAllTac').addEventListener('click',clearAllTactics);
@@ -1968,6 +2075,7 @@ function cancelAllPlacing(){
   if(state.placing){
     state.placing=false;
     mapEl.classList.remove('placing');
+    mapEl.classList.remove('eraser');
     changed=true;
   }
   if(state.activeTool||state.iodaWizard){
@@ -1975,6 +2083,7 @@ function cancelAllPlacing(){
     state.toolDraft=null;
     state.iodaWizard=false;
     mapEl.classList.remove('placing');
+    mapEl.classList.remove('eraser');
     changed=true;
   }
   hidePlacingMsg();

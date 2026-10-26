@@ -125,6 +125,17 @@ Diseñada específicamente para debriefings y explicaciones tácticas en pantall
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.0.11] - Inversión de amuras en ceñida, Borrador táctico selectivo y Colores individuales
+* **Corrección de amuras de barcos tácticos en ceñida**: Invertida la orientación para barcos en ceñida («Estribor» y «Babor»). Ahora «Estribor (ceñida)» sitúa el barco con el viento entrando por su costado de estribor (rumbo `w − 45°`) con la botavara a babor, y «Babor (ceñida)» con el viento entrando por babor (rumbo `w + 45°`) con la botavara a estribor, reflejando con exactitud la física de navegación. La popa se mantiene inalterada.
+* **Herramienta de Borrador táctico selectivo (`🧽 Borrador`)**:
+  * Nuevo botón «🧽 Borrador» en la pizarra táctica.
+  * Permite hacer clic directamente sobre cualquier elemento del mapa (barco táctico, línea de rumbo, flecha, zona manual o línea de salida) para borrar **únicamente** la figura pulsada, sin tener que borrar todo ni empezar desde cero.
+  * Incluye avisos interactivos y cursor específico tipo puntero para facilitar la selección.
+* **Colores personalizados e individuales por elemento**:
+  * **Barcos tácticos**: Selector de color para elegir el color del barco antes de colocarlo, y selector de color individual en la lista de barcos colocados para cambiar el color de cualquier barco en cualquier momento.
+  * **Líneas y flechas**: Selectores de color dedicados junto a los botones de línea y flecha para trazar mediciones y vectores tácticos en el color que prefieras (azul, verde, naranja, etc.).
+* **Persistencia total**: Los colores asignados y los borrados selectivos se guardan automáticamente en la memoria del navegador y persisten tras pulsar F5.
+
 ### [v1.0.10] - Cierre V1: Equipo de Regatas RCNGC, Rosa de Viento, Memoria F5, Nueva Sesión y Guía del Entrenador
 * **Identificación oficial «Equipo de Regatas RCNGC · Optimist»**: Actualizados todos los textos de cabecera y títulos de sesión para mostrar siempre «Equipo de Regatas RCNGC · Optimist».
 * **Dirección del viento en el mapa**: Corregida la rotación de la flecha en la rosa de los vientos para reflejar con exactitud la dirección del flujo de viento (si el viento entra de 0°, la flecha apunta hacia 180°; si entra de 10°, apunta a 190°, etc.).
