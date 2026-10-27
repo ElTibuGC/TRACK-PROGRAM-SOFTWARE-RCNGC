@@ -1622,10 +1622,12 @@ function buildReal(trackMap,files,align){
   const pad=Math.max(40,.06*Math.max(maxX-minX,maxY-minY));
   const days=[...new Set(tracks.map(tr=>new Date(tr.start).toDateString()))];
   const day=new Date(t0).toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+  const defaultTitle = align&&days.length>1?`Comparación de ${N} sesiones`:'Entrenamiento del '+day;
+  const sessionTitle = (typeof currentCloudRegata !== 'undefined' && currentCloudRegata && currentCloudRegata.titulo) ? currentCloudRegata.titulo : defaultTitle;
   return{mode:'real',align,together,boats,N,stride:T,T,X,Y,H,S,CD,LG,OK,t0:align?null:t0,windRef:0,windAt:null,windKn:null,
     course:{marks:[],lines:null,legs:[],u:{x:0,y:1},editable:true},startT:null,radius:25,quality,
     bounds:{minX:minX-pad,maxX:maxX+pad,minY:minY-pad,maxY:maxY+pad},origin:{lat:la,lon:lo},
-    eyebrow:'Equipo de Regatas RCNGC · Optimist',title:align&&days.length>1?`Comparación de ${N} sesiones`:'Entrenamiento del '+day,
+    eyebrow:'Equipo de Regatas RCNGC · Optimist',title:sessionTitle,
     meta:`${N} ${align?(N===1?'sesión':'sesiones superpuestas desde su inicio'):(N===1?'barco':'barcos')} · ${mmss(T)} de datos · ${files.join(', ')}`,chip:'Datos reales',
     notes:{spikes,cut,days:days.length}};
 }
@@ -1733,6 +1735,7 @@ function computeCourse(){
 
 /* ---------- estado ---------- */
 let D=null;
+let currentCloudRegata=null;
 const state={t:0,playing:false,speed:5,trail:300,sparkWindow:300,labels:true,sel:0,follow:false,placing:false,orientation:'north',activeTool:null,toolDraft:null,iodaWizard:false,tactics:{lines:[],arrows:[],boats:[],startLine:null,showStartGrid:true,laylines:false,threeLengths:false,manualZones:[]},cam:{x:0,y:0,scale:1}};
 const windAt=t=>D.windAt?D.windAt(t):D.windRef;
 const ok=(i,s)=>!D.OK||D.OK[i*D.stride+s]===1;
@@ -5873,6 +5876,12 @@ const msgEl=document.getElementById('importMsg'),fileIn=document.getElementById(
 function showMsg(lines){msgEl.innerHTML=lines.map(l=>`<span class="${l.cls||''}">${esc(l.t)}</span>`).join('');}
 const OKEXT=['gpx','kml','xlsx','xls','ods','csv'];
 async function handleFiles(files){
+  currentCloudRegata = null;
+  const btnShare = document.getElementById('btnShareCloudRegata');
+  if(btnShare) btnShare.style.display = 'none';
+  if(window.location.search){
+    history.replaceState(null, '', window.location.pathname);
+  }
   files=[...files].filter(f=>!/^\./.test(f.name));
   const skipped=files.filter(f=>!OKEXT.includes((f.name.split('.').pop()||'').toLowerCase()));
   files=files.filter(f=>OKEXT.includes((f.name.split('.').pop()||'').toLowerCase()));
@@ -5904,6 +5913,9 @@ function rebuild(align, savedCourse, savedTactics){
   try{
     const prev={};if(D)D.boats.forEach(b=>prev[b.name]=b.sail);
     const nd=buildReal(all,used,align);
+    if(currentCloudRegata && currentCloudRegata.titulo){
+      nd.title = currentCloudRegata.titulo;
+    }
     if(savedCourse){
       nd.course=Object.assign(nd.course, savedCourse);
       if(savedCourse.startT!=null)nd.startT=savedCourse.startT;
@@ -5968,6 +5980,9 @@ function loadDataset(nd){
   setPlacing(false);
   D.boats.forEach(b=>b.color=`hsl(${b.hue} 72% ${C.boatL||'44%'})`);
   document.getElementById('eyebrow').textContent=D.eyebrow;
+  if(currentCloudRegata && currentCloudRegata.titulo){
+    D.title = currentCloudRegata.titulo;
+  }
   document.getElementById('title').textContent=D.title;
   document.getElementById('meta').textContent=D.meta;
   const chip=document.getElementById('chip');chip.textContent=D.chip;chip.classList.toggle('real',D.mode==='real');
@@ -6051,7 +6066,8 @@ function saveCurrentSession(){
       radius:D.radius
     },
     tactics:state.tactics,
-    customSails
+    customSails,
+    currentCloudRegata: currentCloudRegata || null
   };
   saveSessionToDB(data);
 }
@@ -6099,10 +6115,20 @@ async function initSession(){
 
   const saved=await loadSessionFromDB();
   if(saved&&saved.all&&Object.keys(saved.all).length){
+    if(saved.currentCloudRegata){
+      currentCloudRegata = saved.currentCloudRegata;
+      const btnShare = document.getElementById('btnShareCloudRegata');
+      if(btnShare) btnShare.style.display = 'inline-flex';
+    }
     lastLoad={all:saved.all,used:saved.used||[],warn:[],skipped:[]};
     try{
       rebuild(saved.align!=null?saved.align:null, saved.course, saved.tactics);
       if(D){
+        if(currentCloudRegata && currentCloudRegata.titulo){
+          D.title = currentCloudRegata.titulo;
+          const titleEl = document.getElementById('title');
+          if(titleEl) titleEl.textContent = currentCloudRegata.titulo;
+        }
         if(saved.customSails){
           D.boats.forEach(b=>{if(saved.customSails[b.name])b.sail=saved.customSails[b.name];});
         }
@@ -6137,7 +6163,7 @@ if(polarModal)polarModal.addEventListener('click',e=>{if(e.target===polarModal)p
 /* ==========================================================================
    NUBE CENTRAL RCNGC · BASE DE DATOS SQLITE (TURSO SERVERLESS)
    ========================================================================== */
-let currentCloudRegata = null;
+// currentCloudRegata gestionado globalmente en estado del visor
 
 function getCloudShareUrl(id){
   const url = new URL(window.location.href);
@@ -6460,7 +6486,13 @@ function updateCloudSaveForm(){
   const now = new Date();
   const dateStr = now.toISOString().slice(0, 10);
   if(dateIn && !dateIn.value) dateIn.value = dateStr;
-  if(titleIn && !titleIn.value) titleIn.value = `Entrenamiento Optimist · ${dateStr}`;
+  if(titleIn && !titleIn.value){
+    if(currentCloudRegata && currentCloudRegata.titulo){
+      titleIn.value = currentCloudRegata.titulo;
+    } else {
+      titleIn.value = `Entrenamiento Optimist · ${dateStr}`;
+    }
+  }
   if(pinIn && !pinIn.value){
     const savedPin = localStorage.getItem('rcngc_coach_pin');
     if(savedPin) pinIn.value = savedPin;
@@ -8035,6 +8067,10 @@ async function loadCloudSession(id, titulo){
       switchMainView('track');
 
       currentCloudRegata = { id, titulo: realTitle };
+      D.title = realTitle;
+      const titleEl = document.getElementById('title');
+      if(titleEl) titleEl.textContent = realTitle;
+      saveCurrentSession();
       history.replaceState(null, '', getCloudShareUrl(id));
       const btnShare = document.getElementById('btnShareCloudRegata');
       if(btnShare) btnShare.style.display = 'inline-flex';
@@ -8341,6 +8377,12 @@ async function submitCloudSave(){
     }
 
     currentCloudRegata = { id, titulo: title };
+    if(D){
+      D.title = title;
+      const titleEl = document.getElementById('title');
+      if(titleEl) titleEl.textContent = title;
+    }
+    saveCurrentSession();
     history.replaceState(null, '', getCloudShareUrl(id));
     const btnShare = document.getElementById('btnShareCloudRegata');
     if(btnShare) btnShare.style.display = 'inline-flex';

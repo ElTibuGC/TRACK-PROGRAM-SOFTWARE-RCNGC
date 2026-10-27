@@ -98,6 +98,7 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 * **Biblioteca de regatas guardadas**: Lista interactiva con fecha, barcos, viento, autor y notas de cada manga. Cualquier usuario puede pulsar **«📥 Cargar en el mapa»** para abrir y reproducir la regata de inmediato con un solo clic.
 * **Búsqueda en tiempo real**: Casilla de búsqueda para encontrar regatas por fecha, título, notas o entrenador.
 * **Publicar sesión actual**: En la pestaña *«Guardar sesión actual»*, introduce el título, fecha y notas.
+* **Título dinámico en cabecera**: Al abrir o guardar una regata de la nube, el título de la cabecera adopta automáticamente el nombre de la regata guardada (ej. «Trofeo RCNGC 2026 - Manga 2») y se mantiene tras recargas (F5), volviendo a «Entrenamiento del [fecha]» solo al iniciar una nueva sesión o importar nuevos archivos locales.
 * **Protección con PIN de Entrenador**: Para evitar que personas ajenas borren o sobreescriban datos del club, se solicita el PIN de entrenador (por defecto: `RCNGC2026`).
 * **Ajustes de conexión**: Pestaña para comprobar latencia o configurar credenciales de la base de datos Turso SQLite.
 
@@ -135,6 +136,32 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 ## 📋 Changelog (Registro de Cambios)
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
+
+### [v1.3.7] - Título Dinámico de Regata en Cabecera, Insignias Náuticas con Control de Entrenador, Cuaderno Técnico y Métricas de Rendimiento Big Data
+* **Título Dinámico de la Regata en Cabecera**:
+  * **Nombre Oficial de la Regata en Tiempo Real**: Mientras la sesión proviene de archivos locales no guardados, la cabecera muestra el título predeterminado `Entrenamiento del [fecha]`. En cuanto la sesión se guarda en la nube (`Guardar sesión actual`) o se carga una regata desde la biblioteca (`📥 Cargar en el mapa` o mediante enlace URL `?regata=ID`), el encabezado `#title` se actualiza al instante con el nombre personalizado de la regata.
+  * **Persistencia Integral con F5**: El título de la regata de la nube se sincroniza con el estado global `currentCloudRegata` e IndexedDB, restaurándose fielmente tras actualizar o recargar el navegador.
+  * **Preservación al Cambiar Modo Temporal**: Alternar entre `Hora real` y `Desde el inicio` respeta el nombre de la regata de la nube sin sobreescribirlo con la fecha.
+  * **Reinicio Limpio**: Al pulsar `Nueva sesión` o arrastrar/cargar nuevos archivos locales, el título se restablece automáticamente a la fecha del entrenamiento.
+* **Cuaderno Técnico y Anotaciones del Entrenador por Regatista**:
+  * **Espacio de Anotaciones Exclusivo**: En la ficha histórica y deportiva de cada regatista (pestaña «Big Data»), se incorpora un bloque dedicado a notas técnicas, objetivos individuales y seguimiento deportivo.
+  * **Edición y Guardado en Modo Entrenador**: En `Modo Entrenador`, se habilita un cuadro de texto interactivo con botón `💾 Guardar Anotación`, que sincroniza las observaciones directamente en la tabla `regatistas_club` en Turso SQLite.
+  * **Modo Lectura para Regatistas**: En `Modo Regatista`, las notas se muestran en una tarjeta estilizada y protegida contra modificaciones, permitiendo a los regatistas consultar las indicaciones técnicas de sus entrenadores.
+* **Sistema de Insignias y Logros Náuticos (Gamificación)**:
+  * **Insignias Telemétricas Inteligentes**: Reconocimientos calculados en base al rendimiento real:
+    * 🚀 **Salida Bala (Rocket Start)**: Por arrancar con menos de 2.5 segundos de retraso respecto a la señal de salida.
+    * 🧭 **Ceñidor Nato**: Por alcanzar una eficiencia polar superior al 95% o un VMG sobresaliente en tramos de ceñida.
+    * 🛡️ **Muro de Estribor (Starboard Wall)**: Por solidez táctica con preferencia de paso y aprovechamiento del bordo amurado a estribor.
+    * ⚡ **Virada Relámpago**: Por maniobras fluidas minimizando la pérdida de metros y velocidad (Tack Loss reducido).
+    * 📈 **Constancia Polar**: Por consistencia de alto nivel a lo largo de múltiples sesiones.
+  * **Control y Modificación Manual de Visibilidad por el Entrenador**:
+    * En `Modo Entrenador`, cada insignia cuenta con un control de visibilidad (botón de ojo / toggle) para ocultar o mostrar manualmente cualquier insignia a los regatistas, adaptando los premios y la pedagogía a la evolución particular de cada deportista.
+    * En `Modo Regatista`, se muestran únicamente las insignias validadas y activas.
+    * Configuración persistida en la nube (`regatistas_club.insignias_config`).
+* **Métricas Avanzadas de Rendimiento en el Perfil de Big Data**:
+  * **VMG Ceñida y Popa**: Cálculo de la velocidad de progresión eficaz hacia barlovento y sotavento acumulada a lo largo del histórico.
+  * **Eficiencia Polar Media (%)**: Medición del porcentaje de rendimiento respecto a la curva de polares oficial del Optimist.
+  * **Pérdida Media en Viradas (Tack Loss)**: Cálculo del coste promedio en metros en cada virada realizada por el regatista.
 
 ### [v1.3.6] - Perfil del Regatista con Asignación de Nombre en Modo Entrenador, Histórico de Resultados (Puestos y Podios) y Evolución de Tiempos de Salida
 * **Gestión de Nombres de Regatistas y Seguridad de Configuración**:
