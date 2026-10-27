@@ -69,8 +69,8 @@ Esta guía está redactada para que cualquier entrenador del **Real Club Náutic
 ### 4. 📐 Pizarra Táctica y Explicaciones (Pestaña «Táctica»)
 Diseñada específicamente para debriefings y explicaciones tácticas en pantalla grande o proyector:
 * **Laylines automáticas**: Pulsa **«📐 Laylines de barlovento»** para proyectar las líneas de layline a 45° a ambos bordos de la baliza 1 y de la línea de llegada.
-* **Círculo de 3 esloras (7,08 m)**: Pulsa **«⭕ 3 esloras (7,08 m)»** para activar el círculo reglamentario de 3 esloras de Optimist alrededor de todas las boyas (según la Regla 18 del RRV).
-* **Línea de salida táctica con parrilla**: Pulsa **«🚩 Trazar línea de salida»**, haz 1 clic en la boya de Pin y otro en el barco Comité. Se dibujará la línea de salida y una parrilla de aproximación a sotavento con líneas cada 10 metros hasta los 75 metros de distancia.
+* **Círculo de 3 esloras (7,08 m)**: Pulsa **«⭕ 3 esloras (7,08 m)»** para activar el círculo reglamentario de 3 esloras de Optimist ($3 \times 2,36\text{ m} = 7,08\text{ m}$) alrededor de todas las balizas y de la línea de llegada (tanto en la boya de Pin como en el barco Comité de llegadas, conforme a la Regla 18 del RRV; excluyendo la línea de salida donde no aplica zona de espacio en baliza).
+* **Línea de salida táctica con parrilla de esloras (hasta 45 m)**: Pulsa **«🚩 Marcar Pin y Comité»**, haz 1 clic en la boya de Pin y otro en el barco Comité. Se dibuja la línea de salida con su zona de aproximación a sotavento hasta los 45 metros: los primeros 20 metros medidos con precisión en esloras de Optimist (línea de puntos diferenciada cada 2,36 m de 1 a 8 esloras en naranja cálido) y referencias métricas a 20 m, 30 m, 40 m y límite exterior de 45 m.
 * **Medición de rumbo y distancia**: Pulsa **«📏 Línea recta»** y haz 2 clics en el mapa. Una etiqueta central te indicará el rumbo exacto (ej. *045°*) y la distancia en metros (ej. *185 m*).
 * **Flechas de rachas y corrientes**: Pulsa **«➡️ Flecha táctica»** y arrastra en el mapa para señalar roles, zonas de presión o corrientes marinas.
 * **Barcos tácticos interactivos**: Añade barcos adicionales con vela personalizada y oriéntalos fácilmente amurados a estribor o babor (en ceñida a 45°, popa a 140° o rumbo libre).
@@ -124,6 +124,24 @@ Diseñada específicamente para debriefings y explicaciones tácticas en pantall
 ## 📋 Changelog (Registro de Cambios)
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
+
+### [v1.2.7] - Parrilla de Salida por Esloras (Zona 45 m) y Ajuste Reglamentario de Zonas de 3 Esloras (Llegada vs Salida)
+* **Zona de Salida hasta 45 Metros hacia Sotavento**:
+  * Rediseñada la zona de aproximación de salida táctica, reduciendo el área activa desde los 75 m previos hasta **45 metros**, delimitada por líneas laterales de encuadre y sombreado suave de campo.
+* **Primeros 20 Metros Medidos por Esloras de Optimist (Línea de Puntos Diferenciada)**:
+  * En los primeros 20 metros desde la línea de salida, la parrilla se mide en **esloras de Optimist ($1\text{ eslora} = 2,36\text{ m}$)**.
+  * Trazado con **línea de puntos diferenciada (`setLineDash([2, 3])`)** en color ámbar/naranja de alto contraste (`#f97316`) desde $1\text{ esl}$ ($2,36\text{ m}$) hasta $8\text{ esloras}$ ($18,88\text{ m}$).
+  * Etiquetas adaptadas dinámicamente al zoom (`1 esl`, `2 esl`... o `X esl (Y.Ym)` al acercar).
+  * Zona de esloras (0 a 20 m) resaltada con fondo cálido suave para distinguirla de la zona métrica exterior.
+* **Referencias Métricas Exteriores (20 m, 30 m, 40 m y Límite 45 m)**:
+  * Línea de transición a $20\text{ m}$ (`20m (8.5 esl)`).
+  * Líneas discontinuas métricas a $30\text{ m}$ y $40\text{ m}$.
+  * Línea límite reforzada a $45\text{ m}$ (`45m (límite)`).
+* **Eliminación de la Zona Roja de 3 Esloras en la Salida (START)**:
+  * Eliminado el círculo rojo de 3 esloras que aparecía erróneamente en el punto de START. Conforme a la Regla 18 del Reglamento de Regatas a Vela (RRV), las balizas de salida no confieren derecho a espacio en baliza (*mark-room*) en la aproximación para salir.
+* **Incorporación de la Zona de 3 Esloras en Pin de Llegada y Barco Comité de Llegadas**:
+  * Ahora el círculo reglamentario de 3 esloras de Optimist ($7,08\text{ m}$) se dibuja tanto en la **Boya Pin de llegada** como en el **Barco Comité de llegadas**, donde la Regla 18 sí aplica con total rigor reglamentario.
+  * Añadidos además los rótulos identificativos `PIN Llegada` y `RC Llegada` sobre la línea de llegada.
 
 ### [v1.2.6] - Orientación del Campo de Regatas: North Up vs Wind Up y Cuadrícula Táctica a 45° del Viento
 * **Modo de Visualización Dual: «North Up» vs «Wind Up»**:

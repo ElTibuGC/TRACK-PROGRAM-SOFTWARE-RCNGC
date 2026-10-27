@@ -1900,13 +1900,15 @@ function drawIODACourse(ioda, sc, w){
     const fmx=(fx1+fx2)/2,fmy=(fy1+fy2)/2;
     drawTextLabel('LLEGADA',fmx,fmy-6,{font:`800 11.5px ${C.disp}`,fillStyle:'#0284c7',strokeStyle:C.panel||'#ffffff',lineWidth:2.5,align:'center'});
     drawBuoy(fPin,null,'#0284c7','#0369a1');
+    drawTextLabel('PIN Llegada',fx1,fy1+r+10,{font:`600 10px ${C.disp}`,fillStyle:'#0284c7',strokeStyle:C.halo,lineWidth:2,align:'center'});
     ctx.fillStyle='#0284c7';ctx.fillRect(fx2-6,fy2-4,12,8);
     ctx.strokeStyle='#0f172a';ctx.lineWidth=1.2;ctx.strokeRect(fx2-6,fy2-4,12,8);
     ctx.fillStyle='#38bdf8';ctx.fillRect(fx2-1,fy2-13,1.5,9);ctx.fillRect(fx2+0.5,fy2-13,6,5);
+    drawTextLabel('RC Llegada',fx2,fy2+14,{font:`600 10px ${C.disp}`,fillStyle:'#0284c7',strokeStyle:C.halo,lineWidth:2,align:'center'});
   }
 
-  // Línea de Salida (si no hay salida táctica personalizada)
-  if(ioda.start&&ioda.start.pin&&ioda.start.rc&&!state.tactics.startLine){
+  // Línea de Salida (delegada a drawTacticalStartLine para soporte unificado de parrilla y zona)
+  if(ioda.start&&ioda.start.pin&&ioda.start.rc&&!state.tactics.startLine&&!D.course.ioda.start){
     const sPin=ioda.start.pin,sRC=ioda.start.rc;
     const sx1=sx(sPin.x),sy1=sy(sPin.y),sx2=sx(sRC.x),sy2=sy(sRC.y);
     ctx.strokeStyle='#ef4444';ctx.lineWidth=2.4;
@@ -1958,14 +1960,20 @@ function drawThreeLengths(marks, sc){
   const rPx=7.08*sc;
   const allPts=[...(marks||[])];
   if(D&&D.course){
-    if(D.course.startPt)allPts.push(D.course.startPt);
     if(D.course.type==='ioda'&&D.course.ioda){
       const io=D.course.ioda;
       if(io.b1)allPts.push(io.b1);
       if(io.b2)allPts.push(io.b2);
       if(io.gate3s)allPts.push(io.gate3s);
       if(io.gate3p)allPts.push(io.gate3p);
-      if(io.finish&&io.finish.pin)allPts.push(io.finish.pin);
+      if(io.finish){
+        if(io.finish.pin)allPts.push(io.finish.pin);
+        if(io.finish.rc)allPts.push(io.finish.rc);
+      }
+    }
+    if(D.course.finish){
+      if(D.course.finish.pin)allPts.push(D.course.finish.pin);
+      if(D.course.finish.rc)allPts.push(D.course.finish.rc);
     }
   }
   ctx.save();
@@ -1979,7 +1987,8 @@ function drawThreeLengths(marks, sc){
 }
 
 function drawTacticalStartLine(w, sc){
-  const tac=state.tactics,st=tac&&tac.startLine;
+  const tac=state.tactics;
+  const st=(tac&&tac.startLine)||(D&&D.course&&D.course.type==='ioda'&&D.course.ioda&&D.course.ioda.start);
   if(!st||!st.pin||!st.rc)return;
   const p1=st.pin,p2=st.rc,x1=sx(p1.x),y1=sy(p1.y),x2=sx(p2.x),y2=sy(p2.y);
   const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.hypot(dx,dy);
@@ -1990,17 +1999,70 @@ function drawTacticalStartLine(w, sc){
   if(nx*downX+ny*downY<0){nx=-nx;ny=-ny;}
   ctx.save();
   if(tac.showStartGrid){
-    const dList=[10,20,30,40,50,60,70,75];
-    const maxD=75;
+    const maxD=45;
     const p1_max={x:p1.x+maxD*nx,y:p1.y+maxD*ny},p2_max={x:p2.x+maxD*nx,y:p2.y+maxD*ny};
-    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(sx(p2_max.x),sy(p2_max.y));ctx.lineTo(sx(p1_max.x),sy(p1_max.y));ctx.closePath();
-    ctx.fillStyle='rgba(239, 68, 68, 0.04)';ctx.fill();
+    const p1_20={x:p1.x+20*nx,y:p1.y+20*ny},p2_20={x:p2.x+20*nx,y:p2.y+20*ny};
+
+    // Fondo zona 0-20 m (zona de esloras)
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.lineTo(sx(p2_20.x),sy(p2_20.y));ctx.lineTo(sx(p1_20.x),sy(p1_20.y));ctx.closePath();
+    ctx.fillStyle='rgba(249, 115, 22, 0.05)';ctx.fill();
+
+    // Fondo zona 20-45 m (zona exterior hasta 45 m)
+    ctx.beginPath();ctx.moveTo(sx(p1_20.x),sy(p1_20.y));ctx.lineTo(sx(p2_20.x),sy(p2_20.y));ctx.lineTo(sx(p2_max.x),sy(p2_max.y));ctx.lineTo(sx(p1_max.x),sy(p1_max.y));ctx.closePath();
+    ctx.fillStyle='rgba(239, 68, 68, 0.035)';ctx.fill();
+
+    // Lineas laterales de encuadre hasta 45 m
     ctx.setLineDash([3,4]);ctx.strokeStyle='rgba(239, 68, 68, 0.35)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(sx(p1_max.x),sy(p1_max.y));ctx.moveTo(x2,y2);ctx.lineTo(sx(p2_max.x),sy(p2_max.y));ctx.stroke();
-    dList.forEach(d=>{
+
+    // Primeros 20 m medidos por esloras de Optimist (2.36 m) con linea de puntos diferenciada
+    const optiLen=2.36;
+    const eslGap=optiLen*sc;
+    const maxEsl=Math.floor(20/optiLen); // 8 esloras (18.88 m)
+    for(let k=1;k<=maxEsl;k++){
+      const d=k*optiLen;
       const g1x=p1.x+d*nx,g1y=p1.y+d*ny,g2x=p2.x+d*nx,g2y=p2.y+d*ny;
-      ctx.beginPath();ctx.moveTo(sx(g1x),sy(g1y));ctx.lineTo(sx(g2x),sy(g2y));ctx.strokeStyle='rgba(239, 68, 68, 0.45)';ctx.lineWidth=1.2;ctx.stroke();
-      drawTextLabel(d+'m',sx(g2x)+6,sy(g2y)+3,{font:`700 10px ${C.mono}`,fillStyle:'rgba(239, 68, 68, 0.9)',stroke:false,align:'left'});
+      ctx.beginPath();
+      ctx.setLineDash([2, 3]); // linea de puntos diferenciada
+      ctx.strokeStyle='rgba(249, 115, 22, 0.8)'; // naranja calido distintivo
+      ctx.lineWidth=1.2;
+      ctx.moveTo(sx(g1x),sy(g1y));
+      ctx.lineTo(sx(g2x),sy(g2y));
+      ctx.stroke();
+
+      const showLabel=(eslGap>=11)||(k%2===0);
+      if(showLabel){
+        const txt=(eslGap>=22)?`${k} esl (${d.toFixed(1)}m)`:`${k} esl`;
+        drawTextLabel(txt,sx(g2x)+6,sy(g2y)+3,{font:`700 9.5px ${C.mono}`,fillStyle:'rgba(249, 115, 22, 0.95)',stroke:false,align:'left'});
+      }
+    }
+
+    // Lineas de referencia hasta 45 m: 20m, 30m, 40m, 45m
+    const metricLines=[20, 30, 40, 45];
+    metricLines.forEach(d=>{
+      const g1x=p1.x+d*nx,g1y=p1.y+d*ny,g2x=p2.x+d*nx,g2y=p2.y+d*ny;
+      ctx.beginPath();
+      ctx.moveTo(sx(g1x),sy(g1y));
+      ctx.lineTo(sx(g2x),sy(g2y));
+      if(d===20){
+        ctx.setLineDash([4,3]);
+        ctx.strokeStyle='rgba(249, 115, 22, 0.9)';
+        ctx.lineWidth=1.5;
+        ctx.stroke();
+        drawTextLabel('20m (8.5 esl)',sx(g2x)+6,sy(g2y)+3,{font:`700 10px ${C.mono}`,fillStyle:'rgba(249, 115, 22, 0.95)',stroke:false,align:'left'});
+      }else if(d===45){
+        ctx.setLineDash([5,3]);
+        ctx.strokeStyle='rgba(239, 68, 68, 0.85)';
+        ctx.lineWidth=1.6;
+        ctx.stroke();
+        drawTextLabel('45m (límite)',sx(g2x)+6,sy(g2y)+3,{font:`700 10px ${C.mono}`,fillStyle:'rgba(239, 68, 68, 0.95)',stroke:false,align:'left'});
+      }else{
+        ctx.setLineDash([3,4]);
+        ctx.strokeStyle='rgba(239, 68, 68, 0.45)';
+        ctx.lineWidth=1.1;
+        ctx.stroke();
+        drawTextLabel(d+'m',sx(g2x)+6,sy(g2y)+3,{font:`700 10px ${C.mono}`,fillStyle:'rgba(239, 68, 68, 0.85)',stroke:false,align:'left'});
+      }
     });
     ctx.setLineDash([]);
   }
@@ -2419,7 +2481,7 @@ function renderTacticsPane(){
         <button class="btn" id="btnLaylines" aria-pressed="${tac.laylines}">📐 Laylines barlovento</button>
         <button class="btn" id="btnThreeLengths" aria-pressed="${tac.threeLengths}">⭕ 3 esloras (7,08 m)</button>
       </div>
-      <span class="hint">Calcula automáticamente las laylines a 45° del viento y la zona de 3 esloras alrededor de las balizas.</span>
+      <span class="hint">Calcula automáticamente las laylines a 45° del viento y la zona de 3 esloras (7,08 m) en balizas y línea de llegada.</span>
     </div>
 
     <div class="field">
@@ -2428,8 +2490,8 @@ function renderTacticsPane(){
         <button class="btn" id="btnDrawStart" aria-pressed="${state.activeTool==='start'}">🚩 ${state.activeTool==='start'?'Cancelando...':'Marcar Pin y Comité'}</button>
         ${tac.startLine?'<button class="btn" id="btnClearStartLine">Quitar salida</button>':''}
       </div>
-      ${tac.startLine?`<label class="chk" style="margin-top:6px"><input type="checkbox" id="chkStartGrid" ${tac.showStartGrid?'checked':''}> Cuadrícula cada 10 m hacia sotavento (hasta 75 m)</label>`:''}
-      <span class="hint">Traza la línea entre la boya de Pin y el barco del Comité con cuadrícula para ver el descuelgue.</span>
+      ${(tac.startLine||(D&&D.course&&D.course.ioda&&D.course.ioda.start))?`<label class="chk" style="margin-top:6px"><input type="checkbox" id="chkStartGrid" ${tac.showStartGrid?'checked':''}> Parrilla de salida hasta 45 m (por esloras en primeros 20 m)</label>`:''}
+      <span class="hint">Parrilla hacia sotavento: los primeros 20 m por esloras (2,36 m) con línea de puntos y referencias métricas hasta el límite de 45 m.</span>
     </div>
 
     <div class="field">
