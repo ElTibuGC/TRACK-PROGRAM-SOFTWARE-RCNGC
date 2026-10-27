@@ -146,6 +146,10 @@ select.num{width:auto}
 .app.is-empty #chip,.app.is-empty #clock,.app.is-empty #newSessionBtn{display:none}
 #newSessionBtn{font-size:12px;padding:4px 11px;border-radius:6px;cursor:pointer;font-weight:600}
 #btnHelp{font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:4px}
+#btnCloudModal{font-size:12px;padding:4px 11px;border-radius:6px;cursor:pointer;font-weight:600;background:rgba(2,132,199,0.1);border:1px solid #0284c7;color:#0284c7;display:inline-flex;align-items:center;gap:4px}
+#btnCloudModal:hover{background:#0284c7;color:#ffffff}
+.btn-cloud-tab{border:none;background:none;color:var(--dim);border-radius:6px;padding:6px 14px;cursor:pointer;transition:all .15s}
+.btn-cloud-tab[aria-pressed="true"]{background:var(--panel);color:#0284c7;box-shadow:0 1px 3px rgba(0,0,0,0.1);font-weight:700}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;backdrop-filter:blur(3px)}
 .modal-overlay[hidden]{display:none}
 .modal-box{background:var(--panel);border:1px solid var(--line);border-radius:12px;max-width:820px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 16px 40px rgba(0,0,0,.4)}
@@ -513,6 +517,7 @@ tr.qsep th{padding-top:4px}
   .side,
   .map,
   #btnHelp,
+  #btnCloudModal,
   #newSessionBtn,
   .metrics-actions,
   .modal-overlay{
@@ -658,6 +663,7 @@ tr.qsep th{padding-top:4px}
       <div class="meta" id="meta">Carga la carpeta con los GPX del día para ver la sesión.</div>
     </div>
     <div class="top-right">
+      <button class="btn btn-cloud" id="btnCloudModal" type="button" title="Acceder a la Nube Central de Regatas (Turso SQLite)">☁️ Nube RCNGC</button>
       <button class="btn" id="btnHelp" type="button" title="Ver guía de uso e instrucciones para entrenadores">📖 Guía de uso</button>
       <button class="btn" id="newSessionBtn" type="button" title="Borrar datos actuales y empezar una nueva regata de cero">Nueva sesión</button>
       <span class="chip real" id="chip">Datos reales</span>
@@ -733,6 +739,11 @@ tr.qsep th{padding-top:4px}
       <div class="picks">
         <button class="btn primary" id="pickDir" type="button">Elegir carpeta</button>
         <button class="btn" id="pickFiles" type="button">Elegir archivos</button>
+      </div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);text-align:center">
+        <button class="btn" id="btnCloudOpenBanner" type="button" style="width:100%;font-weight:700;padding:9px 16px;background:rgba(2,132,199,0.08);border:1px solid #0284c7;color:#0284c7;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;cursor:pointer">
+          ☁️ Abrir regata guardada en la Nube del Club (Turso SQLite)
+        </button>
       </div>
       <input class="sr" type="file" id="dirIn" webkitdirectory directory multiple>
       <input class="sr" type="file" id="fileIn" multiple accept=".xlsx,.xls,.ods,.csv,.gpx,.kml">
@@ -1034,6 +1045,113 @@ tr.qsep th{padding-top:4px}
         <li><strong>A prueba de F5:</strong> Todo se guarda automáticamente en la memoria privada de tu navegador. Si actualizas con <kbd>F5</kbd> o cierras la pestaña, recuperarás tus barcos, balizas y dibujos al instante.</li>
         <li><strong>Nueva sesión:</strong> Para limpiar los datos y empezar un nuevo entrenamiento desde cero, pulsa el botón <strong>«Nueva sesión»</strong> arriba a la derecha.</li>
       </ul>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="cloudModal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="cloudModalTitle" style="max-width:880px;height:85vh;display:flex;flex-direction:column">
+    <div class="modal-head" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:24px">☁️</span>
+        <div>
+          <h2 id="cloudModalTitle" style="margin:0;font-size:17px;font-weight:700">Nube Central RCNGC · Base de Datos SQLite</h2>
+          <div style="font-size:11.5px;color:var(--dim)">Regatas, entrenamientos y telemetría compartida (Turso Serverless SQLite)</div>
+        </div>
+      </div>
+      <button class="modal-close" id="btnCloseCloud" type="button" aria-label="Cerrar modal de nube">✕</button>
+    </div>
+
+    <div style="display:flex;gap:8px;padding:10px 20px;background:var(--sub);border-bottom:1px solid var(--line)">
+      <button class="btn btn-cloud-tab" id="tabCloudList" type="button" aria-pressed="true">📚 Regatas guardadas</button>
+      <button class="btn btn-cloud-tab" id="tabCloudSave" type="button" aria-pressed="false">💾 Guardar sesión actual</button>
+      <button class="btn btn-cloud-tab" id="tabCloudConfig" type="button" aria-pressed="false">⚙️ Conexión</button>
+    </div>
+
+    <div class="modal-body" style="flex:1;overflow-y:auto;padding:20px" id="cloudModalBody">
+      <!-- Section 1: Regatas guardadas -->
+      <div id="cloudSectionList">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap">
+          <input type="text" id="cloudSearchInput" placeholder="🔍 Buscar regata por título, fecha o notas..." style="flex:1;min-width:200px;padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+          <button class="btn" id="btnRefreshCloudList" type="button" style="display:inline-flex;align-items:center;gap:6px">🔄 Actualizar lista</button>
+        </div>
+        <div id="cloudListContainer" style="display:flex;flex-direction:column;gap:10px">
+          <div style="text-align:center;padding:40px 10px;color:var(--dim)">Cargando regatas desde Turso SQLite...</div>
+        </div>
+      </div>
+
+      <!-- Section 2: Guardar sesión actual -->
+      <div id="cloudSectionSave" hidden>
+        <div id="cloudSaveWarningNoData" style="background:#fef3c7;border:1px solid #fde047;color:#854d0e;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px" hidden>
+          ⚠️ <strong>No hay ninguna sesión activa en el visor:</strong> Carga primero los archivos GPX o abre una regata existente para poder publicarla en la nube.
+        </div>
+        <div id="cloudSaveForm">
+          <div style="background:var(--sub);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;display:flex;gap:16px;flex-wrap:wrap" id="cloudSaveSummaryInfo">
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Título de la regata / manga *</label>
+              <input type="text" id="cloudSaveTitle" placeholder="Ej: Entrenamiento Grupo Oro - 27 Octubre - M1" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px" required>
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Fecha de la regata</label>
+              <input type="text" id="cloudSaveDate" placeholder="AAAA-MM-DD (ej: 2026-10-27)" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Autor / Entrenador</label>
+              <input type="text" id="cloudSaveAuthor" value="Entrenador RCNGC" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">PIN de Entrenador (Seguridad) *</label>
+              <input type="password" id="cloudSavePin" placeholder="Introduce el PIN de entrenador" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+              <span style="font-size:11px;color:var(--dim)">Requerido para evitar que personas no autorizadas modifiquen la base de datos (por defecto: RCNGC2026).</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px">
+            <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Observaciones / Notas del día (opcional)</label>
+            <textarea id="cloudSaveNotes" rows="3" placeholder="Ej: Viento del 120º con racha de 16 kts. Ceñida con corriente hacia el sur..." style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;resize:vertical"></textarea>
+          </div>
+
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px">
+            <span id="cloudSaveStatusMsg" style="font-size:13px"></span>
+            <button class="btn primary" id="btnSubmitCloudSave" type="button" style="padding:9px 20px;font-weight:600">☁️ Guardar en la Nube</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Conexión y Ajustes -->
+      <div id="cloudSectionConfig" hidden>
+        <div style="background:var(--sub);border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px">
+          <h3 style="margin:0 0 8px 0;font-size:14px">Parámetros de Base de Datos Turso (SQLite)</h3>
+          <p style="font-size:12px;color:var(--dim);margin:0 0 14px 0">Conexión configurada con la base de datos central del club. Puedes modificar estos valores si creas otra base de datos o cambias el token.</p>
+          
+          <div style="margin-bottom:12px">
+            <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">URL de la Base de Datos</label>
+            <input type="text" id="cloudConfigUrl" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:12.5px;font-family:var(--f-mono)">
+          </div>
+
+          <div style="margin-bottom:12px">
+            <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Token de Autenticación (Auth Token)</label>
+            <input type="password" id="cloudConfigToken" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:12.5px;font-family:var(--f-mono)">
+          </div>
+
+          <div style="margin-bottom:16px">
+            <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">PIN de Entrenador (Almacenado localmente)</label>
+            <input type="password" id="cloudConfigPin" placeholder="RCNGC2026" style="width:200px;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px">
+            <button class="btn" id="btnTestCloudConnection" type="button">🔌 Probar conexión</button>
+            <button class="btn primary" id="btnSaveCloudConfig" type="button">Guardar configuración</button>
+            <span id="cloudConfigStatus" style="font-size:12.5px"></span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -5531,6 +5649,467 @@ const polarModal=document.getElementById('polarModal'),btnShowPolar=document.get
 if(btnShowPolar&&polarModal)btnShowPolar.addEventListener('click',()=>{polarModal.hidden=false;});
 if(btnClosePolar&&polarModal)btnClosePolar.addEventListener('click',()=>{polarModal.hidden=true;});
 if(polarModal)polarModal.addEventListener('click',e=>{if(e.target===polarModal)polarModal.hidden=true;});
+
+/* ==========================================================================
+   NUBE CENTRAL RCNGC · BASE DE DATOS SQLITE (TURSO SERVERLESS)
+   ========================================================================== */
+const TURSO_CONFIG = {
+  defaultUrl: 'https://rcngc-regatas-eltibugc.aws-eu-west-1.turso.io/v2/pipeline',
+  defaultToken: 'eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3OTMxMDg2MzgsImlkIjoiMDFhMTdkOTctMDQwMS03ZWNiLThjNDEtYmQ3MzBiNDcwZjRjIiwia2lkIjoibUphRWtuYjA4OHN0bkhUSWJXVXc3aGdETGYyd18yQTBqYnFCaC1CMjdZWSIsInJpZCI6ImIxOTdlY2ZmLWE3MjctNDNiYi04NGU5LWY4MDNhNGJlYzg3NSJ9.cuknxZQCGhNDMW6kbXFMqoDB4NzWrgPUHwpozdey0FmoxyP13naoLyjJ9ez5PAZgJ8Kodos695lU6qAZXlEACg',
+  defaultPin: 'RCNGC2026'
+};
+
+function getTursoEndpoint(){
+  let u = localStorage.getItem('rcngc_turso_url') || TURSO_CONFIG.defaultUrl;
+  u = (u || '').trim();
+  if(!u) u = TURSO_CONFIG.defaultUrl;
+  if(u.startsWith('libsql://')){
+    u = u.replace('libsql://', 'https://');
+  }
+  if(!u.endsWith('/v2/pipeline')){
+    u = u.replace(/\/+$/, '') + '/v2/pipeline';
+  }
+  return u;
+}
+
+function getTursoToken(){
+  const t = (localStorage.getItem('rcngc_turso_token') || TURSO_CONFIG.defaultToken).trim();
+  return t || TURSO_CONFIG.defaultToken;
+}
+
+function getCoachPin(){
+  const p = (localStorage.getItem('rcngc_coach_pin') || TURSO_CONFIG.defaultPin).trim();
+  return p || TURSO_CONFIG.defaultPin;
+}
+
+function toTursoArg(val){
+  if(val === null || val === undefined) return { type: 'null' };
+  if(typeof val === 'number'){
+    if(Number.isInteger(val)) return { type: 'integer', value: String(val) };
+    return { type: 'float', value: val };
+  }
+  if(typeof val === 'boolean') return { type: 'integer', value: val ? '1' : '0' };
+  return { type: 'text', value: String(val) };
+}
+
+async function executeTurso(sql, args = []){
+  const endpoint = getTursoEndpoint();
+  const token = getTursoToken();
+  const body = {
+    requests: [
+      {
+        type: 'execute',
+        stmt: {
+          sql: sql,
+          args: args.map(toTursoArg)
+        }
+      },
+      { type: 'close' }
+    ]
+  };
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if(!res.ok){
+    const errText = await res.text();
+    throw new Error(`Error HTTP ${res.status}: ${errText}`);
+  }
+  const data = await res.json();
+  const firstRes = data.results && data.results[0];
+  if(firstRes && firstRes.type === 'error'){
+    throw new Error(firstRes.error && firstRes.error.message || 'Error en consulta SQL');
+  }
+  const r = firstRes && firstRes.response && firstRes.response.result;
+  if(!r || !r.cols) return [];
+  const cols = r.cols.map(c => c.name);
+  return (r.rows || []).map(row => {
+    const obj = {};
+    row.forEach((cell, i) => {
+      obj[cols[i]] = (cell && cell.value !== undefined) ? cell.value : null;
+    });
+    return obj;
+  });
+}
+
+let cloudRacesCache = [];
+
+function switchCloudTab(tabName){
+  const tabs = ['List', 'Save', 'Config'];
+  tabs.forEach(t => {
+    const btn = document.getElementById('tabCloud' + t);
+    const sec = document.getElementById('cloudSection' + t);
+    const isCurrent = t.toLowerCase() === tabName.toLowerCase();
+    if(btn) btn.setAttribute('aria-pressed', String(isCurrent));
+    if(sec) sec.hidden = !isCurrent;
+  });
+
+  if(tabName === 'save'){
+    updateCloudSaveForm();
+  } else if(tabName === 'config'){
+    populateCloudConfigInputs();
+  }
+}
+
+function updateCloudSaveForm(){
+  const warning = document.getElementById('cloudSaveWarningNoData');
+  const form = document.getElementById('cloudSaveForm');
+  const summary = document.getElementById('cloudSaveSummaryInfo');
+  const dateIn = document.getElementById('cloudSaveDate');
+  const titleIn = document.getElementById('cloudSaveTitle');
+  const pinIn = document.getElementById('cloudSavePin');
+
+  if(!D || !lastLoad || !lastLoad.all || !D.N){
+    if(warning) warning.hidden = false;
+    if(form) form.style.display = 'none';
+    return;
+  }
+  if(warning) warning.hidden = true;
+  if(form) form.style.display = 'block';
+
+  const now = new Date();
+  const dateStr = now.toISOString().slice(0, 10);
+  if(dateIn && !dateIn.value) dateIn.value = dateStr;
+  if(titleIn && !titleIn.value) titleIn.value = `Entrenamiento Optimist · ${dateStr}`;
+  if(pinIn && !pinIn.value){
+    const savedPin = localStorage.getItem('rcngc_coach_pin');
+    if(savedPin) pinIn.value = savedPin;
+  }
+
+  if(summary){
+    summary.innerHTML = `
+      <div><strong>⛵ Barcos cargados:</strong> ${D.N}</div>
+      <div><strong>💨 Viento:</strong> ${Math.round(D.windRef || 0)}°</div>
+      <div><strong>📍 Recorrido:</strong> ${D.course && D.course.type === 'ioda' ? 'Trapecio IODA' : 'Libre'}</div>
+      <div><strong>⏱️ Duración:</strong> ${D.T ? mmss(D.T) : '-'}</div>
+    `;
+  }
+}
+
+async function renderCloudList(){
+  const container = document.getElementById('cloudListContainer');
+  if(!container) return;
+  container.innerHTML = '<div style="text-align:center;padding:34px;color:var(--dim)">⏳ Conectando con Turso SQLite...</div>';
+
+  try {
+    const rows = await executeTurso(
+      "SELECT id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, notas, creado_en FROM regatas_club ORDER BY creado_en DESC;"
+    );
+    cloudRacesCache = rows || [];
+    filterAndDisplayCloudList();
+  } catch(err) {
+    container.innerHTML = `
+      <div style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:8px;padding:16px;text-align:center;font-size:13px">
+        <strong>⚠️ No se pudo conectar con la base de datos Turso:</strong><br>
+        <span style="font-size:12px">${esc(err.message)}</span><br>
+        <button class="btn" id="btnGoToConfig" type="button" style="margin-top:10px;font-size:12px">Revisar configuración de conexión</button>
+      </div>
+    `;
+    const btnGo = document.getElementById('btnGoToConfig');
+    if(btnGo) btnGo.addEventListener('click', () => switchCloudTab('config'));
+  }
+}
+
+function filterAndDisplayCloudList(){
+  const container = document.getElementById('cloudListContainer');
+  const term = (document.getElementById('cloudSearchInput')?.value || '').trim().toLowerCase();
+  if(!container) return;
+
+  const filtered = cloudRacesCache.filter(r => {
+    if(!term) return true;
+    const txt = `${r.titulo||''} ${r.fecha_regata||''} ${r.autor||''} ${r.notas||''}`.toLowerCase();
+    return txt.includes(term);
+  });
+
+  if(!filtered.length){
+    container.innerHTML = `
+      <div style="text-align:center;padding:40px 20px;color:var(--dim);border:1px dashed var(--line);border-radius:8px">
+        ${cloudRacesCache.length ? 'No se encontraron regatas que coincidan con la búsqueda.' : 'No hay regatas guardadas todavía en la nube del club.<br><br>¡Carga un entrenamiento y pulsa en <strong>«Guardar sesión actual»</strong> para publicarla!'}
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(r => `
+    <div class="card" style="padding:14px 16px;border:1px solid var(--line);border-radius:8px;display:flex;justify-content:space-between;align-items:center;gap:14px;background:var(--panel);box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:14.5px;color:var(--ink);margin-bottom:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span>${esc(r.titulo)}</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11.5px;margin-bottom:6px">
+          <span style="background:var(--sub);padding:2px 7px;border-radius:4px;border:1px solid var(--line);color:var(--ink)">📅 ${esc(r.fecha_regata || 'Sin fecha')}</span>
+          <span style="background:rgba(2,132,199,0.08);color:#0284c7;padding:2px 7px;border-radius:4px;border:1px solid rgba(2,132,199,0.25);font-weight:600">⛵ ${r.num_barcos || 0} barcos</span>
+          <span style="background:rgba(249,115,22,0.08);color:#ea580c;padding:2px 7px;border-radius:4px;border:1px solid rgba(249,115,22,0.25);font-weight:600">💨 ${r.viento_dir != null ? Math.round(r.viento_dir) + '°' : '-'} ${r.viento_kts ? '· ' + r.viento_kts + ' kn' : ''}</span>
+          <span style="background:var(--sub);padding:2px 7px;border-radius:4px;color:var(--dim)">👤 ${esc(r.autor || 'Club')}</span>
+        </div>
+        ${r.notas ? `<div style="font-size:12px;color:var(--dim);line-height:1.4">${esc(r.notas)}</div>` : ''}
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <button class="btn primary btn-load-cloud" data-id="${r.id}" data-title="${esc(r.titulo)}" type="button" style="padding:6px 14px;font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;gap:5px" title="Cargar y abrir regata completa en el mapa">
+          📥 Cargar en el mapa
+        </button>
+        <button class="btn btn-delete-cloud" data-id="${r.id}" data-title="${esc(r.titulo)}" type="button" style="padding:6px 9px;color:#ef4444;border-color:rgba(239,68,68,0.3)" title="Eliminar de la nube (requiere PIN)">
+          🗑️
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('.btn-load-cloud').forEach(b => {
+    b.addEventListener('click', () => loadCloudSession(b.dataset.id, b.dataset.title));
+  });
+  container.querySelectorAll('.btn-delete-cloud').forEach(b => {
+    b.addEventListener('click', () => deleteCloudRegata(b.dataset.id, b.dataset.title));
+  });
+}
+
+async function loadCloudSession(id, titulo){
+  const container = document.getElementById('cloudListContainer');
+  if(container) {
+    container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--ink);font-size:14px">⏳ Descargando y cargando «${esc(titulo)}» desde Turso SQLite...</div>`;
+  }
+  try {
+    const rows = await executeTurso("SELECT datos_sesion_json FROM regatas_club WHERE id = ?;", [id]);
+    if(!rows || !rows.length || !rows[0].datos_sesion_json){
+      alert('No se encontraron los datos de la regata seleccionada.');
+      renderCloudList();
+      return;
+    }
+    const raw = rows[0].datos_sesion_json;
+    const saved = typeof raw === 'string' ? JSON.parse(raw) : raw;
+
+    if(!saved || !saved.all || !Object.keys(saved.all).length){
+      alert('El archivo guardado no contiene pistas GPX válidas.');
+      renderCloudList();
+      return;
+    }
+
+    lastLoad = { all: saved.all, used: saved.used || [], warn: [], skipped: [] };
+    rebuild(saved.align != null ? saved.align : null, saved.course, saved.tactics);
+
+    if(D){
+      if(saved.customSails){
+        D.boats.forEach(b => { if(saved.customSails[b.name]) b.sail = saved.customSails[b.name]; });
+      }
+      if(saved.tactics){
+        state.tactics = Object.assign({lines:[],arrows:[],boats:[],startLine:null,showStartGrid:true,laylines:false,threeLengths:false,manualZones:[]}, saved.tactics);
+      }
+      if(saved.orientation){
+        toggleOrientation(saved.orientation);
+      }
+      computeCourse();
+      buildList();
+      renderBoatCard(true);
+      renderCoursePane();
+      renderTacticsPane();
+      renderTicks();
+      renderSummary();
+      updateUI();
+      saveCurrentSession();
+      fit();
+      document.getElementById('cloudModal').hidden = true;
+      switchMainView('track');
+      showMsg([{ t: `Regata «${titulo}» cargada desde la nube de Turso SQLite (${D.N} barcos).`, cls: 'ok' }]);
+    }
+  } catch(err) {
+    alert('Error al cargar la regata desde la nube: ' + err.message);
+    renderCloudList();
+  }
+}
+
+async function submitCloudSave(){
+  if(!D || !lastLoad || !lastLoad.all || !D.N){
+    alert('No hay ninguna sesión activa para guardar.');
+    return;
+  }
+  const title = (document.getElementById('cloudSaveTitle')?.value || '').trim();
+  if(!title){
+    alert('Por favor, indica un título para la regata.');
+    document.getElementById('cloudSaveTitle')?.focus();
+    return;
+  }
+
+  const pin = (document.getElementById('cloudSavePin')?.value || '').trim();
+  if(pin !== getCoachPin()){
+    alert('PIN de entrenador incorrecto. Solo los entrenadores autorizados pueden guardar o modificar regatas en la nube.');
+    document.getElementById('cloudSavePin')?.focus();
+    return;
+  }
+
+  const date = (document.getElementById('cloudSaveDate')?.value || '').trim() || new Date().toISOString().slice(0, 10);
+  const author = (document.getElementById('cloudSaveAuthor')?.value || '').trim() || 'Entrenador RCNGC';
+  const notes = (document.getElementById('cloudSaveNotes')?.value || '').trim();
+
+  const btn = document.getElementById('btnSubmitCloudSave');
+  const status = document.getElementById('cloudSaveStatusMsg');
+  if(btn) btn.disabled = true;
+  if(status) { status.style.color = 'var(--ink)'; status.textContent = '⏳ Subiendo regata a Turso SQLite...'; }
+
+  try {
+    const customSails = {};
+    D.boats.forEach(b => { customSails[b.name] = b.sail; });
+    const sessionPayload = {
+      all: lastLoad.all,
+      used: lastLoad.used,
+      align: D.align,
+      orientation: state.orientation,
+      course: {
+        type: D.course.type || 'free',
+        marks: D.course.marks,
+        ioda: D.course.ioda,
+        startT: D.startT,
+        windRef: D.windRef,
+        radius: D.radius
+      },
+      tactics: state.tactics,
+      customSails
+    };
+
+    const id = 'regata_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+    const sessionJson = JSON.stringify(sessionPayload);
+
+    await executeTurso(
+      `INSERT INTO regatas_club (id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, notas, datos_sesion_json) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+      [
+        id,
+        title,
+        date,
+        D.windRef || 0,
+        14.0,
+        D.N,
+        author,
+        notes,
+        sessionJson
+      ]
+    );
+
+    if(status) { status.style.color = '#16a34a'; status.textContent = '✓ Guardada con éxito'; }
+    setTimeout(() => {
+      if(status) status.textContent = '';
+      switchCloudTab('list');
+      renderCloudList();
+    }, 1000);
+  } catch(err) {
+    if(status) { status.style.color = '#ef4444'; status.textContent = 'Error: ' + err.message; }
+    alert('Error al guardar la regata en Turso: ' + err.message);
+  } finally {
+    if(btn) btn.disabled = false;
+  }
+}
+
+async function deleteCloudRegata(id, titulo){
+  const pin = prompt(`Introduce el PIN de entrenador para eliminar «${titulo}» de la nube:`);
+  if(pin === null) return;
+  if(pin.trim() !== getCoachPin()){
+    alert('PIN incorrecto. No se ha eliminado la regata.');
+    return;
+  }
+  if(!confirm(`¿Seguro que deseas eliminar definitivamente la regata «${titulo}» de la base de datos central?`)){
+    return;
+  }
+
+  try {
+    await executeTurso("DELETE FROM regatas_club WHERE id = ?;", [id]);
+    renderCloudList();
+  } catch(err) {
+    alert('Error al eliminar la regata: ' + err.message);
+  }
+}
+
+function populateCloudConfigInputs(){
+  const urlIn = document.getElementById('cloudConfigUrl');
+  const tokenIn = document.getElementById('cloudConfigToken');
+  const pinIn = document.getElementById('cloudConfigPin');
+  if(urlIn) urlIn.value = localStorage.getItem('rcngc_turso_url') || TURSO_CONFIG.defaultUrl;
+  if(tokenIn) tokenIn.value = localStorage.getItem('rcngc_turso_token') || TURSO_CONFIG.defaultToken;
+  if(pinIn) pinIn.value = localStorage.getItem('rcngc_coach_pin') || TURSO_CONFIG.defaultPin;
+}
+
+function saveCloudConfig(){
+  const urlIn = document.getElementById('cloudConfigUrl');
+  const tokenIn = document.getElementById('cloudConfigToken');
+  const pinIn = document.getElementById('cloudConfigPin');
+  const status = document.getElementById('cloudConfigStatus');
+
+  if(urlIn) localStorage.setItem('rcngc_turso_url', urlIn.value.trim());
+  if(tokenIn) localStorage.setItem('rcngc_turso_token', tokenIn.value.trim());
+  if(pinIn) localStorage.setItem('rcngc_coach_pin', pinIn.value.trim());
+
+  if(status){
+    status.style.color = '#16a34a';
+    status.textContent = '✓ Configuración guardada en el navegador';
+    setTimeout(() => { status.textContent = ''; }, 3000);
+  }
+}
+
+async function testCloudConnection(){
+  const status = document.getElementById('cloudConfigStatus');
+  if(status) { status.style.color = 'var(--ink)'; status.textContent = '⏳ Probando conexión...'; }
+  const t0 = performance.now();
+  try {
+    await executeTurso("SELECT 1 as test;");
+    const ms = Math.round(performance.now() - t0);
+    if(status){
+      status.style.color = '#16a34a';
+      status.textContent = `✓ Conexión establecida con Turso SQLite (${ms} ms)`;
+    }
+  } catch(err) {
+    if(status){
+      status.style.color = '#ef4444';
+      status.textContent = `Error: ${err.message}`;
+    }
+  }
+}
+
+function openCloudModal(preferredTab = 'list'){
+  const modal = document.getElementById('cloudModal');
+  if(!modal) return;
+  modal.hidden = false;
+  switchCloudTab(preferredTab);
+  if(preferredTab === 'list'){
+    renderCloudList();
+  }
+}
+
+const btnCloudModal = document.getElementById('btnCloudModal');
+if(btnCloudModal) btnCloudModal.addEventListener('click', () => openCloudModal('list'));
+
+const btnCloudOpenBanner = document.getElementById('btnCloudOpenBanner');
+if(btnCloudOpenBanner) btnCloudOpenBanner.addEventListener('click', () => openCloudModal('list'));
+
+const btnCloseCloud = document.getElementById('btnCloseCloud');
+const cloudModal = document.getElementById('cloudModal');
+if(btnCloseCloud && cloudModal) btnCloseCloud.addEventListener('click', () => { cloudModal.hidden = true; });
+if(cloudModal) cloudModal.addEventListener('click', e => { if(e.target === cloudModal) cloudModal.hidden = true; });
+
+const tabCloudList = document.getElementById('tabCloudList');
+if(tabCloudList) tabCloudList.addEventListener('click', () => { switchCloudTab('list'); renderCloudList(); });
+
+const tabCloudSave = document.getElementById('tabCloudSave');
+if(tabCloudSave) tabCloudSave.addEventListener('click', () => switchCloudTab('save'));
+
+const tabCloudConfig = document.getElementById('tabCloudConfig');
+if(tabCloudConfig) tabCloudConfig.addEventListener('click', () => switchCloudTab('config'));
+
+const btnRefreshCloudList = document.getElementById('btnRefreshCloudList');
+if(btnRefreshCloudList) btnRefreshCloudList.addEventListener('click', renderCloudList);
+
+const cloudSearchInput = document.getElementById('cloudSearchInput');
+if(cloudSearchInput) cloudSearchInput.addEventListener('input', filterAndDisplayCloudList);
+
+const btnSubmitCloudSave = document.getElementById('btnSubmitCloudSave');
+if(btnSubmitCloudSave) btnSubmitCloudSave.addEventListener('click', submitCloudSave);
+
+const btnTestCloudConnection = document.getElementById('btnTestCloudConnection');
+if(btnTestCloudConnection) btnTestCloudConnection.addEventListener('click', testCloudConnection);
+
+const btnSaveCloudConfig = document.getElementById('btnSaveCloudConfig');
+if(btnSaveCloudConfig) btnSaveCloudConfig.addEventListener('click', saveCloudConfig);
 
 readTokens();
 requestAnimationFrame(loop);

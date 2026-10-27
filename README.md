@@ -92,6 +92,17 @@ Diseñada específicamente para debriefings y explicaciones tácticas en pantall
 
 ---
 
+### 7. ☁️ Nube Central RCNGC (Base de Datos SQLite en Turso)
+Diseñada para compartir entrenamientos y regatas entre entrenadores y regatistas desde cualquier dispositivo con el enlace público de GitHub:
+* **Acceso directo**: Pulsa el botón **«☁️ Nube RCNGC»** en la cabecera superior o el botón azul en la pantalla de bienvenida.
+* **Biblioteca de regatas guardadas**: Lista interactiva con fecha, barcos, viento, autor y notas de cada manga. Cualquier usuario puede pulsar **«📥 Cargar en el mapa»** para abrir y reproducir la regata de inmediato con un solo clic.
+* **Búsqueda en tiempo real**: Casilla de búsqueda para encontrar regatas por fecha, título, notas o entrenador.
+* **Publicar sesión actual**: En la pestaña *«Guardar sesión actual»*, introduce el título, fecha y notas.
+* **Protección con PIN de Entrenador**: Para evitar que personas ajenas borren o sobreescriban datos del club, se solicita el PIN de entrenador (por defecto: `RCNGC2026`).
+* **Ajustes de conexión**: Pestaña para comprobar latencia o configurar credenciales de la base de datos Turso SQLite.
+
+---
+
 ## ✨ Características y Funciones Clave
 
 * **Mapa interactivo en 2D**:
@@ -124,6 +135,25 @@ Diseñada específicamente para debriefings y explicaciones tácticas en pantall
 ## 📋 Changelog (Registro de Cambios)
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
+
+### [v1.3.0] - Nube Central Compartida (Turso Serverless SQLite) y Biblioteca de Regatas del Club
+* **Integración Nativa con Base de Datos SQLite en la Nube (Turso)**:
+  * Conexión directa mediante HTTP pipeline con la base de datos oficial del club en Turso (`rcngc-regatas-eltibugc.aws-eu-west-1.turso.io`), permitiendo que el visor en GitHub Pages funcione como una plataforma multiusuario compartida con coste 0 € y sin servidores intermedios.
+  * Creación y gestión automática de la tabla `regatas_club` (título, fecha, viento, barcos, autor, notas, telemetría y metadatos).
+* **Biblioteca de Regatas Compartidas**:
+  * Botón **«☁️ Nube RCNGC»** en la barra superior (accesible en todo momento) y botón destacado en la pantalla de bienvenida.
+  * Ventana modal con el catálogo completo de entrenamientos y mangas guardadas, ordenadas de más reciente a más antigua.
+  * Tarjetas informativas con fecha, número de barcos participantes, dirección e intensidad del viento, autor y observaciones.
+  * **Carga instantánea en 1 clic («📥 Cargar en el mapa»)**: Descarga la sesión desde Turso, reconstruye toda la cinemática a 1 Hz, las balizas del recorrido y las herramientas tácticas, y la pone a reproducir inmediatamente.
+  * **Búsqueda reactiva**: Filtro en tiempo real por título, fecha o notas del día.
+* **Publicación y Guardado de Entrenamientos**:
+  * Pestaña dedicada para publicar la sesión activa actual en la base de datos central.
+  * Formulario intuitivo con título, fecha, autor, notas y resumen automático de la flota cargada.
+* **Sistema de Seguridad y Permisos (PIN de Entrenador)**:
+  * **Lectura abierta**: Cualquier regatista, padre o entrenador que acceda al enlace de GitHub puede consultar y reproducir libremente las regatas de la biblioteca.
+  * **Acciones protegidas**: Para guardar nuevas regatas o eliminar una sesión de la nube se solicita el PIN de entrenador (por defecto: `RCNGC2026`), impidiendo modificaciones accidentales o no autorizadas.
+* **Panel de Configuración y Diagnóstico**:
+  * Pestaña para comprobar la latencia de la base de datos (`SELECT 1`), visualizar o personalizar la URL de la base de datos, el Token y almacenar el PIN de entrenador en la memoria local del navegador.
 
 ### [v1.2.7] - Parrilla de Salida por Esloras (Zona 45 m) y Ajuste Reglamentario de Zonas de 3 Esloras (Llegada vs Salida)
 * **Zona de Salida hasta 45 Metros hacia Sotavento**:
