@@ -136,6 +136,45 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.3.2] - Corrección de Polares Empíricas Optimist y Reactivación de Gráficos de Métricas Avanzadas
+* **Definición de Polares Empíricas Calibradas (`getOptimistPolarTarget`)**:
+  * Implementado el modelo de interpolación lineal continua de polares para la clase Optimist (IOD95) en base a las tablas empíricas de 6, 10, 14 y 18+ nudos:
+    * **Ceñida (Upwind)**: TWA 43°–42°, SOG objetivo 3.25–4.35 kn, VMG objetivo 2.35–3.18 kn.
+    * **Través (Reach)**: SOG objetivo 3.80–6.10 kn.
+    * **Popa (Downwind)**: TWA 152°–146°, SOG objetivo 3.50–5.75 kn, VMG objetivo 2.90–4.65 kn.
+  * Solucionado el fallo `ReferenceError: getOptimistPolarTarget is not defined` que detenía la ejecución del módulo táctico al detectar maniobras o analizar tramos IODA.
+* **Restauración Completa de los Gráficos de Dinámica de Regata y Tablas**:
+  * **Gráfico Polar del Regatista**: Vuelve a dibujar los círculos concéntricos de 1 a 6 kn, rayos radiales cada 15°, la curva de referencia discontinua azul y la nube de puntos GPS con la curva empírica del regatista junto al indicador `% Rendimiento Polar`.
+  * **Pérdida de Velocidad y Ángulo en Maniobras**: Vuelve a graficar el perfil temporal [-5s, 0s, +5s] con las curvas de velocidad máxima (verde), mínima (roja), media (azul) y evolución angular de TWA (violeta), así como la tira de indicadores superiores (V. Entrada, V. Mín Ápex, V. Salida, Caída/Recup., TWA Entrada/Salida).
+  * **Métricas Tácticas por Tramo (Recorrido IODA)**: Vuelve a poblar la tabla con el desglose de tramos, tiempos, distancias, eficiencia de derrota, viradas/trasluchadas y Polar Target %.
+  * **Diagnóstico Micro-Telemétrico de Maniobras**: Vuelve a registrar cada virada y trasluchada con segundo de ápex, velocidad previa, velocidad mínima, ratio de timón y pérdida en metros (Tack Loss).
+  * **Tarjetas KPI Vectoriales del Barco**: Vuelve a renderizar las tarjetas superiores con viento TWD del track vs entrenador, SOG máx/ceñida, VMG ceñida/popa, pérdida media en viradas y ratio de frenado de timón.
+* **Protección Defensiva de Renderizado**:
+  * Incorporada gestión de errores y bloques `try/catch` defensivos en `renderTacticalAnalysis()`, garantizando que cualquier anomalía en un tramo o dato no bloquee el resto de la interfaz.
+
+### [v1.3.1] - Unificación de Línea de Salida en Recorrido, Detección de Cruce de Salida y Estelas por Tramo
+* **Línea de Salida Unificada en la Pestaña «Recorrido»**:
+  * Eliminado el botón y la sección de línea de salida de la pestaña «Táctica» para evitar duplicidades o incoherencias entre módulos.
+  * Centralización completa de la línea de salida en la pestaña «Recorrido» (tanto para Trapecio IODA como para Recorrido Libre/Tradicional):
+    * Botón **«🚩 Marcar Pin y Comité (2 clics)»**: Permite situar el Pin y el Comité en el mapa sucesivamente de forma rápida.
+    * Botones individuales **«📍 Mover Pin»** y **«📍 Mover Comité»** para ajustes finos e independientes.
+    * Botón **«🗑️ Quitar salida»** para reiniciar la línea de salida.
+    * Indicador de estado con la longitud en metros y esloras equivalentes de Optimist (ej. `✓ Definida (78 m · 33 esloras)`).
+    * Casilla integrada para activar o desactivar la **«Parrilla de salida hasta 45 m (por esloras en primeros 20 m)»**.
+* **Detección Geométrica de Salida de la Flota y de Cada Barco**:
+  * Nuevo algoritmo cinemático que analiza el cruce efectivo de la línea de salida hacia el campo de regatas (hacia barlovento / B1).
+  * Auto-detección del momento oficial de salida de la flota (`D.detectedStartT`) a partir de la mediana de cruces de los barcos, con opción de fijación manual por el entrenador (`D.startT`).
+* **Estelas por Tramo («Tramo») Ancladas a la Salida**:
+  * Corregido el inicio del tramo 0 (`Ceñida a B1`): ahora el tramo de ceñida comienza estrictamente en el instante exacto en que el barco cruza la línea de salida.
+  * Todo el tiempo previo se etiqueta como pre-salida (`-1`), evitando que la estela arrastre la navegación previa desde el puerto, la rampa de varada o la espera de flota.
+  * Al navegar en el primer tramo, la estela se proyecta limpiamente desde la línea de salida hasta la posición actual del barco.
+* **Marcas de Salida en la Línea de Tiempo y Gráficas de Velocidad**:
+  * En la barra de reproducción inferior se muestra de forma garantizada el indicador vertical **«Salida»** en el segundo de la señal.
+  * En la tarjeta del barco y su gráfica de velocidad individual (sparkline) se dibuja la línea discontinua de **«Salida (+Xs)»** indicando el segundo y retraso exacto del barco con respecto al bocinazo.
+* **Integración en «Métricas Avanzadas»**:
+  * La tabla de métricas avanzadas detecta de forma fiable la salida de cada regatista, mostrando su hora real y retraso (`Salida: hh:mm:ss (+Xs)`).
+  * Las métricas de distancia navegada, velocidad media y viradas se computan desde el cruce real de la salida hasta la llegada.
+
 ### [v1.3.0] - Nube Central Compartida (Turso Serverless SQLite) y Biblioteca de Regatas del Club
 * **Integración Nativa con Base de Datos SQLite en la Nube (Turso)**:
   * Conexión directa mediante HTTP pipeline con la base de datos oficial del club en Turso (`rcngc-regatas-eltibugc.aws-eu-west-1.turso.io`), permitiendo que el visor en GitHub Pages funcione como una plataforma multiusuario compartida con coste 0 € y sin servidores intermedios.

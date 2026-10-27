@@ -1503,25 +1503,99 @@ function computeCourse(){
   if(!D)return;
   const C=D.course;
   if(C.type==='ioda'){computeIODACourse();return;}
-  C.legs=[];D.boats.forEach(b=>b.finishT=Infinity);D.LG.fill(-1);
-  if(!C.marks.length||D.startT==null)return;
-  const s0=Math.round(D.startT);
-  let sx=0,sy=0,n=0;
-  for(let i=0;i<D.N;i++){const ix=i*D.stride+s0;if(D.OK[ix]){sx+=D.X[ix];sy+=D.Y[ix];n++;}}
-  if(!n)for(let i=0;i<D.N;i++){const ix=i*D.stride+s0;sx+=D.X[ix];sy+=D.Y[ix];n++;}
-  const start={x:sx/n,y:sy/n};C.startPt=start;
+  C.legs=[];D.boats.forEach(b=>{b.finishT=Infinity;b.raceInterval=null;});D.LG.fill(-1);
+  if(!C.marks.length)return;
+
+  const stLine=getActiveStartLine();
+  let start=null;
+  if(stLine&&stLine.pin&&stLine.rc){
+    start={x:(stLine.pin.x+stLine.rc.x)/2, y:(stLine.pin.y+stLine.rc.y)/2};
+  }else if(D.startT!=null){
+    const s0=Math.round(D.startT);
+    let sx=0,sy=0,n=0;
+    for(let i=0;i<D.N;i++){const ix=i*D.stride+s0;if(D.OK[ix]){sx+=D.X[ix];sy+=D.Y[ix];n++;}}
+    if(!n)for(let i=0;i<D.N;i++){const ix=i*D.stride+s0;sx+=D.X[ix];sy+=D.Y[ix];n++;}
+    start={x:sx/n,y:sy/n};
+  }else{
+    start={x:C.marks[0].x, y:C.marks[0].y-150};
+  }
+  C.startPt=start;
   const r=makeLegs([start,...C.marks],D.windRef,null);C.legs=r.legs;C.u=r.u;
   const nL=C.legs.length,R=D.radius;
+
+  // Detección de salidas para curso libre si hay startLine
+  const boatCrossings=[];
   for(let i=0;i<D.N;i++){
-    let leg=-1;const base=i*D.stride;
-    for(let s=0;s<D.T;s++){
+    const crs=stLine?findBoatStartCrossings(i, stLine, C.marks[0], D.windRef):[];
+    boatCrossings.push(crs);
+  }
+  const validStarts=[];
+  for(let i=0;i<D.N;i++){
+    if(boatCrossings[i].length) validStarts.push(boatCrossings[i][boatCrossings[i].length-1].s);
+  }
+  if(validStarts.length){
+    validStarts.sort((a,b)=>a-b);
+    const mid=Math.floor(validStarts.length/2);
+    D.detectedStartT=(validStarts.length%2!==0)?validStarts[mid]:Math.round((validStarts[mid-1]+validStarts[mid])/2);
+  }else{
+    D.detectedStartT=null;
+  }
+
+  const fleetStartSec=D.startT!=null?Math.round(D.startT):(D.detectedStartT!=null?D.detectedStartT:0);
+
+  for(let i=0;i<D.N;i++){
+    const base=i*D.stride;
+    const crs=boatCrossings[i];
+    let boatStart=fleetStartSec;
+    let crossedStart=false;
+
+    if(crs.length){
+      if(D.startT!=null){
+        let bestDiff=Infinity, bestCross=null;
+        for(const c of crs){
+          const diff=Math.abs(c.s-D.startT);
+          if(diff<bestDiff){bestDiff=diff; bestCross=c;}
+        }
+        if(bestCross&&bestDiff<=360){boatStart=bestCross.s; crossedStart=true;}
+      }else if(D.detectedStartT!=null){
+        let bestDiff=Infinity, bestCross=null;
+        for(const c of crs){
+          const diff=Math.abs(c.s-D.detectedStartT);
+          if(diff<bestDiff){bestDiff=diff; bestCross=c;}
+        }
+        if(bestCross&&bestDiff<=300){boatStart=bestCross.s; crossedStart=true;}
+      }
+    }
+
+    boatStart=Math.max(0, Math.min(boatStart, D.T-1));
+    for(let s=0;s<boatStart;s++) D.LG[base+s]=-1;
+
+    let leg=0;
+    for(let s=boatStart;s<D.T;s++){
       const ix=base+s;
-      if(s>=s0){
-        if(leg<0)leg=0;
-        if(leg<nL&&D.OK[ix]){const m=C.marks[leg];if(Math.hypot(D.X[ix]-m.x,D.Y[ix]-m.y)<R){leg++;if(leg===nL)D.boats[i].finishT=s;}}
+      if(leg<nL&&D.OK[ix]){
+        const m=C.marks[leg];
+        if(Math.hypot(D.X[ix]-m.x,D.Y[ix]-m.y)<R){
+          leg++;
+          if(leg===nL)D.boats[i].finishT=s;
+        }
       }
       D.LG[ix]=leg;
     }
+
+    const sEnd=(D.boats[i].finishT!=null&&D.boats[i].finishT<Infinity)?D.boats[i].finishT:(D.T-1);
+    const finished=D.boats[i].finishT!=null&&D.boats[i].finishT<Infinity;
+    const startDelaySec=boatStart-(D.startT!=null?Math.round(D.startT):(D.detectedStartT!=null?D.detectedStartT:boatStart));
+
+    D.boats[i].raceInterval={
+      sStart: boatStart,
+      sEnd: sEnd,
+      crossedStart: crossedStart,
+      finished: finished,
+      startTimeSec: D.t0 ? D.t0+boatStart*1000 : null,
+      finishTimeSec: (finished&&D.t0) ? D.t0+sEnd*1000 : null,
+      startDelaySec: startDelaySec
+    };
   }
 }
 
@@ -1758,14 +1832,20 @@ function draw(now){
     if(state.trail==='leg'){
       if(D.LG && hasCourse()){
         const curLeg=D.LG[base+s];
-        from=s;
-        while(from>0 && D.LG[base+(from-1)]===curLeg){
-          from--;
+        if(curLeg<0){
+          from=Math.max(0, s-120);
+        }else{
+          from=s;
+          while(from>0 && D.LG[base+(from-1)]===curLeg){
+            from--;
+          }
         }
       }else if(D.startT!=null && s>=D.startT){
         from=Math.round(D.startT);
+      }else if(D.detectedStartT!=null && s>=D.detectedStartT){
+        from=D.detectedStartT;
       }else{
-        from=Math.max(0,s-300);
+        from=Math.max(0,s-120);
       }
     }else if(state.trail===Infinity){
       from=0;
@@ -2106,7 +2186,7 @@ function drawThreeLengths(marks, sc){
 
 function drawTacticalStartLine(w, sc){
   const tac=state.tactics;
-  const st=(tac&&tac.startLine)||(D&&D.course&&D.course.type==='ioda'&&D.course.ioda&&D.course.ioda.start);
+  const st=getActiveStartLine();
   if(!st||!st.pin||!st.rc)return;
   const p1=st.pin,p2=st.rc,x1=sx(p1.x),y1=sy(p1.y),x2=sx(p2.x),y2=sy(p2.y);
   const dx=p2.x-p1.x,dy=p2.y-p1.y,len=Math.hypot(dx,dy);
@@ -2273,7 +2353,7 @@ function drawTacticalDraft(w, sc){
   }else if(tool==='arrow'){
     ctx.strokeStyle=tacArrowConfig.color||'#10b981';ctx.lineWidth=2;ctx.setLineDash([4,4]);
     ctx.beginPath();ctx.moveTo(sx(d.x1),sy(d.y1));ctx.lineTo(sx(d.curX),sy(d.curY));ctx.stroke();
-  }else if(tool==='start'){
+  }else if(tool==='start'||tool==='course_start_line'){
     ctx.strokeStyle='#ef4444';ctx.lineWidth=2;ctx.setLineDash([4,4]);
     ctx.beginPath();ctx.moveTo(sx(d.pin.x),sy(d.pin.y));ctx.lineTo(sx(d.curX),sy(d.curY));ctx.stroke();
   }else if(tool==='zone'){
@@ -2336,7 +2416,7 @@ function setTacticsTool(tool){
     if(tool==='line')msg='Haz clic en el inicio de la línea y luego en el final';
     else if(tool==='arrow')msg='Haz clic en el origen de la flecha y luego donde apunta';
     else if(tool==='boat')msg='Haz clic en el mapa donde quieras colocar el barco';
-    else if(tool==='start')msg='Haz clic en el Pin (boya izquierda de salida)';
+    else if(tool==='start'||tool==='course_start_line')msg='Haz clic en el Pin (boya izquierda de salida)';
     else if(tool==='zone')msg='Haz clic en el centro de la zona y luego fija el radio';
     else if(tool==='eraser')msg='Toca sobre cualquier elemento táctico para borrarlo (barco, línea, flecha o zona) · Esc para terminar';
     else if(tool==='ioda_b1')msg=(state.iodaWizard?'📍 Paso 1/6: ':'')+'Haz clic en el mapa para situar la Baliza 1 (B1 - Barlovento)';
@@ -2408,8 +2488,9 @@ function handleTacticsClick(x, y, px, py){
     }
 
     // 5. Línea de salida
-    if(tac.startLine&&tac.startLine.pin&&tac.startLine.rc){
-      const d=dSeg(px,py,sx(tac.startLine.pin.x),sy(tac.startLine.pin.y),sx(tac.startLine.rc.x),sy(tac.startLine.rc.y));
+    const curStart=getActiveStartLine();
+    if(curStart&&curStart.pin&&curStart.rc){
+      const d=dSeg(px,py,sx(curStart.pin.x),sy(curStart.pin.y),sx(curStart.rc.x),sy(curStart.rc.y));
       if(d<minDist){minDist=d;bestHit={type:'start',desc:'Línea de salida'};}
     }
 
@@ -2418,7 +2499,7 @@ function handleTacticsClick(x, y, px, py){
       else if(bestHit.type==='line')tac.lines.splice(bestHit.index,1);
       else if(bestHit.type==='arrow')tac.arrows.splice(bestHit.index,1);
       else if(bestHit.type==='zone')tac.manualZones.splice(bestHit.index,1);
-      else if(bestHit.type==='start')tac.startLine=null;
+      else if(bestHit.type==='start'){setActiveStartLine(null);boatKinematicsCache.clear();courseChanged();}
 
       showPlacingMsg(`${bestHit.desc} borrado · Toca otro elemento para borrarlo o Esc para salir`);
       renderTacticsPane();
@@ -2482,18 +2563,19 @@ function handleTacticsClick(x, y, px, py){
     return;
   }
   if(tool==='ioda_start_pin'){
-    if(!D.course.ioda)D.course.ioda={};
-    if(!D.course.ioda.start)D.course.ioda.start={};
-    D.course.ioda.start.pin={x,y};
-    setTacticsTool('ioda_start_rc');
+    const curSt=getActiveStartLine()||{};
+    setActiveStartLine({pin:{x,y}, rc:curSt.rc||null});
+    if(!curSt.rc) setTacticsTool('ioda_start_rc');
+    else setTacticsTool(null);
+    boatKinematicsCache.clear();
     courseChanged();
     return;
   }
   if(tool==='ioda_start_rc'){
-    if(!D.course.ioda)D.course.ioda={};
-    if(!D.course.ioda.start)D.course.ioda.start={};
-    D.course.ioda.start.rc={x,y};
+    const curSt=getActiveStartLine()||{};
+    setActiveStartLine({pin:curSt.pin||null, rc:{x,y}});
     setTacticsTool(null);
+    boatKinematicsCache.clear();
     courseChanged();
     return;
   }
@@ -2545,19 +2627,17 @@ function handleTacticsClick(x, y, px, py){
     return;
   }
 
-  // Línea de salida con cuadrícula de distancia
-  if(tool==='start'){
+  // Línea de salida (Pin y Comité)
+  if(tool==='start'||tool==='course_start_line'){
     if(!state.toolDraft){
       state.toolDraft={pin:{x,y},curX:x,curY:y};
       showPlacingMsg('Haz clic en el Barco Comité (extremo derecho de la salida)');
     }else{
-      state.tactics.startLine={pin:state.toolDraft.pin,rc:{x,y}};
+      setActiveStartLine({pin:state.toolDraft.pin,rc:{x,y}});
       state.toolDraft=null;
       setTacticsTool(null);
       boatKinematicsCache.clear();
-      if(D&&hasCourse())computeCourse();
-      renderTacticsPane();
-      saveCurrentSession();
+      courseChanged();
     }
     return;
   }
@@ -2600,16 +2680,6 @@ function renderTacticsPane(){
         <button class="btn" id="btnThreeLengths" aria-pressed="${tac.threeLengths}">⭕ 3 esloras (7,08 m)</button>
       </div>
       <span class="hint">Calcula automáticamente las laylines a 45° del viento y la zona de 3 esloras (7,08 m) en balizas y línea de llegada.</span>
-    </div>
-
-    <div class="field">
-      <span class="lbl">Línea de salida (Pin y Comité)</span>
-      <div class="inline">
-        <button class="btn" id="btnDrawStart" aria-pressed="${state.activeTool==='start'}">🚩 ${state.activeTool==='start'?'Cancelando...':'Marcar Pin y Comité'}</button>
-        ${tac.startLine?'<button class="btn" id="btnClearStartLine">Quitar salida</button>':''}
-      </div>
-      ${(tac.startLine||(D&&D.course&&D.course.ioda&&D.course.ioda.start))?`<label class="chk" style="margin-top:6px"><input type="checkbox" id="chkStartGrid" ${tac.showStartGrid?'checked':''}> Parrilla de salida hasta 45 m (por esloras en primeros 20 m)</label>`:''}
-      <span class="hint">Parrilla hacia sotavento: los primeros 20 m por esloras (2,36 m) con línea de puntos y referencias métricas hasta el límite de 45 m.</span>
     </div>
 
     <div class="field">
@@ -2672,11 +2742,6 @@ function renderTacticsPane(){
   if(btnTacW)btnTacW.addEventListener('click',()=>toggleOrientation('wind'));
   tacticsEl.querySelector('#btnLaylines').addEventListener('click',()=>{tac.laylines=!tac.laylines;renderTacticsPane();saveCurrentSession();});
   tacticsEl.querySelector('#btnThreeLengths').addEventListener('click',()=>{tac.threeLengths=!tac.threeLengths;renderTacticsPane();saveCurrentSession();});
-  tacticsEl.querySelector('#btnDrawStart').addEventListener('click',()=>setTacticsTool(state.activeTool==='start'?null:'start'));
-  const btnClrSt=tacticsEl.querySelector('#btnClearStartLine');
-  if(btnClrSt)btnClrSt.addEventListener('click',()=>{tac.startLine=null;boatKinematicsCache.clear();if(D&&hasCourse())computeCourse();renderTacticsPane();saveCurrentSession();});
-  const chkGrid=tacticsEl.querySelector('#chkStartGrid');
-  if(chkGrid)chkGrid.addEventListener('change',e=>{tac.showStartGrid=e.target.checked;saveCurrentSession();});
   tacticsEl.querySelector('#btnDrawLine').addEventListener('click',()=>setTacticsTool(state.activeTool==='line'?null:'line'));
   const lineCol=tacticsEl.querySelector('#tacLineColor');
   if(lineCol)lineCol.addEventListener('input',e=>{tacLineConfig.color=e.target.value;});
@@ -2736,16 +2801,97 @@ function segmentCrossesLine(p1, p2, pin, rc, margin){
   return (c1*c2<=0)&&(c3*c4<=0);
 }
 
+function getActiveStartLine(){
+  if(D&&D.course&&D.course.startLine&&D.course.startLine.pin&&D.course.startLine.rc){
+    return D.course.startLine;
+  }
+  if(D&&D.course&&D.course.ioda&&D.course.ioda.start&&D.course.ioda.start.pin&&D.course.ioda.start.rc){
+    return D.course.ioda.start;
+  }
+  if(state.tactics&&state.tactics.startLine&&state.tactics.startLine.pin&&state.tactics.startLine.rc){
+    return state.tactics.startLine;
+  }
+  return null;
+}
+
+function setActiveStartLine(line){
+  if(D&&D.course){
+    D.course.startLine=line;
+    if(!D.course.ioda)D.course.ioda={};
+    D.course.ioda.start=line;
+  }
+  if(!state.tactics)state.tactics={};
+  state.tactics.startLine=line;
+}
+
+function getActiveFinishLine(){
+  if(D&&D.course&&D.course.ioda&&D.course.ioda.finish&&D.course.ioda.finish.pin&&D.course.ioda.finish.rc){
+    return D.course.ioda.finish;
+  }
+  return null;
+}
+
+function findBoatStartCrossings(boatIndex, stLine, b1Pt, coachWind){
+  if(!D||!D.boats||!D.boats[boatIndex]||!stLine||!stLine.pin||!stLine.rc)return [];
+  const i=boatIndex;
+  const base=i*D.stride;
+  const pPin=stLine.pin, pRC=stLine.rc;
+  const dx=pRC.x-pPin.x, dy=pRC.y-pPin.y;
+  const len=Math.hypot(dx,dy);
+  if(len<1)return [];
+
+  const ux=dx/len, uy=dy/len;
+  const cx=(pPin.x+pRC.x)/2, cy=(pPin.y+pRC.y)/2;
+  let nx=-uy, ny=ux;
+
+  // Orientar normal hacia el campo / barlovento
+  if(b1Pt){
+    const vx=b1Pt.x-cx, vy=b1Pt.y-cy;
+    if(nx*vx+ny*vy<0){nx=-nx; ny=-ny;}
+  }else{
+    const downW=((coachWind%360)+360)%360;
+    const upX=-Math.sin(downW*D2R), upY=-Math.cos(downW*D2R);
+    if(nx*upX+ny*upY<0){nx=-nx; ny=-ny;}
+  }
+
+  const signedDist=(x,y)=>(x-cx)*nx+(y-cy)*ny;
+  const alongLine=(x,y)=>(x-cx)*ux+(y-cy)*uy;
+  const margin=20;
+
+  const crossings=[];
+  for(let s=1; s<D.T; s++){
+    const prevIx=base+(s-1), curIx=base+s;
+    if(!D.OK[prevIx]||!D.OK[curIx])continue;
+    const x1=D.X[prevIx], y1=D.Y[prevIx];
+    const x2=D.X[curIx], y2=D.Y[curIx];
+
+    const d1=signedDist(x1,y1);
+    const d2=signedDist(x2,y2);
+
+    if(d1<=0 && d2>0){
+      const f=(-d1)/(d2-d1);
+      const ix=x1+f*(x2-x1), iy=y1+f*(y2-y1);
+      const u=alongLine(ix,iy);
+      if(Math.abs(u)<=len/2+margin){
+        crossings.push({s, u, x:ix, y:iy});
+      }
+    }else if(segmentCrossesLine({x:x1,y:y1},{x:x2,y:y2},pPin,pRC,margin)){
+      if(d2>d1){
+        crossings.push({s, u:alongLine(x2,y2), x:x2, y:y2});
+      }
+    }
+  }
+  return crossings;
+}
+
 function computeIODACourse(){
   const C=D.course, io=C.ioda;
   if(!io) return;
-  const s0=D.startT!=null?Math.round(D.startT):0;
+  const stLine=getActiveStartLine();
 
-  const startPt=(io.start&&io.start.pin&&io.start.rc)
-    ?{x:(io.start.pin.x+io.start.rc.x)/2, y:(io.start.pin.y+io.start.rc.y)/2}
-    :(state.tactics&&state.tactics.startLine&&state.tactics.startLine.pin&&state.tactics.startLine.rc
-      ?{x:(state.tactics.startLine.pin.x+state.tactics.startLine.rc.x)/2, y:(state.tactics.startLine.pin.y+state.tactics.startLine.rc.y)/2}
-      :(C.startPt||(io.b1?{x:io.b1.x, y:io.b1.y-100}:null)));
+  const startPt=(stLine&&stLine.pin&&stLine.rc)
+    ?{x:(stLine.pin.x+stLine.rc.x)/2, y:(stLine.pin.y+stLine.rc.y)/2}
+    :(C.startPt||(io.b1?{x:io.b1.x, y:io.b1.y-100}:null));
   C.startPt=startPt;
 
   const waypoints=[];
@@ -2768,51 +2914,140 @@ function computeIODACourse(){
 
   const nL=C.legs.length, R=Math.max(D.radius||25, 65);
 
+  // FASE 1: Detección de B1 y cruces de salida para toda la flota
+  const b1Arrivals=new Int32Array(D.N).fill(-1);
+  const boatCrossings=[];
+
   for(let i=0;i<D.N;i++){
     const base=i*D.stride;
-    for(let s=0;s<Math.min(s0,D.T);s++)D.LG[base+s]=-1;
-    let currentS=s0;
+    if(io.b1){
+      let bestS1=-1, bestD1=Infinity;
+      for(let s=1;s<D.T;s++){
+        const ix=base+s; if(!D.OK[ix])continue;
+        const d=Math.hypot(D.X[ix]-io.b1.x, D.Y[ix]-io.b1.y);
+        if(d<bestD1){bestD1=d; bestS1=s;}
+        if(bestD1<R&&(d>bestD1+35||(io.b2&&Math.hypot(D.X[ix]-io.b2.x, D.Y[ix]-io.b2.y)<d))) break;
+      }
+      if(bestD1<R&&bestS1>0){
+        b1Arrivals[i]=bestS1;
+      }
+    }
+    const crs=stLine?findBoatStartCrossings(i, stLine, io.b1, D.windRef):[];
+    boatCrossings.push(crs);
+  }
+
+  // FASE 2: Determinar salida de la flota (D.detectedStartT) si D.startT es null
+  const validStarts=[];
+  for(let i=0;i<D.N;i++){
+    const crs=boatCrossings[i];
+    const sB1=b1Arrivals[i];
+    if(sB1>0&&crs.length){
+      const beforeB1=crs.filter(c=>c.s<sB1);
+      if(beforeB1.length){
+        validStarts.push(beforeB1[beforeB1.length-1].s);
+      }
+    }else if(crs.length){
+      validStarts.push(crs[crs.length-1].s);
+    }
+  }
+
+  if(validStarts.length){
+    validStarts.sort((a,b)=>a-b);
+    const mid=Math.floor(validStarts.length/2);
+    D.detectedStartT=(validStarts.length%2!==0)?validStarts[mid]:Math.round((validStarts[mid-1]+validStarts[mid])/2);
+  }else{
+    D.detectedStartT=null;
+  }
+
+  const fleetStartSec=D.startT!=null?Math.round(D.startT):(D.detectedStartT!=null?D.detectedStartT:0);
+
+  // FASE 3: Asignar intervalo exacto de cada barco y tramos en D.LG
+  for(let i=0;i<D.N;i++){
+    const base=i*D.stride;
+    const crs=boatCrossings[i];
+    const sB1=b1Arrivals[i];
+
+    let boatStart=fleetStartSec;
+    let crossedStart=false;
+
+    if(crs.length){
+      if(D.startT!=null){
+        let bestDiff=Infinity, bestCross=null;
+        for(const c of crs){
+          const diff=Math.abs(c.s-D.startT);
+          if(diff<bestDiff){bestDiff=diff; bestCross=c;}
+        }
+        if(bestCross&&bestDiff<=360){
+          boatStart=bestCross.s;
+          crossedStart=true;
+        }
+      }else if(sB1>0){
+        const beforeB1=crs.filter(c=>c.s<sB1);
+        if(beforeB1.length){
+          boatStart=beforeB1[beforeB1.length-1].s;
+          crossedStart=true;
+        }
+      }else if(D.detectedStartT!=null){
+        let bestDiff=Infinity, bestCross=null;
+        for(const c of crs){
+          const diff=Math.abs(c.s-D.detectedStartT);
+          if(diff<bestDiff){bestDiff=diff; bestCross=c;}
+        }
+        if(bestCross&&bestDiff<=300){
+          boatStart=bestCross.s;
+          crossedStart=true;
+        }
+      }
+    }
+
+    boatStart=Math.max(0, Math.min(boatStart, D.T-1));
+
+    for(let s=0;s<boatStart;s++){
+      D.LG[base+s]=-1;
+    }
+
+    let currentS=boatStart;
 
     // Tramo 0: Ceñida a B1
     if(io.b1&&nL>=1){
       let bestS1=-1, bestD1=Infinity;
       for(let s=currentS;s<D.T;s++){
-        const ix=base+s;if(!D.OK[ix])continue;
+        const ix=base+s; if(!D.OK[ix])continue;
         const d=Math.hypot(D.X[ix]-io.b1.x, D.Y[ix]-io.b1.y);
-        if(d<bestD1){bestD1=d;bestS1=s;}
-        if(bestD1<R&&(d>bestD1+35||(io.b2&&Math.hypot(D.X[ix]-io.b2.x, D.Y[ix]-io.b2.y)<d)))break;
+        if(d<bestD1){bestD1=d; bestS1=s;}
+        if(bestD1<R&&(d>bestD1+35||(io.b2&&Math.hypot(D.X[ix]-io.b2.x, D.Y[ix]-io.b2.y)<d))) break;
       }
       if(bestD1<R&&bestS1>=currentS){
-        for(let s=currentS;s<=bestS1;s++)D.LG[base+s]=0;
+        for(let s=currentS;s<=bestS1;s++) D.LG[base+s]=0;
         currentS=bestS1+1;
 
         // Tramo 1: Través a B2
         if(io.b2&&nL>=2){
           let bestS2=-1, bestD2=Infinity;
           for(let s=currentS;s<D.T;s++){
-            const ix=base+s;if(!D.OK[ix])continue;
+            const ix=base+s; if(!D.OK[ix])continue;
             const d=Math.hypot(D.X[ix]-io.b2.x, D.Y[ix]-io.b2.y);
-            if(d<bestD2){bestD2=d;bestS2=s;}
-            if(bestD2<R&&(d>bestD2+35||(gateCenter&&Math.hypot(D.X[ix]-gateCenter.x, D.Y[ix]-gateCenter.y)<d)))break;
+            if(d<bestD2){bestD2=d; bestS2=s;}
+            if(bestD2<R&&(d>bestD2+35||(gateCenter&&Math.hypot(D.X[ix]-gateCenter.x, D.Y[ix]-gateCenter.y)<d))) break;
           }
           if(bestD2<R&&bestS2>=currentS){
-            for(let s=currentS;s<=bestS2;s++)D.LG[base+s]=1;
+            for(let s=currentS;s<=bestS2;s++) D.LG[base+s]=1;
             currentS=bestS2+1;
 
             // Tramo 2: Popa a Puerta 3 (pasa por 3s o 3p)
             if((io.gate3s||io.gate3p)&&nL>=3){
               let bestS3=-1, bestD3=Infinity;
               for(let s=currentS;s<D.T;s++){
-                const ix=base+s;if(!D.OK[ix])continue;
+                const ix=base+s; if(!D.OK[ix])continue;
                 let d;
-                if(io.gate3s&&io.gate3p)d=Math.min(Math.hypot(D.X[ix]-io.gate3s.x, D.Y[ix]-io.gate3s.y), Math.hypot(D.X[ix]-io.gate3p.x, D.Y[ix]-io.gate3p.y));
-                else if(io.gate3s)d=Math.hypot(D.X[ix]-io.gate3s.x, D.Y[ix]-io.gate3s.y);
+                if(io.gate3s&&io.gate3p) d=Math.min(Math.hypot(D.X[ix]-io.gate3s.x, D.Y[ix]-io.gate3s.y), Math.hypot(D.X[ix]-io.gate3p.x, D.Y[ix]-io.gate3p.y));
+                else if(io.gate3s) d=Math.hypot(D.X[ix]-io.gate3s.x, D.Y[ix]-io.gate3s.y);
                 else d=Math.hypot(D.X[ix]-io.gate3p.x, D.Y[ix]-io.gate3p.y);
-                if(d<bestD3){bestD3=d;bestS3=s;}
-                if(bestD3<R&&(d>bestD3+35||(finishCenter&&Math.hypot(D.X[ix]-finishCenter.x, D.Y[ix]-finishCenter.y)<d)))break;
+                if(d<bestD3){bestD3=d; bestS3=s;}
+                if(bestD3<R&&(d>bestD3+35||(finishCenter&&Math.hypot(D.X[ix]-finishCenter.x, D.Y[ix]-finishCenter.y)<d))) break;
               }
               if(bestD3<R&&bestS3>=currentS){
-                for(let s=currentS;s<=bestS3;s++)D.LG[base+s]=2;
+                for(let s=currentS;s<=bestS3;s++) D.LG[base+s]=2;
                 currentS=bestS3+1;
 
                 // Tramo 3: Ceñida a Llegada
@@ -2821,23 +3056,21 @@ function computeIODACourse(){
                   const finPin=io.finish&&io.finish.pin;
                   const finRc=io.finish&&io.finish.rc;
                   for(let s=currentS;s<D.T;s++){
-                    const ix=base+s;if(!D.OK[ix])continue;
+                    const ix=base+s; if(!D.OK[ix])continue;
                     const prevIx=base+Math.max(0,s-1);
-                    const pt={x:D.X[ix],y:D.Y[ix]};
-                    const prevPt=D.OK[prevIx]?{x:D.X[prevIx],y:D.Y[prevIx]}:pt;
+                    const pt={x:D.X[ix], y:D.Y[ix]};
+                    const prevPt=D.OK[prevIx]?{x:D.X[prevIx], y:D.Y[prevIx]}:pt;
 
-                    // 1. Cruce geométrico del segmento Pin - Comité de Llegada
                     if(finPin&&finRc&&segmentCrossesLine(prevPt,pt,finPin,finRc,15)){
                       bestS4=s;
                       break;
                     }
-                    // 2. Proximidad al centro de la línea si no cortó el segmento estricto
                     const d=Math.hypot(pt.x-finishCenter.x, pt.y-finishCenter.y);
-                    if(d<bestD4){bestD4=d;bestS4=s;}
-                    if(bestD4<R&&(d>bestD4+35))break;
+                    if(d<bestD4){bestD4=d; bestS4=s;}
+                    if(bestD4<R&&(d>bestD4+35)) break;
                   }
                   if(bestS4>=currentS){
-                    for(let s=currentS;s<=bestS4;s++)D.LG[base+s]=3;
+                    for(let s=currentS;s<=bestS4;s++) D.LG[base+s]=3;
                     currentS=bestS4+1;
                     D.boats[i].finishT=bestS4;
                   }
@@ -2851,6 +3084,20 @@ function computeIODACourse(){
     for(let s=currentS;s<D.T;s++){
       D.LG[base+s]=D.boats[i].finishT<Infinity?nL:Math.max(0,nL-1);
     }
+
+    const sEnd=(D.boats[i].finishT!=null&&D.boats[i].finishT<Infinity)?D.boats[i].finishT:(D.T-1);
+    const finished=D.boats[i].finishT!=null&&D.boats[i].finishT<Infinity;
+    const startDelaySec=boatStart-(D.startT!=null?Math.round(D.startT):(D.detectedStartT!=null?D.detectedStartT:boatStart));
+
+    D.boats[i].raceInterval={
+      sStart: boatStart,
+      sEnd: sEnd,
+      crossedStart: crossedStart,
+      finished: finished,
+      startTimeSec: D.t0 ? D.t0+boatStart*1000 : null,
+      finishTimeSec: (finished&&D.t0) ? D.t0+sEnd*1000 : null,
+      startDelaySec: startDelaySec
+    };
   }
 }
 
@@ -2860,6 +3107,53 @@ function renderCoursePane(){
   if(!D)return;
   const C_=D.course;
   const isIODA=C_.type==='ioda';
+  const stLine=getActiveStartLine();
+  let stLen=0;
+  if(stLine&&stLine.pin&&stLine.rc){
+    stLen=Math.hypot(stLine.rc.x-stLine.pin.x, stLine.rc.y-stLine.pin.y);
+  }
+  const hasStLine=!!(stLine&&stLine.pin&&stLine.rc);
+  const stStatus=hasStLine
+    ? `<span style="color:#16a34a;font-weight:600">✓ Definida (${Math.round(stLen)} m · ${Math.round(stLen/2.36)} esloras)</span>`
+    : (stLine&&stLine.pin ? `<span style="color:#f59e0b;font-weight:600">Falta Comité</span>` : `<span style="color:#94a3b8">Sin definir</span>`);
+
+  const startHtml=`
+    <div class="field">
+      <span class="lbl">Línea de salida · Pin y Comité ${stStatus}</span>
+      <p style="margin:2px 0 6px 0;font-size:12px;color:var(--muted)">
+        ${hasStLine?'Línea de salida activa: define el tramo de salida para las estelas, métricas avanzadas y parrilla de esloras.':'Marca el Pin (boya) y el Barco Comité en el mapa para activar la detección automática de salida.'}
+      </p>
+      <div class="inline" style="flex-wrap:wrap;gap:6px">
+        <button class="btn primary" id="btnPlaceStartLine" aria-pressed="${state.activeTool==='course_start_line'||state.activeTool==='start'}">
+          🚩 ${state.activeTool==='course_start_line'||state.activeTool==='start'?'Cancelando...':'Marcar Pin y Comité (2 clics)'}
+        </button>
+        <button class="btn" id="btnMoveStPin" aria-pressed="${state.activeTool==='ioda_start_pin'}">${(stLine&&stLine.pin)?'📍 Mover Pin':'📍 Pin'}</button>
+        <button class="btn" id="btnMoveStRC" aria-pressed="${state.activeTool==='ioda_start_rc'}">${(stLine&&stLine.rc)?'📍 Mover Comité':'📍 Comité'}</button>
+        ${(stLine&&(stLine.pin||stLine.rc))?'<button class="btn" id="btnClearStLine" style="color:#ef4444">🗑️ Quitar salida</button>':''}
+      </div>
+      ${hasStLine?`
+        <label class="chk" style="margin-top:6px">
+          <input type="checkbox" id="chkCourseStartGrid" ${state.tactics.showStartGrid?'checked':''}>
+          Parrilla de salida hasta 45 m (por esloras en primeros 20 m)
+        </label>
+      `:''}
+    </div>
+
+    <div class="field">
+      <span class="lbl">Momento de salida</span>
+      <div class="inline">
+        <button class="btn" id="setStart">Marcar salida en ${D.t0?hhmmss(D.t0+state.t*1000):mmss(state.t)}</button>
+        ${D.startT!=null?'<button class="btn" id="clrStart">Quitar manual</button>':''}
+      </div>
+      <span class="hint">
+        ${D.startT!=null
+          ? 'Salida oficial fijada en '+(D.t0?hhmmss(D.t0+D.startT*1000):'T+'+mmss(D.startT))+'. Mueve la línea de tiempo y vuelve a pulsar para cambiarla.'
+          : (D.detectedStartT!=null
+            ? 'Salida detectada automáticamente en '+(D.t0?hhmmss(D.t0+D.detectedStartT*1000):'T+'+mmss(D.detectedStartT))+' (según cruce de la flota).'
+            : 'Mueve la línea de tiempo hasta la señal de salida o coloca Pin y Comité para detección automática.')}
+      </span>
+    </div>
+  `;
 
   let html=`
     <p>Elige el tipo de recorrido para ver tramos, tiempos de paso y clasificación.</p>
@@ -2886,10 +3180,7 @@ function renderCoursePane(){
       <div class="field"><span class="lbl">Viento · de dónde sopla</span>
         <div class="inline"><button class="btn" data-wd="-10">−10°</button><input class="num" id="windIn" type="number" min="0" max="359" step="1" value="${Math.round(((D.windRef%360)+360)%360)}" aria-label="Dirección del viento en grados"><button class="btn" data-wd="10">+10°</button></div>
       </div>
-      <div class="field"><span class="lbl">Salida</span>
-        <div class="inline"><button class="btn primary" id="setStart">Marcar salida en ${D.t0?hhmmss(D.t0+state.t*1000):mmss(state.t)}</button>${D.startT!=null?'<button class="btn" id="clrStart">Quitar</button>':''}</div>
-        <span class="hint">${D.startT!=null?'Salida en '+(D.t0?hhmmss(D.t0+D.startT*1000):'T+'+mmss(D.startT))+'. Mueve la línea de tiempo y vuelve a pulsar para cambiarla.':'Mueve la línea de tiempo hasta la señal de salida y pulsa el botón.'}</span>
-      </div>
+      ${startHtml}
       <div class="field">
         <span class="lbl">Balizas del Trapecio IODA</span>
         <ul class="marks" style="list-style:none;padding:0">
@@ -2909,18 +3200,11 @@ function renderCoursePane(){
             <div><b>Puerta 3p</b> · Babor ${io.gate3p?'<span style="color:#16a34a;font-weight:600">✓ Colocada</span>':'<span style="color:#94a3b8">Pendiente</span>'}</div>
             <button class="btn" id="btnMoveGate3p" aria-pressed="${state.activeTool==='ioda_gate3p'}">${io.gate3p?'📍 Mover 3p':'📍 Colocar 3p'}</button>
           </li>
-          <li style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line)">
+          <li style="display:flex;align-items:center;justify-content:space-between;padding:5px 0">
             <div><b>Llegada</b> · Boya y Comité ${(io.finish&&io.finish.pin&&io.finish.rc)?'<span style="color:#16a34a;font-weight:600">✓ Colocada</span>':(io.finish&&io.finish.pin?'<span style="color:#f59e0b">Falta Comité</span>':'<span style="color:#94a3b8">Pendiente</span>')}</div>
             <div class="inline" style="gap:4px">
               <button class="btn" id="btnMoveFinPin" aria-pressed="${state.activeTool==='ioda_finish_pin'}">${io.finish&&io.finish.pin?'📍 Mover Pin':'📍 Pin'}</button>
               <button class="btn" id="btnMoveFinRC" aria-pressed="${state.activeTool==='ioda_finish_rc'}">${io.finish&&io.finish.rc?'📍 Mover RC':'📍 Comité'}</button>
-            </div>
-          </li>
-          <li style="display:flex;align-items:center;justify-content:space-between;padding:5px 0">
-            <div><b>Salida</b> · Opcional ${(io.start&&io.start.pin&&io.start.rc)?'<span style="color:#16a34a;font-weight:600">✓ Colocada</span>':(io.start&&io.start.pin?'<span style="color:#f59e0b">Falta Comité</span>':'<span style="color:#94a3b8">Opcional</span>')}</div>
-            <div class="inline" style="gap:4px">
-              <button class="btn" id="btnMoveStPin" aria-pressed="${state.activeTool==='ioda_start_pin'}">${io.start&&io.start.pin?'📍 Mover Pin':'📍 Pin'}</button>
-              <button class="btn" id="btnMoveStRC" aria-pressed="${state.activeTool==='ioda_start_rc'}">${io.start&&io.start.rc?'📍 Mover RC':'📍 Comité'}</button>
             </div>
           </li>
         </ul>
@@ -2934,10 +3218,7 @@ function renderCoursePane(){
       <div class="field"><span class="lbl">Viento · de dónde sopla</span>
         <div class="inline"><button class="btn" data-wd="-10">−10°</button><input class="num" id="windIn" type="number" min="0" max="359" step="1" value="${Math.round(((D.windRef%360)+360)%360)}" aria-label="Dirección del viento en grados"><button class="btn" data-wd="10">+10°</button></div>
       </div>
-      <div class="field"><span class="lbl">Salida</span>
-        <div class="inline"><button class="btn primary" id="setStart">Marcar salida en ${D.t0?hhmmss(D.t0+state.t*1000):mmss(state.t)}</button>${D.startT!=null?'<button class="btn" id="clrStart">Quitar</button>':''}</div>
-        <span class="hint">${D.startT!=null?'Salida en '+(D.t0?hhmmss(D.t0+D.startT*1000):'T+'+mmss(D.startT))+'. Mueve la línea de tiempo y vuelve a pulsar para cambiarla.':'Mueve la línea de tiempo hasta la señal de salida y pulsa el botón.'}</span>
-      </div>
+      ${startHtml}
       <div class="field"><span class="lbl">Balizas en orden de paso</span>
         ${C_.marks.length?`<ol class="marks">${C_.marks.map((m,k)=>`<li><b>B${k+1}</b>${k===C_.marks.length-1&&C_.marks.length>1?'llegada':(C_.legs[k]?C_.legs[k].name.split(' a ')[0].toLowerCase():'')}<button class="x" data-del="${k}" aria-label="Quitar baliza ${k+1}">✕</button></li>`).join('')}</ol>`:'<span class="empty">Todavía no hay balizas.</span>'}
         <div class="inline"><button class="btn" id="addMark" aria-pressed="${state.placing}">${state.placing?'Terminar de colocar':'Colocar balizas en el mapa'}</button></div>
@@ -2961,6 +3242,17 @@ function renderCoursePane(){
     }
   });
 
+  const btnPlcSt=courseEl.querySelector('#btnPlaceStartLine');
+  if(btnPlcSt)btnPlcSt.addEventListener('click',()=>setTacticsTool(state.activeTool==='course_start_line'||state.activeTool==='start'?null:'course_start_line'));
+  const bStPin=courseEl.querySelector('#btnMoveStPin');
+  if(bStPin)bStPin.addEventListener('click',()=>setTacticsTool(state.activeTool==='ioda_start_pin'?null:'ioda_start_pin'));
+  const bStRC=courseEl.querySelector('#btnMoveStRC');
+  if(bStRC)bStRC.addEventListener('click',()=>setTacticsTool(state.activeTool==='ioda_start_rc'?null:'ioda_start_rc'));
+  const btnClrSt=courseEl.querySelector('#btnClearStLine');
+  if(btnClrSt)btnClrSt.addEventListener('click',()=>{setActiveStartLine(null);boatKinematicsCache.clear();courseChanged();});
+  const chkGrid=courseEl.querySelector('#chkCourseStartGrid');
+  if(chkGrid)chkGrid.addEventListener('change',e=>{state.tactics.showStartGrid=e.target.checked;drawMap();saveCurrentSession();});
+
   if(isIODA){
     const btnAll=courseEl.querySelector('#btnPlaceAllIODA');
     if(btnAll)btnAll.addEventListener('click',()=>{
@@ -2980,8 +3272,6 @@ function renderCoursePane(){
     const bG3p=courseEl.querySelector('#btnMoveGate3p');if(bG3p)bG3p.addEventListener('click',()=>setTacticsTool(state.activeTool==='ioda_gate3p'?null:'ioda_gate3p'));
     const bFinPin=courseEl.querySelector('#btnMoveFinPin');if(bFinPin)bFinPin.addEventListener('click',()=>setTacticsTool(state.activeTool==='ioda_finish_pin'?null:'ioda_finish_pin'));
     const bFinRC=courseEl.querySelector('#btnMoveFinRC');if(bFinRC)bFinRC.addEventListener('click',()=>setTacticsTool(state.activeTool==='ioda_finish_rc'?null:'ioda_finish_rc'));
-    const bStPin=courseEl.querySelector('#btnMoveStPin');if(bStPin)bStPin.addEventListener('click',()=>setTacticsTool(state.activeTool==='ioda_start_pin'?null:'ioda_start_pin'));
-    const bStRC=courseEl.querySelector('#btnMoveStRC');if(bStRC)bStRC.addEventListener('click',()=>setTacticsTool(state.activeTool==='ioda_start_rc'?null:'ioda_start_rc'));
   }else{
     const am=courseEl.querySelector('#addMark');if(am)am.addEventListener('click',()=>setPlacing(!state.placing));
     courseEl.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{D.course.marks.splice(+b.dataset.del,1);courseChanged();}));
@@ -3139,11 +3429,19 @@ function drawSpark(b,t){
 
   // Marcas de paso de baliza y salida del barco
   const events=[];
-  if(D.startT!=null)events.push({t:D.startT,label:'Salida',cls:'start'});
+  const rInt=getBoatRaceInterval(b.id);
+  if(rInt&&rInt.crossedStart){
+    const delayTxt=rInt.startDelaySec!=0?` (${rInt.startDelaySec>0?'+':''}${rInt.startDelaySec}s)`:'';
+    events.push({t:rInt.sStart,label:'Salida'+delayTxt,cls:'start'});
+  }else if(D.startT!=null){
+    events.push({t:D.startT,label:'Salida',cls:'start'});
+  }else if(D.detectedStartT!=null){
+    events.push({t:D.detectedStartT,label:'Salida',cls:'start'});
+  }
   if(hasCourse()){
     const nL=D.course.legs.length;
     for(let k=1;k<nL;k++){
-      for(let sec=(D.startT||0);sec<D.T;sec++){
+      for(let sec=(rInt&&rInt.crossedStart?rInt.sStart:(D.startT||0));sec<D.T;sec++){
         if(D.LG[base+sec]>=k){
           let lbl='B'+k;
           if(D.course.type==='ioda'){
@@ -3303,6 +3601,7 @@ if(cancelBtn){
 const TABS=['rank','course','boats','tactics'];
 function showTab(which){
   TABS.forEach(k=>{document.getElementById('tab-'+k).setAttribute('aria-selected',String(k===which));document.getElementById('pane-'+k).hidden=k!==which;});
+  if(which==='course')renderCoursePane();
   if(which==='boats')renderBoatsPane();
   if(which==='tactics')renderTacticsPane();
 }
@@ -3310,7 +3609,7 @@ TABS.forEach(k=>document.getElementById('tab-'+k).addEventListener('click',()=>s
 /* ---------- resumen de la sesión ---------- */
 let sumRows=[];
 function renderSummary(){
-  const course=hasCourse(),s0=D.startT!=null?Math.round(D.startT):0;
+  const course=hasCourse(),s0=D.startT!=null?Math.round(D.startT):(D.detectedStartT!=null?D.detectedStartT:0);
   const rk=course?ranking(D.T-1):null;
   sumRows=D.boats.map(b=>{
     const i=b.id,base=i*D.stride,end=b.finishT<Infinity?b.finishT:D.T-1;
@@ -3388,98 +3687,52 @@ function fmtDuration(s){
 /* ---------- Motor de Análisis Cinemático y Telemetría Avanzada (Optimist) ---------- */
 const boatKinematicsCache=new Map();
 
-function getActiveStartLine(){
-  if(D&&D.course&&D.course.ioda&&D.course.ioda.start&&D.course.ioda.start.pin&&D.course.ioda.start.rc){
-    return D.course.ioda.start;
-  }
-  if(state.tactics&&state.tactics.startLine&&state.tactics.startLine.pin&&state.tactics.startLine.rc){
-    return state.tactics.startLine;
-  }
-  return null;
-}
-
-function getActiveFinishLine(){
-  if(D&&D.course&&D.course.ioda&&D.course.ioda.finish&&D.course.ioda.finish.pin&&D.course.ioda.finish.rc){
-    return D.course.ioda.finish;
-  }
-  return null;
-}
-
-function getOptimistPolarTarget(legType, twsKnots){
-  const tws=clamp(twsKnots||10, 5, 22);
-
-  function interp(table, w){
-    if(w<=6) return table[0];
-    if(w<=10) return table[0] + (table[1]-table[0]) * ((w-6)/4);
-    if(w<=14) return table[1] + (table[2]-table[1]) * ((w-10)/4);
-    if(w<=18) return table[2] + (table[3]-table[2]) * ((w-14)/4);
-    return table[3] + 0.02 * (w-18);
-  }
-
-  if(legType==='UPWIND'){
-    const sogTarget=interp([3.25, 3.85, 4.20, 4.35], tws);
-    const vmgTarget=interp([2.35, 2.82, 3.07, 3.18], tws);
-    return { targetSog:Number(sogTarget.toFixed(2)), targetVmg:Number(vmgTarget.toFixed(2)), optimalTwa:43 };
-  }else if(legType==='DOWNWIND'){
-    const sogTarget=interp([3.50, 4.60, 5.30, 5.80], tws);
-    const vmgTarget=interp([2.90, 3.85, 4.45, 4.90], tws);
-    return { targetSog:Number(sogTarget.toFixed(2)), targetVmg:Number(vmgTarget.toFixed(2)), optimalTwa:150 };
-  }else{
-    const sogTarget=interp([3.80, 4.90, 5.60, 6.10], tws);
-    return { targetSog:Number(sogTarget.toFixed(2)), targetVmg:0, optimalTwa:90 };
-  }
-}
-
 function getBoatRaceInterval(boatIndex){
   if(!D||!D.boats||!D.boats[boatIndex]){
     return { sStart:0, sEnd:0, crossedStart:false, finished:false, startTimeSec:null, finishTimeSec:null, startDelaySec:0 };
   }
+  const b=D.boats[boatIndex];
+  if(b.raceInterval)return b.raceInterval;
+
   const i=boatIndex;
   const base=i*D.stride;
-  const s0=D.startT!=null?Math.round(D.startT):0;
+  const s0=D.startT!=null?Math.round(D.startT):(D.detectedStartT!=null?D.detectedStartT:0);
   const stLine=getActiveStartLine();
   const finLine=getActiveFinishLine();
 
-  // 1. Detección de salida: primer cruce de la línea hacia el campo de regatas
   let sStart=s0;
   let crossedStart=false;
 
   if(stLine&&stLine.pin&&stLine.rc){
-    const scanFrom=Math.max(1, s0-45);
-    const scanTo=Math.min(D.T-1, s0+360);
-    for(let s=scanFrom;s<=scanTo;s++){
-      const ix=base+s;
-      const prevIx=base+(s-1);
-      if(!D.OK[ix]||!D.OK[prevIx])continue;
-      const p1={x:D.X[prevIx], y:D.Y[prevIx]};
-      const p2={x:D.X[ix], y:D.Y[ix]};
-      if(segmentCrossesLine(p1,p2,stLine.pin,stLine.rc,15)){
-        sStart=s;
+    const b1Pt=(D.course&&D.course.ioda&&D.course.ioda.b1)?D.course.ioda.b1:(D.course&&D.course.marks&&D.course.marks[0]?D.course.marks[0]:null);
+    const crs=findBoatStartCrossings(i, stLine, b1Pt, D.windRef);
+    if(crs.length){
+      if(D.startT!=null){
+        let bestDiff=Infinity, bestCross=null;
+        for(const c of crs){const diff=Math.abs(c.s-D.startT); if(diff<bestDiff){bestDiff=diff; bestCross=c;}}
+        if(bestCross&&bestDiff<=360){sStart=bestCross.s; crossedStart=true;}
+      }else{
+        sStart=crs[crs.length-1].s;
         crossedStart=true;
-        break;
       }
     }
   }
 
-  // 2. Detección de llegada: cruce de la línea de llegada
   let sEnd=D.T-1;
   let finished=false;
 
-  if(D.boats[i].finishT!=null&&D.boats[i].finishT<Infinity){
-    sEnd=Math.max(sStart+1, D.boats[i].finishT);
+  if(b.finishT!=null&&b.finishT<Infinity){
+    sEnd=Math.max(sStart+1, b.finishT);
     finished=true;
   }else if(finLine&&finLine.pin&&finLine.rc){
     const scanFrom=Math.max(sStart+15, s0+30);
     for(let s=scanFrom;s<D.T;s++){
-      const ix=base+s;
-      const prevIx=base+(s-1);
+      const ix=base+s, prevIx=base+(s-1);
       if(!D.OK[ix]||!D.OK[prevIx])continue;
-      const p1={x:D.X[prevIx], y:D.Y[prevIx]};
-      const p2={x:D.X[ix], y:D.Y[ix]};
-      if(segmentCrossesLine(p1,p2,finLine.pin,finLine.rc,15)){
+      if(segmentCrossesLine({x:D.X[prevIx], y:D.Y[prevIx]}, {x:D.X[ix], y:D.Y[ix]}, finLine.pin, finLine.rc, 15)){
         sEnd=s;
         finished=true;
-        D.boats[i].finishT=s;
+        b.finishT=s;
         break;
       }
     }
@@ -3488,11 +3741,11 @@ function getBoatRaceInterval(boatIndex){
   sStart=Math.max(0, Math.min(sStart, D.T-1));
   sEnd=Math.max(sStart, Math.min(sEnd, D.T-1));
 
-  const startDelaySec=sStart-s0;
+  const startDelaySec=sStart-(D.startT!=null?Math.round(D.startT):(D.detectedStartT!=null?D.detectedStartT:sStart));
   const startTimeSec=D.t0?D.t0+sStart*1000:null;
   const finishTimeSec=(finished&&D.t0)?D.t0+sEnd*1000:null;
 
-  return{
+  b.raceInterval={
     sStart,
     sEnd,
     crossedStart,
@@ -3501,6 +3754,7 @@ function getBoatRaceInterval(boatIndex){
     finishTimeSec,
     startDelaySec
   };
+  return b.raceInterval;
 }
 
 function getBoatKinematics(i){
@@ -3643,6 +3897,56 @@ function computeTrackEstimatedWind(boatIndex){
 function estimateTWD(boatIndex){
   const wind=(D&&D.windRef!=null)?Math.round(((D.windRef%360)+360)%360):0;
   return{twd:wind,twaBase:43,confidence:'Fijado por entrenador'};
+}
+
+/**
+ * Polares empíricas de referencia para la clase Optimist (IOD95).
+ * Devuelve valores objetivo de TWA, SOG y VMG según el tipo de tramo y la intensidad de viento (TWS).
+ */
+function getOptimistPolarTarget(legType, tws){
+  const w = Math.max(4, Math.min(25, Number(tws) || 10));
+  const type = String(legType || 'UPWIND').toUpperCase();
+
+  // Polares oficiales calibradas para regatas de Optimist (6, 10, 14, 18+ kn)
+  const polarTable = [
+    { tws: 6,  upwind: { twa: 43, sog: 3.25, vmg: 2.35 }, reach: { sog: 3.80 }, downwind: { twa: 152, sog: 3.50, vmg: 2.90 } },
+    { tws: 10, upwind: { twa: 43, sog: 3.85, vmg: 2.82 }, reach: { sog: 4.90 }, downwind: { twa: 150, sog: 4.60, vmg: 3.85 } },
+    { tws: 14, upwind: { twa: 42, sog: 4.20, vmg: 3.07 }, reach: { sog: 5.60 }, downwind: { twa: 148, sog: 5.30, vmg: 4.45 } },
+    { tws: 18, upwind: { twa: 42, sog: 4.35, vmg: 3.18 }, reach: { sog: 6.10 }, downwind: { twa: 146, sog: 5.75, vmg: 4.65 } }
+  ];
+
+  let rowA = polarTable[0], rowB = polarTable[0], f = 0;
+  if(w <= polarTable[0].tws){
+    rowA = polarTable[0]; rowB = polarTable[0]; f = 0;
+  }else if(w >= polarTable[polarTable.length - 1].tws){
+    rowA = polarTable[polarTable.length - 1]; rowB = polarTable[polarTable.length - 1]; f = 0;
+  }else{
+    for(let i = 0; i < polarTable.length - 1; i++){
+      if(w >= polarTable[i].tws && w <= polarTable[i+1].tws){
+        rowA = polarTable[i];
+        rowB = polarTable[i+1];
+        f = (w - rowA.tws) / (rowB.tws - rowA.tws);
+        break;
+      }
+    }
+  }
+
+  const lerp = (a, b) => a + (b - a) * f;
+
+  if(type === 'UPWIND'){
+    const twa = lerp(rowA.upwind.twa, rowB.upwind.twa);
+    const targetSog = lerp(rowA.upwind.sog, rowB.upwind.sog);
+    const targetVmg = lerp(rowA.upwind.vmg, rowB.upwind.vmg);
+    return { type, twa, targetSog, targetVmg };
+  } else if(type === 'DOWNWIND'){
+    const twa = lerp(rowA.downwind.twa, rowB.downwind.twa);
+    const targetSog = lerp(rowA.downwind.sog, rowB.downwind.sog);
+    const targetVmg = lerp(rowA.downwind.vmg, rowB.downwind.vmg);
+    return { type, twa, targetSog, targetVmg };
+  } else {
+    const targetSog = lerp(rowA.reach.sog, rowB.reach.sog);
+    return { type: 'REACH', twa: 90, targetSog, targetVmg: 0 };
+  }
 }
 
 function detectManeuvers(boatIndex, twd){
@@ -3988,10 +4292,22 @@ function renderTacticalAnalysis(){
   const boatIdx=Math.min(D.N-1,Math.max(0,parseInt(selEl.value,10)||0));
   selectedTacticalBoatId=boatIdx;
   const boat=D.boats[boatIdx];
+  if(!boat)return;
   const kine=getBoatKinematics(boatIdx);
+  if(!kine)return;
   const twd=Math.round(((D.windRef%360)+360)%360);
-  const maneuvers=detectManeuvers(boatIdx,twd);
-  const legs=analyzeIODALegs(boatIdx,twd,maneuvers);
+  let maneuvers=[];
+  try{
+    maneuvers=detectManeuvers(boatIdx,twd)||[];
+  }catch(err){
+    console.error('Error detectManeuvers:',err);
+  }
+  let legs=[];
+  try{
+    legs=analyzeIODALegs(boatIdx,twd,maneuvers)||[];
+  }catch(err){
+    console.error('Error analyzeIODALegs:',err);
+  }
 
   currentTacticalData={boat,boatIdx,kine,twd,maneuvers,legs};
 
@@ -4139,8 +4455,16 @@ function renderTacticalAnalysis(){
   }
 
   // 4. Renderizar Gráficos Dinámicos de Rendimiento y Maniobras
-  renderSailorPolarChart(boatIdx, twd);
-  renderManeuverSpeedChart(boatIdx, currentManeuverChartMode);
+  try{
+    renderSailorPolarChart(boatIdx, twd);
+  }catch(err){
+    console.error('Error renderSailorPolarChart:',err);
+  }
+  try{
+    renderManeuverSpeedChart(boatIdx, currentManeuverChartMode);
+  }catch(err){
+    console.error('Error renderManeuverSpeedChart:',err);
+  }
 }
 
 function renderSailorPolarChart(boatIdx, twd){
@@ -5311,7 +5635,8 @@ document.getElementById('labels').addEventListener('change',e=>state.labels=e.ta
 function renderTicks(){
   const el=document.getElementById('ticks');el.innerHTML='';const add=(t,l,cls)=>{const d=document.createElement('span');d.className='tick'+(cls?' '+cls:'');d.style.left=(t/(D.T-1)*100)+'%';d.textContent=l;el.appendChild(d);};
   if(D.t0){const step=D.T>3*3600?3600:1800;let h=Math.ceil(D.t0/(step*1000))*step*1000;for(;h<D.t0+D.T*1000;h+=step*1000){const s=(h-D.t0)/1000;if(s>D.T*0.03&&s<D.T*0.97)add(s,new Date(h).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}),'hour');}}
-  if(D.startT!=null)add(D.startT,'Salida','start');
+  const effStart=D.startT!=null?D.startT:(D.detectedStartT!=null?D.detectedStartT:null);
+  if(effStart!=null)add(effStart,'Salida','start');
   if(!hasCourse())return;
   const nL=D.course.legs.length;
   for(let k=0;k<nL;k++){outer:for(let s=0;s<D.T;s++){for(let i=0;i<D.N;i++){if(D.LG[i*D.stride+s]>k){add(s,k<nL-1?'B'+(k+1):'1º llega');break outer;}}}}
@@ -5456,6 +5781,13 @@ function rebuild(align, savedCourse, savedTactics){
     if(savedTactics){
       state.tactics=Object.assign({lines:[],arrows:[],boats:[],startLine:null,showStartGrid:true,laylines:false,threeLengths:false,manualZones:[]}, savedTactics);
     }
+    const restoredStartLine=(savedCourse&&savedCourse.startLine)||(savedCourse&&savedCourse.ioda&&savedCourse.ioda.start)||(savedTactics&&savedTactics.startLine)||null;
+    if(restoredStartLine){
+      nd.course.startLine=restoredStartLine;
+      if(!nd.course.ioda)nd.course.ioda={};
+      nd.course.ioda.start=restoredStartLine;
+      state.tactics.startLine=restoredStartLine;
+    }
     nd.boats.forEach(b=>{if(prev[b.name])b.sail=prev[b.name];});
     loadDataset(nd);
     const short=Object.keys(all).filter(k=>all[k].length<10);
@@ -5581,6 +5913,7 @@ function saveCurrentSession(){
       type:D.course.type||'free',
       marks:D.course.marks,
       ioda:D.course.ioda,
+      startLine:getActiveStartLine(),
       startT:D.startT,
       windRef:D.windRef,
       radius:D.radius
