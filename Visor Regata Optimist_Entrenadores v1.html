@@ -6321,6 +6321,9 @@ let currentCloudCategoryFilter = 'all';
 let currentCloudTypeFilter = 'all';
 let currentCloudBoatFilter = 'all';
 let clubSailorNames = {};
+let clubSailorNotes = {};
+let clubSailorBadges = {};
+let clubSailorUpdated = {};
 let bigDataActiveChartTab = 'starts';
 
 function isCoachModeActive(){
@@ -6535,10 +6538,13 @@ async function ensureTursoSchema(){
         nombre TEXT NOT NULL,
         categoria TEXT,
         notas TEXT,
+        insignias_config TEXT,
         actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
   } catch(_) {}
+  try { await executeTurso("ALTER TABLE regatistas_club ADD COLUMN notas TEXT;"); } catch(_) {}
+  try { await executeTurso("ALTER TABLE regatistas_club ADD COLUMN insignias_config TEXT;"); } catch(_) {}
   try {
     await executeTurso("CREATE INDEX IF NOT EXISTS idx_barcos_stats_vela ON regatas_barcos_stats(vela);");
   } catch(_) {}
@@ -6549,10 +6555,19 @@ async function ensureTursoSchema(){
 
 async function fetchClubSailorNames(){
   try {
-    const sRows = await executeTurso("SELECT vela, nombre FROM regatistas_club;");
+    const sRows = await executeTurso("SELECT vela, nombre, notas, insignias_config, actualizado_en FROM regatistas_club;");
     if(sRows && sRows.length){
       sRows.forEach(sr => {
-        if(sr.vela && sr.nombre) clubSailorNames[sr.vela.trim()] = sr.nombre.trim();
+        const v = (sr.vela || '').trim();
+        if(!v) return;
+        if(sr.nombre) clubSailorNames[v] = sr.nombre.trim();
+        if(sr.notas != null) clubSailorNotes[v] = sr.notas.trim();
+        if(sr.insignias_config){
+          try {
+            clubSailorBadges[v] = typeof sr.insignias_config === 'string' ? JSON.parse(sr.insignias_config) : sr.insignias_config;
+          } catch(_) {}
+        }
+        if(sr.actualizado_en) clubSailorUpdated[v] = sr.actualizado_en;
       });
     }
   } catch(e) {
@@ -7017,14 +7032,20 @@ async function renderBigDataStatsView(chosenSail){
 
   container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--dim)">⏳ Consultando Big Data del regatista desde Turso SQLite...</div>';
 
-  if(!clubSailorNames[sail]){
-    try {
-      const nameRes = await executeTurso("SELECT nombre FROM regatistas_club WHERE vela = ? LIMIT 1;", [sail]);
-      if(nameRes && nameRes.length && nameRes[0].nombre){
-        clubSailorNames[sail] = nameRes[0].nombre.trim();
+  try {
+    const rClub = await executeTurso("SELECT nombre, notas, insignias_config, actualizado_en FROM regatistas_club WHERE vela = ? LIMIT 1;", [sail]);
+    if(rClub && rClub.length){
+      const rc = rClub[0];
+      if(rc.nombre) clubSailorNames[sail] = rc.nombre.trim();
+      if(rc.notas != null) clubSailorNotes[sail] = rc.notas.trim();
+      if(rc.insignias_config){
+        try {
+          clubSailorBadges[sail] = typeof rc.insignias_config === 'string' ? JSON.parse(rc.insignias_config) : rc.insignias_config;
+        } catch(_) {}
       }
-    } catch(_) {}
-  }
+      if(rc.actualizado_en) clubSailorUpdated[sail] = rc.actualizado_en;
+    }
+  } catch(_) {}
 
   let statsRows = [];
   try {
@@ -7167,15 +7188,112 @@ async function renderBigDataStatsView(chosenSail){
   const validGaps = statsRows.map(r => parseFloat(r.gap_lider_s)).filter(g => !isNaN(g));
   const avgGapLider = validGaps.length ? (validGaps.reduce((a, b) => a + b, 0) / validGaps.length) : 15.0;
 
-  // Insignias y Logros de Gamificación (Punto 7)
-  const hasSalidaCanon = statsRows.some(r => (parseFloat(r.tiempo_salida_s) || 99) <= 2.0 && (parseFloat(r.vel_salida_kn) || 0) >= 3.5);
-  const hasViradaFina = avgTackLoss <= 1.8;
-  const hasMillasOro = parseFloat(totalNm) >= 10.0;
-  const hasRemontador = remontadaDiff >= 0.5;
+  // Insignias y Logros de Gamificación (Punto 7 + Gestión Manual)
+  const autoSalidaCanon = statsRows.some(r => (parseFloat(r.tiempo_salida_s) || 99) <= 2.0 && (parseFloat(r.vel_salida_kn) || 0) >= 3.5);
+  const autoViradaFina = avgTackLoss <= 1.8;
+  const autoMillasOro = parseFloat(totalNm) >= 10.0;
+  const autoRemontador = remontadaDiff >= 0.5;
+  const autoRecordSog = maxSog > 0;
 
   let bestSogDate = '';
   const bestSogRow = statsRows.find(r => parseFloat(r.sog_max) === maxSog);
   if(bestSogRow) bestSogDate = (bestSogRow.fecha || '').slice(0, 10);
+
+  const sailorNotes = clubSailorNotes[sail] || '';
+  const sailorNotesUpdated = clubSailorUpdated[sail] || '';
+  const badgeConfig = clubSailorBadges[sail] || {};
+
+  const getBadgeVisibility = (key, autoVal) => {
+    const cfg = badgeConfig[key] || 'auto';
+    if(cfg === 'show') return { visibleForSailor: true, isForced: true, isHidden: false };
+    if(cfg === 'hide') return { visibleForSailor: false, isForced: false, isHidden: true };
+    return { visibleForSailor: !!autoVal, isForced: false, isHidden: false };
+  };
+
+  const stSalida = getBadgeVisibility('salidaCanon', autoSalidaCanon);
+  const stVirada = getBadgeVisibility('viradaFina', autoViradaFina);
+  const stMillas = getBadgeVisibility('millasOro', autoMillasOro);
+  const stRemontador = getBadgeVisibility('remontador', autoRemontador);
+  const stRecord = getBadgeVisibility('recordSog', autoRecordSog);
+  const customBadgeText = (badgeConfig.customBadge || '').trim();
+
+  let badgesHtml = '';
+  let visibleBadgeCount = 0;
+
+  // 1. Récord SOG
+  if(isCoach ? (stRecord.visibleForSailor || stRecord.isHidden) : stRecord.visibleForSailor){
+    visibleBadgeCount++;
+    badgesHtml += `
+      <div style="background:rgba(234,179,8,0.12);color:#b45309;border:${stRecord.isHidden ? '1.5px dashed #ef4444' : '1px solid rgba(234,179,8,0.3)'};padding:4px 10px;border-radius:20px;font-weight:700;display:inline-flex;align-items:center;gap:6px;${stRecord.isHidden ? 'opacity:0.75' : ''}" title="Récord máximo alcanzado">
+        ⚡ Récord SOG: ${maxSog.toFixed(1)} kn ${bestSogDate ? `(${esc(bestSogDate)})` : ''}
+        ${isCoach && stRecord.isHidden ? '<span style="font-size:10px;background:#ef4444;color:#fff;padding:1px 5px;border-radius:10px">Oculta al regatista</span>' : ''}
+        ${isCoach && stRecord.isForced ? '<span style="font-size:10px;background:#16a34a;color:#fff;padding:1px 5px;border-radius:10px">Forzada</span>' : ''}
+      </div>
+    `;
+  }
+
+  // 2. Salida Cañón
+  if(isCoach ? (stSalida.visibleForSailor || stSalida.isHidden) : stSalida.visibleForSailor){
+    visibleBadgeCount++;
+    badgesHtml += `
+      <div style="background:rgba(22,163,74,0.12);color:#16a34a;border:${stSalida.isHidden ? '1.5px dashed #ef4444' : '1px solid rgba(22,163,74,0.3)'};padding:4px 10px;border-radius:20px;font-weight:700;display:inline-flex;align-items:center;gap:6px;${stSalida.isHidden ? 'opacity:0.75' : ''}" title="Salida en ≤ 2.0s a más de 3.5 kn">
+        🚀 Insignia «Salida Cañón»
+        ${isCoach && stSalida.isHidden ? '<span style="font-size:10px;background:#ef4444;color:#fff;padding:1px 5px;border-radius:10px">Oculta al regatista</span>' : ''}
+        ${isCoach && stSalida.isForced ? '<span style="font-size:10px;background:#16a34a;color:#fff;padding:1px 5px;border-radius:10px">Forzada</span>' : ''}
+      </div>
+    `;
+  }
+
+  // 3. Virada Fina
+  if(isCoach ? (stVirada.visibleForSailor || stVirada.isHidden) : stVirada.visibleForSailor){
+    visibleBadgeCount++;
+    badgesHtml += `
+      <div style="background:rgba(14,165,233,0.12);color:#0284c7;border:${stVirada.isHidden ? '1.5px dashed #ef4444' : '1px solid rgba(14,165,233,0.3)'};padding:4px 10px;border-radius:20px;font-weight:700;display:inline-flex;align-items:center;gap:6px;${stVirada.isHidden ? 'opacity:0.75' : ''}" title="Pérdida media en viradas ≤ 1.8 kn">
+        🔄 Insignia «Virada Fina»
+        ${isCoach && stVirada.isHidden ? '<span style="font-size:10px;background:#ef4444;color:#fff;padding:1px 5px;border-radius:10px">Oculta al regatista</span>' : ''}
+        ${isCoach && stVirada.isForced ? '<span style="font-size:10px;background:#16a34a;color:#fff;padding:1px 5px;border-radius:10px">Forzada</span>' : ''}
+      </div>
+    `;
+  }
+
+  // 4. Millas de Oro
+  if(isCoach ? (stMillas.visibleForSailor || stMillas.isHidden) : stMillas.visibleForSailor){
+    visibleBadgeCount++;
+    badgesHtml += `
+      <div style="background:rgba(168,85,247,0.12);color:#7c3aed;border:${stMillas.isHidden ? '1.5px dashed #ef4444' : '1px solid rgba(168,85,247,0.3)'};padding:4px 10px;border-radius:20px;font-weight:700;display:inline-flex;align-items:center;gap:6px;${stMillas.isHidden ? 'opacity:0.75' : ''}" title="Más de 10 Millas Náuticas navegadas">
+        ⚓ Insignia «Millas de Oro» (${totalNm} NM)
+        ${isCoach && stMillas.isHidden ? '<span style="font-size:10px;background:#ef4444;color:#fff;padding:1px 5px;border-radius:10px">Oculta al regatista</span>' : ''}
+        ${isCoach && stMillas.isForced ? '<span style="font-size:10px;background:#16a34a;color:#fff;padding:1px 5px;border-radius:10px">Forzada</span>' : ''}
+      </div>
+    `;
+  }
+
+  // 5. Remontador
+  if(isCoach ? (stRemontador.visibleForSailor || stRemontador.isHidden) : stRemontador.visibleForSailor){
+    visibleBadgeCount++;
+    badgesHtml += `
+      <div style="background:rgba(249,115,22,0.12);color:#ea580c;border:${stRemontador.isHidden ? '1.5px dashed #ef4444' : '1px solid rgba(249,115,22,0.3)'};padding:4px 10px;border-radius:20px;font-weight:700;display:inline-flex;align-items:center;gap:6px;${stRemontador.isHidden ? 'opacity:0.75' : ''}" title="Gana puestos de media desde Barlovento hasta Meta">
+        📈 Insignia «Remontador» (+${remontadaDiff.toFixed(1)} p.)
+        ${isCoach && stRemontador.isHidden ? '<span style="font-size:10px;background:#ef4444;color:#fff;padding:1px 5px;border-radius:10px">Oculta al regatista</span>' : ''}
+        ${isCoach && stRemontador.isForced ? '<span style="font-size:10px;background:#16a34a;color:#fff;padding:1px 5px;border-radius:10px">Forzada</span>' : ''}
+      </div>
+    `;
+  }
+
+  // 6. Insignia Personalizada (si existe)
+  if(customBadgeText){
+    visibleBadgeCount++;
+    badgesHtml += `
+      <div style="background:rgba(13,148,136,0.12);color:#0f766e;border:1px solid rgba(13,148,136,0.3);padding:4px 10px;border-radius:20px;font-weight:700;display:inline-flex;align-items:center;gap:6px" title="Insignia asignada por el entrenador">
+        🎖️ Insignia «${esc(customBadgeText)}»
+        ${isCoach ? '<span style="font-size:10px;background:#0d9488;color:#fff;padding:1px 5px;border-radius:10px">Entrenador</span>' : ''}
+      </div>
+    `;
+  }
+
+  if(!visibleBadgeCount && !isCoach){
+    badgesHtml = `<span style="font-size:12px;color:var(--dim);font-style:italic">⛵ Completa entrenamientos y cumple los objetivos del club para desbloquear insignias deportivas.</span>`;
+  }
 
   container.innerHTML = `
     <!-- Tarjeta de cabecera del regatista -->
@@ -7211,31 +7329,144 @@ async function renderBigDataStatsView(chosenSail){
       </div>
 
       <!-- Tira de Insignias y Logros de Gamificación -->
-      <div style="display:flex;gap:10px;flex-wrap:wrap;padding-top:10px;border-top:1px dashed var(--line);font-size:12px">
-        <div style="background:rgba(234,179,8,0.12);color:#b45309;border:1px solid rgba(234,179,8,0.3);padding:4px 10px;border-radius:20px;font-weight:700;display:inline-flex;align-items:center;gap:6px" title="Récord máximo alcanzado">
-          ⚡ Récord SOG: ${maxSog.toFixed(1)} kn ${bestSogDate ? `(${esc(bestSogDate)})` : ''}
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:12px">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          ${badgesHtml}
         </div>
-        ${hasSalidaCanon ? `
-          <div style="background:rgba(22,163,74,0.12);color:#16a34a;border:1px solid rgba(22,163,74,0.3);padding:4px 10px;border-radius:20px;font-weight:700;display:inline-flex;align-items:center;gap:6px" title="Salida en ≤ 2.0s a más de 3.5 kn">
-            🚀 Insignia «Salida Cañón»
-          </div>
-        ` : ''}
-        ${hasViradaFina ? `
-          <div style="background:rgba(14,165,233,0.12);color:#0284c7;border:1px solid rgba(14,165,233,0.3);padding:4px 10px;border-radius:20px;font-weight:700;display:inline-flex;align-items:center;gap:6px" title="Pérdida media en viradas ≤ 1.8 kn">
-            🔄 Insignia «Virada Fina»
-          </div>
-        ` : ''}
-        ${hasMillasOro ? `
-          <div style="background:rgba(168,85,247,0.12);color:#7c3aed;border:1px solid rgba(168,85,247,0.3);padding:4px 10px;border-radius:20px;font-weight:700;display:inline-flex;align-items:center;gap:6px" title="Más de 10 Millas Náuticas navegadas">
-            ⚓ Insignia «Millas de Oro» (${totalNm} NM)
-          </div>
-        ` : ''}
-        ${hasRemontador ? `
-          <div style="background:rgba(249,115,22,0.12);color:#ea580c;border:1px solid rgba(249,115,22,0.3);padding:4px 10px;border-radius:20px;font-weight:700;display:inline-flex;align-items:center;gap:6px" title="Gana puestos de media desde Barlovento hasta Meta">
-            📈 Insignia «Remontador» (+${remontadaDiff.toFixed(1)} p.)
+        ${isCoach ? `
+          <div>
+            <button class="btn" id="btnToggleBadgesPanel" type="button" style="font-size:11px;padding:3px 9px;font-weight:600;color:var(--accent);display:inline-flex;align-items:center;gap:4px" title="Ocultar, forzar o modificar insignias">
+              ⚙️ Gestionar Insignias
+            </button>
           </div>
         ` : ''}
       </div>
+
+      <!-- Panel de Control de Insignias para Entrenador -->
+      ${isCoach ? `
+        <div id="badgesManagementPanel" style="display:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-top:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div style="font-weight:700;font-size:13px;color:var(--ink);display:flex;align-items:center;gap:6px">
+              <span>⚙️ Configuración Manual de Insignias</span>
+            </div>
+            <button class="btn" id="btnCloseManageBadges" type="button" style="padding:2px 8px;font-size:11px">✕ Cerrar</button>
+          </div>
+          <div style="font-size:11.5px;color:var(--dim);margin-bottom:12px">
+            Puedes configurar cada insignia en modo <strong>Auto</strong> (calculada por telemetría), <strong>Mostrar siempre</strong> (forzada/concedida) u <strong>Ocultar al regatista</strong>.
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:10px;margin-bottom:12px">
+            <div style="background:var(--sub);padding:8px 12px;border-radius:6px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:12px">
+                <strong>🚀 Salida Cañón</strong>
+                <div style="font-size:10.5px;color:var(--dim)">Auto: ${autoSalidaCanon ? '<span style="color:#16a34a">✓ Cumple</span>' : '✗ No cumple'}</div>
+              </div>
+              <select id="selBadge_salidaCanon" style="font-size:11.5px;padding:4px 6px;border-radius:4px;border:1px solid var(--line);background:var(--panel);color:var(--ink)">
+                <option value="auto" ${badgeConfig.salidaCanon === 'auto' || !badgeConfig.salidaCanon ? 'selected' : ''}>Auto (por datos)</option>
+                <option value="show" ${badgeConfig.salidaCanon === 'show' ? 'selected' : ''}>👁️ Mostrar siempre</option>
+                <option value="hide" ${badgeConfig.salidaCanon === 'hide' ? 'selected' : ''}>🚫 Ocultar al regatista</option>
+              </select>
+            </div>
+
+            <div style="background:var(--sub);padding:8px 12px;border-radius:6px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:12px">
+                <strong>🔄 Virada Fina</strong>
+                <div style="font-size:10.5px;color:var(--dim)">Auto: ${autoViradaFina ? '<span style="color:#16a34a">✓ Cumple</span>' : '✗ No cumple'}</div>
+              </div>
+              <select id="selBadge_viradaFina" style="font-size:11.5px;padding:4px 6px;border-radius:4px;border:1px solid var(--line);background:var(--panel);color:var(--ink)">
+                <option value="auto" ${badgeConfig.viradaFina === 'auto' || !badgeConfig.viradaFina ? 'selected' : ''}>Auto (por datos)</option>
+                <option value="show" ${badgeConfig.viradaFina === 'show' ? 'selected' : ''}>👁️ Mostrar siempre</option>
+                <option value="hide" ${badgeConfig.viradaFina === 'hide' ? 'selected' : ''}>🚫 Ocultar al regatista</option>
+              </select>
+            </div>
+
+            <div style="background:var(--sub);padding:8px 12px;border-radius:6px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:12px">
+                <strong>⚓ Millas de Oro</strong>
+                <div style="font-size:10.5px;color:var(--dim)">Auto: ${autoMillasOro ? '<span style="color:#16a34a">✓ Cumple</span>' : '✗ No cumple'}</div>
+              </div>
+              <select id="selBadge_millasOro" style="font-size:11.5px;padding:4px 6px;border-radius:4px;border:1px solid var(--line);background:var(--panel);color:var(--ink)">
+                <option value="auto" ${badgeConfig.millasOro === 'auto' || !badgeConfig.millasOro ? 'selected' : ''}>Auto (por datos)</option>
+                <option value="show" ${badgeConfig.millasOro === 'show' ? 'selected' : ''}>👁️ Mostrar siempre</option>
+                <option value="hide" ${badgeConfig.millasOro === 'hide' ? 'selected' : ''}>🚫 Ocultar al regatista</option>
+              </select>
+            </div>
+
+            <div style="background:var(--sub);padding:8px 12px;border-radius:6px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:12px">
+                <strong>📈 Remontador</strong>
+                <div style="font-size:10.5px;color:var(--dim)">Auto: ${autoRemontador ? '<span style="color:#16a34a">✓ Cumple</span>' : '✗ No cumple'}</div>
+              </div>
+              <select id="selBadge_remontador" style="font-size:11.5px;padding:4px 6px;border-radius:4px;border:1px solid var(--line);background:var(--panel);color:var(--ink)">
+                <option value="auto" ${badgeConfig.remontador === 'auto' || !badgeConfig.remontador ? 'selected' : ''}>Auto (por datos)</option>
+                <option value="show" ${badgeConfig.remontador === 'show' ? 'selected' : ''}>👁️ Mostrar siempre</option>
+                <option value="hide" ${badgeConfig.remontador === 'hide' ? 'selected' : ''}>🚫 Ocultar al regatista</option>
+              </select>
+            </div>
+
+            <div style="background:var(--sub);padding:8px 12px;border-radius:6px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:12px">
+                <strong>⚡ Récord SOG</strong>
+                <div style="font-size:10.5px;color:var(--dim)">Auto: ${autoRecordSog ? '<span style="color:#16a34a">✓ Cumple</span>' : '✗ No cumple'}</div>
+              </div>
+              <select id="selBadge_recordSog" style="font-size:11.5px;padding:4px 6px;border-radius:4px;border:1px solid var(--line);background:var(--panel);color:var(--ink)">
+                <option value="auto" ${badgeConfig.recordSog === 'auto' || !badgeConfig.recordSog ? 'selected' : ''}>Auto (por datos)</option>
+                <option value="show" ${badgeConfig.recordSog === 'show' ? 'selected' : ''}>👁️ Mostrar siempre</option>
+                <option value="hide" ${badgeConfig.recordSog === 'hide' ? 'selected' : ''}>🚫 Ocultar al regatista</option>
+              </select>
+            </div>
+
+            <div style="background:var(--sub);padding:8px 12px;border-radius:6px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+              <div style="font-size:12px">
+                <strong>🎖️ Insignia Especial</strong>
+                <div style="font-size:10.5px;color:var(--dim)">Personalizada</div>
+              </div>
+              <input type="text" id="inpCustomBadge" value="${esc(badgeConfig.customBadge || '')}" placeholder="Nombre insignia" style="width:130px;font-size:11.5px;padding:4px 6px;border-radius:4px;border:1px solid var(--line);background:var(--panel);color:var(--ink)">
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:8px">
+            <button class="btn primary" id="btnSaveBadgesConfig" type="button" style="font-size:11.5px;padding:5px 14px;font-weight:700">
+              💾 Guardar Ajustes de Insignias
+            </button>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+
+    <!-- Cuadro de Anotaciones y Objetivos del Entrenador -->
+    <div style="background:var(--sub);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:18px">
+      ${isCoach ? `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px">
+          <div style="font-weight:700;font-size:13.5px;color:var(--ink);display:flex;align-items:center;gap:7px">
+            <span>📝 Anotaciones y Objetivos del Entrenador · ⛵ ${esc(sail)} (${esc(currentSailorName || 'Regatista')})</span>
+          </div>
+          <span style="font-size:11px;background:rgba(2,132,199,0.08);color:#0284c7;padding:2px 8px;border-radius:12px;font-weight:700">Modo Entrenador</span>
+        </div>
+        <div style="font-size:11.5px;color:var(--dim);margin-bottom:8px">
+          Espacio exclusivo para anotaciones sobre trimado, colocación en la línea de salida, técnica de virada y debriefing de este regatista.
+        </div>
+        <textarea id="sailorCoachNotesText" rows="3" style="width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-family:inherit;font-size:12.5px;line-height:1.5;resize:vertical;background:var(--panel);color:var(--ink)" placeholder="Escribe aquí las observaciones técnicas, puntos fuertes, debilidades y metas para el regatista...">${esc(sailorNotes)}</textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;flex-wrap:wrap;gap:8px">
+          <span id="sailorCoachNotesStatus" style="font-size:11.5px;color:var(--dim)">${sailorNotesUpdated ? `Última actualización: ${esc(sailorNotesUpdated)}` : 'Sin anotaciones registradas aún'}</span>
+          <button class="btn primary" id="btnSaveSailorCoachNotes" type="button" style="font-size:11.5px;padding:5px 14px;font-weight:700">
+            💾 Guardar Notas
+          </button>
+        </div>
+      ` : `
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">
+          <span style="font-size:15px">📝</span>
+          <span style="font-weight:700;font-size:13.5px;color:var(--ink)">Observaciones y Objetivos del Entrenador</span>
+        </div>
+        ${sailorNotes ? `
+          <div style="font-size:12.5px;color:var(--ink);line-height:1.6;white-space:pre-wrap;background:var(--panel);padding:12px 14px;border-radius:6px;border:1px solid var(--line)">${esc(sailorNotes)}</div>
+          ${sailorNotesUpdated ? `<div style="font-size:11px;color:var(--dim);margin-top:6px;text-align:right">Actualizado: ${esc(sailorNotesUpdated)}</div>` : ''}
+        ` : `
+          <div style="font-size:12px;color:var(--dim);font-style:italic;background:var(--panel);padding:10px 12px;border-radius:6px;border:1px dashed var(--line)">
+            Aún no hay anotaciones registradas por los entrenadores para esta vela.
+          </div>
+        `}
+      `}
     </div>
 
     <!-- Grid de 6 KPIs Big Data Principales -->
@@ -7586,9 +7817,15 @@ async function renderBigDataStatsView(chosenSail){
       }
       try {
         await ensureTursoSchema();
+        const curNotes = clubSailorNotes[sail] || null;
+        const curBadges = clubSailorBadges[sail] ? JSON.stringify(clubSailorBadges[sail]) : null;
         await executeTurso(
-          "INSERT OR REPLACE INTO regatistas_club (vela, nombre, actualizado_en) VALUES (?, ?, CURRENT_TIMESTAMP);",
-          [sail, clean]
+          "UPDATE regatistas_club SET nombre = ?, actualizado_en = CURRENT_TIMESTAMP WHERE vela = ?;",
+          [clean, sail]
+        );
+        await executeTurso(
+          "INSERT OR IGNORE INTO regatistas_club (vela, nombre, notas, insignias_config, actualizado_en) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP);",
+          [sail, clean, curNotes, curBadges]
         );
         try {
           await executeTurso("UPDATE regatas_barcos_stats SET regatista = ? WHERE vela = ?;", [clean, sail]);
@@ -7612,6 +7849,102 @@ async function renderBigDataStatsView(chosenSail){
         const btnNow = document.getElementById('btnEditSailorName');
         if(btnNow) btnNow.click();
       });
+    });
+  }
+
+  // Panel de Gestión Manual de Insignias (Modo Entrenador)
+  const btnToggleBadges = document.getElementById('btnToggleBadgesPanel');
+  const badgesPanel = document.getElementById('badgesManagementPanel');
+  if(btnToggleBadges && badgesPanel){
+    btnToggleBadges.addEventListener('click', () => {
+      const isClosed = badgesPanel.style.display === 'none' || !badgesPanel.style.display;
+      badgesPanel.style.display = isClosed ? 'block' : 'none';
+      btnToggleBadges.textContent = isClosed ? '✕ Ocultar Panel' : '⚙️ Gestionar Insignias';
+    });
+  }
+  const btnCloseBadges = document.getElementById('btnCloseManageBadges');
+  if(btnCloseBadges && badgesPanel){
+    btnCloseBadges.addEventListener('click', () => {
+      badgesPanel.style.display = 'none';
+      if(btnToggleBadges) btnToggleBadges.textContent = '⚙️ Gestionar Insignias';
+    });
+  }
+
+  const btnSaveBadges = document.getElementById('btnSaveBadgesConfig');
+  if(btnSaveBadges){
+    btnSaveBadges.addEventListener('click', async () => {
+      btnSaveBadges.disabled = true;
+      btnSaveBadges.textContent = 'Guardando...';
+      const newConfig = {
+        salidaCanon: document.getElementById('selBadge_salidaCanon')?.value || 'auto',
+        viradaFina: document.getElementById('selBadge_viradaFina')?.value || 'auto',
+        millasOro: document.getElementById('selBadge_millasOro')?.value || 'auto',
+        remontador: document.getElementById('selBadge_remontador')?.value || 'auto',
+        recordSog: document.getElementById('selBadge_recordSog')?.value || 'auto',
+        customBadge: (document.getElementById('inpCustomBadge')?.value || '').trim()
+      };
+      try {
+        await ensureTursoSchema();
+        const configStr = JSON.stringify(newConfig);
+        const curName = clubSailorNames[sail] || '';
+        const curNotes = clubSailorNotes[sail] || null;
+        await executeTurso(
+          "UPDATE regatistas_club SET insignias_config = ?, actualizado_en = CURRENT_TIMESTAMP WHERE vela = ?;",
+          [configStr, sail]
+        );
+        await executeTurso(
+          "INSERT OR IGNORE INTO regatistas_club (vela, nombre, notas, insignias_config, actualizado_en) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP);",
+          [sail, curName || sail, curNotes, configStr]
+        );
+        clubSailorBadges[sail] = newConfig;
+        showMsg([{ t: `✓ Configuración de insignias guardada para ⛵ ${sail}`, cls: 'ok' }]);
+        renderBigDataStatsView(sail);
+      } catch(err) {
+        alert('Error al guardar insignias: ' + err.message);
+      } finally {
+        btnSaveBadges.disabled = false;
+        btnSaveBadges.textContent = '💾 Guardar Ajustes de Insignias';
+      }
+    });
+  }
+
+  // Cuaderno de Notas del Entrenador
+  const btnSaveNotes = document.getElementById('btnSaveSailorCoachNotes');
+  if(btnSaveNotes){
+    btnSaveNotes.addEventListener('click', async () => {
+      const textarea = document.getElementById('sailorCoachNotesText');
+      const statusEl = document.getElementById('sailorCoachNotesStatus');
+      const notesVal = textarea ? textarea.value.trim() : '';
+      btnSaveNotes.disabled = true;
+      btnSaveNotes.textContent = 'Guardando...';
+      if(statusEl){ statusEl.style.color = 'var(--ink)'; statusEl.textContent = 'Guardando en la nube de Turso...'; }
+
+      try {
+        await ensureTursoSchema();
+        const curName = clubSailorNames[sail] || '';
+        const curBadges = clubSailorBadges[sail] ? JSON.stringify(clubSailorBadges[sail]) : null;
+        await executeTurso(
+          "UPDATE regatistas_club SET notas = ?, actualizado_en = CURRENT_TIMESTAMP WHERE vela = ?;",
+          [notesVal, sail]
+        );
+        await executeTurso(
+          "INSERT OR IGNORE INTO regatistas_club (vela, nombre, notas, insignias_config, actualizado_en) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP);",
+          [sail, curName || sail, notesVal, curBadges]
+        );
+        clubSailorNotes[sail] = notesVal;
+        clubSailorUpdated[sail] = new Date().toISOString().replace('T', ' ').slice(0, 19);
+        if(statusEl){
+          statusEl.style.color = '#16a34a';
+          statusEl.textContent = '✓ Guardado correctamente';
+        }
+        showMsg([{ t: `✓ Notas del entrenador guardadas para ⛵ ${sail}`, cls: 'ok' }]);
+      } catch(err) {
+        if(statusEl){ statusEl.style.color = '#ef4444'; statusEl.textContent = 'Error: ' + err.message; }
+        alert('Error al guardar las notas: ' + err.message);
+      } finally {
+        btnSaveNotes.disabled = false;
+        btnSaveNotes.textContent = '💾 Guardar Notas';
+      }
     });
   }
 

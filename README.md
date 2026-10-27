@@ -449,6 +449,21 @@ Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan
   * **Líneas y flechas**: Selectores de color dedicados junto a los botones de línea y flecha para trazar mediciones y vectores tácticos en el color que prefieras (azul, verde, naranja, etc.).
 * **Persistencia total**: Los colores asignados y los borrados selectivos se guardan automáticamente en la memoria del navegador y persisten tras pulsar F5.
 
+### [v1.3.8] - Gestión Manual de Insignias y Cuaderno de Notas del Entrenador por Regatista
+* **Gestión Manual de Insignias (Modo Entrenador)**:
+  * **Control de visibilidad**: Los entrenadores disponen del botón **«⚙️ Gestionar Insignias»** para personalizar individualmente las insignias de cada regatista.
+  * **Opciones por insignia**:
+    * `Auto (por datos)`: El sistema calcula y otorga la insignia de manera automática según la telemetría del regatista.
+    * `Mostrar siempre`: Fuerza la visibilidad de la insignia como condecoración o reconocimiento del entrenador.
+    * `Ocultar al regatista`: Oculta expresamente la insignia en la vista del regatista (incluso si sus números la alcanzan), útil para debriefing o nuevos objetivos.
+  * **Insignia Especial Personalizada**: Campo para crear insignias únicas asignadas por el cuerpo técnico (ej. *Espíritu Deportivo*, *Constancia*, *Premio Flota*...).
+  * **Persistencia en la nube**: Configuración guardada en Turso SQLite (`regatistas_club.insignias_config`).
+  * **Privacidad**: En Modo Regatista no se muestran los controles de gestión ni las insignias marcadas como ocultas.
+* **Cuaderno de Notas y Objetivos del Entrenador**:
+  * **Modo Entrenador**: Área de texto editable para escribir observaciones técnicas sobre trimado, colocación en la línea, viradas, errores y metas para el regatista, con botón **«💾 Guardar Notas»** y sello de última actualización.
+  * **Modo Regatista**: El regatista ve un panel destacado con las **«Observaciones y Objetivos del Entrenador»** redactadas por su cuerpo técnico para su aprendizaje y preparación.
+  * **Sincronización en la nube**: Almacenamiento centralizado en Turso SQLite (`regatistas_club.notas`).
+
 ### [v1.3.7] - Suite Completa de Analítica Avanzada, Big Data del Regatista y Gamificación RCNGC
 * **Análisis Profundo de Salidas**:
   * **Velocidad en el bocinazo ($V_{gun}$)**: Medición exacta en nudos de la velocidad de arrancada en el segundo cero de la salida (Objetivo RCNGC $\ge 3,5\text{ kn}$).
