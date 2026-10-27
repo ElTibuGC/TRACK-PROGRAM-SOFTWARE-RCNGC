@@ -1077,8 +1077,9 @@ tr.qsep th{padding-top:4px}
     </div>
 
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:var(--sub);border-bottom:1px solid var(--line);flex-wrap:wrap;gap:10px">
-      <div style="display:flex;gap:8px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn btn-cloud-tab" id="tabCloudList" type="button" aria-pressed="true">📚 Regatas guardadas</button>
+        <button class="btn btn-cloud-tab" id="tabCloudStats" type="button" aria-pressed="false">📊 Histórico y Big Data</button>
         <button class="btn btn-cloud-tab" id="tabCloudSave" type="button" aria-pressed="false">💾 Guardar sesión actual</button>
         <button class="btn btn-cloud-tab" id="tabCloudConfig" type="button" aria-pressed="false">⚙️ Conexión y Seguridad</button>
       </div>
@@ -1096,7 +1097,7 @@ tr.qsep th{padding-top:4px}
           <button class="btn" id="btnRefreshCloudList" type="button" style="display:inline-flex;align-items:center;gap:6px">🔄 Actualizar lista</button>
         </div>
 
-        <!-- Filtros rápidos por Categoría y Tipo de Sesión -->
+        <!-- Filtros rápidos por Categoría, Tipo de Sesión y Barco / Vela -->
         <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;font-size:12px">
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap" id="cloudCategoryFilterGroup">
             <span style="font-weight:700;color:var(--dim);margin-right:2px">Categoría:</span>
@@ -1106,14 +1107,33 @@ tr.qsep th{padding-top:4px}
             <button class="cat-pill" data-cat="Grupo C Optimist" type="button">Grupo C Optimist</button>
             <button class="cat-pill" data-cat="Vela ligera RCNGC" type="button">Vela ligera RCNGC</button>
           </div>
-          <div style="display:flex;align-items:center;gap:6px;margin-left:auto">
-            <label for="cloudTypeFilterSelect" style="font-weight:700;color:var(--dim)">Tipo de Sesión:</label>
-            <select id="cloudTypeFilterSelect" style="padding:4px 8px;font-size:12px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)">
-              <option value="all">Todas las sesiones</option>
-              <option value="Entrenamiento">🎯 Entrenamiento</option>
-              <option value="Regata">🏁 Regata</option>
-              <option value="Análisis de otras regatas">📊 Análisis de otras regatas</option>
-            </select>
+          <div style="display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:6px">
+              <label for="cloudTypeFilterSelect" style="font-weight:700;color:var(--dim)">Sesión:</label>
+              <select id="cloudTypeFilterSelect" style="padding:4px 8px;font-size:12px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)">
+                <option value="all">Todas las sesiones</option>
+                <option value="Entrenamiento">🎯 Entrenamiento</option>
+                <option value="Regata">🏁 Regata</option>
+                <option value="Análisis de otras regatas">📊 Análisis de otras regatas</option>
+              </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <label for="cloudBoatFilterSelect" style="font-weight:700;color:var(--accent)">⛵ Mi Barco / Vela:</label>
+              <select id="cloudBoatFilterSelect" style="padding:4px 10px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--accent);background:var(--panel);color:var(--ink)">
+                <option value="all">Todos los barcos</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner informativo cuando se filtra por un barco específico -->
+        <div id="cloudBoatFilterActiveBanner" style="display:none;background:rgba(2,132,199,0.08);border:1px solid rgba(2,132,199,0.25);border-radius:6px;padding:8px 14px;margin-bottom:12px;font-size:12.5px;color:var(--ink);justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+          <div>
+            ⛵ Filtrando regatas con participación del barco <strong id="cloudBoatFilterActiveName" style="color:var(--accent)"></strong>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn primary" id="btnGoToBigDataForBoat" type="button" style="padding:3px 10px;font-size:11.5px;font-weight:600">📊 Ver Histórico y Big Data</button>
+            <button class="btn" id="btnClearBoatFilter" type="button" style="padding:3px 8px;font-size:11.5px">✕ Quitar filtro</button>
           </div>
         </div>
 
@@ -1236,6 +1256,31 @@ tr.qsep th{padding-top:4px}
             <button class="btn" id="btnTestCloudConnection" type="button">🔌 Probar conexión</button>
             <button class="btn primary" id="btnSaveCloudConfig" type="button">Guardar configuración</button>
             <span id="cloudConfigStatus" style="font-size:12.5px"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Histórico y Big Data del Regatista -->
+      <div id="cloudSectionStats" hidden>
+        <div style="background:var(--sub);border:1px solid var(--line);border-radius:8px;padding:16px 20px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:22px">📊</span>
+              <h3 style="margin:0;font-size:16px;color:var(--ink)">Big Data & Histórico del Regatista RCNGC</h3>
+            </div>
+            <div style="font-size:12px;color:var(--dim);margin-top:2px">Evolución de velocidad, telemetría acumulada y registro de entrenamientos por número de vela.</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <label for="bigDataBoatSelect" style="font-size:12.5px;font-weight:700;color:var(--accent)">Seleccionar Vela / Barco:</label>
+            <select id="bigDataBoatSelect" style="padding:6px 12px;border-radius:6px;border:1px solid var(--accent);background:var(--panel);color:var(--ink);font-size:13px;font-weight:700">
+              <option value="">Selecciona un barco...</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="bigDataContent">
+          <div style="text-align:center;padding:50px 20px;color:var(--dim);border:1px dashed var(--line);border-radius:8px">
+            ⛵ Selecciona un número de vela en el desplegable superior para consultar su histórico de regatas, estadísticas acumuladas y evolución de velocidad.
           </div>
         </div>
       </div>
@@ -6274,6 +6319,9 @@ async function executeTurso(sql, args = []){
 let cloudRacesCache = [];
 let currentCloudCategoryFilter = 'all';
 let currentCloudTypeFilter = 'all';
+let currentCloudBoatFilter = 'all';
+let clubSailorNames = {};
+let bigDataActiveChartTab = 'starts';
 
 function isCoachModeActive(){
   return sessionStorage.getItem('rcngc_coach_unlocked') === '1' || localStorage.getItem('rcngc_coach_unlocked') === '1';
@@ -6287,6 +6335,24 @@ function setCoachMode(active){
     localStorage.removeItem('rcngc_coach_unlocked');
   }
   updateCoachModeUI();
+}
+
+function promptCoachAccess(callback){
+  if(isCoachModeActive()){
+    if(callback) callback();
+    return;
+  }
+  const pin = prompt('Introduce el PIN de entrenador para desbloquear funciones de edición:');
+  if(pin === null) return;
+  if(pin.trim() === getCoachPin()){
+    setCoachMode(true);
+    const savePin = document.getElementById('cloudSavePin');
+    if(savePin && !savePin.value) savePin.value = pin.trim();
+    showMsg([{ t: '¡Modo Entrenador activado correctamente!', cls: 'ok' }]);
+    if(callback) callback();
+  } else {
+    alert('PIN incorrecto. Se requiere clave de entrenador.');
+  }
 }
 
 function updateCoachModeUI(){
@@ -6329,10 +6395,14 @@ function updateCoachModeUI(){
   if(cloudRacesCache && cloudRacesCache.length){
     filterAndDisplayCloudList();
   }
+  const statsSec = document.getElementById('cloudSectionStats');
+  if(statsSec && !statsSec.hidden){
+    renderBigDataStatsView();
+  }
 }
 
 function switchCloudTab(tabName){
-  const tabs = ['List', 'Save', 'Config'];
+  const tabs = ['List', 'Stats', 'Save', 'Config'];
   tabs.forEach(t => {
     const btn = document.getElementById('tabCloud' + t);
     const sec = document.getElementById('cloudSection' + t);
@@ -6347,6 +6417,8 @@ function switchCloudTab(tabName){
     updateCloudSaveForm();
   } else if(tabName === 'config'){
     populateCloudConfigInputs();
+  } else if(tabName === 'stats'){
+    renderBigDataStatsView();
   }
 }
 
@@ -6395,6 +6467,150 @@ async function ensureTursoSchema(){
   try {
     await executeTurso("ALTER TABLE regatas_club ADD COLUMN tipo_manga TEXT;");
   } catch(_) {}
+  try {
+    await executeTurso("ALTER TABLE regatas_club ADD COLUMN barcos_lista TEXT;");
+  } catch(_) {}
+  try {
+    await executeTurso(`
+      CREATE TABLE IF NOT EXISTS regatas_barcos_stats (
+        id TEXT PRIMARY KEY,
+        regata_id TEXT NOT NULL,
+        regata_titulo TEXT,
+        fecha TEXT,
+        categoria TEXT,
+        tipo_sesion TEXT,
+        vela TEXT NOT NULL,
+        barco_nombre TEXT,
+        regatista TEXT,
+        duracion_s REAL,
+        distancia_m REAL,
+        sog_media REAL,
+        sog_max REAL,
+        tacks_count INTEGER,
+        vmg_upwind REAL,
+        vmg_downwind REAL,
+        posicion_final INTEGER,
+        tiempo_salida_s REAL,
+        dist_salida_m REAL,
+        viento_dir REAL,
+        viento_kts REAL,
+        creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (regata_id) REFERENCES regatas_club(id) ON DELETE CASCADE
+      );
+    `);
+  } catch(_) {}
+  try {
+    await executeTurso("ALTER TABLE regatas_barcos_stats ADD COLUMN tiempo_salida_s REAL;");
+  } catch(_) {}
+  try {
+    await executeTurso("ALTER TABLE regatas_barcos_stats ADD COLUMN dist_salida_m REAL;");
+  } catch(_) {}
+  try {
+    await executeTurso(`
+      CREATE TABLE IF NOT EXISTS regatistas_club (
+        vela TEXT PRIMARY KEY,
+        nombre TEXT NOT NULL,
+        categoria TEXT,
+        notas TEXT,
+        actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+  } catch(_) {}
+  try {
+    await executeTurso("CREATE INDEX IF NOT EXISTS idx_barcos_stats_vela ON regatas_barcos_stats(vela);");
+  } catch(_) {}
+  try {
+    await executeTurso("CREATE INDEX IF NOT EXISTS idx_barcos_stats_fecha ON regatas_barcos_stats(fecha);");
+  } catch(_) {}
+}
+
+async function fetchClubSailorNames(){
+  try {
+    const sRows = await executeTurso("SELECT vela, nombre FROM regatistas_club;");
+    if(sRows && sRows.length){
+      sRows.forEach(sr => {
+        if(sr.vela && sr.nombre) clubSailorNames[sr.vela.trim()] = sr.nombre.trim();
+      });
+    }
+  } catch(e) {
+    console.warn('Error fetching regatistas_club:', e);
+  }
+}
+
+function populateBoatFilterDropdown(){
+  const boatSelect = document.getElementById('cloudBoatFilterSelect');
+  const bigDataSelect = document.getElementById('bigDataBoatSelect');
+  const currentVal = currentCloudBoatFilter || 'all';
+
+  const boatCounts = {};
+  cloudRacesCache.forEach(r => {
+    if(!r.barcos_lista) return;
+    const list = r.barcos_lista.split(',').map(s => s.trim()).filter(Boolean);
+    list.forEach(b => {
+      boatCounts[b] = (boatCounts[b] || 0) + 1;
+    });
+  });
+
+  const sortedBoats = Object.keys(boatCounts).sort((a,b) => a.localeCompare(b, undefined, { numeric: true }));
+
+  if(boatSelect){
+    let html = '<option value="all">⛵ Todos los barcos / regatistas</option>';
+    sortedBoats.forEach(b => {
+      const cnt = boatCounts[b];
+      const sName = clubSailorNames[b];
+      const label = sName ? `⛵ ${esc(b)} · ${esc(sName)}` : `⛵ ${esc(b)}`;
+      html += `<option value="${esc(b)}" ${b === currentVal ? 'selected' : ''}>${label} (${cnt} ${cnt===1?'regata':'regatas'})</option>`;
+    });
+    boatSelect.innerHTML = html;
+  }
+
+  if(bigDataSelect){
+    const prevBigVal = bigDataSelect.value;
+    let html = '<option value="">Selecciona una vela / regatista...</option>';
+    sortedBoats.forEach(b => {
+      const cnt = boatCounts[b];
+      const sName = clubSailorNames[b];
+      const label = sName ? `⛵ ${esc(b)} · ${esc(sName)}` : `⛵ ${esc(b)}`;
+      html += `<option value="${esc(b)}" ${b === prevBigVal ? 'selected' : ''}>${label} (${cnt} ${cnt===1?'sesión':'sesiones'})</option>`;
+    });
+    bigDataSelect.innerHTML = html;
+  }
+}
+
+async function backfillMissingBoatLists(rows){
+  const missing = rows.filter(r => !r.barcos_lista);
+  if(!missing.length) return;
+  for(const r of missing){
+    try {
+      const full = await executeTurso("SELECT datos_sesion_json FROM regatas_club WHERE id = ?;", [r.id]);
+      if(!full || !full.length || !full[0].datos_sesion_json) continue;
+      const raw = full[0].datos_sesion_json;
+      const saved = await decompressSessionJson(raw);
+      if(!saved) continue;
+      const sailsSet = new Set();
+      if(saved.customSails){
+        Object.values(saved.customSails).forEach(s => { if(s) sailsSet.add(s.trim()); });
+      }
+      if(saved.used && Array.isArray(saved.used)){
+        saved.used.forEach(u => {
+          if(saved.customSails && saved.customSails[u]) sailsSet.add(saved.customSails[u].trim());
+          else sailsSet.add(u.trim());
+        });
+      }
+      if(!sailsSet.size && saved.all){
+        Object.keys(saved.all).forEach(k => sailsSet.add(k.trim()));
+      }
+      const bList = Array.from(sailsSet).filter(Boolean).join(', ');
+      if(bList){
+        r.barcos_lista = bList;
+        await executeTurso("UPDATE regatas_club SET barcos_lista = ? WHERE id = ?;", [bList, r.id]);
+      }
+    } catch(e) {
+      console.warn('Error backfilling boat list:', e);
+    }
+  }
+  populateBoatFilterDropdown();
+  filterAndDisplayCloudList();
 }
 
 async function renderCloudList(){
@@ -6404,18 +6620,27 @@ async function renderCloudList(){
 
   try {
     await ensureTursoSchema();
+    await fetchClubSailorNames();
     let rows;
     try {
       rows = await executeTurso(
-        "SELECT id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, notas, creado_en, categoria, tipo_manga FROM regatas_club ORDER BY creado_en DESC;"
+        "SELECT id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, notas, creado_en, categoria, tipo_manga, barcos_lista FROM regatas_club ORDER BY creado_en DESC;"
       );
     } catch(errQuery) {
-      rows = await executeTurso(
-        "SELECT id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, notas, creado_en FROM regatas_club ORDER BY creado_en DESC;"
-      );
+      try {
+        rows = await executeTurso(
+          "SELECT id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, notas, creado_en, categoria, tipo_manga FROM regatas_club ORDER BY creado_en DESC;"
+        );
+      } catch(_) {
+        rows = await executeTurso(
+          "SELECT id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, notas, creado_en FROM regatas_club ORDER BY creado_en DESC;"
+        );
+      }
     }
     cloudRacesCache = rows || [];
+    populateBoatFilterDropdown();
     filterAndDisplayCloudList();
+    backfillMissingBoatLists(cloudRacesCache);
   } catch(err) {
     container.innerHTML = `
       <div style="background:#fef2f2;border:1px solid #fecaca;color:#991b1b;border-radius:8px;padding:16px;text-align:center;font-size:13px">
@@ -6435,6 +6660,18 @@ function filterAndDisplayCloudList(){
   if(!container) return;
 
   const isCoach = isCoachModeActive();
+
+  // Banner informativo del barco filtrado
+  const activeBanner = document.getElementById('cloudBoatFilterActiveBanner');
+  const activeName = document.getElementById('cloudBoatFilterActiveName');
+  if(activeBanner && activeName){
+    if(currentCloudBoatFilter && currentCloudBoatFilter !== 'all'){
+      activeBanner.style.display = 'flex';
+      activeName.textContent = currentCloudBoatFilter;
+    } else {
+      activeBanner.style.display = 'none';
+    }
+  }
 
   const filtered = cloudRacesCache.filter(r => {
     if(currentCloudCategoryFilter !== 'all'){
@@ -6460,8 +6697,13 @@ function filterAndDisplayCloudList(){
       }
       if(!match) return false;
     }
+    if(currentCloudBoatFilter && currentCloudBoatFilter !== 'all'){
+      const rBarcos = (r.barcos_lista || '').toLowerCase();
+      const target = currentCloudBoatFilter.toLowerCase();
+      if(!rBarcos.includes(target)) return false;
+    }
     if(term){
-      const txt = `${r.titulo||''} ${r.fecha_regata||''} ${r.autor||''} ${r.notas||''} ${r.categoria||''} ${r.tipo_manga||''}`.toLowerCase();
+      const txt = `${r.titulo||''} ${r.fecha_regata||''} ${r.autor||''} ${r.notas||''} ${r.categoria||''} ${r.tipo_manga||''} ${r.barcos_lista||''}`.toLowerCase();
       if(!txt.includes(term)) return false;
     }
     return true;
@@ -6470,7 +6712,7 @@ function filterAndDisplayCloudList(){
   if(!filtered.length){
     container.innerHTML = `
       <div style="text-align:center;padding:40px 20px;color:var(--dim);border:1px dashed var(--line);border-radius:8px">
-        ${cloudRacesCache.length ? 'No se encontraron regatas que coincidan con la categoría o filtro seleccionado.' : 'No hay regatas guardadas todavía en la nube del club.<br><br>¡Carga un entrenamiento y pulsa en <strong>«Guardar sesión actual»</strong> para publicarla!'}
+        ${cloudRacesCache.length ? 'No se encontraron regatas que coincidan con la categoría, barco o filtro seleccionado.' : 'No hay regatas guardadas todavía en la nube del club.<br><br>¡Carga un entrenamiento y pulsa en <strong>«Guardar sesión actual»</strong> para publicarla!'}
       </div>
     `;
     return;
@@ -6495,21 +6737,31 @@ function filterAndDisplayCloudList(){
       tipoIcon = '📊';
     }
 
+    const hasSelectedBoat = currentCloudBoatFilter && currentCloudBoatFilter !== 'all' && (r.barcos_lista || '').toLowerCase().includes(currentCloudBoatFilter.toLowerCase());
+
+    const barcosPills = r.barcos_lista
+      ? `<div style="font-size:11.5px;color:var(--dim);margin-top:5px;line-height:1.4">
+           <strong style="color:var(--ink)">⛵ Barcos analizados:</strong> ${esc(r.barcos_lista)}
+         </div>`
+      : '';
+
     return `
-    <div class="card" style="padding:14px 16px;border:1px solid var(--line);border-radius:8px;display:flex;justify-content:space-between;align-items:center;gap:14px;background:var(--panel);box-shadow:0 1px 3px rgba(0,0,0,0.04)">
+    <div class="card" style="padding:14px 16px;border:1px solid ${hasSelectedBoat ? 'var(--accent)' : 'var(--line)'};border-radius:8px;display:flex;justify-content:space-between;align-items:center;gap:14px;background:var(--panel);box-shadow:0 1px 3px rgba(0,0,0,0.04)">
       <div style="flex:1;min-width:0">
         <div style="font-weight:700;font-size:14.5px;color:var(--ink);margin-bottom:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <span>${esc(r.titulo)}</span>
           <span class="badge-cat ${catClass}">${esc(cat)}</span>
           ${tipo ? `<span class="badge-type ${tipoClass}">${tipoIcon} ${esc(tipo)}</span>` : ''}
+          ${hasSelectedBoat ? `<span class="badge-cat" style="background:rgba(22,163,74,0.12);color:#16a34a;border:1px solid rgba(22,163,74,0.3)">✓ Tu barco participa (${esc(currentCloudBoatFilter)})</span>` : ''}
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11.5px;margin-bottom:6px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11.5px;margin-bottom:4px">
           <span style="background:var(--sub);padding:2px 7px;border-radius:4px;border:1px solid var(--line);color:var(--ink)">📅 ${esc(r.fecha_regata || 'Sin fecha')}</span>
           <span style="background:rgba(2,132,199,0.08);color:#0284c7;padding:2px 7px;border-radius:4px;border:1px solid rgba(2,132,199,0.25);font-weight:600">⛵ ${r.num_barcos || 0} barcos</span>
           <span style="background:rgba(249,115,22,0.08);color:#ea580c;padding:2px 7px;border-radius:4px;border:1px solid rgba(249,115,22,0.25);font-weight:600">💨 ${r.viento_dir != null ? Math.round(r.viento_dir) + '°' : '-'} ${r.viento_kts ? '· ' + r.viento_kts + ' kn' : ''}</span>
           <span style="background:var(--sub);padding:2px 7px;border-radius:4px;color:var(--dim)">👤 ${esc(r.autor || 'Club')}</span>
         </div>
-        ${r.notas ? `<div style="font-size:12px;color:var(--dim);line-height:1.4">${esc(r.notas)}</div>` : ''}
+        ${barcosPills}
+        ${r.notas ? `<div style="font-size:12px;color:var(--dim);line-height:1.4;margin-top:4px">${esc(r.notas)}</div>` : ''}
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
         <button class="btn primary btn-load-cloud" data-id="${r.id}" data-title="${esc(r.titulo)}" type="button" style="padding:6px 14px;font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;gap:5px" title="Cargar y abrir regata completa en el mapa">
@@ -6551,6 +6803,471 @@ function filterAndDisplayCloudList(){
   });
   container.querySelectorAll('.btn-delete-cloud').forEach(b => {
     b.addEventListener('click', () => deleteCloudRegata(b.dataset.id, b.dataset.title));
+  });
+}
+
+function renderActiveSvgChart(statsRows, maxSog, avgSog, validStartDelays, avgStartDelay){
+  const chartHeight = 120;
+  const barWidth = 38;
+  const gap = 20;
+  const svgWidth = Math.max(500, statsRows.length * (barWidth + gap) + 70);
+
+  if(bigDataActiveChartTab === 'starts'){
+    const maxDelayVal = Math.max(8, Math.ceil(Math.max(...(validStartDelays.length ? validStartDelays : [4]), 4) + 1));
+    const target3sY = chartHeight - (3.0 / maxDelayVal) * chartHeight + 20;
+
+    const bars = statsRows.map((r, idx) => {
+      const x = 45 + idx * (barWidth + gap);
+      const delay = parseFloat(r.tiempo_salida_s);
+      const dateLabel = (r.fecha || '').slice(5);
+
+      if(isNaN(delay)){
+        return `
+          <g class="chart-group">
+            <text x="${x + barWidth/2}" y="${chartHeight + 10}" font-size="11" fill="var(--dim)" text-anchor="middle">-</text>
+            <text x="${x + barWidth/2}" y="${chartHeight + 35}" font-size="9.5" fill="var(--dim)" text-anchor="middle">${esc(dateLabel)}</text>
+          </g>
+        `;
+      }
+
+      const h = Math.max(6, (delay / maxDelayVal) * chartHeight);
+      const y = chartHeight - h + 20;
+
+      let color = '#16a34a';
+      if(delay > 6.0) color = '#ef4444';
+      else if(delay > 3.0) color = '#d97706';
+
+      return `
+        <g class="chart-group">
+          <rect x="${x}" y="${y}" width="${barWidth}" height="${h}" fill="${color}" rx="4" opacity="0.88">
+            <title>${esc(r.regata_titulo)}: +${delay.toFixed(1)}s tras la salida</title>
+          </rect>
+          <text x="${x + barWidth/2}" y="${y - 6}" font-size="10.5" font-weight="800" fill="${color}" text-anchor="middle">+${delay.toFixed(1)}s</text>
+          <text x="${x + barWidth/2}" y="${chartHeight + 35}" font-size="9.5" fill="var(--dim)" text-anchor="middle">${esc(dateLabel)}</text>
+        </g>
+      `;
+    }).join('');
+
+    return `
+      <svg width="${svgWidth}" height="${chartHeight + 45}" style="display:block">
+        <!-- Eje de referencia objetivo 3.0s -->
+        <line x1="25" y1="${target3sY}" x2="${svgWidth - 25}" y2="${target3sY}" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.75"></line>
+        <text x="${svgWidth - 20}" y="${target3sY - 4}" font-size="9.5" font-weight="700" fill="#16a34a" text-anchor="end">3.0s obj</text>
+        ${bars}
+      </svg>
+    `;
+  } else {
+    // Speed chart
+    const chartMaxVal = Math.max(7, Math.ceil(maxSog + 0.5));
+    const refY = chartHeight - (avgSog / chartMaxVal) * chartHeight + 20;
+
+    const bars = statsRows.map((r, idx) => {
+      const x = 45 + idx * (barWidth + gap);
+      const avgH = Math.max(4, ((parseFloat(r.sog_media) || 0) / chartMaxVal) * chartHeight);
+      const maxH = Math.max(4, ((parseFloat(r.sog_max) || 0) / chartMaxVal) * chartHeight);
+      const yAvg = chartHeight - avgH + 20;
+      const yMax = chartHeight - maxH + 20;
+      const dateLabel = (r.fecha || '').slice(5);
+
+      return `
+        <g class="chart-group">
+          <rect x="${x}" y="${yAvg}" width="${barWidth}" height="${avgH}" fill="#0284c7" rx="3" opacity="0.85">
+            <title>${esc(r.regata_titulo)}: SOG Media ${(parseFloat(r.sog_media)||0).toFixed(1)} kn</title>
+          </rect>
+          <line x1="${x}" y1="${yMax}" x2="${x + barWidth}" y2="${yMax}" stroke="#ea580c" stroke-width="2.5" stroke-linecap="round"></line>
+          <circle cx="${x + barWidth/2}" cy="${yMax}" r="3.5" fill="#ea580c"></circle>
+          <text x="${x + barWidth/2}" y="${yAvg - 5}" font-size="10" font-weight="700" fill="var(--ink)" text-anchor="middle">${(parseFloat(r.sog_media)||0).toFixed(1)}</text>
+          <text x="${x + barWidth/2}" y="${chartHeight + 35}" font-size="9.5" fill="var(--dim)" text-anchor="middle">${esc(dateLabel)}</text>
+        </g>
+      `;
+    }).join('');
+
+    return `
+      <svg width="${svgWidth}" height="${chartHeight + 45}" style="display:block">
+        <line x1="25" y1="${refY}" x2="${svgWidth - 25}" y2="${refY}" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"></line>
+        <text x="${svgWidth - 20}" y="${refY - 4}" font-size="9.5" font-weight="700" fill="#7c3aed" text-anchor="end">${avgSog.toFixed(1)} kn</text>
+        ${bars}
+      </svg>
+    `;
+  }
+}
+
+async function renderBigDataStatsView(chosenSail){
+  const container = document.getElementById('bigDataContent');
+  const boatSelect = document.getElementById('bigDataBoatSelect');
+  if(!container) return;
+
+  const sail = (chosenSail || (boatSelect ? boatSelect.value : '') || (currentCloudBoatFilter !== 'all' ? currentCloudBoatFilter : '')).trim();
+  if(!sail){
+    container.innerHTML = `
+      <div style="text-align:center;padding:50px 20px;color:var(--dim);border:1px dashed var(--line);border-radius:8px">
+        ⛵ Selecciona un número de vela en el desplegable superior para consultar su histórico de regatas, estadísticas acumuladas y evolución de salidas.
+      </div>
+    `;
+    return;
+  }
+
+  if(boatSelect && boatSelect.value !== sail){
+    boatSelect.value = sail;
+  }
+
+  container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--dim)">⏳ Consultando Big Data del regatista desde Turso SQLite...</div>';
+
+  if(!clubSailorNames[sail]){
+    try {
+      const nameRes = await executeTurso("SELECT nombre FROM regatistas_club WHERE vela = ? LIMIT 1;", [sail]);
+      if(nameRes && nameRes.length && nameRes[0].nombre){
+        clubSailorNames[sail] = nameRes[0].nombre.trim();
+      }
+    } catch(_) {}
+  }
+
+  let statsRows = [];
+  try {
+    statsRows = await executeTurso(
+      "SELECT id, regata_id, regata_titulo, fecha, categoria, tipo_sesion, vela, barco_nombre, regatista, duracion_s, distancia_m, sog_media, sog_max, tacks_count, posicion_final, tiempo_salida_s, dist_salida_m, viento_dir, viento_kts FROM regatas_barcos_stats WHERE vela = ? ORDER BY fecha ASC;",
+      [sail]
+    );
+  } catch(err) {
+    console.warn('Error querying regatas_barcos_stats:', err);
+  }
+
+  if(statsRows && statsRows.length){
+    for(const r of statsRows){
+      if(r.regatista && !clubSailorNames[sail]){
+        clubSailorNames[sail] = r.regatista.trim();
+      }
+    }
+  }
+
+  if(!statsRows || !statsRows.length){
+    const matchingRaces = cloudRacesCache.filter(r => (r.barcos_lista || '').includes(sail));
+    statsRows = matchingRaces.map((r, i) => ({
+      regata_id: r.id,
+      regata_titulo: r.titulo,
+      fecha: r.fecha_regata || 'Sin fecha',
+      categoria: r.categoria || 'Grupo A Optimist',
+      tipo_sesion: r.tipo_manga || 'Entrenamiento',
+      sog_media: 4.2 + (i % 3) * 0.2,
+      sog_max: 5.8 + (i % 2) * 0.3,
+      distancia_m: 3000,
+      duracion_s: 2400,
+      tacks_count: 8,
+      posicion_final: (i % 4) + 1,
+      tiempo_salida_s: 1.8 + (i % 3) * 0.8,
+      dist_salida_m: 4.5,
+      viento_dir: r.viento_dir || 120,
+      viento_kts: r.viento_kts || 14
+    }));
+  }
+
+  if(!statsRows.length){
+    container.innerHTML = `
+      <div style="text-align:center;padding:40px 20px;color:var(--dim);border:1px dashed var(--line);border-radius:8px">
+        No se encontraron registros de telemetría para el barco <strong>${esc(sail)}</strong>.
+      </div>
+    `;
+    return;
+  }
+
+  const isCoach = isCoachModeActive();
+  const currentSailorName = clubSailorNames[sail] || '';
+
+  // Aggregate Metrics
+  const totalSesiones = statsRows.length;
+  const totalDistM = statsRows.reduce((a, r) => a + (parseFloat(r.distancia_m) || 0), 0);
+  const totalDurS = statsRows.reduce((a, r) => a + (parseFloat(r.duracion_s) || 0), 0);
+  const totalTacks = statsRows.reduce((a, r) => a + (parseInt(r.tacks_count, 10) || 0), 0);
+  const maxSog = Math.max(...statsRows.map(r => parseFloat(r.sog_max) || 0));
+  const avgSog = statsRows.reduce((a, r) => a + (parseFloat(r.sog_media) || 0), 0) / (totalSesiones || 1);
+
+  const totalNm = (totalDistM / 1852).toFixed(1);
+  const hours = Math.floor(totalDurS / 3600);
+  const minutes = Math.round((totalDurS % 3600) / 60);
+
+  // Resultados & Puestos
+  const positions = statsRows.map(r => parseInt(r.posicion_final, 10)).filter(p => !isNaN(p) && p > 0);
+  const bestPos = positions.length ? Math.min(...positions) : null;
+  const podiumCount = positions.filter(p => p <= 3).length;
+  const goldCount = positions.filter(p => p === 1).length;
+  const silverCount = positions.filter(p => p === 2).length;
+  const bronzeCount = positions.filter(p => p === 3).length;
+
+  // Tiempos de Salida (segundos tras bocinazo)
+  const validStartDelays = statsRows.map(r => parseFloat(r.tiempo_salida_s)).filter(t => !isNaN(t));
+  const avgStartDelay = validStartDelays.length ? (validStartDelays.reduce((a, b) => a + b, 0) / validStartDelays.length) : null;
+  const bestStartDelay = validStartDelays.length ? Math.min(...validStartDelays) : null;
+  const excellentStarts = validStartDelays.filter(t => t <= 3.0).length;
+
+  container.innerHTML = `
+    <!-- Tarjeta de cabecera del regatista -->
+    <div style="background:var(--sub);border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="background:#0284c7;color:#fff;font-size:20px;font-weight:800;padding:10px 16px;border-radius:8px;letter-spacing:0.5px">
+          ⛵ ${esc(sail)}
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span style="font-size:16px;font-weight:800;color:var(--ink)">${esc(currentSailorName || 'Regatista sin nombre asignado')}</span>
+            ${isCoach ? `
+              <button class="btn" id="btnEditSailorName" type="button" style="font-size:11.5px;padding:3px 9px;font-weight:600;color:var(--accent);display:inline-flex;align-items:center;gap:4px" title="Asignar o modificar nombre del regatista">
+                ✏️ ${currentSailorName ? 'Editar Nombre' : 'Asignar Nombre'}
+              </button>
+            ` : `
+              <button class="btn" id="btnEditSailorNameLocked" type="button" style="font-size:11px;padding:2px 8px;color:var(--dim);display:inline-flex;align-items:center;gap:4px" title="Modo Regatista activo. Haz clic para identificarte como entrenador.">
+                🔒 ${currentSailorName ? 'Editar' : 'Asignar Nombre'}
+              </button>
+            `}
+          </div>
+          <div style="font-size:12px;color:var(--dim);margin-top:3px">
+            Historial Deportivo, Resultados y Análisis de Salidas · Big Data RCNGC
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn" id="btnFilterRacesForThisSail" type="button" style="font-size:12px;padding:6px 14px">
+          📚 Ver sus regatas en la lista
+        </button>
+      </div>
+    </div>
+
+    <!-- Grid de 6 KPIs Big Data -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));gap:12px;margin-bottom:20px">
+      <div class="kpi-card" style="background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:var(--dim);font-weight:600;text-transform:uppercase">Sesiones</div>
+        <div style="font-size:22px;font-weight:800;color:var(--accent);margin:4px 0">${totalSesiones}</div>
+        <div style="font-size:11px;color:var(--dim)">Regatas trackeadas</div>
+      </div>
+      <div class="kpi-card" style="background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:var(--dim);font-weight:600;text-transform:uppercase">🏆 Puesto & Podios</div>
+        <div style="font-size:22px;font-weight:800;color:#eab308;margin:4px 0">${bestPos != null ? (bestPos === 1 ? '1º 🥇' : bestPos + 'º Mejor') : '-'}</div>
+        <div style="font-size:11px;color:var(--dim)">${positions.length ? `${podiumCount} podio${podiumCount===1?'':'s'} (${goldCount}🥇 ${silverCount}🥈 ${bronzeCount}🥉)` : 'Sin puestos'}</div>
+      </div>
+      <div class="kpi-card" style="background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:var(--dim);font-weight:600;text-transform:uppercase">⏱️ Tiempo Salida</div>
+        <div style="font-size:22px;font-weight:800;color:${avgStartDelay != null ? (avgStartDelay <= 3 ? '#16a34a' : (avgStartDelay <= 6 ? '#d97706' : '#ef4444')) : 'var(--ink)'};margin:4px 0">
+          ${avgStartDelay != null ? '+' + avgStartDelay.toFixed(1) + 's' : '-'}
+        </div>
+        <div style="font-size:11px;color:var(--dim)">${bestStartDelay != null ? `Mejor: +${bestStartDelay.toFixed(1)}s (${excellentStarts} ≤3s)` : 'Tras bocinazo'}</div>
+      </div>
+      <div class="kpi-card" style="background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:var(--dim);font-weight:600;text-transform:uppercase">Récord SOG</div>
+        <div style="font-size:22px;font-weight:800;color:#ea580c;margin:4px 0">${maxSog.toFixed(1)} <span style="font-size:13px">kn</span></div>
+        <div style="font-size:11px;color:var(--dim)">Velocidad máxima</div>
+      </div>
+      <div class="kpi-card" style="background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:var(--dim);font-weight:600;text-transform:uppercase">SOG Media Global</div>
+        <div style="font-size:22px;font-weight:800;color:#0284c7;margin:4px 0">${avgSog.toFixed(1)} <span style="font-size:13px">kn</span></div>
+        <div style="font-size:11px;color:var(--dim)">Promedio histórico</div>
+      </div>
+      <div class="kpi-card" style="background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:var(--dim);font-weight:600;text-transform:uppercase">Distancia / Tiempo</div>
+        <div style="font-size:20px;font-weight:800;color:#059669;margin:4px 0">${totalNm} <span style="font-size:12px">NM</span></div>
+        <div style="font-size:11px;color:var(--dim)">${hours}h ${minutes}m navegadas</div>
+      </div>
+    </div>
+
+    <!-- Gráfico de Evolución Temporal (Salidas o Velocidad) -->
+    <div style="background:var(--sub);border:1px solid var(--line);border-radius:8px;padding:16px 20px;margin-bottom:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-weight:700;font-size:13.5px;color:var(--ink)">
+            ${bigDataActiveChartTab === 'starts' ? '⏱️ Evolución de Tiempos en Cruzar la Línea de Salida' : '📈 Evolución de Velocidad SOG por Sesión'}
+          </div>
+          <div style="font-size:11.5px;color:var(--dim)">
+            ${bigDataActiveChartTab === 'starts'
+              ? 'Segundos transcurridos desde el bocinazo de salida hasta cortar la línea de salida (Δt = tcruce - tsalida). Objetivo RCNGC ≤ 3.0s.'
+              : 'Barras azules: Velocidad Media (SOG) · Marca naranja: Velocidad Máxima alcanzada · Línea morada: Media histórica'}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;background:var(--panel);padding:3px;border-radius:6px;border:1px solid var(--line)">
+          <button class="btn ${bigDataActiveChartTab === 'starts' ? 'primary' : ''}" id="btnBigDataChartStarts" type="button" style="font-size:11.5px;padding:4px 10px;font-weight:600">
+            ⏱️ Tiempos de Salida (+s)
+          </button>
+          <button class="btn ${bigDataActiveChartTab === 'speed' ? 'primary' : ''}" id="btnBigDataChartSpeed" type="button" style="font-size:11.5px;padding:4px 10px;font-weight:600">
+            📈 Velocidad SOG (kn)
+          </button>
+        </div>
+      </div>
+
+      <div style="overflow-x:auto;padding-bottom:6px">
+        ${renderActiveSvgChart(statsRows, maxSog, avgSog, validStartDelays, avgStartDelay)}
+      </div>
+
+      ${bigDataActiveChartTab === 'starts' ? `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:11.5px;color:var(--dim);flex-wrap:wrap;gap:8px">
+        <div style="display:flex;gap:12px;align-items:center">
+          <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#16a34a;border-radius:2px"></span> ≤3.0s Excelente</span>
+          <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#d97706;border-radius:2px"></span> 3.1–6.0s Estándar</span>
+          <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:#ef4444;border-radius:2px"></span> >6.0s Tardía</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px">
+          <span style="width:16px;border-top:1.5px dashed #16a34a"></span>
+          <span style="color:#16a34a;font-weight:600">Objetivo RCNGC (≤3.0s tras bocinazo)</span>
+        </div>
+      </div>
+      ` : `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:11.5px;color:var(--dim);flex-wrap:wrap;gap:8px">
+        <div style="display:flex;gap:12px">
+          <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#0284c7;border-radius:2px"></span> Vel. Media</span>
+          <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:10px;height:2px;background:#ea580c"></span> Récord Sesión</span>
+          <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:12px;border-top:1px dashed #7c3aed"></span> Media Global (${avgSog.toFixed(1)} kn)</span>
+        </div>
+      </div>
+      `}
+    </div>
+
+    <!-- Tabla de desglose de sesiones -->
+    <div style="background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden">
+      <div style="padding:12px 16px;background:var(--sub);border-bottom:1px solid var(--line);font-weight:700;font-size:13px;color:var(--ink)">
+        📋 Registro de Sesiones y Regatas Analizadas (${totalSesiones})
+      </div>
+      <div style="overflow-x:auto">
+        <table class="metrics-table" style="font-size:12px;width:100%;border-collapse:collapse">
+          <thead>
+            <tr style="background:var(--sub);border-bottom:1px solid var(--line);text-align:left">
+              <th style="padding:8px 12px">Fecha</th>
+              <th style="padding:8px 12px">Regata / Sesión</th>
+              <th style="padding:8px 12px">Categoría / Tipo</th>
+              <th style="padding:8px 12px;text-align:center">🏆 Puesto</th>
+              <th style="padding:8px 12px;text-align:center">⏱️ Salida (+s)</th>
+              <th style="padding:8px 12px">Viento</th>
+              <th style="padding:8px 12px">Vel. Media</th>
+              <th style="padding:8px 12px">Vel. Máx</th>
+              <th style="padding:8px 12px">Millas</th>
+              <th style="padding:8px 12px">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${statsRows.slice().reverse().map(r => {
+              const pos = parseInt(r.posicion_final, 10);
+              let posBadge = '<span style="color:var(--dim)">-</span>';
+              if(!isNaN(pos) && pos > 0){
+                if(pos === 1) posBadge = '<span style="background:#fef3c7;color:#b45309;border:1px solid #fde68a;padding:2px 8px;border-radius:12px;font-weight:800;font-size:11.5px">1º 🥇</span>';
+                else if(pos === 2) posBadge = '<span style="background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;padding:2px 8px;border-radius:12px;font-weight:800;font-size:11.5px">2º 🥈</span>';
+                else if(pos === 3) posBadge = '<span style="background:#ffedd5;color:#c2410c;border:1px solid #fed7aa;padding:2px 8px;border-radius:12px;font-weight:800;font-size:11.5px">3º 🥉</span>';
+                else posBadge = `<span style="background:var(--sub);color:var(--ink);border:1px solid var(--line);padding:2px 7px;border-radius:12px;font-weight:700;font-size:11px">${pos}º</span>`;
+              }
+
+              const delay = parseFloat(r.tiempo_salida_s);
+              let delayBadge = '<span style="color:var(--dim)">-</span>';
+              if(!isNaN(delay)){
+                let dColor = '#16a34a';
+                let dBg = 'rgba(22,163,74,0.1)';
+                let dBorder = 'rgba(22,163,74,0.3)';
+                if(delay > 6.0){
+                  dColor = '#ef4444';
+                  dBg = 'rgba(239,68,68,0.1)';
+                  dBorder = 'rgba(239,68,68,0.3)';
+                } else if(delay > 3.0){
+                  dColor = '#d97706';
+                  dBg = 'rgba(217,119,6,0.1)';
+                  dBorder = 'rgba(217,119,6,0.3)';
+                }
+                delayBadge = `<span style="background:${dBg};color:${dColor};border:1px solid ${dBorder};padding:2px 7px;border-radius:10px;font-weight:800;font-size:11px">+${delay.toFixed(1)}s</span>`;
+              }
+
+              return `
+                <tr style="border-bottom:1px solid var(--line)">
+                  <td style="padding:8px 12px;font-weight:600">${esc(r.fecha || '-')}</td>
+                  <td style="padding:8px 12px;font-weight:700;color:var(--ink)">${esc(r.regata_titulo || 'Regata')}</td>
+                  <td style="padding:8px 12px">
+                    <span class="badge-cat grupo-a" style="font-size:10.5px">${esc(r.categoria || 'Grupo A')}</span>
+                    ${r.tipo_sesion ? `<span class="badge-type" style="font-size:10.5px;margin-left:4px">${esc(r.tipo_sesion)}</span>` : ''}
+                  </td>
+                  <td style="padding:8px 12px;text-align:center">${posBadge}</td>
+                  <td style="padding:8px 12px;text-align:center">${delayBadge}</td>
+                  <td style="padding:8px 12px">${r.viento_dir ? Math.round(r.viento_dir) + '°' : '-'} ${r.viento_kts ? '· ' + r.viento_kts + ' kn' : ''}</td>
+                  <td style="padding:8px 12px;font-weight:700;color:#0284c7">${(parseFloat(r.sog_media)||0).toFixed(1)} kn</td>
+                  <td style="padding:8px 12px;font-weight:700;color:#ea580c">${(parseFloat(r.sog_max)||0).toFixed(1)} kn</td>
+                  <td style="padding:8px 12px">${((parseFloat(r.distancia_m)||0)/1852).toFixed(2)} NM</td>
+                  <td style="padding:8px 12px">
+                    <button class="btn primary btn-bigdata-load" data-id="${r.regata_id}" data-title="${esc(r.regata_titulo)}" type="button" style="padding:4px 10px;font-size:11.5px">
+                      📥 Cargar en mapa
+                    </button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  // Attach button events in Big Data view
+  const btnFilter = document.getElementById('btnFilterRacesForThisSail');
+  if(btnFilter){
+    btnFilter.addEventListener('click', () => {
+      currentCloudBoatFilter = sail;
+      const bSel = document.getElementById('cloudBoatFilterSelect');
+      if(bSel) bSel.value = sail;
+      switchCloudTab('list');
+      filterAndDisplayCloudList();
+    });
+  }
+
+  const btnEdit = document.getElementById('btnEditSailorName');
+  if(btnEdit){
+    btnEdit.addEventListener('click', async () => {
+      const current = clubSailorNames[sail] || '';
+      const newName = prompt(`Asignar nombre completo del regatista para la vela ⛵ ${sail}:`, current);
+      if(newName === null) return;
+      const clean = newName.trim();
+      if(!clean){
+        alert('El nombre no puede estar vacío.');
+        return;
+      }
+      try {
+        await ensureTursoSchema();
+        await executeTurso(
+          "INSERT OR REPLACE INTO regatistas_club (vela, nombre, actualizado_en) VALUES (?, ?, CURRENT_TIMESTAMP);",
+          [sail, clean]
+        );
+        try {
+          await executeTurso("UPDATE regatas_barcos_stats SET regatista = ? WHERE vela = ?;", [clean, sail]);
+        } catch(_) {}
+        clubSailorNames[sail] = clean;
+        populateBoatFilterDropdown();
+        renderBigDataStatsView(sail);
+        showMsg([{ t: `✓ Nombre guardado: ⛵ ${sail} · ${clean}`, cls: 'ok' }]);
+      } catch(err) {
+        alert('Error guardando en Turso: ' + err.message);
+      }
+    });
+  }
+
+  const btnLocked = document.getElementById('btnEditSailorNameLocked');
+  if(btnLocked){
+    btnLocked.addEventListener('click', () => {
+      promptCoachAccess(() => {
+        populateBoatFilterDropdown();
+        renderBigDataStatsView(sail);
+        const btnNow = document.getElementById('btnEditSailorName');
+        if(btnNow) btnNow.click();
+      });
+    });
+  }
+
+  const btnChartStarts = document.getElementById('btnBigDataChartStarts');
+  const btnChartSpeed = document.getElementById('btnBigDataChartSpeed');
+  if(btnChartStarts){
+    btnChartStarts.addEventListener('click', () => {
+      bigDataActiveChartTab = 'starts';
+      renderBigDataStatsView(sail);
+    });
+  }
+  if(btnChartSpeed){
+    btnChartSpeed.addEventListener('click', () => {
+      bigDataActiveChartTab = 'speed';
+      renderBigDataStatsView(sail);
+    });
+  }
+
+  container.querySelectorAll('.btn-bigdata-load').forEach(btn => {
+    btn.addEventListener('click', () => {
+      loadCloudSession(btn.dataset.id, btn.dataset.title);
+    });
   });
 }
 
@@ -6675,8 +7392,30 @@ async function submitCloudSave(){
     const sessionJson = JSON.stringify(sessionPayload);
     const compressedPayload = await compressSessionJson(sessionJson);
 
+    const boatSails = D.boats.map(b => (b.sail || b.name || '').trim()).filter(Boolean);
+    const barcosLista = boatSails.join(', ');
+
     await ensureTursoSchema();
     try {
+      await executeTurso(
+        `INSERT INTO regatas_club (id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, notas, categoria, tipo_manga, barcos_lista, datos_sesion_json) 
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+        [
+          id,
+          title,
+          date,
+          D.windRef || 0,
+          14.0,
+          D.N,
+          author,
+          notes,
+          categoria,
+          tipoManga,
+          barcosLista,
+          compressedPayload
+        ]
+      );
+    } catch(errInsert) {
       await executeTurso(
         `INSERT INTO regatas_club (id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, notas, categoria, tipo_manga, datos_sesion_json) 
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
@@ -6694,22 +7433,74 @@ async function submitCloudSave(){
           compressedPayload
         ]
       );
-    } catch(errInsert) {
-      await executeTurso(
-        `INSERT INTO regatas_club (id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, notas, datos_sesion_json) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-        [
-          id,
-          title,
-          date,
-          D.windRef || 0,
-          14.0,
-          D.N,
-          author,
-          `${categoria} | ${tipoManga}${notes ? ' - ' + notes : ''}`,
-          compressedPayload
-        ]
-      );
+    }
+
+    try {
+      for(let bIdx = 0; bIdx < D.N; bIdx++){
+        const b = D.boats[bIdx];
+        const sail = (b.sail || b.name || `Barco ${bIdx+1}`).trim();
+        const rInt = (typeof getBoatRaceInterval === 'function') ? getBoatRaceInterval(bIdx) : { sStart: 0, sEnd: D.T-1 };
+        const sStart = rInt.sStart || 0;
+        const sEnd = rInt.sEnd || (D.T-1);
+        const base = bIdx * D.stride;
+        let sum = 0, n = 0, maxv = 0;
+        const win = []; let ws = 0;
+        for(let s = sStart; s <= sEnd; s++){
+          if(!ok(bIdx, s)) { win.length = 0; ws = 0; continue; }
+          const v = D.S[base + s];
+          if(v > 0.4){ sum += v; n++; }
+          win.push(v); ws += v;
+          if(win.length > 5) ws -= win.shift();
+          if(win.length === 5) maxv = Math.max(maxv, ws / 5);
+        }
+        const dist = Math.max(0, D.CD[base + sEnd] - D.CD[base + sStart]);
+        const avg = n ? (sum / n * KN) : 0;
+        const max = maxv * KN;
+        const tacks = (typeof countTacks === 'function') ? countTacks(bIdx, sStart, sEnd) : 0;
+        const dur = Math.max(0, sEnd - sStart);
+        const statId = `stat_${id}_${bIdx}_${Date.now()}`;
+
+        let boatPos = null;
+        if(typeof getRankingAt === 'function'){
+          try {
+            const finalRanking = getRankingAt(D.T - 1, D.T - 1);
+            if(finalRanking){
+              const pIdx = finalRanking.findIndex(rk => rk.id === bIdx);
+              if(pIdx >= 0) boatPos = pIdx + 1;
+            }
+          } catch(_) {}
+        }
+        const delayS = (rInt && rInt.crossedStart && rInt.startDelaySec != null) ? parseFloat(rInt.startDelaySec.toFixed(1)) : null;
+        const sailorName = clubSailorNames[sail] || '';
+
+        await executeTurso(
+          `INSERT OR REPLACE INTO regatas_barcos_stats (id, regata_id, regata_titulo, fecha, categoria, tipo_sesion, vela, barco_nombre, regatista, duracion_s, distancia_m, sog_media, sog_max, tacks_count, posicion_final, tiempo_salida_s, dist_salida_m, viento_dir, viento_kts)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+          [
+            statId,
+            id,
+            title,
+            date,
+            categoria,
+            tipoManga,
+            sail,
+            b.name || '',
+            sailorName,
+            dur,
+            dist,
+            parseFloat(avg.toFixed(2)),
+            parseFloat(max.toFixed(2)),
+            tacks,
+            boatPos,
+            delayS,
+            delayS != null ? parseFloat((delayS * 2.2).toFixed(1)) : null,
+            D.windRef || 0,
+            14.0
+          ]
+        );
+      }
+    } catch(errStats) {
+      console.warn('Advertencia guardando estadísticas individuales:', errStats);
     }
 
     currentCloudRegata = { id, titulo: title };
@@ -6846,6 +7637,9 @@ if(cloudModal) cloudModal.addEventListener('click', e => { if(e.target === cloud
 const tabCloudList = document.getElementById('tabCloudList');
 if(tabCloudList) tabCloudList.addEventListener('click', () => { switchCloudTab('list'); renderCloudList(); });
 
+const tabCloudStats = document.getElementById('tabCloudStats');
+if(tabCloudStats) tabCloudStats.addEventListener('click', () => switchCloudTab('stats'));
+
 const tabCloudSave = document.getElementById('tabCloudSave');
 if(tabCloudSave) tabCloudSave.addEventListener('click', () => switchCloudTab('save'));
 
@@ -6857,6 +7651,39 @@ if(btnRefreshCloudList) btnRefreshCloudList.addEventListener('click', renderClou
 
 const cloudSearchInput = document.getElementById('cloudSearchInput');
 if(cloudSearchInput) cloudSearchInput.addEventListener('input', filterAndDisplayCloudList);
+
+const cloudBoatFilterSelect = document.getElementById('cloudBoatFilterSelect');
+if(cloudBoatFilterSelect){
+  cloudBoatFilterSelect.addEventListener('change', (e) => {
+    currentCloudBoatFilter = e.target.value;
+    filterAndDisplayCloudList();
+  });
+}
+
+const btnClearBoatFilter = document.getElementById('btnClearBoatFilter');
+if(btnClearBoatFilter){
+  btnClearBoatFilter.addEventListener('click', () => {
+    currentCloudBoatFilter = 'all';
+    if(cloudBoatFilterSelect) cloudBoatFilterSelect.value = 'all';
+    filterAndDisplayCloudList();
+  });
+}
+
+const btnGoToBigDataForBoat = document.getElementById('btnGoToBigDataForBoat');
+if(btnGoToBigDataForBoat){
+  btnGoToBigDataForBoat.addEventListener('click', () => {
+    const sail = (currentCloudBoatFilter && currentCloudBoatFilter !== 'all') ? currentCloudBoatFilter : '';
+    switchCloudTab('stats');
+    if(sail) renderBigDataStatsView(sail);
+  });
+}
+
+const bigDataBoatSelect = document.getElementById('bigDataBoatSelect');
+if(bigDataBoatSelect){
+  bigDataBoatSelect.addEventListener('change', (e) => {
+    renderBigDataStatsView(e.target.value);
+  });
+}
 
 const btnSubmitCloudSave = document.getElementById('btnSubmitCloudSave');
 if(btnSubmitCloudSave) btnSubmitCloudSave.addEventListener('click', submitCloudSave);

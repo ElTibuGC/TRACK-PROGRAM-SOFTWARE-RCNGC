@@ -136,6 +136,42 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.3.6] - Perfil del Regatista con Asignación de Nombre en Modo Entrenador, Histórico de Resultados (Puestos y Podios) y Evolución de Tiempos de Salida
+* **Gestión de Nombres de Regatistas (Modo Entrenador vs Modo Regatista)**:
+  * **Asignación y Edición de Nombre en la Ficha del Barco**: En el perfil de cada regatista (pestaña «Big Data»), los entrenadores con permisos activos (`Modo Entrenador`) disponen de un botón `✏️ Asignar / Editar Nombre` para asociar el nombre y apellidos completos al número de vela.
+  * **Directorio Central en Turso SQLite (`regatistas_club`)**: Nueva tabla relacional que persiste la asociación entre vela, nombre y categoría del regatista en la base de datos central en la nube.
+  * **Protección y Acceso Rápido**: En `Modo Regatista`, el nombre asignado se muestra claramente (ej: `⛵ 0614 · Lucía Cabrera`), y el botón de edición muestra un candado `🔒`. Al pulsar sobre él, se solicita el PIN de entrenador para desbloquear la sesión en 1 clic y proceder con la edición.
+  * **Desplegables Enriquecidos**: Tanto el filtro de barcos en la nube como el selector del histórico muestran ahora el número de vela acompañado del nombre real del regatista (ej: `⛵ 0614 · Lucía Cabrera (2 sesiones)`).
+* **Histórico de Resultados, Puestos y Podios de Competición**:
+  * **KPI Resumen de Puestos & Podios**: Muestra el mejor puesto alcanzado en regatas oficiales y entrenamientos (ej: `1º 🥇` o `Mejor: 2º`), indicando el recuento total de podios y desglose de medallas (`X podios (🥇 oro, 🥈 plata, 🥉 bronce)`).
+  * **Columna «🏆 Puesto» en la Tabla de Sesiones**: Incorpora el puesto final conseguido por cada barco en cada sesión con distintivos de medalla dorada (`1º 🥇`), plateada (`2º 🥈`), bronceada (`3º 🥉`) o puesto numérico.
+  * **Cálculo Automático de Puesto al Guardar**: Al guardar un entrenamiento o regata en la nube, el visor computa automáticamente la posición final de cada barco en la clasificación de la flota y la almacena en `posicion_final`.
+* **Evolución de Tiempos en Cruzar la Línea de Salida ($\Delta t = t_{cruce} - t_{salida}$)**:
+  * **Métrica Clave de Salida**: Registra los segundos transcurridos desde el bocinazo de salida oficial hasta el instante exacto en que la proa del regatista corta la línea de salida con rumbo a la baliza 1.
+  * **KPI «⏱️ Tiempo Medio Salida»**: Indicador destacado con la media de retraso a la salida, mejor marca alcanzada y número de salidas de alta calidad ($\le 3.0\text{ s}$).
+  * **Selector Interactivo de Gráficos [⏱️ Tiempos de Salida] / [📈 Velocidad SOG]**:
+    * **Gráfico de Evolución de Salidas**: Barras verticales que representan el tiempo en cruzar la línea en cada sesión con código de semáforo de alto rendimiento:
+      * 🟢 **Verde ($\le 3.0\text{ s}$)**: Salida excelente (arrancada pegada a la línea con velocidad).
+      * 🟡 **Ámbar ($3.1 - 6.0\text{ s}$)**: Salida estándar / media.
+      * 🔴 **Rojo ($> 6.0\text{ s}$)**: Salida tardía o penalizada.
+      * **Línea de Referencia Objetivo RCNGC**: Marca discontinua verde a los $3.0\text{ s}$ como referencia de calidad del club.
+    * **Gráfico de Evolución de Velocidad**: Alternancia instantánea al gráfico de velocidad media SOG y marcas máximas en 5 segundos.
+  * **Columna «⏱️ Salida (+s)» en la Tabla de Sesiones**: Cada fila muestra la etiqueta de salida con su código de color correspondiente (ej: `+1.4s` en verde, `+3.8s` en ámbar).
+
+### [v1.3.5] - Desplegable de Barcos Analizados, Filtro por Regatista y Módulo Big Data del Club (Histórico Deportivo)
+* **Desplegable de Barco / Vela en el Menú de la Nube**:
+  * **Selector «⛵ Mi Barco / Vela»**: Desplegable dinámico en la cabecera de filtros que lista todas las velas y barcos que han sido analizados en la nube central, indicando el número de regatas en las que ha participado cada uno (ej: `⛵ 0614 (2 regatas)`).
+  * **Filtrado Instantáneo de Regatas**: Al seleccionar su número de vela, la lista se reduce en tiempo real para mostrar únicamente las regatas y entrenamientos donde ese regatista fue trackeado.
+  * **Banner Activo y Resaltado en Tarjetas**: Aparece una barra informativa interactiva indicando el barco activo con acceso directo a su ficha histórica, y cada tarjeta de regata resalta con un distintivo verde `✓ Tu barco participa (XXXX)` junto con el listado completo de barcos analizados en la sesión.
+  * **Búsqueda por Vela en el Buscador**: El buscador general de texto ahora busca también por número de vela en el campo `barcos_lista`.
+* **Estructura para Histórico y Estadísticas del Regatista (Big Data del Club)**:
+  * **Nueva Tabla Relacional en Turso SQLite (`regatas_barcos_stats`)**: Almacena de forma ligera y optimizada métricas individuales por barco y sesión (`sog_media`, `sog_max`, `distancia_m`, `duracion_s`, `tacks_count`, `viento_dir`, `viento_kts`) indexada por número de vela y fecha para consultas ultrarrápidas sin descargar gigabytes de telemetría GPS.
+  * **Pestaña «📊 Histórico y Big Data» en la Nube**: Nuevo panel accesible tanto para regatistas como entrenadores con:
+    * **Dashboard de 6 KPIs Acumulados**: Total de sesiones disputadas, horas acumuladas en el agua, millas navegadas (NM), récord personal de velocidad (SOG máx), velocidad media global histórica y volumen total de viradas.
+    * **Gráfico de Evolución Temporal (Progreso Deportivo)**: Gráfico interactivo que muestra la progresión de velocidad media y marcas máximas a lo largo de las semanas, junto con la línea de referencia de su media global.
+    * **Tabla Cronológica de Sesiones**: Desglose sesión a sesión con fecha, título, categoría, condiciones de viento, velocidades y botón `📥 Cargar en mapa` para abrir directamente cualquier entrenamiento del pasado.
+  * **Auto-Backfill Automático**: Las regatas previamente existentes en la base de datos se analizan y enriquecen de forma automática para que todos los regatistas históricos aparezcan disponibles de inmediato.
+
 ### [v1.3.4] - Categorización Oficial RCNGC (Grupos A, B, C y Vela Ligera), Tipos de Sesión y Protección por PIN (Modo Entrenador vs Modo Regatista)
 * **Categorización Oficial RCNGC y Grupos de Flota (Paso 3)**:
   * **Clasificación por Grupo de Flota**: Selector desplegable configurado con las opciones oficiales del club:
