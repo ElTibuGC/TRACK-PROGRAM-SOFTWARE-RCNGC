@@ -136,6 +136,36 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.3.4] - Categorización Oficial RCNGC (Grupos A, B, C y Vela Ligera), Tipos de Sesión y Protección por PIN (Modo Entrenador vs Modo Regatista)
+* **Categorización Oficial RCNGC y Grupos de Flota (Paso 3)**:
+  * **Clasificación por Grupo de Flota**: Selector desplegable configurado con las opciones oficiales del club:
+    * `Grupo A Optimist`
+    * `Grupo B Optimist`
+    * `Grupo C Optimist`
+    * `Vela ligera RCNGC`
+  * **Tipo de Sesión**:
+    * `🎯 Entrenamiento`
+    * `🏁 Regata`
+    * `📊 Análisis de otras regatas`
+  * **Etiquetas y Badges Cromáticos**: Cada tarjeta de la biblioteca muestra badges distintivos con códigos de color náutico para identificar la flota (`.grupo-a`, `.grupo-b`, `.grupo-c`, `.vela-ligera`) y el tipo de sesión (`.entrenamiento`, `.regata`, `.analisis`) a simple vista.
+  * **Filtros Rápidos Interactivos**: Barra de navegación con botones píldora (`cat-pill`) para filtrar instantáneamente por categoría (`Todas`, `Grupo A Optimist`, `Grupo B Optimist`, `Grupo C Optimist`, `Vela ligera RCNGC`) y desplegable para filtrar por Tipo de Sesión, combinables con el buscador textual en tiempo real.
+* **Control de Acceso y Protección de Roles (Paso 4)**:
+  * **Modo Regatista (Público / Solo Lectura)**: Modo predeterminado seguro para regatistas y familias. Los botones de borrado (`🗑️`) quedan completamente ocultos del visor y el formulario de subida a la nube permanece bloqueado tras una pantalla de protección para evitar modificaciones o sobreescrituras accidentales en la base de datos central.
+  * **Modo Entrenador (Escritura y Gestión Completa)**: Desbloqueable mediante PIN de seguridad (por defecto `RCNGC2026`, configurable en local). Muestra el distintivo `🔓 Modo Entrenador` en la cabecera, desbloquea los botones de eliminación de regatas con doble confirmación de seguridad y habilita el formulario completo de publicación a la nube con pre-rellenado automático del PIN.
+  * **Gestión de Sesión Intuitiva**: El entrenador puede bloquear o desbloquear su sesión cómodamente desde el botón superior del modal o desde la pestaña de «Conexión y Seguridad».
+  * **Esquema de Base de Datos Dinámico y Retrocompatible**: La tabla `regatas_club` en Turso SQLite se actualiza automáticamente con las nuevas columnas `categoria` y `tipo_manga` con protección de fallos y fallback transparente si la base de datos tiene esquemas heredados.
+
+### [v1.3.3] - Enlaces Directos para Compartir Regatas por URL y Compresión GZIP en la Nube
+* **Enlaces Directos para Compartir por URL (`?regata=ID`)**:
+  * **Botón «🔗 Compartir» en la Cabecera**: Aparece en la barra superior al cargar o guardar una regata de la nube, permitiendo copiar en un clic el enlace directo para enviar por WhatsApp o guardar.
+  * **Botón «🔗 Compartir» en la Lista de Regatas**: Cada tarjeta de regata en la ventana modal de la nube incluye ahora un botón para copiar directamente su enlace web con confirmación visual interactiva (`✅ ¡Copiado!`).
+  * **Auto-carga Instantánea al Abrir el Enlace**: Si cualquier regatista, padre o entrenador abre una URL con el parámetro `?regata=ID`, el visor detecta la regata automáticamente, la descarga de la base de datos de Turso SQLite y la reproduce en el mapa sin pasos intermedios.
+  * **Sincronización con la Barra de Direcciones**: Al cargar o guardar una regata, la dirección del navegador se actualiza limpiamente (`history.replaceState`) reflejando la ID de la regata activa sin recargar la página. Al pulsar «Nueva sesión», se limpia la URL automáticamente.
+* **Compresión Nativa GZIP en el Cliente (`CompressionStream` / `DecompressionStream`)**:
+  * **Ahorro de hasta el 85% en Espacio**: Antes de subirse a la base de datos de Turso SQLite, el payload JSON de la regata se comprime automáticamente mediante la API nativa de streams GZIP del navegador y se codifica en Base64 con prefijo `gz:`.
+  * **Carga Acelerada**: Al reducir drásticamente el peso de las pistas GPS, las descargas y aperturas de regatas son notablemente más veloces incluso en redes móviles 4G/5G.
+  * **100% Retrocompatible**: El motor de descompresión detecta automáticamente si el registro proviene del formato antiguo (texto plano JSON) o del nuevo formato comprimido, garantizando que todas las regatas previamente almacenadas sigan abriéndose a la perfección.
+
 ### [v1.3.2] - Corrección de Polares Empíricas Optimist y Reactivación de Gráficos de Métricas Avanzadas
 * **Definición de Polares Empíricas Calibradas (`getOptimistPolarTarget`)**:
   * Implementado el modelo de interpolación lineal continua de polares para la clase Optimist (IOD95) en base a las tablas empíricas de 6, 10, 14 y 18+ nudos:
