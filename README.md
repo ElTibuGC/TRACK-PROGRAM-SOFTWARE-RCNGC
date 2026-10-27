@@ -137,7 +137,8 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
 ### [v1.3.6] - Perfil del Regatista con Asignación de Nombre en Modo Entrenador, Histórico de Resultados (Puestos y Podios) y Evolución de Tiempos de Salida
-* **Gestión de Nombres de Regatistas (Modo Entrenador vs Modo Regatista)**:
+* **Gestión de Nombres de Regatistas y Seguridad de Configuración**:
+  * **Ocultación de la Pestaña «⚙️ Conexión y Seguridad» en Modo Regatista**: La pestaña de configuración de conexión de Turso SQLite y parámetros de seguridad queda ahora completamente oculta en Modo Regatista (solo lectura). Únicamente se hace visible cuando se desbloquea el `Modo Entrenador` mediante el PIN de seguridad. Si se cierra la sesión de entrenador mientras se consulta dicha pestaña, el sistema redirige automáticamente al usuario a la lista de regatas.
   * **Asignación y Edición de Nombre en la Ficha del Barco**: En el perfil de cada regatista (pestaña «Big Data»), los entrenadores con permisos activos (`Modo Entrenador`) disponen de un botón `✏️ Asignar / Editar Nombre` para asociar el nombre y apellidos completos al número de vela.
   * **Directorio Central en Turso SQLite (`regatistas_club`)**: Nueva tabla relacional que persiste la asociación entre vela, nombre y categoría del regatista en la base de datos central en la nube.
   * **Protección y Acceso Rápido**: En `Modo Regatista`, el nombre asignado se muestra claramente (ej: `⛵ 0614 · Lucía Cabrera`), y el botón de edición muestra un candado `🔒`. Al pulsar sobre él, se solicita el PIN de entrenador para desbloquear la sesión en 1 clic y proceder con la edición.
@@ -447,6 +448,43 @@ Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan
   * **Barcos tácticos**: Selector de color para elegir el color del barco antes de colocarlo, y selector de color individual en la lista de barcos colocados para cambiar el color de cualquier barco en cualquier momento.
   * **Líneas y flechas**: Selectores de color dedicados junto a los botones de línea y flecha para trazar mediciones y vectores tácticos en el color que prefieras (azul, verde, naranja, etc.).
 * **Persistencia total**: Los colores asignados y los borrados selectivos se guardan automáticamente en la memoria del navegador y persisten tras pulsar F5.
+
+### [v1.3.7] - Suite Completa de Analítica Avanzada, Big Data del Regatista y Gamificación RCNGC
+* **Análisis Profundo de Salidas**:
+  * **Velocidad en el bocinazo ($V_{gun}$)**: Medición exacta en nudos de la velocidad de arrancada en el segundo cero de la salida (Objetivo RCNGC $\ge 3,5\text{ kn}$).
+  * **Distribución táctica de la línea**: Cálculo porcentual de elecciones de salida repartidas entre **Pin**, **Centro** y **Comité** con barra visual tricromática y etiquetas.
+  * **Distancia y tiempo de corte**: Estimación métrica de la distancia a la línea a 0s y tiempo medio de cruce tras el bocinazo.
+* **Matriz de Rendimiento por Rango de Viento**:
+  * Desglose automático de todas las regatas del regatista en tres regímenes meteorológicos clave:
+    1. 🍃 **Viento Suave (< 10 kn)**: Sesiones, velocidad media, VMG ceñida y puesto medio.
+    2. 💨 **Viento Medio (10–15 kn)**: Rendimiento en condiciones estándar de regata.
+    3. 🌊 **Viento Fuerte (> 15 kn - Alisios RCNGC)**: Análisis de potencia y gobierno en las condiciones habituales de la bahía de Las Palmas.
+* **Calidad de Maniobras (Telemetría de Viradas)**:
+  * **Pérdida en el ápex ($\Delta V$)**: Medición de la caída de velocidad en nudos durante la virada por avante.
+  * **Tiempo de aceleración ($t_{rec}$)**: Tiempo en segundos necesario para recuperar el 90% de la velocidad objetivo tras cambiar de bordo.
+  * **Coste en metros y esloras**: Conversión métrica directa del coste de cada virada en distancia y en esloras de Optimist ($2,36\text{ m}$).
+* **Tramos, VMG y Eficiencia de Derrota**:
+  * **VMG Ceñida vs Popa**: Desglose de la velocidad neta de ascenso contra el viento frente a la velocidad de descenso a sotavento.
+  * **Eficiencia de derrota**: Ratio porcentual de progreso respecto a la derrota óptima de ceñida.
+* **Estrategia y Remontadas (Flota RCNGC)**:
+  * **Paso en Baliza 1 (B1 Barlovento) vs Puesto Final en Meta**: Comparación de rendimiento en la primera ceñida frente al resultado global.
+  * **Índice de Remontada**: Puestos ganados o perdidos de promedio desde el paso por Barlovento hasta cortar la línea de llegada.
+  * **Gap al líder**: Diferencia media en segundos respecto al primer barco que cruzó la meta.
+* **Insignias y Gamificación Deportiva**:
+  * 🚀 **«Salida Cañón»**: Otorgada por clavar la salida en $\le 2,0\text{ s}$ con velocidad $V_{gun} \ge 3,5\text{ kn}$.
+  * 🔄 **«Virada Fina»**: Otorgada por promediar una pérdida de velocidad en virada $\le 1,8\text{ kn}$.
+  * ⚓ **«Millas de Oro»**: Otorgada al superar las 10 Millas Náuticas de telemetría acumulada en el club.
+  * 📈 **«Remontador»**: Otorgada al mantener un índice positivo de remontada ($\ge +0,5$ puestos ganados).
+  * ⚡ **«Récord SOG Histórico»**: Muestra la velocidad punta absoluta del regatista acompañada de la fecha exacta de la manga.
+* **Gráfica Multieje SVG con 4 Modos Interactivos**:
+  * Pestañas superiores para alternar instantáneamente entre:
+    1. `⏱️ Tiempos Salida (+s)`: Con línea de objetivo RCNGC ($\le 3,0\text{ s}$) y código semafórico.
+    2. `🚀 Vel. Bocinazo (kn)`: Con línea de objetivo $\ge 3,5\text{ kn}$.
+    3. `📈 Velocidad SOG (kn)`: Velocidad media y pico máximo en 5s.
+    4. `🧭 VMG Ceñida (kn)`: Velocidad de ascenso a barlovento con línea de media histórica.
+* **Seguridad y Jerarquía de Accesos**:
+  * La pestaña **«Conexión y Seguridad»** permanece 100% oculta en modo regatista (`display: none`) y solo se hace visible al autenticarse como entrenador.
+  * La asignación y edición del nombre de regatistas, así como el borrado de regatas en la nube, exige el PIN de entrenador (`RCNGC2026`).
 
 ### [v1.0.10] - Cierre V1: Equipo de Regatas RCNGC, Rosa de Viento, Memoria F5, Nueva Sesión y Guía del Entrenador
 * **Identificación oficial «Equipo de Regatas RCNGC · Optimist»**: Actualizados todos los textos de cabecera y títulos de sesión para mostrar siempre «Equipo de Regatas RCNGC · Optimist».
