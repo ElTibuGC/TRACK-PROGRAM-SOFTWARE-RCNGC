@@ -179,6 +179,25 @@ select.num{width:auto}
 .tl{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 14px}
 .play{width:42px;height:42px;border-radius:50%;border:0;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;cursor:pointer;flex:none}
 .play svg{width:18px;height:18px;fill:currentColor}
+.manual-time-input{
+  width:78px;
+  height:28px;
+  padding:2px 6px;
+  font-family:var(--f-mono);
+  font-size:12.5px;
+  font-weight:700;
+  color:var(--ink);
+  background:var(--bg);
+  border:1px solid var(--line);
+  border-radius:6px;
+  text-align:center;
+  transition:border-color .15s, box-shadow .15s;
+}
+.manual-time-input:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 0 0 2px var(--sel);
+}
 .scrub{flex:1 1 300px;min-width:200px;position:relative;padding-top:16px}
 .ticks{position:absolute;left:0;right:0;top:0;height:14px}
 .tick{position:absolute;transform:translateX(-50%);font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.04em;white-space:nowrap}
@@ -653,6 +672,7 @@ tr.qsep th{padding-top:4px}
       <button class="tool" id="zout" aria-label="Alejar">−</button>
       <button class="tool" id="fit">Flota</button>
       <button class="tool" id="follow" aria-pressed="false">Seguir</button>
+      <button class="tool" id="btnOrientation" type="button" title="Orientación del mapa: Norte Arriba (North Up) · Clic para cambiar a Viento Arriba (Wind Up)" aria-pressed="false" style="font-size:11.5px;font-weight:600;padding:0 6px;white-space:nowrap;">Norte</button>
     </div>
     <div class="placing-msg" id="placingMsg" hidden>
       <span id="placingMsgText">Toca el mapa para colocar la baliza</span>
@@ -681,6 +701,10 @@ tr.qsep th{padding-top:4px}
 
   <div class="card tl">
     <button class="play" id="play" aria-label="Reproducir"></button>
+    <div class="grp manual-time-grp">
+      <span>Hora</span>
+      <input type="text" id="manualTimeInput" class="manual-time-input" placeholder="hh:mm:ss" title="Escribe la hora exacta (ej. 14:35:20 o 25:30) y pulsa Enter para ir a ese momento" maxlength="8">
+    </div>
     <div class="scrub">
       <div class="ticks" id="ticks"></div>
       <input type="range" id="scrub" min="0" max="100" step="0.1" value="0" aria-label="Tiempo de la sesión">
@@ -974,6 +998,7 @@ tr.qsep th{padding-top:4px}
         <li><strong>Marcar salida:</strong> Mueve la barra de tiempo al segundo del bocinazo de salida y pulsa <strong>«Marcar salida»</strong>.</li>
         <li><strong>Modalidad Libre:</strong> Pulsa <em>«+ Añadir baliza»</em> y haz clic en el mapa para situar boyas libres.</li>
         <li><strong>Trapecio Oficial IODA:</strong> Pulsa <em>«📍 Añadir recorrido paso a paso»</em> y el visor te guiará para situar con un clic cada marca oficial: <strong>B1</strong> ➔ <strong>B2</strong> (través a 60°) ➔ <strong>Puerta 3</strong> (balizas 3s y 3p) ➔ <strong>Llegada</strong> (Pin y Comité). El programa detecta automáticamente qué boya de la puerta toma cada regatista.</li>
+        <li><strong>Orientación del Mapa (North Up vs Wind Up):</strong> Alterna entre la vista geográfica clásica (<em>North Up</em>, Norte arriba) y la vista táctica de regata (<em>Wind Up</em>, Viento arriba), que orienta el campo situando Barlovento en la parte superior y Sotavento en la inferior. Ideal para campos con vientos de Este o Sur (como en la bahía de Las Palmas). Puedes cambiarlo desde el botón <strong>[ Norte / Viento ]</strong> del mapa, pulsando directamente la <strong>Rosa de los Vientos</strong>, en la pestaña de <strong>Táctica</strong>, o con las teclas <kbd>W</kbd> / <kbd>N</kbd>.</li>
       </ul>
 
       <h3>📐 4. Pizarra Táctica (Pestaña «Táctica»)</h3>
@@ -1384,7 +1409,7 @@ function computeCourse(){
 
 /* ---------- estado ---------- */
 let D=null;
-const state={t:0,playing:false,speed:10,trail:300,sparkWindow:300,labels:true,sel:0,follow:false,placing:false,activeTool:null,toolDraft:null,iodaWizard:false,tactics:{lines:[],arrows:[],boats:[],startLine:null,showStartGrid:true,laylines:false,threeLengths:false,manualZones:[]},cam:{x:0,y:0,scale:1}};
+const state={t:0,playing:false,speed:5,trail:300,sparkWindow:300,labels:true,sel:0,follow:false,placing:false,orientation:'north',activeTool:null,toolDraft:null,iodaWizard:false,tactics:{lines:[],arrows:[],boats:[],startLine:null,showStartGrid:true,laylines:false,threeLengths:false,manualZones:[]},cam:{x:0,y:0,scale:1}};
 const windAt=t=>D.windAt?D.windAt(t):D.windRef;
 const ok=(i,s)=>!D.OK||D.OK[i*D.stride+s]===1;
 const hasCourse=()=>D.course.legs.length>0;
@@ -1427,39 +1452,154 @@ new MutationObserver(readTokens).observe(document.documentElement,{attributes:tr
 const mapEl=document.getElementById('map'),cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 let W=0,Hh=0,dpr=1,fitted=false;
 new ResizeObserver(()=>{const r=mapEl.getBoundingClientRect();W=r.width;Hh=r.height;dpr=window.devicePixelRatio||1;cv.width=W*dpr;cv.height=Hh*dpr;if(D&&W>0){if(!fitted){fit();fitted=true;}}}).observe(mapEl);
+function getCamRot(){
+  if(state.orientation==='wind'&&D){
+    return -windAt(state.t)*D2R;
+  }
+  return 0;
+}
+function screenToWorldCoords(px, py){
+  const rot=getCamRot();
+  let dx=px-W/2, dy=py-Hh/2;
+  if(rot!==0){
+    const c=Math.cos(rot), s=Math.sin(rot);
+    const udx=dx*c + dy*s;
+    const udy=-dx*s + dy*c;
+    dx=udx; dy=udy;
+  }
+  return {
+    x: state.cam.x + dx / state.cam.scale,
+    y: state.cam.y - dy / state.cam.scale,
+    unrotPx: W/2 + dx,
+    unrotPy: Hh/2 + dy
+  };
+}
+function worldToScreenCoords(x, y){
+  let dx=(x-state.cam.x)*state.cam.scale;
+  let dy=-(y-state.cam.y)*state.cam.scale;
+  const rot=getCamRot();
+  if(rot!==0){
+    const c=Math.cos(rot), s=Math.sin(rot);
+    const rdx=dx*c - dy*s;
+    const rdy=dx*s + dy*c;
+    dx=rdx; dy=rdy;
+  }
+  return {px: W/2 + dx, py: Hh/2 + dy};
+}
+function drawTextLabel(txt, px, py, opts={}){
+  const camRot=getCamRot();
+  ctx.save();
+  ctx.translate(px, py);
+  if(camRot!==0)ctx.rotate(-camRot);
+  if(opts.alpha!=null)ctx.globalAlpha=opts.alpha;
+  if(opts.font)ctx.font=opts.font;
+  if(opts.align)ctx.textAlign=opts.align;
+  if(opts.baseline)ctx.textBaseline=opts.baseline;
+  if(opts.stroke!==false){
+    ctx.lineWidth=opts.lineWidth||2.5;
+    ctx.strokeStyle=opts.strokeStyle||C.halo;
+    ctx.strokeText(txt, 0, 0);
+  }
+  ctx.fillStyle=opts.fillStyle||C.ink;
+  ctx.fillText(txt, 0, 0);
+  ctx.restore();
+}
+function toggleOrientation(forceMode){
+  if(forceMode){
+    state.orientation=forceMode;
+  }else{
+    state.orientation=(state.orientation==='wind'?'north':'wind');
+  }
+  const isWind=state.orientation==='wind';
+  const btn=document.getElementById('btnOrientation');
+  if(btn){
+    btn.setAttribute('aria-pressed',String(isWind));
+    btn.textContent=isWind?'Viento':'Norte';
+    btn.title=isWind
+      ?'Orientación: Viento Arriba (Wind Up) · Clic para cambiar a Norte Arriba (North Up)'
+      :'Orientación: Norte Arriba (North Up) · Clic para cambiar a Viento Arriba (Wind Up)';
+  }
+  const btnN=document.getElementById('btnTacNorthUp');
+  const btnW=document.getElementById('btnTacWindUp');
+  if(btnN)btnN.setAttribute('aria-pressed',String(!isWind));
+  if(btnW)btnW.setAttribute('aria-pressed',String(isWind));
+  if(D&&!state.follow){
+    fit();
+  }
+  saveCurrentSession();
+}
 function fit(){
+  if(!D||!D.bounds)return;
   const b=D.bounds;
-  state.cam.scale=Math.min(W/(b.maxX-b.minX),Hh/(b.maxY-b.minY))*.92;
-  state.cam.x=(b.minX+b.maxX)/2;state.cam.y=(b.minY+b.maxY)/2;
+  const rot=getCamRot();
+  const wSpan=Math.max(10,b.maxX-b.minX), hSpan=Math.max(10,b.maxY-b.minY);
+  const c=Math.abs(Math.cos(rot)), s=Math.abs(Math.sin(rot));
+  const spanX=wSpan*c + hSpan*s;
+  const spanY=wSpan*s + hSpan*c;
+  state.cam.scale=Math.min(W/spanX,Hh/spanY)*.92;
+  state.cam.x=(b.minX+b.maxX)/2;
+  state.cam.y=(b.minY+b.maxY)/2;
 }
 const sx=x=>W/2+(x-state.cam.x)*state.cam.scale;
 const sy=y=>Hh/2-(y-state.cam.y)*state.cam.scale;
-const wx=px=>state.cam.x+(px-W/2)/state.cam.scale;
-const wy=py=>state.cam.y-(py-Hh/2)/state.cam.scale;
+const wx=(px,py)=>screenToWorldCoords(px,py!=null?py:Hh/2).x;
+const wy=(py,px)=>screenToWorldCoords(px!=null?px:W/2,py).y;
 
 const srand=mulberry32(7);
 const streaks=[...Array(46)].map(()=>({u:srand(),v:srand(),l:.6+srand()*.8}));
-function niceStep(scale){const target=90/scale;const p=Math.pow(10,Math.floor(Math.log10(target)));for(const m of [1,2,5,10])if(m*p>=target)return m*p;return 10*p;}
+function niceStep(scale){const target=30/scale;const p=Math.pow(10,Math.floor(Math.log10(target)));for(const m of [1,2,5,10])if(m*p>=target)return m*p;return 10*p;}
 
 function draw(now){
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.fillStyle=C.sea;ctx.fillRect(0,0,W,Hh);
   const t=state.t,w=windAt(t),sc=state.cam.scale;
+  const camRot=getCamRot();
+
+  // Capa del mundo (rotada según orientación North Up o Wind Up)
+  ctx.save();
+  ctx.translate(W/2,Hh/2);
+  ctx.rotate(camRot);
+  ctx.translate(-W/2,-Hh/2);
 
   // rachas de viento
   const wr=(w+180)*D2R,vx=Math.sin(wr),vy=-Math.cos(wr),drift=reduced?0:(now/1000)*28;
+  const diag=Math.hypot(W,Hh)*1.4;
   ctx.strokeStyle=C.grid;ctx.lineWidth=1.2;ctx.beginPath();
-  streaks.forEach(p=>{const span=W+Hh;let px=((p.u*span+vx*drift)%span+span)%span-Hh/2,py=((p.v*span+vy*drift)%span+span)%span-W/2;px=px%(W+40);py=py%(Hh+40);const L=16*p.l;ctx.moveTo(px,py);ctx.lineTo(px+vx*L,py+vy*L);});
+  streaks.forEach(p=>{
+    let px=((p.u*diag+vx*drift)%diag+diag)%diag - diag/2 + W/2;
+    let py=((p.v*diag+vy*drift)%diag+diag)%diag - diag/2 + Hh/2;
+    const L=16*p.l;
+    ctx.moveTo(px,py);ctx.lineTo(px+vx*L,py+vy*L);
+  });
   ctx.stroke();
 
-  // cuadrícula
+  // cuadrícula táctica orientada a 45° del viento
   const step=niceStep(sc);
-  ctx.strokeStyle=C.grid;ctx.lineWidth=1;ctx.beginPath();
-  for(let gx=Math.floor(wx(0)/step)*step;gx<=wx(W);gx+=step){ctx.moveTo(sx(gx),0);ctx.lineTo(sx(gx),Hh);}
-  for(let gy=Math.floor(wy(Hh)/step)*step;gy<=wy(0);gy+=step){ctx.moveTo(0,sy(gy));ctx.lineTo(W,sy(gy));}
-  ctx.stroke();
+  const pxStep=step*sc;
+  const tacticalHdg=(w+45)*D2R;
+  const sinA=Math.sin(tacticalHdg), cosA=Math.cos(tacticalHdg);
+  const u1=state.cam.x*sinA + state.cam.y*cosA;
+  const u2=state.cam.x*cosA - state.cam.y*sinA;
+  const offX=((u1*sc)%pxStep + pxStep)%pxStep;
+  const offY=((u2*sc)%pxStep + pxStep)%pxStep;
 
-  // recorrido
+  ctx.save();
+  ctx.translate(W/2,Hh/2);
+  ctx.rotate(tacticalHdg - Math.PI/2);
+  ctx.strokeStyle=C.grid;
+  ctx.lineWidth=1;
+  ctx.beginPath();
+  for(let x=-diag-offX; x<=diag; x+=pxStep){
+    ctx.moveTo(x, -diag);
+    ctx.lineTo(x, diag);
+  }
+  for(let y=-diag-offY; y<=diag; y+=pxStep){
+    ctx.moveTo(-diag, y);
+    ctx.lineTo(diag, y);
+  }
+  ctx.stroke();
+  ctx.restore();
+
   // recorrido
   const CO=D.course,marks=CO.marks;
   if(CO.type==='ioda'&&CO.ioda){
@@ -1471,20 +1611,16 @@ function draw(now){
       pathPts.forEach((p,k)=>k?ctx.lineTo(sx(p.x),sy(p.y)):ctx.moveTo(sx(p.x),sy(p.y)));ctx.stroke();ctx.setLineDash([]);
     }
     if(CO.startPt){
-      ctx.font=`600 11px ${C.disp}`;ctx.fillStyle=C.accent;ctx.textAlign="center";
-      ctx.beginPath();ctx.moveTo(sx(CO.startPt.x)-6,sy(CO.startPt.y));ctx.lineTo(sx(CO.startPt.x)+6,sy(CO.startPt.y));ctx.strokeStyle=C.accent;ctx.lineWidth=2;ctx.stroke();
-      ctx.fillText('SALIDA',sx(CO.startPt.x),sy(CO.startPt.y)+16);
+      drawTextLabel('SALIDA',sx(CO.startPt.x),sy(CO.startPt.y)+16,{font:`600 11px ${C.disp}`,fillStyle:C.accent,strokeStyle:C.panel||'#ffffff',align:'center'});
     }
     marks.forEach((m,k)=>{
       const r=Math.max(3.5, 0.5*sc);
       ctx.beginPath();ctx.arc(sx(m.x),sy(m.y),r,0,7);ctx.fillStyle='#ea580c';ctx.fill();
       ctx.strokeStyle='#9a3412';ctx.lineWidth=1;ctx.stroke();
       if(r>=5){ctx.beginPath();ctx.arc(sx(m.x),sy(m.y),r*.35,0,7);ctx.fillStyle='#ffedd5';ctx.fill();}
-      ctx.font=`600 11px ${C.disp}`;ctx.fillStyle="#ea580c";ctx.textAlign="left";ctx.lineWidth=2.5;ctx.strokeStyle=C.halo;
       const last=k===marks.length-1&&marks.length>1;
       const txt=(m.name||("B"+(k+1)))+(last&&!m.name?" · llegada":"");
-      ctx.strokeText(txt,sx(m.x)+r+3,sy(m.y)+4);
-      ctx.fillText(txt,sx(m.x)+r+3,sy(m.y)+4);
+      drawTextLabel(txt,sx(m.x)+r+3,sy(m.y)+4,{font:`600 11px ${C.disp}`,fillStyle:'#ea580c',strokeStyle:C.halo,align:'left'});
     });
   }
 
@@ -1497,9 +1633,27 @@ function draw(now){
   drawTacticalArrows();
   drawTacticalDraft(w,sc);
   // estelas
-  const s=Math.min(D.T-1,Math.floor(t)),from=state.trail===Infinity?0:Math.max(0,s-state.trail);
+  const s=Math.min(D.T-1,Math.floor(t));
   for(let i=0;i<D.N;i++){
     const sel=i===state.sel,base=i*D.stride;
+    let from=0;
+    if(state.trail==='leg'){
+      if(D.LG && hasCourse()){
+        const curLeg=D.LG[base+s];
+        from=s;
+        while(from>0 && D.LG[base+(from-1)]===curLeg){
+          from--;
+        }
+      }else if(D.startT!=null && s>=D.startT){
+        from=Math.round(D.startT);
+      }else{
+        from=Math.max(0,s-300);
+      }
+    }else if(state.trail===Infinity){
+      from=0;
+    }else{
+      from=Math.max(0,s-state.trail);
+    }
     ctx.strokeStyle=D.boats[i].color;ctx.lineWidth=sel?2.4:1.3;ctx.globalAlpha=sel?.95:.55;
     ctx.beginPath();let pen=false;
     const stp=Math.max(1,Math.ceil((s-from)/2500));
@@ -1545,13 +1699,8 @@ function draw(now){
           ctx.lineWidth=1.5;
           ctx.stroke();
 
-          ctx.font=`700 10.5px ${C.mono}`;
-          ctx.lineWidth=2.5;
-          ctx.strokeStyle=C.halo;
           const lab=(m.type==='TACK'?'Virada ':'Trasluchada ')+m.tackLossMeters+'m';
-          ctx.strokeText(lab,mx+8,my+3);
-          ctx.fillStyle=m.vMinRatio<0.35?'#ef4444':C.ink;
-          ctx.fillText(lab,mx+8,my+3);
+          drawTextLabel(lab,mx+8,my+3,{font:`700 10.5px ${C.mono}`,fillStyle:m.vMinRatio<0.35?'#ef4444':C.ink,strokeStyle:C.halo,lineWidth:2.5,align:'left'});
         }
       });
     }
@@ -1573,24 +1722,62 @@ function draw(now){
     ctx.beginPath();ctx.moveTo(0,-.22*L);ctx.lineTo(Math.sin(boom)*L*.85,-.22*L+Math.cos(boom)*L*.85);ctx.strokeStyle=C.ink;ctx.lineWidth=1.6;ctx.stroke();
     ctx.restore();
     if(state.labels||i===state.sel){
-      ctx.font=`500 11px ${C.mono}`;ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle=C.halo;
       const tx=sx(p.x)+L*.8,ty=sy(p.y)-L*.6,lab=b.sail+(p.ok?'':' · sin señal');
-      ctx.globalAlpha=p.ok?1:.6;ctx.strokeText(lab,tx,ty);ctx.fillStyle=i===state.sel?C.sel:C.ink;ctx.fillText(lab,tx,ty);ctx.globalAlpha=1;
+      drawTextLabel(lab,tx,ty,{font:`500 11px ${C.mono}`,fillStyle:i===state.sel?C.sel:C.ink,strokeStyle:C.halo,lineWidth:3,align:'left',alpha:p.ok?1:.6});
     }
   });
 
   // barcos tacticos
   drawTacticalBoats(w,sc);
 
-  // rosa de viento
+  ctx.restore(); // FIN DE LA CAPA ROTADA DEL MUNDO
+
+  // rosa de viento (fija en coordenadas de pantalla)
   const cx=46,cy=46,R=26;
-  ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.fillStyle=C.panel;ctx.globalAlpha=.92;ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle=C.course;ctx.lineWidth=1;ctx.stroke();
-  ctx.font=`600 10px ${C.disp}`;ctx.fillStyle=C.muted;ctx.textAlign='center';ctx.fillText('N',cx,cy-R+11);
-  ctx.save();ctx.translate(cx,cy);ctx.rotate(w*D2R);
+  const mouseOverCompass = Math.hypot(lastMousePx - cx, lastMousePy - cy) <= R + 2;
+  ctx.save();
+  ctx.beginPath();ctx.arc(cx,cy,R,0,7);
+  ctx.fillStyle=C.panel;ctx.globalAlpha=.94;ctx.fill();ctx.globalAlpha=1;
+  ctx.strokeStyle=mouseOverCompass ? (C.sel||'#ff7a2e') : C.course;
+  ctx.lineWidth=mouseOverCompass ? 2.2 : 1;
+  ctx.stroke();
+
+  // Marcas de cuadrante (bezel) rotadas con la orientación
+  for(let a=0; a<360; a+=45){
+    const rad = a * D2R + camRot;
+    const len = (a % 90 === 0) ? 4.5 : 2.5;
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.sin(rad) * (R - 1), cy - Math.cos(rad) * (R - 1));
+    ctx.lineTo(cx + Math.sin(rad) * (R - 1 - len), cy - Math.cos(rad) * (R - 1 - len));
+    ctx.strokeStyle = (a === 0) ? '#ef4444' : C.muted;
+    ctx.lineWidth = (a === 0) ? 1.5 : 1;
+    ctx.stroke();
+  }
+
+  // Indicador de Norte geográfico
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate(camRot);
+  ctx.font=`700 10.5px ${C.disp}`;ctx.fillStyle='#ef4444';ctx.textAlign='center';
+  ctx.fillText('N',0,-R+12);
+  ctx.beginPath();ctx.moveTo(0,-R+2);ctx.lineTo(-3.5,-R+7.5);ctx.lineTo(3.5,-R+7.5);ctx.closePath();
+  ctx.fillStyle='#ef4444';ctx.fill();
+  ctx.restore();
+
+  // Flecha de dirección del viento
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate(w*D2R + camRot);
   ctx.beginPath();ctx.moveTo(0,-R+12);ctx.lineTo(0,R-9);ctx.strokeStyle=C.ink;ctx.lineWidth=2;ctx.stroke();
-  ctx.beginPath();ctx.moveTo(0,R-6);ctx.lineTo(-5,R-14);ctx.lineTo(5,R-14);ctx.closePath();ctx.fillStyle=C.ink;ctx.fill();ctx.restore();
+  ctx.beginPath();ctx.moveTo(0,R-6);ctx.lineTo(-5,R-14);ctx.lineTo(5,R-14);ctx.closePath();ctx.fillStyle=C.ink;ctx.fill();
+  ctx.restore();
+
+  ctx.restore();
+
+  // Texto de viento con etiqueta de orientación
   ctx.font=`500 11px ${C.mono}`;ctx.fillStyle=C.ink;ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle=C.halo;
-  const wtxt=D.windKn?`Viento ${deg3(w)} · ${fmt1(D.windKn(t))} kn`:`Viento ${deg3(w)} (indicado a mano)`;
+  const orientBadge = state.orientation==='wind' ? ' · Wind Up' : ' · North Up';
+  const wtxt=(D.windKn?`Viento ${deg3(w)} · ${fmt1(D.windKn(t))} kn`:`Viento ${deg3(w)} (indicado a mano)`) + orientBadge;
   ctx.strokeText(wtxt,cx+R+8,cy+4);ctx.fillText(wtxt,cx+R+8,cy+4);
 
   // escala
@@ -1634,10 +1821,19 @@ function updateUI(){
     R.gap.textContent=gap;
   });
   const clock=document.getElementById('clock');
+  const manualTimeInput=document.getElementById('manualTimeInput');
+  let curFormattedTime='';
   if(D.t0){
     const rel=D.startT!=null?(t>=D.startT?'T+'+mmss(t-D.startT):'T−'+mmss(D.startT-t)):'Sin salida marcada';
-    clock.innerHTML=hhmmss(D.t0+t*1000)+`<span class="sub">${rel}</span>`;
-  }else clock.innerHTML='<small>T+</small>'+mmss(t);
+    curFormattedTime=hhmmss(D.t0+t*1000);
+    clock.innerHTML=curFormattedTime+`<span class="sub">${rel}</span>`;
+  }else{
+    curFormattedTime=mmss(t);
+    clock.innerHTML='<small>T+</small>'+curFormattedTime;
+  }
+  if(manualTimeInput && document.activeElement!==manualTimeInput){
+    manualTimeInput.value=curFormattedTime;
+  }
   renderBoatCard();
 }
 
@@ -1664,9 +1860,7 @@ function drawIODACourse(ioda, sc, w){
     ctx.strokeStyle=borderCol||'#9a3412';ctx.lineWidth=1;ctx.stroke();
     if(r>=5){ctx.beginPath();ctx.arc(px,py,r*0.35,0,7);ctx.fillStyle='#ffedd5';ctx.fill();}
     if(label){
-      ctx.font=`700 11.5px ${C.disp}`;ctx.fillStyle=col||'#ea580c';
-      ctx.lineWidth=2.5;ctx.strokeStyle=C.halo;
-      ctx.strokeText(label,px+r+3,py+4);ctx.fillText(label,px+r+3,py+4);
+      drawTextLabel(label,px+r+3,py+4,{font:`700 11.5px ${C.disp}`,fillStyle:col||'#ea580c',strokeStyle:C.halo,lineWidth:2.5,align:'left'});
     }
   };
 
@@ -1704,8 +1898,7 @@ function drawIODACourse(ioda, sc, w){
     ctx.strokeStyle='#0284c7';ctx.lineWidth=2.4;
     ctx.beginPath();ctx.moveTo(fx1,fy1);ctx.lineTo(fx2,fy2);ctx.stroke();
     const fmx=(fx1+fx2)/2,fmy=(fy1+fy2)/2;
-    ctx.font=`800 11.5px ${C.disp}`;ctx.fillStyle='#0284c7';ctx.textAlign='center';
-    ctx.lineWidth=2.5;ctx.strokeStyle=C.panel||'#ffffff';ctx.strokeText('LLEGADA',fmx,fmy-6);ctx.fillText('LLEGADA',fmx,fmy-6);
+    drawTextLabel('LLEGADA',fmx,fmy-6,{font:`800 11.5px ${C.disp}`,fillStyle:'#0284c7',strokeStyle:C.panel||'#ffffff',lineWidth:2.5,align:'center'});
     drawBuoy(fPin,null,'#0284c7','#0369a1');
     ctx.fillStyle='#0284c7';ctx.fillRect(fx2-6,fy2-4,12,8);
     ctx.strokeStyle='#0f172a';ctx.lineWidth=1.2;ctx.strokeRect(fx2-6,fy2-4,12,8);
@@ -1719,8 +1912,7 @@ function drawIODACourse(ioda, sc, w){
     ctx.strokeStyle='#ef4444';ctx.lineWidth=2.4;
     ctx.beginPath();ctx.moveTo(sx1,sy1);ctx.lineTo(sx2,sy2);ctx.stroke();
     const smx=(sx1+sx2)/2,smy=(sy1+sy2)/2;
-    ctx.font=`800 11.5px ${C.disp}`;ctx.fillStyle='#ef4444';ctx.textAlign='center';
-    ctx.lineWidth=2.5;ctx.strokeStyle=C.panel||'#ffffff';ctx.strokeText('SALIDA',smx,smy-6);ctx.fillText('SALIDA',smx,smy-6);
+    drawTextLabel('SALIDA',smx,smy-6,{font:`800 11.5px ${C.disp}`,fillStyle:'#ef4444',strokeStyle:C.panel||'#ffffff',lineWidth:2.5,align:'center'});
     drawBuoy(sPin,null,'#f97316','#c2410c');
     ctx.fillStyle='#3b82f6';ctx.fillRect(sx2-6,sy2-4,12,8);
     ctx.strokeStyle='#0f172a';ctx.lineWidth=1.2;ctx.strokeRect(sx2-6,sy2-4,12,8);
@@ -1808,21 +2000,21 @@ function drawTacticalStartLine(w, sc){
     dList.forEach(d=>{
       const g1x=p1.x+d*nx,g1y=p1.y+d*ny,g2x=p2.x+d*nx,g2y=p2.y+d*ny;
       ctx.beginPath();ctx.moveTo(sx(g1x),sy(g1y));ctx.lineTo(sx(g2x),sy(g2y));ctx.strokeStyle='rgba(239, 68, 68, 0.45)';ctx.lineWidth=1.2;ctx.stroke();
-      ctx.font=`700 10px ${C.mono}`;ctx.fillStyle='rgba(239, 68, 68, 0.9)';ctx.textAlign='left';ctx.fillText(d+'m',sx(g2x)+6,sy(g2y)+3);
+      drawTextLabel(d+'m',sx(g2x)+6,sy(g2y)+3,{font:`700 10px ${C.mono}`,fillStyle:'rgba(239, 68, 68, 0.9)',stroke:false,align:'left'});
     });
     ctx.setLineDash([]);
   }
   ctx.strokeStyle='#ef4444';ctx.lineWidth=2.6;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
   const mx=(x1+x2)/2,my=(y1+y2)/2;
-  ctx.font=`800 13px ${C.disp}`;ctx.textAlign='center';ctx.fillStyle='#ef4444';ctx.lineWidth=3;ctx.strokeStyle=C.panel||'#ffffff';ctx.strokeText('START',mx,my-6);ctx.fillText('START',mx,my-6);
+  drawTextLabel('START',mx,my-6,{font:`800 13px ${C.disp}`,fillStyle:'#ef4444',strokeStyle:C.panel||'#ffffff',lineWidth:3,align:'center'});
   const pinR=Math.max(3.5, 0.5*sc);
   ctx.beginPath();ctx.arc(x1,y1,pinR,0,7);ctx.fillStyle='#f97316';ctx.fill();ctx.strokeStyle='#1e293b';ctx.lineWidth=1;ctx.stroke();
   if(pinR>=5){ctx.beginPath();ctx.arc(x1,y1,pinR*0.35,0,7);ctx.fillStyle='#ffedd5';ctx.fill();}
-  ctx.font=`600 10px ${C.disp}`;ctx.fillStyle='#f97316';ctx.textAlign='center';ctx.fillText('PIN',x1,y1+pinR+11);
+  drawTextLabel('PIN',x1,y1+pinR+11,{font:`600 10px ${C.disp}`,fillStyle:'#f97316',stroke:false,align:'center'});
   const cbW=Math.max(12,Math.min(26,4.5*sc)),cbH=Math.max(7,Math.min(15,2.2*sc));
   ctx.fillStyle='#3b82f6';ctx.fillRect(x2-cbW/2,y2-cbH/2,cbW,cbH);ctx.strokeStyle='#1e293b';ctx.lineWidth=1.2;ctx.strokeRect(x2-cbW/2,y2-cbH/2,cbW,cbH);
   ctx.fillStyle='#ef4444';ctx.fillRect(x2-1,y2-cbH/2-10,2,10);ctx.fillRect(x2+1,y2-cbH/2-10,7,5);
-  ctx.font=`600 10px ${C.disp}`;ctx.fillStyle='#3b82f6';ctx.textAlign='center';ctx.fillText('RC (Comité)',x2,y2+cbH/2+11);
+  drawTextLabel('RC (Comité)',x2,y2+cbH/2+11,{font:`600 10px ${C.disp}`,fillStyle:'#3b82f6',stroke:false,align:'center'});
   ctx.restore();
 }
 
@@ -1834,8 +2026,7 @@ function drawManualZones(sc){
     ctx.beginPath();ctx.arc(px,py,r,0,7);
     ctx.fillStyle='rgba(59, 130, 246, 0.12)';ctx.fill();
     ctx.setLineDash([4,3]);ctx.strokeStyle='rgba(59, 130, 246, 0.85)';ctx.lineWidth=1.4;ctx.stroke();ctx.setLineDash([]);
-    ctx.font=`600 10px ${C.mono}`;ctx.fillStyle='#2563eb';ctx.textAlign='center';
-    ctx.fillText('Zona · '+Math.round(z.radius)+' m',px,py+r+12);
+    drawTextLabel('Zona · '+Math.round(z.radius)+' m',px,py+r+12,{font:`600 10px ${C.mono}`,fillStyle:'#2563eb',stroke:false,align:'center'});
   });
   ctx.restore();
 }
@@ -1850,10 +2041,8 @@ function drawTacticalLines(){
     const mx=(x1+x2)/2,my=(y1+y2)/2;
     const dist=Math.hypot(l.x2-l.x1,l.y2-l.y1);
     const hdg=((Math.atan2(l.x2-l.x1,l.y2-l.y1)/D2R)%360+360)%360;
-    ctx.font=`600 10.5px ${C.mono}`;ctx.textAlign='center';
-    ctx.lineWidth=3;ctx.strokeStyle=C.halo;
     const txt=`${Math.round(dist)} m · ${deg3(hdg)}`;
-    ctx.strokeText(txt,mx,my-6);ctx.fillStyle=l.color||'#0284c7';ctx.fillText(txt,mx,my-6);
+    drawTextLabel(txt,mx,my-6,{font:`600 10.5px ${C.mono}`,fillStyle:l.color||'#0284c7',lineWidth:3,strokeStyle:C.halo,align:'center'});
   });
   ctx.restore();
 }
@@ -1889,9 +2078,8 @@ function drawTacticalBoats(w, sc){
     const boom=clamp(Math.abs(twa)/2,8,85)*D2R*(twa>0?1:-1);
     ctx.beginPath();ctx.moveTo(0,-.22*L);ctx.lineTo(Math.sin(boom)*L*.85,-.22*L+Math.cos(boom)*L*.85);ctx.strokeStyle=C.ink;ctx.lineWidth=1.6;ctx.stroke();
     ctx.restore();
-    ctx.font=`600 11px ${C.mono}`;ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle=C.halo;
     const tx=px+L*.8,ty=py-L*.6,lab=`${b.sail} (${b.tack==='stbd'?'Est':'Bab'})`;
-    ctx.strokeText(lab,tx,ty);ctx.fillStyle=b.color||'#ef4444';ctx.fillText(lab,tx,ty);
+    drawTextLabel(lab,tx,ty,{font:`600 11px ${C.mono}`,fillStyle:b.color||'#ef4444',strokeStyle:C.halo,lineWidth:3,align:'left'});
   });
 }
 
@@ -2217,6 +2405,15 @@ function renderTacticsPane(){
   tacticsEl.innerHTML=`
     <p>Pizarra táctica para analizar salidas, aproximaciones, laylines y situaciones de regata.</p>
     <div class="field">
+      <span class="lbl">Orientación del campo de regatas</span>
+      <div class="inline">
+        <button class="btn" id="btnTacNorthUp" aria-pressed="${state.orientation==='north'}">Norte arriba (North Up)</button>
+        <button class="btn" id="btnTacWindUp" aria-pressed="${state.orientation==='wind'}">Viento arriba (Wind Up)</button>
+      </div>
+      <span class="hint">Wind Up orienta el campo con barlovento arriba y sotavento abajo, ideal para vientos de Este o Sur (como en la bahía de Las Palmas).</span>
+    </div>
+
+    <div class="field">
       <span class="lbl">Herramientas automáticas</span>
       <div class="inline">
         <button class="btn" id="btnLaylines" aria-pressed="${tac.laylines}">📐 Laylines barlovento</button>
@@ -2289,6 +2486,10 @@ function renderTacticsPane(){
       </div>
     </div>`;
 
+  const btnTacN=tacticsEl.querySelector('#btnTacNorthUp');
+  if(btnTacN)btnTacN.addEventListener('click',()=>toggleOrientation('north'));
+  const btnTacW=tacticsEl.querySelector('#btnTacWindUp');
+  if(btnTacW)btnTacW.addEventListener('click',()=>toggleOrientation('wind'));
   tacticsEl.querySelector('#btnLaylines').addEventListener('click',()=>{tac.laylines=!tac.laylines;renderTacticsPane();saveCurrentSession();});
   tacticsEl.querySelector('#btnThreeLengths').addEventListener('click',()=>{tac.threeLengths=!tac.threeLengths;renderTacticsPane();saveCurrentSession();});
   tacticsEl.querySelector('#btnDrawStart').addEventListener('click',()=>setTacticsTool(state.activeTool==='start'?null:'start'));
@@ -3710,7 +3911,7 @@ function renderTacticalAnalysis(){
             <strong style="margin-left:6px;font-size:13.5px">${esc(l.name)}</strong>
           </td>
           <td>${fmtDuration(l.durationSec)}</td>
-          <td>${l.distanceReal} m</td>
+          <td>${fmt2(l.distanceReal / 1852)} NM</td>
           <td><strong>${l.rhumblineEfficiencyPct}%</strong></td>
           <td>
             ${l.type==='UPWIND'
@@ -4602,7 +4803,7 @@ function renderAdvancedMetrics(){
         </td>
         <td><strong>${fmt2(r.avg)}</strong> <span style="font-size:11px;color:var(--muted)">kn</span></td>
         <td><strong>${fmt2(r.max)}</strong> <span style="font-size:11px;color:var(--muted)">kn</span></td>
-        <td>${distTxt(r.dist)} <span class="unit-sub">(${fmt2(r.dist/1852)} NM)</span></td>
+        <td>${fmt2(r.dist / 1852)} NM <span class="unit-sub">(${fmt2(r.dist / 1000)} km)</span></td>
         <td><strong>${r.tacks}</strong> <span style="font-size:11px;color:var(--muted)">viradas</span></td>
         <td>
           <strong>${fmtDuration(r.dur)}</strong>
@@ -4843,6 +5044,79 @@ let scrubbing=false;
 scrub.addEventListener('input',()=>{scrubbing=true;state.t=+scrub.value;updateUI();refreshStartLabel();});
 scrub.addEventListener('change',()=>{scrubbing=false;});
 
+// Entrada manual de tiempo a teclado
+const manualTimeInput=document.getElementById('manualTimeInput');
+function parseAndSeekManualTime(val){
+  if(!D || !val) return;
+  const str=val.trim();
+  if(!str) return;
+  const parts=str.split(':').map(p=>parseInt(p,10));
+  let targetS=null;
+
+  if(parts.some(isNaN)) return;
+
+  if(parts.length===3){
+    const [h, m, s] = parts;
+    if(D.t0){
+      const d0=new Date(D.t0);
+      const targetDate=new Date(d0.getFullYear(), d0.getMonth(), d0.getDate(), h, m, s);
+      targetS=(targetDate.getTime()-D.t0)/1000;
+    }else{
+      targetS=h*3600 + m*60 + s;
+    }
+  }else if(parts.length===2){
+    const [p0, p1] = parts;
+    if(D.t0 && p0 >= 6 && p0 <= 23){
+      const d0=new Date(D.t0);
+      const targetDate=new Date(d0.getFullYear(), d0.getMonth(), d0.getDate(), p0, p1, 0);
+      targetS=(targetDate.getTime()-D.t0)/1000;
+    }else{
+      targetS=p0*60 + p1;
+    }
+  }else if(parts.length===1){
+    targetS=parts[0];
+  }
+
+  if(targetS!=null && isFinite(targetS)){
+    targetS=Math.max(0, Math.min(D.T-1, targetS));
+    state.t=targetS;
+    if(scrub) scrub.value=targetS;
+    updateUI();
+    refreshStartLabel();
+    renderBoatCard();
+  }
+}
+
+if(manualTimeInput){
+  manualTimeInput.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){
+      e.preventDefault();
+      parseAndSeekManualTime(manualTimeInput.value);
+      manualTimeInput.blur();
+    }else if(e.key==='Escape'){
+      e.preventDefault();
+      manualTimeInput.blur();
+      updateUI();
+    }
+  });
+  manualTimeInput.addEventListener('change', ()=>{
+    parseAndSeekManualTime(manualTimeInput.value);
+  });
+  manualTimeInput.addEventListener('focus', ()=>{
+    manualTimeInput.select();
+  });
+}
+
+const clockEl=document.getElementById('clock');
+if(clockEl && manualTimeInput){
+  clockEl.style.cursor='pointer';
+  clockEl.title='Haz clic para escribir la hora o momento exacto de la simulación';
+  clockEl.addEventListener('click', ()=>{
+    manualTimeInput.focus();
+    manualTimeInput.select();
+  });
+}
+
 const segs={};
 function seg(id,opts,key,lab){
   const el=document.getElementById(id);segs[key]={el,opts};
@@ -4850,8 +5124,8 @@ function seg(id,opts,key,lab){
     b.addEventListener('click',()=>{state[key]=o;syncSeg(key);});el.appendChild(b);});
 }
 function syncSeg(key){const s=segs[key];[...s.el.children].forEach((c,k)=>c.setAttribute('aria-pressed',String(s.opts[k]===state[key])));}
-seg('speeds',[5,10,30,60,120],'speed',v=>v+'×');
-seg('trails',[60,300,Infinity],'trail',v=>v===Infinity?'Toda':(v/60)+' min');
+seg('speeds',[1,5,30,60,120],'speed',v=>v+'×');
+seg('trails',[60,300,'leg',Infinity],'trail',v=>v==='leg'?'Tramo':(v===Infinity?'Toda':(v/60)+' min'));
 document.getElementById('labels').addEventListener('change',e=>state.labels=e.target.checked);
 
 function renderTicks(){
@@ -4866,26 +5140,96 @@ function renderTicks(){
 const followBtn=document.getElementById('follow');
 followBtn.addEventListener('click',()=>{state.follow=!state.follow;followBtn.setAttribute('aria-pressed',String(state.follow));});
 document.getElementById('fit').addEventListener('click',()=>{state.follow=false;followBtn.setAttribute('aria-pressed','false');fit();});
-const zoomAt=(f,px,py)=>{const x=wx(px),y=wy(py);state.cam.scale=clamp(state.cam.scale*f,.02,20);state.cam.x=x-(px-W/2)/state.cam.scale;state.cam.y=y+(py-Hh/2)/state.cam.scale;};
+const orientBtn=document.getElementById('btnOrientation');
+if(orientBtn)orientBtn.addEventListener('click',()=>toggleOrientation());
+
+const zoomAt=(f,px,py)=>{
+  const pt=screenToWorldCoords(px,py);
+  state.cam.scale=clamp(state.cam.scale*f,.02,20);
+  const rot=getCamRot();
+  let dx=px-W/2,dy=py-Hh/2;
+  if(rot!==0){
+    const c=Math.cos(rot),s=Math.sin(rot);
+    const udx=dx*c+dy*s;
+    const udy=-dx*s+dy*c;
+    dx=udx;dy=udy;
+  }
+  state.cam.x=pt.x-dx/state.cam.scale;
+  state.cam.y=pt.y+dy/state.cam.scale;
+};
 document.getElementById('zin').addEventListener('click',()=>zoomAt(1.4,W/2,Hh/2));
 document.getElementById('zout').addEventListener('click',()=>zoomAt(1/1.4,W/2,Hh/2));
 mapEl.addEventListener('wheel',e=>{e.preventDefault();const r=cv.getBoundingClientRect();zoomAt(Math.exp(-e.deltaY*.0015),e.clientX-r.left,e.clientY-r.top);},{passive:false});
-let drag=null;
-cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,cx:state.cam.x,cy:state.cam.y,moved:false};cv.setPointerCapture(e.pointerId);});
-cv.addEventListener('pointermove',e=>{
-  if(state.activeTool&&state.toolDraft){
-    const r=cv.getBoundingClientRect();
-    const px=e.clientX-r.left,py=e.clientY-r.top;
-    state.toolDraft.curX=wx(px);state.toolDraft.curY=wy(py);
+
+let drag=null,lastMousePx=-999,lastMousePy=-999;
+cv.addEventListener('pointerdown',e=>{
+  const r=cv.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;
+  if(Math.hypot(px-46,py-46)<=28){
+    drag={x:e.clientX,y:e.clientY,cx:state.cam.x,cy:state.cam.y,moved:false,isCompass:true};
+    return;
   }
-  if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.hypot(dx,dy)>4){drag.moved=true;mapEl.classList.add('dragging');if(state.follow){state.follow=false;followBtn.setAttribute('aria-pressed','false');}}
-  if(drag.moved){state.cam.x=drag.cx-dx/state.cam.scale;state.cam.y=drag.cy+dy/state.cam.scale;}});
-cv.addEventListener('pointerup',e=>{mapEl.classList.remove('dragging');if(D&&drag&&!drag.moved){const r=cv.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;
-  if(state.activeTool){handleTacticsClick(wx(px),wy(py),px,py);drag=null;return;}
-  if(state.placing){D.course.marks.push({x:wx(px),y:wy(py)});courseChanged();drag=null;return;}
-  let best=-1,bd=18;
-  for(let i=0;i<D.N;i++){const p=boatAt(i,state.t),d=Math.hypot(sx(p.x)-px,sy(p.y)-py);if(d<bd){bd=d;best=i;}}
-  if(best>=0){state.sel=best;renderBoatCard(true);updateUI();}}drag=null;});
+  drag={x:e.clientX,y:e.clientY,cx:state.cam.x,cy:state.cam.y,moved:false};
+  cv.setPointerCapture(e.pointerId);
+});
+
+cv.addEventListener('pointermove',e=>{
+  const r=cv.getBoundingClientRect();
+  const px=e.clientX-r.left,py=e.clientY-r.top;
+  lastMousePx=px;lastMousePy=py;
+  if(Math.hypot(px-46,py-46)<=28){
+    cv.style.cursor='pointer';
+  }else if(!state.activeTool&&!state.placing&&!mapEl.classList.contains('dragging')){
+    cv.style.cursor='';
+  }
+  if(state.activeTool&&state.toolDraft){
+    const pt=screenToWorldCoords(px,py);
+    state.toolDraft.curX=pt.x;state.toolDraft.curY=pt.y;
+  }
+  if(!drag||drag.isCompass)return;
+  const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+  if(Math.hypot(dx,dy)>4){drag.moved=true;mapEl.classList.add('dragging');if(state.follow){state.follow=false;followBtn.setAttribute('aria-pressed','false');}}
+  if(drag.moved){
+    const rot=getCamRot();
+    let udx=dx,udy=dy;
+    if(rot!==0){
+      const c=Math.cos(rot),s=Math.sin(rot);
+      udx=dx*c+dy*s;
+      udy=-dx*s+dy*c;
+    }
+    state.cam.x=drag.cx-udx/state.cam.scale;
+    state.cam.y=drag.cy+udy/state.cam.scale;
+  }
+});
+
+cv.addEventListener('pointerleave',()=>{lastMousePx=-999;lastMousePy=-999;});
+
+cv.addEventListener('pointerup',e=>{
+  mapEl.classList.remove('dragging');
+  if(drag&&drag.isCompass){
+    const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+    if(Math.hypot(dx,dy)<6){toggleOrientation();}
+    drag=null;return;
+  }
+  if(D&&drag&&!drag.moved){
+    const r=cv.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;
+    if(Math.hypot(px-46,py-46)<=28){
+      toggleOrientation();drag=null;return;
+    }
+    const pt=screenToWorldCoords(px,py);
+    if(state.activeTool){handleTacticsClick(pt.x,pt.y,pt.unrotPx,pt.unrotPy);drag=null;return;}
+    if(state.placing){D.course.marks.push({x:pt.x,y:pt.y});courseChanged();drag=null;return;}
+    let best=-1,bd=18;
+    for(let i=0;i<D.N;i++){const p=boatAt(i,state.t),d=Math.hypot(sx(p.x)-pt.unrotPx,sy(p.y)-pt.unrotPy);if(d<bd){bd=d;best=i;}}
+    if(best>=0){state.sel=best;renderBoatCard(true);updateUI();}
+  }
+  drag=null;
+});
+
+window.addEventListener('keydown',e=>{
+  if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))return;
+  if(e.key==='w'||e.key==='W'){toggleOrientation('wind');}
+  else if(e.key==='n'||e.key==='N'){toggleOrientation('north');}
+});
 
 /* ---------- carga de archivos ---------- */
 const msgEl=document.getElementById('importMsg'),fileIn=document.getElementById('fileIn'),drop=document.getElementById('drop');
@@ -5052,6 +5396,7 @@ function saveCurrentSession(){
     all:lastLoad.all,
     used:lastLoad.used,
     align:D.align,
+    orientation:state.orientation,
     course:{
       type:D.course.type||'free',
       marks:D.course.marks,
@@ -5072,6 +5417,7 @@ function clearSession(){
     D=null;lastLoad=null;
     document.querySelector('.app').classList.add('is-empty');
     showMsg([]);
+    toggleOrientation('north');
     state.activeTool=null;
     state.placing=false;
     state.tactics={lines:[],arrows:[],boats:[],startLine:null,showStartGrid:true,laylines:false,threeLengths:false,manualZones:[]};
@@ -5098,6 +5444,9 @@ async function initSession(){
         }
         if(saved.tactics){
           state.tactics=Object.assign({lines:[],arrows:[],boats:[],startLine:null,showStartGrid:true,laylines:false,threeLengths:false,manualZones:[]}, saved.tactics);
+        }
+        if(saved.orientation){
+          toggleOrientation(saved.orientation);
         }
         computeCourse();
         buildList();renderBoatCard(true);renderCoursePane();renderTacticsPane();renderTicks();renderSummary();updateUI();

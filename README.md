@@ -125,6 +125,48 @@ Diseñada específicamente para debriefings y explicaciones tácticas en pantall
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.2.6] - Orientación del Campo de Regatas: North Up vs Wind Up y Cuadrícula Táctica a 45° del Viento
+* **Modo de Visualización Dual: «North Up» vs «Wind Up»**:
+  * **North Up (Norte arriba)**: Vista geográfica estándar donde el Norte geográfico ($0^\circ$) apunta hacia la parte superior de la pantalla. Ideal para ubicar la posición geográfica real del campo en la costa o bahía.
+  * **Wind Up (Viento arriba)**: Vista orientada al viento en la que todo el campo de regatas se rota automáticamente para situar **Barlovento en la parte superior** (arriba) y **Sotavento en la inferior** (abajo).
+  * **Solución para vientos de Este o Sur**: Elimina la necesidad de ver recorridos ladeados o invertidos cuando el viento sopla del Este ($90^\circ / 120^\circ$) o del Sur ($180^\circ$). Las ceñidas se visualizan siempre avanzando verticalmente hacia arriba y las empopadas descendiendo hacia abajo, tal como se enseña en la pizarra técnica y en los sistemas tácticos profesionales de navegación (B&G, Expedition, RaceFoxx).
+* **Cuadrícula Táctica de Fondo Orientada a 45° del Viento**:
+  * Las cuadrículas del fondo del mapa se trazan ahora **alineadas a $\pm 45^\circ$ respecto a la dirección del viento real**:
+    * Un conjunto de líneas paralelas coincide de forma exacta con el rumbo de **ceñida a estribor ($TWD + 45^\circ$)**.
+    * El conjunto ortogonal perpendicular coincide con el rumbo de **ceñida a babor ($TWD - 45^\circ$)**.
+  * **Análisis táctico visual inmediato**: Permite a entrenadores y regatistas comprobar al instante la ganancia de VMG (*escalones tácticos*), verificar si los barcos navegan por encima o debajo de la layline a las boyas, y observar cómo las viradas se alinean con las diagonales del campo.
+  * **Densidad Triplicada de Cuadrícula**: Se ha ajustado la función de escala métrica (`niceStep`) con un objetivo base de 30 px (frente a los 90 px originales), haciendo que cada celda sea **el triple de pequeña** y generando el triple de líneas de cuadrícula para una referencia táctica milimétrica, manteniendo su adaptación continua al nivel de zoom.
+  * **Anclaje rígido geográfico**: Las líneas de la cuadrícula están matemáticamente fijadas a coordenadas reales del agua; al arrastrar (*pan*) o hacer zoom, la cuadrícula se desplaza solidaria al agua y las marcas sin flotar ni deslizarse.
+* **Controles Interactivos de Orientación y Tipografía Limpia (Sin Emoticonos)**:
+  * **Botón en Herramientas del Mapa**: Selector limpio `[ Norte ]` / `[ Viento ]` en la barra flotante de herramientas del mapa (junto a `+`, `−`, `Flota` y `Seguir`), que se ilumina en naranja al activar Wind Up.
+  * **Rosa de los Vientos Interactiva**:
+    * Al hacer clic directo sobre la rosa de los vientos en la esquina superior izquierda, se alterna instantáneamente entre North Up y Wind Up.
+    * En **Wind Up**, la flecha del viento sopla recta desde arriba hacia abajo, y la aguja roja de **Norte (`N`)** rota con precisión para indicar hacia dónde queda el Norte geográfico real.
+    * Rótulo limpio junto a la rosa: `· Wind Up` / `· North Up` (sin emoticonos añadidos).
+  * **Pestaña Táctica**: Botones limpios en el panel lateral de Táctica: `[ Norte arriba (North Up) ]` y `[ Viento arriba (Wind Up) ]`.
+  * **Atajos de Teclado**: Pulsar la tecla `W` activa el modo Wind Up y pulsar la tecla `N` regresa a North Up.
+* **Transformación Geométrica Rigurosa y Rótulos Horizontales**:
+  * **Encuadre automático (`fit`)**: El zoom y encuadre de la flota recalculan la caja envolvente rotada para asegurar que el recorrido aproveche al máximo el espacio de pantalla sin cortes en ningún extremo.
+  * **Rotación y arrastre 1:1**: El movimiento de arrastre (pan) y el zoom con la rueda del ratón responden de forma natural en la dirección del cursor físico.
+  * **Contrarrotación de textos (`drawTextLabel`)**: Todos los números de vela, identificadores de baliza (B1, B2, 3s, 3p, Salida, Llegada) y rótulos de maniobras se contrarrotan automáticamente para mantenerse siempre horizontales y perfectamente legibles en pantalla.
+  * **Persistencia en memoria**: La orientación seleccionada se guarda automáticamente en la memoria del navegador y se restaura al reabrir la sesión.
+  * **Estabilidad y corrección de carga en refresco (F5)**: Corregida una errata tipográfica en la definición de propiedades de rótulos que impedía la inicialización completa de la base de datos de sesión y los eventos de carga de archivos tras refrescar la página.
+
+### [v1.2.5] - Distancias en Millas Náuticas (NM), Selector de Velocidad 1×, Salto Temporal por Teclado y Estela por Tramo
+* **Unidades Náuticas Oficiales en Tablas (Millas Náuticas y Kilómetros)**:
+  * **Distancia Real por Tramo (Recorrido IODA)**: La columna de distancia de cada tramo se expresa ahora en **millas náuticas** (ej. `0,64 NM`).
+  * **Distancia Navegada (Tabla de Flota)**: Se establece como unidad principal la **milla náutica** con los kilómetros en tamaño reducido entre paréntesis (ej. `2,11 NM (3,91 km)`), facilitando la lectura náutica directa para los entrenadores.
+* **Ajuste de Velocidad de Reproducción: Incorporada opción 1× (eliminada 10×)**:
+  * El selector de velocidad de reproducción en la barra inferior pasa a ofrecer: **`1×`**, **`5×`**, **`30×`**, **`60×`** y **`120×`**, permitiendo reproducir en tiempo real ($1\text{ s}$ de reloj = $1\text{ s}$ de regata) para debriefings minuciosos de maniobras o salidas.
+* **Entrada Manual de Tiempo por Teclado (`Hora: hh:mm:ss`)**:
+  * Nuevo control interactivo en la barra de reproducción para escribir a teclado la hora exacta deseada de la simulación.
+  * Admite formatos de hora real (`14:35:20` o `14:35`) y tiempos relativos (`25:30`).
+  * Al pulsar `Enter`, el reproductor salta de forma instantánea al segundo indicado y actualiza todos los barcos en el mapa.
+  * Al hacer clic sobre el reloj de la cabecera superior, el cursor se sitúa automáticamente en la casilla para escribir.
+* **Estela Dinámica por Tramo de Recorrido (`Tramo`)**:
+  * Incorporado el modo **`Tramo`** en los botones de longitud de estela: `[ 1 min | 5 min | Tramo | Toda ]`.
+  * Al activarlo, la estela de cada barco se confina de forma estricta al tramo que está navegando en ese instante. En cuanto el barco cruza una baliza oficial (B1, B2, Puerta 3 o Línea de Llegada), la estela del tramo anterior se retira automáticamente y comienza a dibujarse únicamente la traza del nuevo tramo desde el paso por boya.
+
 ### [v1.2.4] - Viento del Track en Grande (Naranja), TWA Entrada vs Salida en Gráfico de Maniobras y Doble Eje Angular
 * **Prioridad Visual al Viento Analizado por el Track**:
   * Invertida la jerarquía en la tarjeta KPI superior de viento:
