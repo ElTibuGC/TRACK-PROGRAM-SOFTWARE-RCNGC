@@ -137,6 +137,32 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.3.8] - Código Único de Regatista, Soporte Multivelas, Sincronización de Podios, Eliminación de Resultados y Depuración de 0 Sesiones
+* **Ajuste Responsivo y Enmarcado de la Tabla de Viento**:
+  * **Corrección de Desbordamiento**: Corregida la regla CSS heredada que forzaba un ancho mínimo global de 760px en tablas; la tabla de *Rendimiento según Rango de Viento* cuenta ahora con `min-width: 0 !important`, `table-layout: fixed` y contenedor con desplazamiento táctil horizontal (`overflow-x: auto`), garantizando que jamás sobresalga de los límites de la tarjeta.
+* **Jerarquía de Métricas en Tramos & Remontadas**:
+  * **KPIs Principales Destacados en Grande**: Los dos bloques destacados de 18px muestran ahora la **Posición Media en 1ª Baliza (B1)** (ej. `3.5º`) y la **Remontada Media B1 → Meta** (ej. `+2.5 puestos`), permitiendo al entrenador evaluar de un vistazo si el regatista gana o cede puestos en popas y tramos finales.
+  * **Métricas Secundarias en Texto Compacto**: VMG Popa/Largo, Eficiencia de Derrota y Distancia media en tiempo al líder se sitúan en la zona inferior de apoyo.
+* **Depuración Automática de Regatistas con 0 Sesiones**:
+  * **Limpieza en Base de Datos**: Purga automática de la tabla `regatistas_club` para cualquier deportista sin registros de telemetría en `regatas_barcos_stats` ni apariciones en regatas guardadas.
+  * **Filtrado Estricto en Desplegables**: Los selectores de filtro en la biblioteca de regatas y en el perfil de Big Data filtran activamente las entradas con `count > 0`, suprimiendo cualquier opción fantasma de `(0 sesiones)`.
+* **Identificador Único por Regatista (`codigo_regatista`) y Fusión Multivelas**:
+  * **Transición de Enfoque Barco a Enfoque Deportista**: A cada regatista del club se le asigna un identificador único estandarizado (ej: `REG-JAN-PALOU`, `REG-LLUC-BESTARD`), persistido en `regatistas_club` y `regatas_barcos_stats`.
+  * **Sincronización de Múltiples Números de Vela**: Si un regatista compite o entrena con diferentes números de vela (por ejemplo, Jan Palou con `ESP 3581` y `ESP 2800`), todas las velas vinculadas a su código consolidan automáticamente sus estadísticas, millas, viradas y resultados en una sola ficha de Big Data.
+  * **Modal de Gestión Deportiva (`#sailorProfileModal`)**: Diálogo interactivo accesible en `Modo Entrenador` para editar el nombre completo, código único y añadir o retirar números de vela asociados.
+  * **Cabecera con Avatar y Gestión de Velas**: Ficha con avatar circular `👤`, distintivo de código `🆔 REG-XXXX`, etiquetas de velas vinculadas con opción de desvinculación `✕` y botón directo `+ Vincular vela`.
+* **Sincronización Total de Histórico de Resultados, Puestos y Podios**:
+  * **Reparación del Cálculo de Clasificación**: Corregida la invocación del ranking en `submitCloudSave` integrando la función oficial `ranking(D.T - 1)` del visor.
+  * **Backfill Histórico Automático en Turso SQLite**: Regularización de los registros existentes en la base de datos calculando puestos finales basados en `gap_lider_s ASC`.
+  * **Visibilidad en Ficha y Tabla**: El recuadro resumen «🏆 Puesto & Podios» refleja con precisión el mejor puesto (ej: `1º 🥇`) y el total de medallas (`X podios (🥇 oro, 🥈 plata, 🥉 bronce)`), mientras la tabla cronológica inferior desglosa el puesto de cada regata con insignias oficiales (`1º 🥇`, `2º 🥈`, `3º 🥉`).
+* **Eliminación Selectiva de Resultados Erróneos o No Deseados**:
+  * En `Modo Entrenador`, la tabla de registro de sesiones incluye el botón `🗑️ Quitar` para descartar entradas estadísticas anómalas o pruebas incorrectas sin afectar a la regata general.
+* **Buscador Escrito con Búsqueda Directa por Número de Vela**:
+  * La casilla de búsqueda de regatas en la nube (`cloudSearchInput`) permite teclear tanto dígitos numéricos (ej. `3581`, `0614`) como formato completo (`ESP 3581`), filtrando inmediatamente todas las regatas en las que compitió el regatista, además de permitir buscar por nombre o código único.
+* **Apertura de la Ficha en 1 Solo Clic (Solución del Bug de Múltiples Clics)**:
+  * Eliminadas las llamadas simultáneas y desordenadas mediante control de concurrencia `bigDataRenderRequestId` y delegación atómica `switchCloudTab('stats', optSail)`.
+  * Chips interactivos de barcos en la lista de regatas (`.btn-goto-sailor`) para saltar directamente al perfil del regatista con un solo toque.
+
 ### [v1.3.7] - Título Dinámico de Regata en Cabecera, Insignias Náuticas con Control de Entrenador, Cuaderno Técnico y Métricas de Rendimiento Big Data
 * **Título Dinámico de la Regata en Cabecera**:
   * **Nombre Oficial de la Regata en Tiempo Real**: Mientras la sesión proviene de archivos locales no guardados, la cabecera muestra el título predeterminado `Entrenamiento del [fecha]`. En cuanto la sesión se guarda en la nube (`Guardar sesión actual`) o se carga una regata desde la biblioteca (`📥 Cargar en el mapa` o mediante enlace URL `?regata=ID`), el encabezado `#title` se actualiza al instante con el nombre personalizado de la regata.
