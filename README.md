@@ -137,6 +137,66 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.4.0] - Sistema de Edición y "Guardar / Guardar como..." en la Nube, Modificación Rápida de Fichas de Regata, Ajuste de Viento y Recálculo en Cascada
+* **Opciones de «Guardar cambios» (Sobrescribir) vs «Guardar como nueva regata...»**:
+  * **Sobrescribir regata existente (`💾 Guardar cambios`)**: Permite actualizar cualquier regata cargada desde la nube de Turso sin tener que guardarla desde cero ni borrar la original. Mantiene intacto el identificador único (`id`) y el enlace compartido (`?regata=...`).
+  * **Guardar como copia independiente (`📋 Guardar como nueva regata...`)**: Genera un nuevo identificador y nuevo enlace, solicitando el nombre de la nueva prueba (por defecto añade el sufijo `(Copia)`).
+  * **Recálculo y Purga en Cascada (`regatas_barcos_stats`)**: Al sobrescribir, se purgan automáticamente las estadísticas anteriores de esa regata en la base de datos central y se reinsertan las métricas de los barcos que quedan, garantizando que si se eliminó un barco o se corrigió su vela, el Big Data histórico quede limpio sin registros huérfanos ni duplicados.
+* **Edición Rápida de Ficha en la Nube (`✏️ Editar ficha`)**:
+  * En la pestaña de *Regatas guardadas* (`📚 Regatas guardadas`), los entrenadores disponen de un nuevo botón **«✏️ Editar»** en cada tarjeta.
+  * Abre una ventana modal flotante (`#cloudEditModal`) para modificar instantáneamente: título, fecha de la sesión, autor, categoría de flota, tipo de sesión (Entrenamiento / Regata / Análisis), dirección del viento (º), intensidad del viento (nudos) y notas/observaciones.
+  * No requiere esperar a descargar ni descomprimir tracks GPX. Aplica los cambios en Turso SQLite, actualiza la caché local y sincroniza en tiempo real la regata cargada en el visor si coincide con la editada.
+* **Botón de Guardado Rápido en la Barra Superior (`#btnQuickSaveCloud`)**:
+  * Acceso directo en la cabecera (`💾 Guardar cambios`) visible automáticamente siempre que una regata de la nube esté activa, permitiendo al entrenador confirmar y sincronizar modificaciones en un clic.
+* **Ajuste de Viento y Resumen de Barcos en el Formulario de Guardado**:
+  * Incorporados campos específicos para fijar la dirección (º) e intensidad (nudos) del viento directamente antes de publicar o actualizar.
+  * Resumen dinámico que muestra el recuento de barcos cargados con sus números de vela actualizados.
+* **Corrección en Eliminación de Barcos (`deleteBoat`)**:
+  * Se preserva el recorrido completo, balizas IODA, línea de salida y herramientas tácticas al eliminar barcos de una sesión activa sin resetear el trazado.
+
+### [v1.3.9] - Pestaña «Análisis V2», Vista Multi-Barco con Desglose de Tramos IODA, Corrección Rigurosa de Eficiencia de Derrota, Calibración de Polares Optimist, Deducción Dinámica de Intensidad de Viento y Motor de Debriefing Táctico Inteligente
+* **Solución Integral al Cálculo de Intensidad de Viento (Eliminación del Bug de 14 Nudos)**:
+  * **Causa Raíz Eliminada**: Se eliminaron los valores hardcodeados de `14.0` que se inyectaban en las sentencias SQL `INSERT INTO regatas_club` y los fallbacks estáticos en `submitCloudSave`.
+  * **Deducción Dinámica de Viento (`estimateFleetWindSpeed`)**: Algoritmo telemétrico que analiza la mediana de velocidad de avance de la flota en rumbos de ceñida (TWA 36°–55° con SOG > 1.2 kn) durante la ventana oficial de regata e invierte la curva polar calibrada del Optimist para determinar automáticamente la intensidad real en nudos ($TWS$).
+  * **Control Manual del Entrenador en Panel de Recorrido (`#windKnIn`)**: Añadido campo numérico de nudos en la pestaña «Recorrido» con indicador dinámico de modo (`kn (Fijado entrenador)` vs `kn (Auto: X.X kn)`), permitiendo forzar cualquier intensidad que sobrescribe al instante todas las polares y cálculos.
+* **Nueva Pestaña Principal «Análisis V2»**:
+  * Pestaña de navegación de primer nivel (`#mainTabAnalysisV2`), situada junto a *Visualizar el track* y *Métricas avanzadas*, con diseño responsivo y selector de vistas atómico (`switchMainView('analysisV2')`).
+* **Parte Superior de Análisis V2 (5 KPIs y Clasificación con Velocidades por Tramo)**:
+  * **5 Tarjetas KPI Superiores**: Mantiene la estructura de alto impacto de la flota: *Flota Analizada* (total barcos y modo de sesión), *Viento de Sesión* (dirección en grados + intensidad en nudos con indicación de origen telemetría/entrenador), *Velocidad Media Flota*, *Velocidad Máxima Flota (pico 5s)* y *Total Viradas Flota* con promedio por barco.
+  * **Tabla General con Velocidades Medias por Tramo (T1 a T4)**: Columnas `Posición`, `Barco / Vela`, `Vmed T1 (Ceñida B1)`, `Vmed T2 (Través B2)`, `Vmed T3 (Popa Puerta 3)`, `Vmed T4 (Ceñida Llegada)`, `Distancia navegada` (NM y km) y `Tiempo navegado` (duración total, hora de salida y hora de corte de meta).
+  * **Ordenación Multicolumna Interactiva**: Clic en cualquier encabezado para ordenar ascendentemente o descendentemente por puesto, vela, velocidades de tramos, distancia o tiempo.
+* **Vista Multi-Barco en Tarjetas (Visualización Simultánea de Toda la Flota)**:
+  * Sustitución del selector dropdown unitario por un grid responsivo (`.analysis-v2-grid`) donde el entrenador visualiza a **todos los regatistas trackeados a la vez en recuadros individuales**.
+  * **Cabecera de Tarjeta**: Distintivo de puesto con podio (`1º 🥇`, `2º 🥈`, `3º 🥉`), número de vela, nombre del deportista, pastilla de color, estado de regata (`✓ Meta` / `En regata`) y píldoras con Vmed global, viradas totales, distancia y tiempo.
+  * **Tabla Completa de Tramos Oficiales IODA**: Desglose exacto de cada tramo con: `Tramo del Recorrido` (etiquetas Ceñida, Través, Popa), `Duración`, `Distancia Real` (NM), `Eficiencia de la Derrota`, `Maniobras y Pérdida` (número de viradas/trasluchadas y metros perdidos), `Polar Target %`, `Bordo Favorecido % (VMC)` y `Desviación Laylines` (+X m / Óptimo).
+  * **Buscador Escrito en Tiempo Real (`#v2SailorSearch`)**: Filtrado instantáneo de tarjetas por nombre de regatista o número de vela.
+* **Cálculo Riguroso de la Eficiencia de la Derrota (% Rhumbline con Corrección por Laylines)**:
+  * **Corrección Teórica**: En rumbos contra el viento (T1 Barlovento y T4 Ceñida Final), un Optimist no puede navegar en línea recta a la baliza. La distancia teórica mínima no es la línea recta entre boyas sino la derrota geométrica óptima en laylines a 44° TWA ($d_{\text{teorica}} = d_{\text{rhumb}} / \cos 44^\circ \approx d_{\text{rhumb}} \times 1.390$).
+  * En popa (T3), la distancia mínima teórica se calcula según el ángulo óptimo de planeo y trasluchada a 148° TWA ($d_{\text{teorica}} = d_{\text{rhumb}} / \cos 32^\circ \approx d_{\text{rhumb}} \times 1.179$). En través (T2), la derrota teórica es la línea recta entre balizas.
+  * Esta formulación elimina el sesgo que otorgaba falsamente ~70% a ceñidas perfectas, reflejando ahora valores reales del 90% al 98% en ceñidas limpias.
+* **Calibración Empírica de Polares de la Clase Optimist (IOD95)**:
+  * Ajuste de la tabla de polares (`getOptimistPolarTarget`) a condiciones reales de ola y regata:
+    * **6 nudos**: Ceñida TWA 45°, SOG 2.80 kn (VMG 1.98 kn) | Través 3.50 kn | Popa TWA 152°, SOG 3.20 kn (VMG 2.82 kn).
+    * **10 nudos**: Ceñida TWA 44°, SOG 3.45 kn (VMG 2.48 kn) | Través 4.60 kn | Popa TWA 150°, SOG 4.20 kn (VMG 3.64 kn).
+    * **14 nudos**: Ceñida TWA 43°, SOG 3.85 kn (VMG 2.81 kn) | Través 5.30 kn | Popa TWA 148°, SOG 4.85 kn (VMG 4.11 kn).
+    * **18+ nudos**: Ceñida TWA 44°, SOG 4.05 kn (VMG 2.91 kn) | Través 5.80 kn | Popa TWA 146°, SOG 5.30 kn (VMG 4.27 kn).
+  * Actualización sincronizada en la guía teórica del modal de polares (`#polarModal`).
+* **Motor de Diagnóstico Táctico Inteligente (Debriefing del Entrenador)**:
+  * Sistema de evaluación basada en reglas (`evaluateSailorTactics` y `TACTICAL_RULE_DEFINITIONS`) que genera automáticamente claves técnicas y de debriefing para cada deportista:
+    * **Orzada excesiva / Punteada**: Detección de ceñidas con TWA < 41° y déficit de aceleración («*Iba muy punteado/a: barco cerrado al viento con pérdida de potencia y velocidad en ola*»).
+    * **Ceñida abierta**: Detección de ángulos TWA > 48° con regalo de metros a barlovento.
+    * **Falta de velocidad pura**: Comparación de la ceñida del regatista frente a la mediana del grupo de cabeza.
+    * **Exceso de maniobras**: Alerta cuando las viradas superan en más de un 65% la mediana de la flota, calculando la penalización en metros perdidos.
+    * **Regalo de metros en layline (Overstanding)**: Identificación de metros innecesarios navegados por encima de la layline en las aproximaciones a B1 y meta.
+    * **Bordo desfavorecido**: Detección de tramos con bajo aprovechamiento del bordo favorecido (VMC negativo hacia baliza).
+    * **Cruce del campo de regatas**: Detección de bordos continuos de más de 450 metros cruzando el campo sin negociar roles.
+    * **Rendimiento sobresaliente**: Reconocimiento de ejecuciones con más del 91% de eficiencia en todos los tramos.
+* **Cuaderno de Notas del Entrenador por Regatista**:
+  * Cuadro de texto interactivo en cada tarjeta para anotaciones tácticas y correcciones personalizadas con guardado automático local por sesión y regatista.
+* **Exportación a Excel e Impresión Especializada**:
+  * Botón `📋 Copiar para Excel` (`#btnCopyV2Table`) con volcado en TSV de puestos, velocidades medias por tramo, distancias y tiempos.
+  * Botón `🖨️ Imprimir Análisis V2` con formateo para impresión y exportación en PDF.
+
 ### [v1.3.8] - Código Único de Regatista, Soporte Multivelas, Sincronización de Podios, Eliminación de Resultados y Depuración de 0 Sesiones
 * **Ajuste Responsivo y Enmarcado de la Tabla de Viento**:
   * **Corrección de Desbordamiento**: Corregida la regla CSS heredada que forzaba un ancho mínimo global de 760px en tablas; la tabla de *Rendimiento según Rango de Viento* cuenta ahora con `min-width: 0 !important`, `table-layout: fixed` y contenedor con desplazamiento táctil horizontal (`overflow-x: auto`), garantizando que jamás sobresalga de los límites de la tarjeta.

@@ -143,7 +143,7 @@ select.num{width:auto}
 .app.is-empty .map,.app.is-empty .side,.app.is-empty .tl,.app.is-empty .summary{display:none}
 .app.is-empty .import{padding:28px 24px}
 .app.is-empty .drop{padding:56px 16px}
-.app.is-empty #chip,.app.is-empty #clock,.app.is-empty #newSessionBtn,.app.is-empty #btnShareCloudRegata{display:none}
+.app.is-empty #chip,.app.is-empty #clock,.app.is-empty #newSessionBtn,.app.is-empty #btnShareCloudRegata,.app.is-empty #btnQuickSaveCloud{display:none}
 #newSessionBtn{font-size:12px;padding:4px 11px;border-radius:6px;cursor:pointer;font-weight:600}
 #btnHelp{font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:4px}
 #btnCloudModal{font-size:12px;padding:4px 11px;border-radius:6px;cursor:pointer;font-weight:600;background:rgba(2,132,199,0.1);border:1px solid #0284c7;color:#0284c7;display:inline-flex;align-items:center;gap:4px}
@@ -301,15 +301,227 @@ tr.qsep th{padding-top:4px}
   grid-column:1/-1;
   padding:20px 24px;
 }
+.advanced-metrics-view, .analysis-v2-view{
+  grid-column:1/-1;
+  padding:20px 24px;
+}
 .app.view-metrics .map,
 .app.view-metrics .side,
 .app.view-metrics .tl,
 .app.view-metrics .summary,
-.app.view-metrics .import{
+.app.view-metrics .import,
+.app.view-metrics .analysis-v2-view{
+  display:none!important;
+}
+.app.view-analysis-v2 .map,
+.app.view-analysis-v2 .side,
+.app.view-analysis-v2 .tl,
+.app.view-analysis-v2 .summary,
+.app.view-analysis-v2 .import,
+.app.view-analysis-v2 .advanced-metrics-view{
   display:none!important;
 }
 .app:not(.view-metrics) .advanced-metrics-view{
   display:none!important;
+}
+.app:not(.view-analysis-v2) .analysis-v2-view{
+  display:none!important;
+}
+
+/* ---------- Estilos Vista Análisis V2 ---------- */
+.analysis-v2-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:22px;
+  margin-top:18px;
+}
+@media (min-width: 1400px){
+  .analysis-v2-grid{
+    grid-template-columns:repeat(auto-fit, minmax(640px, 1fr));
+  }
+}
+.sailor-analysis-card{
+  background:var(--bg);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:16px 18px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  box-shadow:0 4px 6px -1px rgba(0,0,0,0.06);
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.sailor-analysis-card:hover{
+  border-color:var(--accent);
+  box-shadow:0 6px 12px -2px rgba(0,0,0,0.12);
+}
+.sailor-card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:10px;
+}
+.sailor-card-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:15px;
+  font-weight:700;
+  color:var(--ink);
+}
+.sailor-rank-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  font-size:12px;
+  font-weight:800;
+  color:#fff;
+  background:#475569;
+}
+.sailor-rank-badge.rank-1{background:#eab308;color:#000;}
+.sailor-rank-badge.rank-2{background:#94a3b8;color:#000;}
+.sailor-rank-badge.rank-3{background:#b45309;color:#fff;}
+.sailor-quick-stats{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:12px;
+  color:var(--muted);
+  flex-wrap:wrap;
+}
+.sailor-quick-stats strong{
+  color:var(--ink);
+}
+.debrief-box{
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.debrief-title{
+  font-size:12px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.04em;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.debrief-pill{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  font-size:12px;
+  line-height:1.45;
+  padding:6px 10px;
+  border-radius:6px;
+}
+.debrief-pill.warning{
+  background:rgba(239, 68, 68, 0.10);
+  border-left:3px solid #ef4444;
+  color:var(--ink);
+}
+.debrief-pill.success{
+  background:rgba(16, 185, 129, 0.10);
+  border-left:3px solid #10b981;
+  color:var(--ink);
+}
+.debrief-pill.info{
+  background:rgba(59, 130, 246, 0.10);
+  border-left:3px solid #3b82f6;
+  color:var(--ink);
+}
+.debrief-tag{
+  font-weight:700;
+  font-size:11px;
+  white-space:nowrap;
+  display:inline-flex;
+  align-items:center;
+  padding:1px 6px;
+  border-radius:4px;
+}
+.debrief-pill.warning .debrief-tag{background:rgba(239,68,68,0.2);color:#ef4444;}
+.debrief-pill.success .debrief-tag{background:rgba(16,185,129,0.2);color:#10b981;}
+.debrief-pill.info .debrief-tag{background:rgba(59,130,246,0.2);color:#3b82f6;}
+.sailor-coach-notes{
+  margin-top:4px;
+  border-top:1px dashed var(--line);
+  padding-top:8px;
+}
+.coach-notes-input{
+  width:100%;
+  background:var(--bg);
+  border:1px solid var(--line);
+  color:var(--ink);
+  padding:6px 10px;
+  border-radius:6px;
+  font-size:11.5px;
+  font-family:inherit;
+  resize:vertical;
+  min-height:36px;
+  box-sizing:border-box;
+}
+.coach-notes-input:focus{
+  border-color:var(--accent);
+  outline:none;
+}
+
+/* ---------- Pie de página del programa (Versión y Créditos) ---------- */
+.app-footer{
+  grid-column:1/-1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  padding:12px 18px;
+  margin-top:16px;
+  background:var(--sub, rgba(15, 23, 42, 0.6));
+  border:1px solid var(--line);
+  border-radius:8px;
+  font-size:12px;
+  color:var(--muted);
+}
+.app-footer-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.app-footer-badge{
+  display:inline-flex;
+  align-items:center;
+  font-weight:700;
+  font-size:11.5px;
+  letter-spacing:.03em;
+  padding:2px 8px;
+  border-radius:4px;
+  background:rgba(2,132,199,0.12);
+  color:var(--accent);
+  border:1px solid rgba(2,132,199,0.28);
+}
+.app-footer-appname{
+  font-weight:500;
+}
+.app-footer-right{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+}
+.app-footer-author{
+  color:var(--ink);
+  font-weight:600;
 }
 
 .metrics-head{
@@ -533,6 +745,7 @@ tr.qsep th{padding-top:4px}
   #btnCloudModal,
   #newSessionBtn,
   .metrics-actions,
+  .app-footer,
   .modal-overlay{
     display:none!important;
   }
@@ -667,6 +880,7 @@ tr.qsep th{padding-top:4px}
   <nav class="main-tabs" role="tablist" aria-label="Modo de visualización">
     <button class="main-tab-btn is-active" id="mainTabTrack" role="tab" aria-selected="true">Visualizar el track</button>
     <button class="main-tab-btn" id="mainTabMetrics" role="tab" aria-selected="false">Métricas avanzadas</button>
+    <button class="main-tab-btn" id="mainTabAnalysisV2" role="tab" aria-selected="false">Análisis V2</button>
   </nav>
 
   <header class="top">
@@ -677,6 +891,7 @@ tr.qsep th{padding-top:4px}
     </div>
     <div class="top-right">
       <button class="btn btn-cloud" id="btnCloudModal" type="button" title="Acceder a la Nube Central de Regatas (Turso SQLite)">☁️ Nube RCNGC</button>
+      <button class="btn" id="btnQuickSaveCloud" type="button" title="Guardar cambios directamente en la nube de Turso SQLite" style="display:none;font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;font-weight:600;background:rgba(2,132,199,0.12);border:1px solid #0284c7;color:#0284c7;align-items:center;gap:4px">💾 Guardar cambios</button>
       <button class="btn" id="btnShareCloudRegata" type="button" title="Copiar enlace directo para compartir esta regata por WhatsApp o redes" style="display:none;font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;font-weight:600;background:rgba(16,185,129,0.12);border:1px solid #10b981;color:#059669;align-items:center;gap:4px">🔗 Compartir</button>
       <button class="btn" id="btnHelp" type="button" title="Ver guía de uso e instrucciones para entrenadores">📖 Guía de uso</button>
       <button class="btn" id="newSessionBtn" type="button" title="Borrar datos actuales y empezar una nueva regata de cero">Nueva sesión</button>
@@ -992,6 +1207,83 @@ tr.qsep th{padding-top:4px}
       <div style="border-bottom:1px solid #999;height:24px;margin-top:12px"></div>
     </div>
   </section>
+
+  <!-- ==================== PESTAÑA ANÁLISIS V2 ==================== -->
+  <section class="card analysis-v2-view" id="analysisV2View" hidden aria-labelledby="analysis-v2-h">
+    <div class="metrics-head">
+      <div>
+        <h2 id="analysis-v2-h">📊 Análisis Táctico y de Rendimiento por Tramos V2</h2>
+        <div class="hint" id="v2Subtitle">Desglose integral de la flota por tramos IODA, velocidad media de tramo, eficiencia de derrota corregida y diagnóstico táctico</div>
+      </div>
+      <div class="metrics-actions">
+        <button class="btn" id="btnCopyV2Table" type="button" title="Copiar tabla para pegar en Excel">📋 Copiar para Excel</button>
+        <button class="btn primary" id="btnPrintV2Report" type="button" title="Imprimir informe completo o guardar en PDF">🖨️ Imprimir Análisis V2</button>
+      </div>
+    </div>
+
+    <div class="race-window-notice" style="background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:8px;padding:9px 14px;margin:10px 0 16px 0;font-size:12.5px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:18px">⏱️</span>
+      <div><strong>Filtro Estricto de Regata & Desglose IODA:</strong> Todas las velocidades medias por tramo (Vmed T1 Barlovento, Vmed T2 Través, Vmed T3 Popa, Vmed T4 Ceñida Final) y las métricas de derrota se computan estrictamente durante el tiempo de regata oficial. La eficiencia de la derrota se calcula frente a la distancia teórica mínima en laylines para la clase Optimist.</div>
+    </div>
+
+    <!-- 5 Tarjetas KPI superiores de la flota -->
+    <div class="metrics-kpis" id="v2Kpis"></div>
+
+    <!-- Tabla general de la flota con columnas de tramos Vmed T1..T4 -->
+    <div class="table-wrap" id="v2FleetTableWrap">
+      <table class="metrics-table" id="v2FleetTable">
+        <thead>
+          <tr id="v2TheadRow">
+            <th data-v2sort="pos" style="width:75px;text-align:center" title="Ordenar por posición">Posición ⬍</th>
+            <th data-v2sort="sail" style="text-align:left" title="Ordenar por número de vela">Barco / Vela ⬍</th>
+            <th data-v2sort="t1" title="Ordenar por velocidad media en Tramo 1 (Ceñida a B1)">Vmed T1 ⬍</th>
+            <th data-v2sort="t2" title="Ordenar por velocidad media en Tramo 2 (Través a B2)">Vmed T2 ⬍</th>
+            <th data-v2sort="t3" title="Ordenar por velocidad media en Tramo 3 (Popa a Puerta 3)">Vmed T3 ⬍</th>
+            <th data-v2sort="t4" title="Ordenar por velocidad media en Tramo 4 (Ceñida a Llegada)">Vmed T4 ⬍</th>
+            <th data-v2sort="dist" title="Ordenar por distancia navegada">Distancia navegada ⬍</th>
+            <th data-v2sort="dur" title="Ordenar por tiempo navegado">Tiempo navegado ⬍</th>
+          </tr>
+        </thead>
+        <tbody id="v2FleetTbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Sección Multi-Barco: Desglose individual de cada regatista con su tabla de tramos y diagnóstico -->
+    <div class="metrics-section-title" style="margin-top:28px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div>
+        <h3 style="margin:0;font-size:18px;color:var(--ink)">⛵ Desglose Táctico y Rendimiento por Barco (Vista de Toda la Flota)</h3>
+        <div class="hint" style="font-size:12px;color:var(--muted)">Visualización simultánea de todos los regatistas con desglose de tramos IODA, polares y debriefing táctico automatizado</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <input type="text" id="v2SailorSearch" placeholder="🔍 Filtrar regatista o vela..." style="background:var(--bg);border:1px solid var(--line);color:var(--ink);padding:6px 12px;border-radius:6px;font-size:12.5px;width:200px">
+      </div>
+    </div>
+
+    <!-- Contenedor grid de tarjetas multi-barco -->
+    <div class="analysis-v2-grid" id="v2MultiBoatGrid"></div>
+
+    <div class="metrics-empty-state" id="v2EmptyState" hidden>
+      <div style="font-size:36px;margin-bottom:8px">⛵</div>
+      <h3 style="margin:0 0 6px">No hay entrenamiento cargado todavía</h3>
+      <p style="color:var(--muted);max-width:480px;margin:0 auto 16px">Carga los archivos GPX en la pestaña <strong>«Visualizar el track»</strong> para calcular automáticamente el desglose V2 y el diagnóstico táctico.</p>
+      <button class="btn primary" id="btnGoToTrackFromV2" type="button">Ir a «Visualizar el track»</button>
+    </div>
+
+    <div class="metrics-technical-note" style="margin-top:20px;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)">
+      <p style="margin:0"><strong>ℹ️ Medición de Eficiencia de Derrota & Laylines:</strong> En tramos contra el viento (T1 y T4), la distancia mínima teórica no es la línea recta entre boyas sino la derrota óptima sobre laylines a 44° TWA (distancia rhumbline / cos 44°). En popa (T3), la distancia mínima se basa en el ángulo de descenso a 148° TWA (32° fuera de la empopada). Las velocidades objetivo se interpolan según las polares calibradas para la clase Optimist.</p>
+    </div>
+  </section>
+
+  <!-- Pie de página general del programa (Versión y Créditos) -->
+  <footer class="app-footer" aria-label="Información del programa y créditos">
+    <div class="app-footer-left">
+      <span class="app-footer-badge">v1.4.0</span>
+      <span class="app-footer-appname">Visor y Analizador de Regatas · Optimist RCNGC</span>
+    </div>
+    <div class="app-footer-right">
+      <span>Desarrollado por <strong class="app-footer-author">Pablo Quintana Labarta</strong></span>
+    </div>
+  </footer>
 </div>
 
 <div class="modal-overlay" id="helpModal" hidden>
@@ -1059,6 +1351,11 @@ tr.qsep th{padding-top:4px}
         <li><strong>A prueba de F5:</strong> Todo se guarda automáticamente en la memoria privada de tu navegador. Si actualizas con <kbd>F5</kbd> o cierras la pestaña, recuperarás tus barcos, balizas y dibujos al instante.</li>
         <li><strong>Nueva sesión:</strong> Para limpiar los datos y empezar un nuevo entrenamiento desde cero, pulsa el botón <strong>«Nueva sesión»</strong> arriba a la derecha.</li>
       </ul>
+
+      <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap;gap:8px">
+        <span>Visor y Analizador de Regatas · Optimist RCNGC · <strong style="color:var(--accent)">v1.4.0</strong></span>
+        <span>Desarrollado por <strong style="color:var(--ink)">Pablo Quintana Labarta</strong></span>
+      </div>
     </div>
   </div>
 </div>
@@ -1161,6 +1458,19 @@ tr.qsep th{padding-top:4px}
           ⚠️ <strong>No hay ninguna sesión activa en el visor:</strong> Carga primero los archivos GPX o abre una regata existente para poder publicarla en la nube.
         </div>
         <div id="cloudSaveForm" style="display:none">
+          <!-- Banner modo edición de regata existente -->
+          <div id="cloudSaveModeBanner" style="margin-bottom:14px;padding:12px 14px;border-radius:8px;border:1px solid rgba(2,132,199,0.3);background:rgba(2,132,199,0.06);display:none">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:22px">✏️</span>
+                <div>
+                  <div style="font-size:13.5px;font-weight:700;color:var(--ink)">Editando regata de la nube: <span id="cloudSaveEditingTitle" style="color:#0284c7">—</span></div>
+                  <div style="font-size:11.5px;color:var(--dim)">ID: <code id="cloudSaveEditingId" style="font-family:var(--f-mono);background:var(--panel);padding:1px 5px;border-radius:4px;border:1px solid var(--line)">—</code> · Puedes sobrescribir los datos (manteniendo el enlace actual) o crear una copia independiente con «Guardar como...».</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div style="background:var(--sub);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;display:flex;gap:16px;flex-wrap:wrap" id="cloudSaveSummaryInfo">
           </div>
 
@@ -1196,6 +1506,18 @@ tr.qsep th{padding-top:4px}
             </div>
           </div>
 
+          <!-- Dirección e Intensidad del Viento -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Dirección del Viento (º)</label>
+              <input type="number" id="cloudSaveWindDir" min="0" max="359" placeholder="0 - 359" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Intensidad del Viento (nudos)</label>
+              <input type="number" id="cloudSaveWindKnots" step="0.1" min="0" max="45" placeholder="Ej: 12.0" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+            </div>
+          </div>
+
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
             <div>
               <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Autor / Entrenador</label>
@@ -1213,8 +1535,9 @@ tr.qsep th{padding-top:4px}
             <textarea id="cloudSaveNotes" rows="3" placeholder="Ej: Viento del 120º con racha de 16 kts. Ceñida con corriente hacia el sur..." style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;resize:vertical"></textarea>
           </div>
 
-          <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px">
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap">
             <span id="cloudSaveStatusMsg" style="font-size:13px"></span>
+            <button class="btn" id="btnSubmitCloudSaveAsNew" type="button" style="padding:9px 16px;font-weight:600;border-color:var(--accent);color:var(--accent);display:none" title="Crear una copia independiente con un nuevo ID y enlace">📋 Guardar como nueva regata...</button>
             <button class="btn primary" id="btnSubmitCloudSave" type="button" style="padding:9px 20px;font-weight:600">☁️ Guardar en la Nube</button>
           </div>
         </div>
@@ -1283,6 +1606,84 @@ tr.qsep th{padding-top:4px}
             ⛵ Selecciona un número de vela en el desplegable superior para consultar su histórico de regatas, estadísticas acumuladas y evolución de velocidad.
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal: Edición Rápida de Ficha de Regata en la Nube -->
+<div class="modal-overlay" id="cloudEditModal" hidden style="z-index:99999">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="cloudEditModalTitle" style="max-width:580px;display:flex;flex-direction:column;max-height:85vh">
+    <div class="modal-head" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:22px">✏️</span>
+        <div>
+          <h2 id="cloudEditModalTitle" style="margin:0;font-size:16px;font-weight:700">Modificar Ficha de Regata</h2>
+          <div style="font-size:11.5px;color:var(--dim)">Actualiza el título, fecha, viento, notas y configuración en la nube</div>
+        </div>
+      </div>
+      <button class="modal-close" id="btnCloseCloudEdit" type="button" aria-label="Cerrar ventana de edición">✕</button>
+    </div>
+    <div class="modal-body" style="padding:20px;overflow-y:auto;flex:1">
+      <input type="hidden" id="cloudEditId">
+      
+      <div style="margin-bottom:12px">
+        <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Título de la regata *</label>
+        <input type="text" id="cloudEditTitle" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px" required>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Fecha de la sesión</label>
+          <input type="text" id="cloudEditDate" placeholder="AAAA-MM-DD" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Autor / Entrenador</label>
+          <input type="text" id="cloudEditAuthor" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Categoría / Grupo</label>
+          <select id="cloudEditCategory" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+            <option value="Grupo A Optimist">Grupo A Optimist</option>
+            <option value="Grupo B Optimist">Grupo B Optimist</option>
+            <option value="Grupo C Optimist">Grupo C Optimist</option>
+            <option value="Vela ligera RCNGC">Vela ligera RCNGC</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Tipo de Sesión</label>
+          <select id="cloudEditType" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+            <option value="Entrenamiento">Entrenamiento</option>
+            <option value="Regata">Regata</option>
+            <option value="Análisis de otras regatas">Análisis de otras regatas</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Dirección del Viento (º)</label>
+          <input type="number" id="cloudEditWindDir" min="0" max="359" placeholder="0 - 359" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Intensidad del Viento (kn)</label>
+          <input type="number" id="cloudEditWindKnots" step="0.1" min="0" max="45" placeholder="Ej: 12.0" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Observaciones / Notas del día (Descripción)</label>
+        <textarea id="cloudEditNotes" rows="3" placeholder="Añadir observaciones o descripción..." style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;resize:vertical"></textarea>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px">
+        <span id="cloudEditStatusMsg" style="font-size:12.5px"></span>
+        <button class="btn" id="btnCancelCloudEdit" type="button" style="padding:7px 14px">Cancelar</button>
+        <button class="btn primary" id="btnSaveCloudEdit" type="button" style="padding:7px 18px;font-weight:600">💾 Guardar cambios</button>
       </div>
     </div>
   </div>
@@ -1359,43 +1760,43 @@ tr.qsep th{padding-top:4px}
           <tbody>
             <tr>
               <td><strong>6 nudos</strong> (Brisa suave)</td>
-              <td>43°</td>
-              <td>3.25 kn</td>
-              <td><strong>2.35 kn</strong></td>
-              <td>3.80 kn</td>
-              <td>152°</td>
+              <td>45°</td>
+              <td>2.80 kn</td>
+              <td><strong>1.98 kn</strong></td>
               <td>3.50 kn</td>
-              <td><strong>2.90 kn</strong></td>
+              <td>152°</td>
+              <td>3.20 kn</td>
+              <td><strong>2.82 kn</strong></td>
             </tr>
             <tr>
               <td><strong>10 nudos</strong> (Viento medio)</td>
-              <td>43°</td>
-              <td>3.85 kn</td>
-              <td><strong>2.82 kn</strong></td>
-              <td>4.90 kn</td>
-              <td>150°</td>
+              <td>44°</td>
+              <td>3.45 kn</td>
+              <td><strong>2.48 kn</strong></td>
               <td>4.60 kn</td>
-              <td><strong>3.85 kn</strong></td>
+              <td>150°</td>
+              <td>4.20 kn</td>
+              <td><strong>3.64 kn</strong></td>
             </tr>
             <tr>
               <td><strong>14 nudos</strong> (Brisa fresca)</td>
-              <td>42°</td>
-              <td>4.20 kn</td>
-              <td><strong>3.07 kn</strong></td>
-              <td>5.60 kn</td>
-              <td>148°</td>
+              <td>43°</td>
+              <td>3.85 kn</td>
+              <td><strong>2.81 kn</strong></td>
               <td>5.30 kn</td>
-              <td><strong>4.45 kn</strong></td>
+              <td>148°</td>
+              <td>4.85 kn</td>
+              <td><strong>4.11 kn</strong></td>
             </tr>
             <tr>
               <td><strong>18+ nudos</strong> (Viento duro)</td>
-              <td>42°</td>
-              <td>4.35 kn</td>
-              <td><strong>3.18 kn</strong></td>
-              <td>6.10 kn</td>
-              <td>146°</td>
+              <td>44°</td>
+              <td>4.05 kn</td>
+              <td><strong>2.91 kn</strong></td>
               <td>5.80 kn</td>
-              <td><strong>4.90 kn</strong></td>
+              <td>146°</td>
+              <td>5.30 kn</td>
+              <td><strong>4.27 kn</strong></td>
             </tr>
           </tbody>
         </table>
@@ -1407,6 +1808,11 @@ tr.qsep th{padding-top:4px}
         <li><strong>Línea de Llegada:</strong> Se define entre la boya de meta y el Comité de Llegada. En cada segundo, el algoritmo de intersección de segmentos vectoriales comprueba el cruce de meta. Cuando un barco pasa la línea, se fija su tiempo de llegada (Meta) y finaliza el intervalo de cómputo de sus métricas.</li>
         <li><strong>Eficiencia Polar Target (%):</strong> En cada tramo de ceñida o empopada se compara la velocidad real obtenida frente al objetivo polar para ese ángulo y rango de viento: un valor &ge; 90% indica rendimiento óptimo de navegación.</li>
       </ul>
+
+      <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap;gap:8px">
+        <span>Visor y Analizador de Regatas · Optimist RCNGC · <strong style="color:var(--accent)">v1.4.0</strong></span>
+        <span>Desarrollado por <strong style="color:var(--ink)">Pablo Quintana Labarta</strong></span>
+      </div>
     </div>
   </div>
 </div>
@@ -3349,8 +3755,18 @@ function renderCoursePane(){
           <button class="btn" id="btnClearIODA" style="color:#ef4444">✕ Borrar marcas IODA</button>
         </div>
       </div>
-      <div class="field"><span class="lbl">Viento · de dónde sopla</span>
-        <div class="inline"><button class="btn" data-wd="-10">−10°</button><input class="num" id="windIn" type="number" min="0" max="359" step="1" value="${Math.round(((D.windRef%360)+360)%360)}" aria-label="Dirección del viento en grados"><button class="btn" data-wd="10">+10°</button></div>
+      <div class="field"><span class="lbl">Viento · de dónde sopla e intensidad</span>
+        <div class="inline" style="flex-wrap:wrap;gap:8px">
+          <div class="inline">
+            <button class="btn" data-wd="-10">−10°</button>
+            <input class="num" id="windIn" type="number" min="0" max="359" step="1" value="${Math.round(((D.windRef%360)+360)%360)}" aria-label="Dirección del viento en grados">
+            <button class="btn" data-wd="10">+10°</button>
+          </div>
+          <div class="inline" style="gap:4px">
+            <input class="num" id="windKnIn" type="number" min="1" max="40" step="0.5" placeholder="Auto" value="${D.windKnVal != null ? D.windKnVal : ''}" style="width:75px" title="Intensidad en nudos (deja vacío para cálculo automático por telemetría)">
+            <span class="hint" style="margin:0;font-size:12px;font-weight:600">kn (${D.windKnVal != null ? 'Fijado entrenador' : 'Auto: ' + (typeof estimateFleetWindSpeed === 'function' ? estimateFleetWindSpeed() : 10) + ' kn'})</span>
+          </div>
+        </div>
       </div>
       ${startHtml}
       <div class="field">
@@ -3387,8 +3803,18 @@ function renderCoursePane(){
       </div>`;
   }else{
     html+=`
-      <div class="field"><span class="lbl">Viento · de dónde sopla</span>
-        <div class="inline"><button class="btn" data-wd="-10">−10°</button><input class="num" id="windIn" type="number" min="0" max="359" step="1" value="${Math.round(((D.windRef%360)+360)%360)}" aria-label="Dirección del viento en grados"><button class="btn" data-wd="10">+10°</button></div>
+      <div class="field"><span class="lbl">Viento · de dónde sopla e intensidad</span>
+        <div class="inline" style="flex-wrap:wrap;gap:8px">
+          <div class="inline">
+            <button class="btn" data-wd="-10">−10°</button>
+            <input class="num" id="windIn" type="number" min="0" max="359" step="1" value="${Math.round(((D.windRef%360)+360)%360)}" aria-label="Dirección del viento en grados">
+            <button class="btn" data-wd="10">+10°</button>
+          </div>
+          <div class="inline" style="gap:4px">
+            <input class="num" id="windKnIn" type="number" min="1" max="40" step="0.5" placeholder="Auto" value="${D.windKnVal != null ? D.windKnVal : ''}" style="width:75px" title="Intensidad en nudos (deja vacío para cálculo automático por telemetría)">
+            <span class="hint" style="margin:0;font-size:12px;font-weight:600">kn (${D.windKnVal != null ? 'Fijado entrenador' : 'Auto: ' + (typeof estimateFleetWindSpeed === 'function' ? estimateFleetWindSpeed() : 10) + ' kn'})</span>
+          </div>
+        </div>
       </div>
       ${startHtml}
       <div class="field"><span class="lbl">Balizas en orden de paso</span>
@@ -3451,6 +3877,7 @@ function renderCoursePane(){
 
   courseEl.querySelectorAll('[data-wd]').forEach(b=>b.addEventListener('click',()=>{D.windRef=((D.windRef+ +b.dataset.wd)%360+360)%360;courseChanged();}));
   const wi=courseEl.querySelector('#windIn');if(wi)wi.addEventListener('change',()=>{const v=+wi.value;if(isFinite(v)){D.windRef=((v%360)+360)%360;courseChanged();}});
+  const wki=courseEl.querySelector('#windKnIn');if(wki)wki.addEventListener('change',()=>{const v=parseFloat(wki.value);if(isFinite(v)&&v>0){D.windKnVal=v;}else{D.windKnVal=null;}courseChanged();});
   const sBtn=courseEl.querySelector('#setStart');if(sBtn)sBtn.addEventListener('click',()=>{D.startT=Math.floor(state.t);courseChanged();});
   const cs=courseEl.querySelector('#clrStart');if(cs)cs.addEventListener('click',()=>{D.startT=null;courseChanged();});
   const rad=courseEl.querySelector('#radius');if(rad)rad.addEventListener('change',e=>{D.radius=+e.target.value;courseChanged();});
@@ -3510,9 +3937,9 @@ function deleteBoat(id){
     clearSession();
   }else{
     if(state.sel===id)state.sel=0;
-    rebuild(D.align);
+    rebuild(D.align, D.course, state.tactics);
     showTab('boats');
-    showMsg([{t:`Barco ${b.sail} eliminado de la sesión. Quedan ${D.N} barco(s).`,cls:'warn'}]);
+    showMsg([{t:`Barco ${b.sail} eliminado de la sesión. Quedan ${D.N} barco(s). Pulsa «Guardar cambios» para actualizar en la nube.`,cls:'warn'}]);
   }
 }
 
@@ -3817,12 +4244,17 @@ let currentMainView='track';
 let advSort={col:'pos',asc:true};
 let selectedTacticalBoatId=0;
 
+let v2Sort = { col: 'pos', asc: true };
+let v2RowsData = [];
+
 function switchMainView(view){
   currentMainView=view;
   const btnTrack=document.getElementById('mainTabTrack');
   const btnMetrics=document.getElementById('mainTabMetrics');
+  const btnV2=document.getElementById('mainTabAnalysisV2');
   const appEl=document.querySelector('.app');
   const advView=document.getElementById('advancedMetricsView');
+  const v2View=document.getElementById('analysisV2View');
 
   if(btnTrack){
     btnTrack.classList.toggle('is-active',view==='track');
@@ -3832,19 +4264,666 @@ function switchMainView(view){
     btnMetrics.classList.toggle('is-active',view==='metrics');
     btnMetrics.setAttribute('aria-selected',String(view==='metrics'));
   }
+  if(btnV2){
+    btnV2.classList.toggle('is-active',view==='analysisV2');
+    btnV2.setAttribute('aria-selected',String(view==='analysisV2'));
+  }
 
   if(appEl){
     appEl.classList.toggle('view-metrics',view==='metrics');
+    appEl.classList.toggle('view-analysis-v2',view==='analysisV2');
   }
   if(advView){
     advView.hidden=(view!=='metrics');
   }
+  if(v2View){
+    v2View.hidden=(view!=='analysisV2');
+  }
 
   if(view==='metrics'){
     renderAdvancedMetrics();
+  }else if(view==='analysisV2'){
+    renderAnalysisV2View();
   }else{
     if(typeof drawMap==='function')requestAnimationFrame(drawMap);
   }
+}
+
+/**
+ * Diccionario de diagnósticos tácticos y claves de rendimiento (Extensible para el entrenador)
+ */
+const TACTICAL_RULE_DEFINITIONS = {
+  PINCHING: {
+    label: "Orzada excesiva / Punteada",
+    severity: "warning",
+    defaultText: "Iba muy punteado/a: navegó demasiado cerrado al viento, perdiendo velocidad y aceleración en ola."
+  },
+  BEARING_AWAY: {
+    label: "Ceñida abierta",
+    severity: "info",
+    defaultText: "Navegó con ángulo muy abierto: buena velocidad sobre el agua pero regalando metros hacia barlovento."
+  },
+  OPTIMAL_TWA: {
+    label: "Ángulo de ceñida óptimo",
+    severity: "success",
+    defaultText: "Excelente ángulo de ceñida (TWA 43°-45°): compromiso perfecto entre rumbo y velocidad."
+  },
+  SPEED_DEFICIT: {
+    label: "Falta de velocidad",
+    severity: "warning",
+    defaultText: "Falta de velocidad pura respecto a la flota en los tramos de ceñida."
+  },
+  SPEED_EXCELLENT: {
+    label: "Velocidad destacada",
+    severity: "success",
+    defaultText: "Excelente velocidad punta sobre el agua, superando la media de la flota."
+  },
+  EXCESS_MANEUVERS: {
+    label: "Exceso de viradas",
+    severity: "warning",
+    defaultText: "Viró demasiadas veces: penalización acumulada de maniobras con pérdida de metros."
+  },
+  CLEAN_MANEUVERS: {
+    label: "Maniobras optimizadas",
+    severity: "success",
+    defaultText: "Pocas viradas y muy eficaces: navegó con bordos limpios y buena conservación de energía."
+  },
+  OVERSTANDING: {
+    label: "Regaló metros en layline",
+    severity: "warning",
+    defaultText: "Se pasó de la layline: regaló metros innecesarios navegando por encima del rumbo a la baliza."
+  },
+  OPTIMAL_LAYLINE: {
+    label: "Laylines precisas",
+    severity: "success",
+    defaultText: "Gran precisión al cortar la layline sin regalar metros hacia la baliza."
+  },
+  UNFAVORED_TACK: {
+    label: "Bordo desfavorecido",
+    severity: "warning",
+    defaultText: "Navegó demasiado tiempo en el bordo desfavorecido respecto a la baliza (VMC subóptimo)."
+  },
+  FAVORED_VMC: {
+    label: "Buena lectura de roles",
+    severity: "success",
+    defaultText: "Aprovechó el bordo favorecido la mayor parte del recorrido con VMC óptimo hacia la baliza."
+  },
+  CROSSED_COURSE: {
+    label: "Cruzó el campo",
+    severity: "info",
+    defaultText: "Cruzó el campo de regatas de lado a lado en un único bordo largo sin negociar las oscilaciones centrales."
+  },
+  TOP_PERFORMANCE: {
+    label: "Rendimiento óptimo",
+    severity: "success",
+    defaultText: "Excelente conjunción de táctica, rumbo y velocidad frente a las polares teóricas."
+  }
+};
+
+/**
+ * Motor de Inteligencia Táctica: Evalúa el desempeño del regatista por tramo y emite debriefings técnicos.
+ */
+function evaluateSailorTactics(boatIdx, legs, maneuvers, fleetSummary){
+  const findings = [];
+  if(!legs || !legs.length) return findings;
+
+  const kine = getBoatKinematics(boatIdx);
+  const upwindLegs = legs.filter(l => l.type === 'UPWIND');
+  const downwindLegs = legs.filter(l => l.type === 'DOWNWIND');
+
+  // 1. Análisis de Velocidad en Ceñida vs Flota
+  if(upwindLegs.length && fleetSummary && fleetSummary.medianUpwindSog > 0){
+    const avgUpwindSog = upwindLegs.reduce((a,l)=>a+(l.avgSogKnots||0),0)/upwindLegs.length;
+    if(avgUpwindSog < fleetSummary.medianUpwindSog - 0.32){
+      findings.push({
+        code: 'SPEED_DEFICIT',
+        severity: 'warning',
+        tag: '⚠️ Falta de velocidad',
+        text: `Velocidad media en ceñida (${fmt2(avgUpwindSog)} kn) notablemente inferior a la flota (${fmt2(fleetSummary.medianUpwindSog)} kn). Requiere revisar trimado y técnica en ola.`
+      });
+    } else if(avgUpwindSog > fleetSummary.medianUpwindSog + 0.18){
+      findings.push({
+        code: 'SPEED_EXCELLENT',
+        severity: 'success',
+        tag: '⚡ Gran velocidad',
+        text: `Excelente velocidad en ceñida (${fmt2(avgUpwindSog)} kn), por encima del promedio del grupo de cabeza (${fmt2(fleetSummary.medianUpwindSog)} kn).`
+      });
+    }
+  }
+
+  // 2. Análisis de Punteo / Ángulo de Ceñida (TWA)
+  if(kine && upwindLegs.length){
+    let upwindTwaSum = 0, upwindTwaCount = 0;
+    upwindLegs.forEach(l => {
+      for(let s = l.tIn; s <= l.tOut; s++){
+        if(ok(boatIdx, s)){
+          upwindTwaSum += Math.abs(kine.twa[s]);
+          upwindTwaCount++;
+        }
+      }
+    });
+    if(upwindTwaCount > 20){
+      const avgTwa = upwindTwaSum / upwindTwaCount;
+      const avgPolarTarget = upwindLegs.reduce((a,l)=>a+l.polarTargetPct,0)/upwindLegs.length;
+      if(avgTwa < 41.0 && avgPolarTarget < 87.0){
+        findings.push({
+          code: 'PINCHING',
+          severity: 'warning',
+          tag: '⚠️ Iba muy punteado/a',
+          text: `Ángulo medio de ceñida muy cerrado (${Math.round(avgTwa)}° TWA): barco punteado con pérdida continua de potencia y velocidad frente al objetivo polar.`
+        });
+      } else if(avgTwa > 48.0){
+        findings.push({
+          code: 'BEARING_AWAY',
+          severity: 'info',
+          tag: 'ℹ️ Ceñida abierta',
+          text: `Ceñida muy abierta (${Math.round(avgTwa)}° TWA): buena aceleración pero regalando ángulo de ascenso hacia barlovento.`
+        });
+      } else if(avgTwa >= 42.5 && avgTwa <= 45.5 && avgPolarTarget >= 88.0){
+        findings.push({
+          code: 'OPTIMAL_TWA',
+          severity: 'success',
+          tag: '✅ Ángulo óptimo',
+          text: `Excelente ángulo de ceñida (${Math.round(avgTwa)}° TWA): compromiso ideal entre velocidad de navegación y ganancia a barlovento.`
+        });
+      }
+    }
+  }
+
+  // 3. Análisis de Viradas y Maniobras
+  const totalTacks = maneuvers.filter(m => m.type === 'TACK').length;
+  const totalLossM = maneuvers.reduce((a,m)=>a+m.tackLossMeters,0);
+  if(fleetSummary && fleetSummary.medianTacks > 0){
+    if(totalTacks >= 1.65 * fleetSummary.medianTacks && totalTacks >= 8){
+      findings.push({
+        code: 'EXCESS_MANEUVERS',
+        severity: 'warning',
+        tag: '⚠️ Exceso de viradas',
+        text: `Realizó ${totalTacks} viradas (media de la flota: ${Math.round(fleetSummary.medianTacks)}). Penalización acumulada de -${Math.round(totalLossM)} m en maniobras.`
+      });
+    } else if(totalTacks <= fleetSummary.medianTacks * 0.8 && legs.some(l => l.rhumblineEfficiencyPct >= 88)){
+      findings.push({
+        code: 'CLEAN_MANEUVERS',
+        severity: 'success',
+        tag: '✅ Maniobras limpias',
+        text: `Navegación limpia con pocas viradas (${totalTacks} viradas) y bordos largos con excelente rendimiento.`
+      });
+    }
+  }
+
+  // 4. Desviación de Laylines / Overstanding
+  const totalOverstandM = legs.reduce((a,l)=>a+(l.overstandingMeters||0),0);
+  if(totalOverstandM >= 22){
+    findings.push({
+      code: 'OVERSTANDING',
+      severity: 'warning',
+      tag: '⚠️ Regaló metros en layline',
+      text: `Se pasó de la layline en ${Math.round(totalOverstandM)} metros acumulados: regaló distancia innecesaria navegando por encima de la línea a baliza.`
+    });
+  } else if(upwindLegs.length && totalOverstandM <= 5){
+    findings.push({
+      code: 'OPTIMAL_LAYLINE',
+      severity: 'success',
+      tag: '✅ Laylines clavadas',
+      text: `Aproximación precisa a las balizas sin regalar metros por encima de las laylines.`
+    });
+  }
+
+  // 5. Bordo Favorecido & VMC
+  if(upwindLegs.length){
+    const avgFavored = upwindLegs.reduce((a,l)=>a+(l.favoredTackPct||0),0)/upwindLegs.length;
+    if(avgFavored < 58.0){
+      findings.push({
+        code: 'UNFAVORED_TACK',
+        severity: 'warning',
+        tag: '⚠️ Bordo desfavorecido',
+        text: `Navegó solo el ${Math.round(avgFavored)}% del tiempo en el bordo favorecido. Pasó demasiado tiempo con VMC desfavorable respecto a la baliza.`
+      });
+    } else if(avgFavored >= 78.0){
+      findings.push({
+        code: 'FAVORED_VMC',
+        severity: 'success',
+        tag: '✅ Buena lectura de roles',
+        text: `Gran aprovechamiento táctico: ${Math.round(avgFavored)}% de la ceñida amurado al bordo favorecido hacia la baliza.`
+      });
+    }
+  }
+
+  // 6. Cruce de campo de regatas (bordos muy largos sin virar en oscilaciones)
+  if(upwindLegs.length && D.CD){
+    const base = boatIdx * D.stride;
+    let maxTackSpanM = 0;
+    const manTacks = maneuvers.filter(m => m.type === 'TACK').sort((a,b)=>a.apexS-b.apexS);
+    if(manTacks.length > 1){
+      for(let m = 0; m < manTacks.length - 1; m++){
+        const spanM = Math.abs(D.CD[base + manTacks[m+1].apexS] - D.CD[base + manTacks[m].apexS]);
+        if(spanM > maxTackSpanM) maxTackSpanM = spanM;
+      }
+    }
+    if(maxTackSpanM > 480){
+      findings.push({
+        code: 'CROSSED_COURSE',
+        severity: 'info',
+        tag: 'ℹ️ Cruzó el campo',
+        text: `Realizó un bordo continuo de ${Math.round(maxTackSpanM)} m cruzando el campo de lado a lado sin negociar los roles centrales.`
+      });
+    }
+  }
+
+  // 7. Rendimiento Global
+  const allEff = legs.map(l => l.rhumblineEfficiencyPct);
+  if(allEff.length >= 3 && allEff.every(e => e >= 91.0)){
+    findings.push({
+      code: 'TOP_PERFORMANCE',
+      severity: 'success',
+      tag: '🏆 Gran rendimiento global',
+      text: `Eficiencia de derrota superior al 91% en todos los tramos oficiales con excelente ejecución técnica.`
+    });
+  }
+
+  return findings;
+}
+
+/**
+ * Genera el HTML de la tabla de tramos IODA para un regatista individual.
+ */
+function renderSailorLegsTableHtml(legs){
+  if(!legs || !legs.length){
+    return `<div style="text-align:center;padding:12px;color:var(--muted);font-size:12px">No se detectaron tramos oficiales navegados.</div>`;
+  }
+  return `
+    <div class="table-wrap" style="margin:4px 0">
+      <table class="metrics-table" style="font-size:12px">
+        <thead>
+          <tr>
+            <th style="text-align:left">Tramo</th>
+            <th>Duración</th>
+            <th>Dist. Real</th>
+            <th>Efic. Derrota</th>
+            <th>Maniobras</th>
+            <th>Polar Target</th>
+            <th>Bordo Fav. (VMC)</th>
+            <th>Laylines</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${legs.map(l => `
+            <tr>
+              <td style="text-align:left">
+                <span class="badge-maneuver ${l.type==='UPWIND'?'tack':(l.type==='DOWNWIND'?'jibe':'')}" style="font-size:10px;padding:2px 5px">${l.type==='UPWIND'?'CEÑIDA':(l.type==='DOWNWIND'?'POPA':'TRAVÉS')}</span>
+                <strong style="margin-left:4px;font-size:12px">${esc(l.name)}</strong>
+              </td>
+              <td>${fmtDuration(l.durationSec)}</td>
+              <td>${fmt2(l.distanceReal / 1852)} NM</td>
+              <td><strong style="color:${l.rhumblineEfficiencyPct>=90?'#10b981':(l.rhumblineEfficiencyPct>=80?'#f59e0b':'#ef4444')}">${l.rhumblineEfficiencyPct}%</strong></td>
+              <td>
+                ${l.type==='UPWIND'
+                  ? `<strong>${l.tacksCount} vir.</strong> <span style="font-size:10.5px;color:${l.totalManeuverLossMeters>25?'#ef4444':'var(--muted)'}">(-${Math.round(l.totalManeuverLossMeters)}m)</span>`
+                  : (l.type==='DOWNWIND'
+                    ? `<strong>${l.jibesCount} tras.</strong> <span style="font-size:10.5px;color:${l.totalManeuverLossMeters>25?'#ef4444':'var(--muted)'}">(-${Math.round(l.totalManeuverLossMeters)}m)</span>`
+                    : `<span>${l.tacksCount}v / ${l.jibesCount}t</span> <span style="font-size:10.5px;color:var(--muted)">(-${Math.round(l.totalManeuverLossMeters)}m)</span>`
+                  )
+                }
+              </td>
+              <td>
+                <span class="${l.polarTargetPct>=90?'chip-good':(l.polarTargetPct>=75?'':'chip-alert')}" style="font-size:11px">${l.polarTargetPct}%</span>
+              </td>
+              <td><strong>${l.favoredTackPct}%</strong></td>
+              <td>${l.overstandingMeters>0?`<span style="color:#ef4444;font-weight:600;font-size:11px">+${l.overstandingMeters}m (${l.overstandingSec}s)</span>`:'<span class="chip-good" style="font-size:11px">✓ 0m</span>'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function computeTacticalLegs(boatIndex, twdVal, mans){
+  const t = twdVal != null ? twdVal : Math.round(((D.windRef%360)+360)%360);
+  const m = mans || detectManeuvers(boatIndex, t);
+  return analyzeIODALegs(boatIndex, t, m);
+}
+
+/**
+ * Renderiza la vista principal de Análisis V2.
+ */
+function renderAnalysisV2View(){
+  const v2View = document.getElementById('analysisV2View');
+  if(!v2View) return;
+
+  const emptyState = document.getElementById('v2EmptyState');
+  const tableWrap = document.getElementById('v2FleetTableWrap');
+  const kpisEl = document.getElementById('v2Kpis');
+  const tbody = document.getElementById('v2FleetTbody');
+  const gridEl = document.getElementById('v2MultiBoatGrid');
+
+  if(!D || !D.boats || !D.boats.length){
+    if(emptyState) emptyState.hidden = false;
+    if(tableWrap) tableWrap.hidden = true;
+    if(kpisEl) kpisEl.innerHTML = '';
+    if(gridEl) gridEl.innerHTML = '';
+    return;
+  }
+
+  if(emptyState) emptyState.hidden = true;
+  if(tableWrap) tableWrap.hidden = false;
+
+  const course = hasCourse();
+  const rk = course ? ranking(D.T - 1) : null;
+  const twd = Math.round(((D.windRef % 360) + 360) % 360);
+  const currentKnots = getWindSpeedKnots(state.t);
+
+  // 1. Computar métricas por barco
+  v2RowsData = D.boats.map((b, idx) => {
+    const i = b.id;
+    const base = i * D.stride;
+    const rInt = getBoatRaceInterval(i);
+    const sStart = rInt.sStart;
+    const sEnd = rInt.sEnd;
+
+    let sum = 0, n = 0, maxv = 0;
+    const win = []; let ws = 0;
+    for(let s = sStart; s <= sEnd; s++){
+      if(!ok(i, s)){ win.length = 0; ws = 0; continue; }
+      const v = D.S[base + s];
+      if(v > 0.4){ sum += v; n++; }
+      win.push(v); ws += v;
+      if(win.length > 5) ws -= win.shift();
+      if(win.length === 5) maxv = Math.max(maxv, ws / 5);
+    }
+
+    const dist = Math.max(0, D.CD[base + sEnd] - D.CD[base + sStart]);
+    const avg = n ? (sum / n * KN) : 0;
+    const max = maxv * KN;
+    const tacks = countTacks(i, sStart, sEnd);
+    const dur = Math.max(0, sEnd - sStart);
+
+    let pos = idx + 1;
+    if(course && rk){
+      const p = rk.findIndex(r => r.id === i);
+      if(p >= 0) pos = p + 1;
+    }
+
+    // Tramos tácticos y maniobras
+    const maneuvers = detectManeuvers(i, twd);
+    const legsData = analyzeIODALegs(i, twd, maneuvers);
+
+    // Vmed T1..T4
+    const vmedT1 = (legsData[0] && isFinite(legsData[0].avgSogKnots)) ? legsData[0].avgSogKnots : null;
+    const vmedT2 = (legsData[1] && isFinite(legsData[1].avgSogKnots)) ? legsData[1].avgSogKnots : null;
+    const vmedT3 = (legsData[2] && isFinite(legsData[2].avgSogKnots)) ? legsData[2].avgSogKnots : null;
+    const vmedT4 = (legsData[3] && isFinite(legsData[3].avgSogKnots)) ? legsData[3].avgSogKnots : null;
+
+    // Sailor name limpio
+    let sailorName = b.sail || ('Barco ' + (idx + 1));
+    if(b.name && b.name.includes('_')){
+      const parts = b.name.split('_');
+      if(parts.length >= 2){
+        sailorName = parts[1].replace(/_/g, ' ');
+      }
+    }
+
+    return {
+      b,
+      id: i,
+      sail: b.sail || ('Barco ' + (idx + 1)),
+      sailorName,
+      sub: b.sub || '',
+      color: b.color || '#ef4444',
+      dist,
+      avg,
+      max,
+      tacks,
+      dur,
+      pos,
+      fin: rInt.finished,
+      rInt,
+      legsData,
+      maneuvers,
+      vmedT1,
+      vmedT2,
+      vmedT3,
+      vmedT4
+    };
+  });
+
+  // Estadísticas globales de flota
+  const fleetAvgSpd = v2RowsData.length ? (v2RowsData.reduce((a,r)=>a+r.avg,0)/v2RowsData.length) : 0;
+  const fleetMaxSpd = v2RowsData.length ? Math.max(...v2RowsData.map(r=>r.max)) : 0;
+  const fleetTotalTacks = v2RowsData.reduce((a,r)=>a+r.tacks,0);
+
+  // Mediana de velocidad en ceñida de la flota
+  const allUpwindSpeeds = [];
+  v2RowsData.forEach(r => {
+    r.legsData.forEach(l => {
+      if(l.type === 'UPWIND' && l.avgSogKnots > 1.2) allUpwindSpeeds.push(l.avgSogKnots);
+    });
+  });
+  allUpwindSpeeds.sort((a,b)=>a-b);
+  const medianUpwindSog = allUpwindSpeeds.length ? allUpwindSpeeds[Math.floor(allUpwindSpeeds.length/2)] : 3.2;
+
+  const allTacksCounts = v2RowsData.map(r=>r.tacks).sort((a,b)=>a-b);
+  const medianTacks = allTacksCounts.length ? allTacksCounts[Math.floor(allTacksCounts.length/2)] : 10;
+
+  const fleetSummary = {
+    fleetAvgSpd,
+    fleetMaxSpd,
+    fleetTotalTacks,
+    medianUpwindSog,
+    medianTacks
+  };
+
+  // 2. Renderizar 5 KPIs superiores
+  if(kpisEl){
+    const w = windAt(state.t);
+    kpisEl.innerHTML = `
+      <div class="kpi-card">
+        <div class="kpi-lbl">Flota Analizada</div>
+        <div class="kpi-val">${D.N} <span style="font-size:14px;color:var(--muted)">${D.N===1?'barco':'barcos'}</span></div>
+        <div class="kpi-sub">${D.together?'Sesión simultánea':'Tracks alineados'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Viento de Sesión</div>
+        <div class="kpi-val">${deg3(w)} · ${fmt1(currentKnots)} <span style="font-size:14px;color:var(--muted)">kn</span></div>
+        <div class="kpi-sub">${D.windKnVal != null ? 'Fijado por entrenador' : 'Estimado por telemetría'}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Vel. Media Flota</div>
+        <div class="kpi-val">${fmt2(fleetAvgSpd)} <span style="font-size:14px;color:var(--muted)">kn</span></div>
+        <div class="kpi-sub">Promedio en navegación</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Vel. Máx Flota (5s)</div>
+        <div class="kpi-val" style="color:var(--accent)">${fmt2(fleetMaxSpd)} <span style="font-size:14px;color:var(--muted)">kn</span></div>
+        <div class="kpi-sub">Pico sostenido 5 s</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-lbl">Total Viradas</div>
+        <div class="kpi-val">${fleetTotalTacks}</div>
+        <div class="kpi-sub">Media: ${v2RowsData.length?Math.round(fleetTotalTacks/v2RowsData.length):0} por barco</div>
+      </div>
+    `;
+  }
+
+  // 3. Ordenar tabla general
+  const col = v2Sort.col;
+  const dir = v2Sort.asc ? 1 : -1;
+  v2RowsData.sort((a,b) => {
+    if(col === 'pos') return (a.pos - b.pos) * dir;
+    if(col === 'sail') return a.sail.localeCompare(b.sail, undefined, {numeric:true, sensitivity:'base'}) * dir;
+    if(col === 't1') return ((a.vmedT1||0) - (b.vmedT1||0)) * dir;
+    if(col === 't2') return ((a.vmedT2||0) - (b.vmedT2||0)) * dir;
+    if(col === 't3') return ((a.vmedT3||0) - (b.vmedT3||0)) * dir;
+    if(col === 't4') return ((a.vmedT4||0) - (b.vmedT4||0)) * dir;
+    if(col === 'dist') return (a.dist - b.dist) * dir;
+    if(col === 'dur') return (a.dur - b.dur) * dir;
+    return 0;
+  });
+
+  // 4. Renderizar Filas de Tabla General
+  if(tbody){
+    tbody.innerHTML = v2RowsData.map(r => {
+      const posClass = r.pos === 1 ? 'rank-1' : (r.pos === 2 ? 'rank-2' : (r.pos === 3 ? 'rank-3' : ''));
+      const statusHtml = r.fin
+        ? `<span style="color:#16a34a;font-size:11px;display:block">✓ Meta: ${r.rInt.finishTimeSec ? hhmmss(r.rInt.finishTimeSec) : msmsOrMmss(r.rInt.sEnd)}</span>`
+        : `<span style="color:#d97706;font-size:11px;display:block">⛵ En regata</span>`;
+
+      const t1Html = r.vmedT1 != null ? `<strong>${fmt2(r.vmedT1)}</strong> <span style="font-size:11px;color:var(--muted)">kn</span>` : '—';
+      const t2Html = r.vmedT2 != null ? `<strong>${fmt2(r.vmedT2)}</strong> <span style="font-size:11px;color:var(--muted)">kn</span>` : '—';
+      const t3Html = r.vmedT3 != null ? `<strong>${fmt2(r.vmedT3)}</strong> <span style="font-size:11px;color:var(--muted)">kn</span>` : '—';
+      const t4Html = r.vmedT4 != null ? `<strong>${fmt2(r.vmedT4)}</strong> <span style="font-size:11px;color:var(--muted)">kn</span>` : '—';
+
+      return `
+        <tr>
+          <td style="text-align:center">
+            <span class="sailor-rank-badge ${posClass}">${r.pos}º</span>
+            ${statusHtml}
+          </td>
+          <td style="text-align:left">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${r.color};flex-shrink:0"></span>
+              <div>
+                <strong style="font-size:13.5px">${esc(r.sail)}</strong>
+                ${r.sub ? `<div style="font-size:11px;color:var(--muted)">${esc(r.sub)}</div>` : ''}
+              </div>
+            </div>
+          </td>
+          <td>${t1Html}</td>
+          <td>${t2Html}</td>
+          <td>${t3Html}</td>
+          <td>${t4Html}</td>
+          <td>${fmt2(r.dist / 1852)} NM <span style="font-size:11px;color:var(--muted)">(${distTxt(r.dist)})</span></td>
+          <td>
+            <strong>${fmtDuration(r.dur)}</strong>
+            <div style="font-size:11px;color:var(--muted)">Salida: ${r.rInt.startTimeSec ? hhmmss(r.rInt.startTimeSec) : msmsOrMmss(r.rInt.sStart)}</div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // 5. Renderizar Tarjetas Multi-Barco (Grid con buscador)
+  if(gridEl){
+    const searchInput = document.getElementById('v2SailorSearch');
+    const query = searchInput ? (searchInput.value || '').trim().toLowerCase() : '';
+
+    const filteredRows = query
+      ? v2RowsData.filter(r => (r.sail && r.sail.toLowerCase().includes(query)) || (r.sub && r.sub.toLowerCase().includes(query)) || (r.sailorName && r.sailorName.toLowerCase().includes(query)))
+      : v2RowsData;
+
+    if(!filteredRows.length){
+      gridEl.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);grid-column:1/-1">No se encontraron regatistas con la búsqueda «${esc(query)}».</div>`;
+    } else {
+      gridEl.innerHTML = filteredRows.map(r => {
+        const posClass = r.pos === 1 ? 'rank-1' : (r.pos === 2 ? 'rank-2' : (r.pos === 3 ? 'rank-3' : ''));
+        const legsHtml = renderSailorLegsTableHtml(r.legsData);
+        const tacticsFindings = evaluateSailorTactics(r.id, r.legsData, r.maneuvers, fleetSummary);
+
+        const storageKey = `coach_notes_${(D.title||'regata').replace(/\s+/g,'_')}_${r.sail}`;
+        const savedNote = localStorage.getItem(storageKey) || '';
+
+        const debriefHtml = tacticsFindings.length ? `
+          <div class="debrief-box">
+            <div class="debrief-title">🧠 Diagnóstico Táctico & Claves de Rendimiento</div>
+            ${tacticsFindings.map(f => `
+              <div class="debrief-pill ${f.severity}">
+                <span class="debrief-tag">${f.tag}</span>
+                <span>${esc(f.text)}</span>
+              </div>
+            `).join('')}
+          </div>
+        ` : `
+          <div class="debrief-box" style="padding:8px 12px">
+            <span style="font-size:11.5px;color:var(--muted)">Sin anomalías significativas detectadas en este barco frente a las polares y la flota.</span>
+          </div>
+        `;
+
+        return `
+          <div class="sailor-analysis-card" data-boatid="${r.id}">
+            <div class="sailor-card-header">
+              <div class="sailor-card-title">
+                <span class="sailor-rank-badge ${posClass}">${r.pos}º</span>
+                <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${r.color};flex-shrink:0"></span>
+                <span>⛵ ${esc(r.sail)} ${r.sailorName ? '· ' + esc(r.sailorName) : ''}</span>
+              </div>
+              <div class="sailor-quick-stats">
+                <span>Vmed: <strong>${fmt2(r.avg)} kn</strong></span>
+                <span>Viradas: <strong>${r.tacks}</strong></span>
+                <span>Dist: <strong>${fmt2(r.dist / 1852)} NM</strong></span>
+                <span>Tiempo: <strong>${fmtDuration(r.dur)}</strong></span>
+                ${r.fin ? '<span style="color:#16a34a;font-weight:700">✓ Meta</span>' : '<span style="color:#d97706">⛵ En regata</span>'}
+              </div>
+            </div>
+
+            <!-- Tabla de Tramos IODA -->
+            ${legsHtml}
+
+            <!-- Debriefing Táctico Inteligente -->
+            ${debriefHtml}
+
+            <!-- Notas del Entrenador -->
+            <div class="sailor-coach-notes">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px">📝 Anotaciones del Entrenador:</div>
+              <textarea class="coach-notes-input" placeholder="Escribe observaciones para este regatista (se guardan automáticamente)..." data-noteskey="${storageKey}">${esc(savedNote)}</textarea>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Auto-guardar notas del entrenador
+      gridEl.querySelectorAll('.coach-notes-input').forEach(ta => {
+        ta.addEventListener('input', e => {
+          const k = e.target.dataset.noteskey;
+          if(k){
+            localStorage.setItem(k, e.target.value);
+          }
+        });
+      });
+    }
+  }
+
+  // 6. Configurar listeners de ordenación en cabecera
+  const theadRow = document.getElementById('v2TheadRow');
+  if(theadRow && !theadRow.dataset.bound){
+    theadRow.dataset.bound = 'true';
+    theadRow.querySelectorAll('th[data-v2sort]').forEach(th => {
+      th.style.cursor = 'pointer';
+      th.addEventListener('click', () => {
+        const c = th.dataset.v2sort;
+        if(v2Sort.col === c){
+          v2Sort.asc = !v2Sort.asc;
+        } else {
+          v2Sort.col = c;
+          v2Sort.asc = (c === 'pos' || c === 'sail');
+        }
+        renderAnalysisV2View();
+      });
+    });
+  }
+
+  // 7. Configurar buscador de regatistas
+  const searchInput = document.getElementById('v2SailorSearch');
+  if(searchInput && !searchInput.dataset.bound){
+    searchInput.dataset.bound = 'true';
+    searchInput.addEventListener('input', () => {
+      renderAnalysisV2View();
+    });
+  }
+
+  // 8. Botón Volver a Track
+  const btnGoTrack = document.getElementById('btnGoToTrackFromV2');
+  if(btnGoTrack && !btnGoTrack.dataset.bound){
+    btnGoTrack.dataset.bound = 'true';
+    btnGoTrack.addEventListener('click', () => switchMainView('track'));
+  }
+}
+
+function msmsOrMmss(s){
+  return (typeof hhmmss === 'function' && D && D.t0) ? hhmmss(D.t0 + s*1000) : mmss(s);
+}
+
+function fmtDist(m){
+  return typeof distTxt === 'function' ? distTxt(m) : Math.round(m) + ' m';
 }
 
 function fmtDuration(s){
@@ -3858,6 +4937,96 @@ function fmtDuration(s){
 
 /* ---------- Motor de Análisis Cinemático y Telemetría Avanzada (Optimist) ---------- */
 const boatKinematicsCache=new Map();
+
+/**
+ * Deduce la intensidad del viento (TWS en nudos) a partir de la velocidad real
+ * de la flota en rumbos de ceñida (TWA 36°-55°) frente a las polares del Optimist.
+ */
+function estimateFleetWindSpeed(){
+  if(!D || !D.boats || !D.boats.length) return 10.0;
+  if(D.windKnVal != null && isFinite(D.windKnVal) && D.windKnVal > 0) return D.windKnVal;
+
+  const boatUpwindSpeeds = [];
+  for(let i = 0; i < D.N; i++){
+    const kine = getBoatKinematics(i);
+    if(!kine) continue;
+    const rInt = getBoatRaceInterval(i);
+    const s0 = Math.max(0, rInt.sStart);
+    const s1 = Math.min(D.T - 1, rInt.sEnd);
+    let sum = 0, cnt = 0;
+    for(let s = s0; s <= s1; s++){
+      if(!ok(i, s)) continue;
+      const twaAbs = Math.abs(kine.twa[s]);
+      const sog = kine.sogEma[s];
+      if(twaAbs >= 36 && twaAbs <= 55 && sog >= 1.2){
+        sum += sog;
+        cnt++;
+      }
+    }
+    if(cnt >= 15){
+      boatUpwindSpeeds.push(sum / cnt);
+    }
+  }
+
+  if(!boatUpwindSpeeds.length){
+    const allSpeeds = [];
+    for(let i = 0; i < D.N; i++){
+      const kine = getBoatKinematics(i);
+      if(!kine) continue;
+      const rInt = getBoatRaceInterval(i);
+      for(let s = Math.max(0, rInt.sStart); s <= Math.min(D.T - 1, rInt.sEnd); s += 5){
+        if(ok(i, s) && kine.sogEma[s] > 1.0) allSpeeds.push(kine.sogEma[s]);
+      }
+    }
+    if(!allSpeeds.length) return 10.0;
+    allSpeeds.sort((a,b) => a - b);
+    const medSpd = allSpeeds[Math.floor(allSpeeds.length * 0.5)];
+    if(medSpd <= 2.5) return 6.0;
+    if(medSpd <= 3.2) return 10.0;
+    if(medSpd <= 3.8) return 14.0;
+    return 18.0;
+  }
+
+  boatUpwindSpeeds.sort((a,b) => a - b);
+  const topHalf = boatUpwindSpeeds.slice(Math.floor(boatUpwindSpeeds.length / 2));
+  const vUp = topHalf[Math.floor(topHalf.length / 2)] || boatUpwindSpeeds[0];
+
+  let estimatedTws = 10.0;
+  if(vUp <= 2.20){
+    estimatedTws = Math.max(4.0, 4.0 + (vUp - 1.20) * 2.0);
+  } else if(vUp <= 2.80){
+    estimatedTws = 6.0 + ((vUp - 2.20) / (2.80 - 2.20)) * 1.5;
+  } else if(vUp <= 3.45){
+    estimatedTws = 7.5 + ((vUp - 2.80) / (3.45 - 2.80)) * 3.5;
+  } else if(vUp <= 3.85){
+    estimatedTws = 11.0 + ((vUp - 3.45) / (3.85 - 3.45)) * 4.0;
+  } else if(vUp <= 4.10){
+    estimatedTws = 15.0 + ((vUp - 3.85) / (4.10 - 3.85)) * 4.0;
+  } else {
+    estimatedTws = Math.min(25.0, 19.0 + (vUp - 4.10) * 8.0);
+  }
+  return Number(estimatedTws.toFixed(1));
+}
+
+/**
+ * Obtiene la velocidad del viento en nudos activa para un instante t o para la sesión.
+ */
+function getWindSpeedKnots(t){
+  if(D){
+    if(D.windKnVal != null && isFinite(D.windKnVal) && D.windKnVal > 0){
+      return D.windKnVal;
+    }
+    if(typeof D.windKn === 'function'){
+      const v = D.windKn(t != null ? t : (D.startT || 0));
+      if(isFinite(v) && v > 0) return v;
+    }
+    if(typeof D.windKn === 'number' && D.windKn > 0){
+      return D.windKn;
+    }
+    return estimateFleetWindSpeed() || 10.0;
+  }
+  return 10.0;
+}
 
 function getBoatRaceInterval(boatIndex){
   if(!D||!D.boats||!D.boats[boatIndex]){
@@ -4079,12 +5248,12 @@ function getOptimistPolarTarget(legType, tws){
   const w = Math.max(4, Math.min(25, Number(tws) || 10));
   const type = String(legType || 'UPWIND').toUpperCase();
 
-  // Polares oficiales calibradas para regatas de Optimist (6, 10, 14, 18+ kn)
+  // Polares calibradas para la clase Optimist (IOD95) en condiciones reales de regata
   const polarTable = [
-    { tws: 6,  upwind: { twa: 43, sog: 3.25, vmg: 2.35 }, reach: { sog: 3.80 }, downwind: { twa: 152, sog: 3.50, vmg: 2.90 } },
-    { tws: 10, upwind: { twa: 43, sog: 3.85, vmg: 2.82 }, reach: { sog: 4.90 }, downwind: { twa: 150, sog: 4.60, vmg: 3.85 } },
-    { tws: 14, upwind: { twa: 42, sog: 4.20, vmg: 3.07 }, reach: { sog: 5.60 }, downwind: { twa: 148, sog: 5.30, vmg: 4.45 } },
-    { tws: 18, upwind: { twa: 42, sog: 4.35, vmg: 3.18 }, reach: { sog: 6.10 }, downwind: { twa: 146, sog: 5.75, vmg: 4.65 } }
+    { tws: 6,  upwind: { twa: 45, sog: 2.80, vmg: 1.98 }, reach: { sog: 3.50 }, downwind: { twa: 152, sog: 3.20, vmg: 2.82 } },
+    { tws: 10, upwind: { twa: 44, sog: 3.45, vmg: 2.48 }, reach: { sog: 4.60 }, downwind: { twa: 150, sog: 4.20, vmg: 3.64 } },
+    { tws: 14, upwind: { twa: 43, sog: 3.85, vmg: 2.81 }, reach: { sog: 5.30 }, downwind: { twa: 148, sog: 4.85, vmg: 4.11 } },
+    { tws: 18, upwind: { twa: 44, sog: 4.05, vmg: 2.91 }, reach: { sog: 5.80 }, downwind: { twa: 146, sog: 5.30, vmg: 4.27 } }
   ];
 
   let rowA = polarTable[0], rowB = polarTable[0], f = 0;
@@ -4291,13 +5460,26 @@ function analyzeIODALegs(boatIndex, twd, maneuvers){
         targetMark=C.marks[l];
       }
 
-      // Distancia y Rhumbline
+      // Distancia y Rhumbline teórica mínima (Laylines IODA)
       const distReal=Math.max(1,D.CD[base+tOut]-D.CD[base+tIn]);
       let distRhumb=distReal;
       if(targetMark){
         distRhumb=Math.hypot(D.X[base+tIn]-targetMark.x, D.Y[base+tIn]-targetMark.y);
       }
-      const rhumbEff=Math.min(100,Number(((distRhumb/distReal)*100).toFixed(1)));
+
+      // Cálculo riguroso de distancia teórica mínima según geometría del tramo:
+      // En ceñida (UPWIND), la derrota mínima óptima en laylines es distRhumb / cos(44°) ≈ distRhumb * 1.390
+      // En popa (DOWNWIND), la derrota mínima óptima a 148° TWA es distRhumb / cos(32°) ≈ distRhumb * 1.179
+      // En través (REACH), la derrota mínima es la línea recta a la baliza (distRhumb)
+      let distTheoretical = distRhumb;
+      if(legType === 'UPWIND'){
+        distTheoretical = distRhumb / Math.cos(44 * D2R);
+      } else if(legType === 'DOWNWIND'){
+        distTheoretical = distRhumb / Math.cos(32 * D2R);
+      } else {
+        distTheoretical = distRhumb;
+      }
+      const rhumbEff=Math.min(100, Math.max(15, Number(((distTheoretical/distReal)*100).toFixed(1))));
 
       // Maniobras en este tramo
       const legManeuvers=maneuvers.filter(m=>m.apexS>=tIn&&m.apexS<=tOut);
@@ -4353,7 +5535,7 @@ function analyzeIODALegs(boatIndex, twd, maneuvers){
       const favoredPct=count?Math.min(100,Number((favoredCount/count*100).toFixed(1))):100;
 
       // Polar target reference utilizando el modelo empírico de la clase Optimist
-      const tws=(D.windKn?D.windKn((tIn+tOut)/2):10)||10;
+      const tws=getWindSpeedKnots((tIn+tOut)/2);
       const polarRef=getOptimistPolarTarget(legType, tws);
       let polarTargetPct=100;
       if(legType==='UPWIND'&&polarRef.targetVmg>0){
@@ -4412,7 +5594,7 @@ function analyzeIODALegs(boatIndex, twd, maneuvers){
         const avgSog=cnt?(sumSog/cnt):0;
         const avgVmg=cnt?(sumVmg/cnt):0;
 
-        const twsFree=(D.windKn?D.windKn((tStart+s)/2):10)||10;
+        const twsFree=getWindSpeedKnots((tStart+s)/2);
         const polarRefFree=getOptimistPolarTarget(curType, twsFree);
         let polarTargetPctFree=100;
         if(curType==='UPWIND'&&polarRefFree.targetVmg>0)polarTargetPctFree=Number((avgVmg/polarRefFree.targetVmg*100).toFixed(1));
@@ -5506,11 +6688,57 @@ function renderAdvancedMetrics(){
 
 const mainTabTrack=document.getElementById('mainTabTrack');
 const mainTabMetrics=document.getElementById('mainTabMetrics');
+const mainTabAnalysisV2=document.getElementById('mainTabAnalysisV2');
 const btnGoToTrack=document.getElementById('btnGoToTrackView');
 
 if(mainTabTrack)mainTabTrack.addEventListener('click',()=>switchMainView('track'));
 if(mainTabMetrics)mainTabMetrics.addEventListener('click',()=>switchMainView('metrics'));
+if(mainTabAnalysisV2)mainTabAnalysisV2.addEventListener('click',()=>switchMainView('analysisV2'));
 if(btnGoToTrack)btnGoToTrack.addEventListener('click',()=>switchMainView('track'));
+
+// Copiar tabla Análisis V2 para Excel
+const btnCopyV2=document.getElementById('btnCopyV2Table');
+if(btnCopyV2){
+  btnCopyV2.addEventListener('click',e=>{
+    if(!v2RowsData.length)return;
+    const head=['Posición','Barco / Vela','Vmed T1 (Ceñida B1)','Vmed T2 (Través B2)','Vmed T3 (Popa P3)','Vmed T4 (Ceñida Llegada)','Distancia (NM)','Distancia (m)','Tiempo navegado','Salida','Meta'];
+    const lines=[
+      head.join('\t'),
+      ...v2RowsData.map(r=>[
+        r.pos,
+        r.sail+(r.sub?' ('+r.sub+')':''),
+        r.vmedT1 != null ? fmt2(r.vmedT1) : '',
+        r.vmedT2 != null ? fmt2(r.vmedT2) : '',
+        r.vmedT3 != null ? fmt2(r.vmedT3) : '',
+        r.vmedT4 != null ? fmt2(r.vmedT4) : '',
+        fmt2(r.dist/1852),
+        Math.round(r.dist),
+        fmtDuration(r.dur),
+        r.rInt.startTimeSec ? hhmmss(r.rInt.startTimeSec) : msmsOrMmss(r.rInt.sStart),
+        r.rInt.finishTimeSec ? hhmmss(r.rInt.finishTimeSec) : (r.fin ? msmsOrMmss(r.rInt.sEnd) : 'En regata')
+      ].join('\t'))
+    ];
+    const txt=lines.join('\n');
+    const btn=e.currentTarget;
+    const done=m=>{btn.textContent=m;setTimeout(()=>btn.textContent='📋 Copiar para Excel',1800);};
+    const fallback=()=>{
+      const ta=document.createElement('textarea');
+      ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.select();
+      let okc=false;try{okc=document.execCommand('copy');}catch(_){}
+      ta.remove();done(okc?'Copiado':'No se pudo copiar');
+    };
+    try{navigator.clipboard.writeText(txt).then(()=>done('Copiado: pégalo en Excel'),fallback);}catch(_){fallback();}
+  });
+}
+
+// Imprimir informe Análisis V2
+const btnPrintV2=document.getElementById('btnPrintV2Report');
+if(btnPrintV2){
+  btnPrintV2.addEventListener('click',()=>{
+    window.print();
+  });
+}
 
 const theadRowAdv=document.getElementById('advMetricsTheadRow');
 if(theadRowAdv){
@@ -5914,8 +7142,7 @@ function showMsg(lines){msgEl.innerHTML=lines.map(l=>`<span class="${l.cls||''}"
 const OKEXT=['gpx','kml','xlsx','xls','ods','csv'];
 async function handleFiles(files){
   currentCloudRegata = null;
-  const btnShare = document.getElementById('btnShareCloudRegata');
-  if(btnShare) btnShare.style.display = 'none';
+  updateCloudHeaderButtons();
   if(window.location.search){
     history.replaceState(null, '', window.location.pathname);
   }
@@ -6113,8 +7340,7 @@ function clearSession(){
   if(confirm('¿Quieres borrar la sesión actual y empezar un entrenamiento nuevo de cero?')){
     clearDBSession();
     currentCloudRegata = null;
-    const btnShare = document.getElementById('btnShareCloudRegata');
-    if(btnShare) btnShare.style.display = 'none';
+    updateCloudHeaderButtons();
     if(window.location.search){
       history.replaceState(null, '', window.location.pathname);
     }
@@ -6154,8 +7380,7 @@ async function initSession(){
   if(saved&&saved.all&&Object.keys(saved.all).length){
     if(saved.currentCloudRegata){
       currentCloudRegata = saved.currentCloudRegata;
-      const btnShare = document.getElementById('btnShareCloudRegata');
-      if(btnShare) btnShare.style.display = 'inline-flex';
+      updateCloudHeaderButtons();
     }
     lastLoad={all:saved.all,used:saved.used||[],warn:[],skipped:[]};
     try{
@@ -6201,6 +7426,20 @@ if(polarModal)polarModal.addEventListener('click',e=>{if(e.target===polarModal)p
    NUBE CENTRAL RCNGC · BASE DE DATOS SQLITE (TURSO SERVERLESS)
    ========================================================================== */
 // currentCloudRegata gestionado globalmente en estado del visor
+
+
+function updateCloudHeaderButtons(){
+  const btnShare = document.getElementById('btnShareCloudRegata');
+  const btnQuickSave = document.getElementById('btnQuickSaveCloud');
+  const hasCloud = !!(currentCloudRegata && currentCloudRegata.id);
+  if(btnShare) btnShare.style.display = hasCloud ? 'inline-flex' : 'none';
+  if(btnQuickSave) {
+    btnQuickSave.style.display = hasCloud ? 'inline-flex' : 'none';
+    if(hasCloud){
+      btnQuickSave.title = `Guardar cambios en «${currentCloudRegata.titulo || 'regata'}» (Turso SQLite)`;
+    }
+  }
+}
 
 function getCloudShareUrl(id){
   const url = new URL(window.location.href);
@@ -6525,7 +7764,18 @@ function updateCloudSaveForm(){
   const summary = document.getElementById('cloudSaveSummaryInfo');
   const dateIn = document.getElementById('cloudSaveDate');
   const titleIn = document.getElementById('cloudSaveTitle');
+  const catIn = document.getElementById('cloudSaveCategory');
+  const typeIn = document.getElementById('cloudSaveType');
+  const authorIn = document.getElementById('cloudSaveAuthor');
+  const notesIn = document.getElementById('cloudSaveNotes');
+  const windDirIn = document.getElementById('cloudSaveWindDir');
+  const windKnIn = document.getElementById('cloudSaveWindKnots');
   const pinIn = document.getElementById('cloudSavePin');
+  const banner = document.getElementById('cloudSaveModeBanner');
+  const editTitleEl = document.getElementById('cloudSaveEditingTitle');
+  const editIdEl = document.getElementById('cloudSaveEditingId');
+  const btnSave = document.getElementById('btnSubmitCloudSave');
+  const btnSaveAsNew = document.getElementById('btnSubmitCloudSaveAsNew');
 
   if(!D || !lastLoad || !lastLoad.all || !D.N){
     if(warning) warning.hidden = false;
@@ -6535,15 +7785,54 @@ function updateCloudSaveForm(){
   if(warning) warning.hidden = true;
   if(form && isCoachModeActive()) form.style.display = 'block';
 
+  const isEditingExisting = !!(currentCloudRegata && currentCloudRegata.id);
+
+  if(banner){
+    banner.style.display = isEditingExisting ? 'block' : 'none';
+    if(editTitleEl) editTitleEl.textContent = isEditingExisting ? currentCloudRegata.titulo : '';
+    if(editIdEl) editIdEl.textContent = isEditingExisting ? currentCloudRegata.id : '';
+  }
+
+  if(btnSave){
+    if(isEditingExisting){
+      btnSave.textContent = '💾 Guardar cambios (Sobrescribir)';
+      btnSave.className = 'btn primary';
+    } else {
+      btnSave.textContent = '☁️ Guardar en la Nube';
+      btnSave.className = 'btn primary';
+    }
+  }
+
+  if(btnSaveAsNew){
+    btnSaveAsNew.style.display = isEditingExisting ? 'inline-flex' : 'none';
+  }
+
   const now = new Date();
   const dateStr = now.toISOString().slice(0, 10);
-  if(dateIn && !dateIn.value) dateIn.value = dateStr;
-  if(titleIn && !titleIn.value){
-    if(currentCloudRegata && currentCloudRegata.titulo){
-      titleIn.value = currentCloudRegata.titulo;
-    } else {
-      titleIn.value = `Entrenamiento Optimist · ${dateStr}`;
-    }
+  if(dateIn){
+    dateIn.value = (isEditingExisting && currentCloudRegata.fecha_regata) ? currentCloudRegata.fecha_regata : (dateIn.value || dateStr);
+  }
+  if(titleIn){
+    titleIn.value = (isEditingExisting && currentCloudRegata.titulo) ? currentCloudRegata.titulo : (D.title || `Entrenamiento Optimist · ${dateStr}`);
+  }
+  if(catIn && isEditingExisting && currentCloudRegata.categoria){
+    catIn.value = currentCloudRegata.categoria;
+  }
+  if(typeIn && isEditingExisting && (currentCloudRegata.tipo_manga || currentCloudRegata.tipoManga)){
+    typeIn.value = currentCloudRegata.tipo_manga || currentCloudRegata.tipoManga;
+  }
+  if(authorIn && isEditingExisting && currentCloudRegata.autor){
+    authorIn.value = currentCloudRegata.autor;
+  }
+  if(notesIn && isEditingExisting && currentCloudRegata.notas){
+    notesIn.value = currentCloudRegata.notas;
+  }
+  if(windDirIn){
+    windDirIn.value = Math.round(D.windRef || 0);
+  }
+  if(windKnIn){
+    const spd = (typeof getWindSpeedKnots === 'function') ? getWindSpeedKnots(D.startT || 0) : 10;
+    windKnIn.value = spd.toFixed(1);
   }
   if(pinIn && !pinIn.value){
     const savedPin = localStorage.getItem('rcngc_coach_pin');
@@ -6551,9 +7840,11 @@ function updateCloudSaveForm(){
   }
 
   if(summary){
+    const sailsList = D.boats.map(b => b.sail).filter(Boolean).join(', ');
+    const spd = (typeof getWindSpeedKnots === 'function') ? getWindSpeedKnots(D.startT || 0) : 10;
     summary.innerHTML = `
-      <div><strong>⛵ Barcos cargados:</strong> ${D.N}</div>
-      <div><strong>💨 Viento:</strong> ${Math.round(D.windRef || 0)}°</div>
+      <div><strong>⛵ Barcos (${D.N}):</strong> <span style="color:var(--ink)">${esc(sailsList)}</span></div>
+      <div><strong>💨 Viento:</strong> ${Math.round(D.windRef || 0)}° · ${spd.toFixed(1)} kn</div>
       <div><strong>📍 Recorrido:</strong> ${D.course && D.course.type === 'ioda' ? 'Trapecio IODA' : 'Libre'}</div>
       <div><strong>⏱️ Duración:</strong> ${D.T ? mmss(D.T) : '-'}</div>
     `;
@@ -7078,6 +8369,9 @@ function filterAndDisplayCloudList(){
           🔗 Compartir
         </button>
         ${isCoach ? `
+        <button class="btn btn-edit-cloud" data-id="${r.id}" type="button" style="padding:6px 11px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:4px;border-color:var(--accent);color:var(--accent)" title="Modificar datos de la regata (título, fecha, viento, notas, categoría, tipo)">
+          ✏️ Editar
+        </button>
         <button class="btn btn-delete-cloud" data-id="${r.id}" data-title="${esc(r.titulo)}" type="button" style="padding:6px 9px;color:#ef4444;border-color:rgba(239,68,68,0.3)" title="Eliminar de la nube (exclusivo entrenador)">
           🗑️
         </button>
@@ -7110,6 +8404,12 @@ function filterAndDisplayCloudList(){
   });
   container.querySelectorAll('.btn-delete-cloud').forEach(b => {
     b.addEventListener('click', () => deleteCloudRegata(b.dataset.id, b.dataset.title));
+  });
+  container.querySelectorAll('.btn-edit-cloud').forEach(b => {
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openCloudEditModal(b.dataset.id);
+    });
   });
   container.querySelectorAll('.btn-goto-sailor').forEach(b => {
     b.addEventListener('click', e => {
@@ -8540,14 +9840,15 @@ async function loadCloudSession(id, titulo){
     container.innerHTML = `<div style="text-align:center;padding:40px;color:var(--ink);font-size:14px">⏳ Descargando y descomprimiendo «${esc(titulo || 'regata')}» desde Turso SQLite...</div>`;
   }
   try {
-    const rows = await executeTurso("SELECT titulo, datos_sesion_json FROM regatas_club WHERE id = ?;", [id]);
+    const rows = await executeTurso("SELECT id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, notas, categoria, tipo_manga, barcos_lista, datos_sesion_json FROM regatas_club WHERE id = ?;", [id]);
     if(!rows || !rows.length || !rows[0].datos_sesion_json){
       alert('No se encontraron los datos de la regata seleccionada en la nube.');
       renderCloudList();
       return;
     }
-    const realTitle = (rows[0] && rows[0].titulo) || titulo || 'Regata';
-    const raw = rows[0].datos_sesion_json;
+    const row = rows[0];
+    const realTitle = row.titulo || titulo || 'Regata';
+    const raw = row.datos_sesion_json;
     const saved = await decompressSessionJson(raw);
 
     if(!saved || !saved.all || !Object.keys(saved.all).length){
@@ -8583,14 +9884,35 @@ async function loadCloudSession(id, titulo){
       if(cModal) cModal.hidden = true;
       switchMainView('track');
 
-      currentCloudRegata = { id, titulo: realTitle };
+      currentCloudRegata = {
+        id: row.id || id,
+        titulo: realTitle,
+        fecha_regata: row.fecha_regata || '',
+        viento_dir: row.viento_dir,
+        viento_kts: row.viento_kts,
+        num_barcos: row.num_barcos,
+        autor: row.autor || '',
+        notas: row.notas || '',
+        categoria: row.categoria || (saved && saved.categoria) || 'Grupo A Optimist',
+        tipo_manga: row.tipo_manga || (saved && (saved.tipo_manga || saved.tipoManga)) || 'Entrenamiento',
+        barcos_lista: row.barcos_lista || ''
+      };
+
+      if(row.viento_kts != null && !isNaN(row.viento_kts)){
+        D.customWindKnots = row.viento_kts;
+        const windKnField = document.getElementById('windKnIn');
+        if(windKnField) windKnField.value = row.viento_kts.toFixed(1);
+      }
+      if(row.viento_dir != null && !isNaN(row.viento_dir)){
+        D.windRef = row.viento_dir;
+      }
+
       D.title = realTitle;
       const titleEl = document.getElementById('title');
       if(titleEl) titleEl.textContent = realTitle;
       saveCurrentSession();
       history.replaceState(null, '', getCloudShareUrl(id));
-      const btnShare = document.getElementById('btnShareCloudRegata');
-      if(btnShare) btnShare.style.display = 'inline-flex';
+      updateCloudHeaderButtons();
 
       showMsg([
         { t: `Regata «${realTitle}» cargada desde la nube de Turso SQLite (${D.N} barcos).`, cls: 'ok' },
@@ -8603,7 +9925,7 @@ async function loadCloudSession(id, titulo){
   }
 }
 
-async function submitCloudSave(){
+async function submitCloudSave(mode = 'auto'){
   if(!D || !lastLoad || !lastLoad.all || !D.N){
     alert('No hay ninguna sesión activa para guardar.');
     return;
@@ -8628,10 +9950,31 @@ async function submitCloudSave(){
   const categoria = (document.getElementById('cloudSaveCategory')?.value || 'Grupo A Optimist').trim();
   const tipoManga = (document.getElementById('cloudSaveType')?.value || 'Entrenamiento').trim();
 
+  // Actualizar viento si se modificó en el formulario
+  const windDirVal = document.getElementById('cloudSaveWindDir')?.value;
+  if(windDirVal !== '' && !isNaN(parseFloat(windDirVal))){
+    D.windRef = ((parseFloat(windDirVal) % 360) + 360) % 360;
+  }
+  const windKnVal = document.getElementById('cloudSaveWindKnots')?.value;
+  if(windKnVal !== '' && !isNaN(parseFloat(windKnVal))){
+    const knVal = Math.max(0, parseFloat(windKnVal));
+    D.customWindKnots = knVal;
+    const wIn = document.getElementById('windKnIn');
+    if(wIn) wIn.value = knVal.toFixed(1);
+  }
+
+  const isOverwrite = mode === 'overwrite' || (mode === 'auto' && !!(currentCloudRegata && currentCloudRegata.id));
+  const id = isOverwrite ? currentCloudRegata.id : ('regata_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6));
+
   const btn = document.getElementById('btnSubmitCloudSave');
+  const btnAsNew = document.getElementById('btnSubmitCloudSaveAsNew');
   const status = document.getElementById('cloudSaveStatusMsg');
   if(btn) btn.disabled = true;
-  if(status) { status.style.color = 'var(--ink)'; status.textContent = '⏳ Comprimiendo y subiendo regata a Turso SQLite...'; }
+  if(btnAsNew) btnAsNew.disabled = true;
+  if(status) { 
+    status.style.color = 'var(--ink)'; 
+    status.textContent = isOverwrite ? '⏳ Actualizando regata en Turso SQLite...' : '⏳ Comprimiendo y subiendo regata a Turso SQLite...'; 
+  }
 
   try {
     const customSails = {};
@@ -8655,7 +9998,6 @@ async function submitCloudSave(){
       tipoManga
     };
 
-    const id = 'regata_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
     const sessionJson = JSON.stringify(sessionPayload);
     const compressedPayload = await compressSessionJson(sessionJson);
 
@@ -8663,7 +10005,35 @@ async function submitCloudSave(){
     const barcosLista = boatSails.join(', ');
 
     await ensureTursoSchema();
-    try {
+    const twd = Math.round(((D.windRef % 360) + 360) % 360);
+    const windKts = Number(getWindSpeedKnots(D.startT || 0).toFixed(1));
+
+    if(isOverwrite){
+      await executeTurso(
+        `UPDATE regatas_club 
+         SET titulo = ?, fecha_regata = ?, viento_dir = ?, viento_kts = ?, num_barcos = ?, autor = ?, notas = ?, categoria = ?, tipo_manga = ?, barcos_lista = ?, datos_sesion_json = ?, actualizado_en = CURRENT_TIMESTAMP
+         WHERE id = ?;`,
+        [
+          title,
+          date,
+          twd,
+          windKts,
+          D.N,
+          author,
+          notes,
+          categoria,
+          tipoManga,
+          barcosLista,
+          compressedPayload,
+          id
+        ]
+      );
+      try {
+        await executeTurso("DELETE FROM regatas_barcos_stats WHERE regata_id = ?;", [id]);
+      } catch(eDel) {
+        console.warn('Advertencia limpiando stats previos:', eDel);
+      }
+    } else {
       await executeTurso(
         `INSERT INTO regatas_club (id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, notas, categoria, tipo_manga, barcos_lista, datos_sesion_json) 
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
@@ -8671,32 +10041,14 @@ async function submitCloudSave(){
           id,
           title,
           date,
-          D.windRef || 0,
-          14.0,
+          twd,
+          windKts,
           D.N,
           author,
           notes,
           categoria,
           tipoManga,
           barcosLista,
-          compressedPayload
-        ]
-      );
-    } catch(errInsert) {
-      await executeTurso(
-        `INSERT INTO regatas_club (id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, notas, categoria, tipo_manga, datos_sesion_json) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-        [
-          id,
-          title,
-          date,
-          D.windRef || 0,
-          14.0,
-          D.N,
-          author,
-          notes,
-          categoria,
-          tipoManga,
           compressedPayload
         ]
       );
@@ -8730,7 +10082,7 @@ async function submitCloudSave(){
       reachedB1.forEach((item, rk) => { b1RankMap[item.boatIdx] = rk + 1; });
 
       const twd = Math.round(((D.windRef % 360) + 360) % 360);
-      const windKts = (typeof D.windKn === 'function' ? Number(D.windKn(D.startT || 0).toFixed(1)) : (D.windKn || 14.0));
+      const windKts = Number(getWindSpeedKnots(D.startT || 0).toFixed(1));
       const stLine = (typeof getActiveStartLine === 'function') ? getActiveStartLine() : null;
 
       for(let bIdx = 0; bIdx < D.N; bIdx++){
@@ -8897,32 +10249,188 @@ async function submitCloudSave(){
       console.warn('Advertencia guardando estadísticas individuales:', errStats);
     }
 
-    currentCloudRegata = { id, titulo: title };
+    currentCloudRegata = {
+      id,
+      titulo: title,
+      fecha_regata: date,
+      viento_dir: twd,
+      viento_kts: windKts,
+      num_barcos: D.N,
+      autor,
+      notas,
+      categoria,
+      tipo_manga: tipoManga,
+      barcos_lista: barcosLista
+    };
     if(D){
       D.title = title;
       const titleEl = document.getElementById('title');
       if(titleEl) titleEl.textContent = title;
     }
+    updateCloudHeaderButtons();
     saveCurrentSession();
     history.replaceState(null, '', getCloudShareUrl(id));
-    const btnShare = document.getElementById('btnShareCloudRegata');
-    if(btnShare) btnShare.style.display = 'inline-flex';
 
     const shareUrl = getCloudShareUrl(id);
     copyTextToClipboard(shareUrl, () => {}, () => {});
 
     if(status) {
       status.style.color = '#16a34a';
-      status.textContent = '✓ Guardada y comprimida con éxito · ¡Enlace copiado al portapapeles!';
+      status.textContent = isOverwrite 
+        ? '✓ Regata actualizada con éxito en la nube de Turso' 
+        : '✓ Guardada y comprimida con éxito · ¡Enlace copiado al portapapeles!';
     }
+    showMsg([
+      { t: isOverwrite ? `Regata «${title}» actualizada con éxito en la nube de Turso (${D.N} barcos).` : `Nueva regata «${title}» guardada con éxito en la nube (${D.N} barcos).`, cls: 'ok' },
+      { t: `Enlace directo activo: ${shareUrl}`, cls: 'ok' }
+    ]);
     setTimeout(() => {
       if(status) status.textContent = '';
       switchCloudTab('list');
       renderCloudList();
-    }, 1000);
+    }, 1200);
   } catch(err) {
     if(status) { status.style.color = '#ef4444'; status.textContent = 'Error: ' + err.message; }
     alert('Error al guardar la regata en Turso: ' + err.message);
+  } finally {
+    if(btn) btn.disabled = false;
+    if(btnAsNew) btnAsNew.disabled = false;
+  }
+}
+
+
+function openCloudEditModal(id){
+  const r = cloudRacesCache.find(x => x.id === id);
+  if(!r) return;
+  const modal = document.getElementById('cloudEditModal');
+  if(!modal) return;
+
+  const titleEl = document.getElementById('cloudEditModalTitle');
+  if(titleEl) titleEl.textContent = `Modificar Ficha · ${r.titulo || 'Regata'}`;
+
+  const idIn = document.getElementById('cloudEditId');
+  if(idIn) idIn.value = r.id;
+
+  const titleIn = document.getElementById('cloudEditTitle');
+  if(titleIn) titleIn.value = r.titulo || '';
+
+  const dateIn = document.getElementById('cloudEditDate');
+  if(dateIn) dateIn.value = r.fecha_regata || '';
+
+  const authorIn = document.getElementById('cloudEditAuthor');
+  if(authorIn) authorIn.value = r.autor || 'Entrenador RCNGC';
+
+  const catIn = document.getElementById('cloudEditCategory');
+  if(catIn) catIn.value = r.categoria || 'Grupo A Optimist';
+
+  const typeIn = document.getElementById('cloudEditType');
+  if(typeIn) typeIn.value = r.tipo_manga || 'Entrenamiento';
+
+  const windDirIn = document.getElementById('cloudEditWindDir');
+  if(windDirIn) windDirIn.value = r.viento_dir != null ? Math.round(r.viento_dir) : 0;
+
+  const windKnIn = document.getElementById('cloudEditWindKnots');
+  if(windKnIn) windKnIn.value = r.viento_kts != null ? r.viento_kts.toFixed(1) : '';
+
+  const notesIn = document.getElementById('cloudEditNotes');
+  if(notesIn) notesIn.value = r.notas || '';
+
+  const statusEl = document.getElementById('cloudEditStatusMsg');
+  if(statusEl) statusEl.textContent = '';
+
+  modal.hidden = false;
+}
+
+async function submitCloudEditModal(){
+  const id = document.getElementById('cloudEditId')?.value;
+  if(!id) return;
+  const title = (document.getElementById('cloudEditTitle')?.value || '').trim();
+  if(!title){
+    alert('El título no puede estar vacío.');
+    document.getElementById('cloudEditTitle')?.focus();
+    return;
+  }
+  const date = (document.getElementById('cloudEditDate')?.value || '').trim();
+  const author = (document.getElementById('cloudEditAuthor')?.value || '').trim() || 'Entrenador RCNGC';
+  const categoria = document.getElementById('cloudEditCategory')?.value || 'Grupo A Optimist';
+  const tipoManga = document.getElementById('cloudEditType')?.value || 'Entrenamiento';
+  const windDirRaw = document.getElementById('cloudEditWindDir')?.value;
+  const windDir = (windDirRaw !== '' && !isNaN(parseFloat(windDirRaw))) ? Math.round(((parseFloat(windDirRaw) % 360) + 360) % 360) : 0;
+  const windKtsRaw = document.getElementById('cloudEditWindKnots')?.value;
+  const windKts = (windKtsRaw !== '' && !isNaN(parseFloat(windKtsRaw))) ? parseFloat(parseFloat(windKtsRaw).toFixed(1)) : null;
+  const notes = (document.getElementById('cloudEditNotes')?.value || '').trim();
+
+  const status = document.getElementById('cloudEditStatusMsg');
+  const btn = document.getElementById('btnSaveCloudEdit');
+  if(btn) btn.disabled = true;
+  if(status) { status.style.color = 'var(--ink)'; status.textContent = '⏳ Guardando cambios en Turso SQLite...'; }
+
+  try {
+    await executeTurso(
+      `UPDATE regatas_club 
+       SET titulo = ?, fecha_regata = ?, viento_dir = ?, viento_kts = ?, autor = ?, notas = ?, categoria = ?, tipo_manga = ?, actualizado_en = CURRENT_TIMESTAMP
+       WHERE id = ?;`,
+      [title, date, windDir, windKts, author, notes, categoria, tipoManga, id]
+    );
+
+    try {
+      await executeTurso(
+        `UPDATE regatas_barcos_stats 
+         SET regata_titulo = ?, fecha = ?, categoria = ?, tipo_sesion = ?, viento_dir = ?, viento_kts = ?
+         WHERE regata_id = ?;`,
+        [title, date, categoria, tipoManga, windDir, windKts, id]
+      );
+    } catch(errStats) {
+      console.warn('Error actualizando stats en cascada:', errStats);
+    }
+
+    const r = cloudRacesCache.find(x => x.id === id);
+    if(r){
+      r.titulo = title;
+      r.fecha_regata = date;
+      r.autor = author;
+      r.categoria = categoria;
+      r.tipo_manga = tipoManga;
+      r.viento_dir = windDir;
+      r.viento_kts = windKts;
+      r.notas = notes;
+    }
+
+    if(currentCloudRegata && currentCloudRegata.id === id){
+      currentCloudRegata.titulo = title;
+      currentCloudRegata.fecha_regata = date;
+      currentCloudRegata.autor = author;
+      currentCloudRegata.categoria = categoria;
+      currentCloudRegata.tipo_manga = tipoManga;
+      currentCloudRegata.viento_dir = windDir;
+      currentCloudRegata.viento_kts = windKts;
+      currentCloudRegata.notas = notes;
+      if(D){
+        D.title = title;
+        const titleEl = document.getElementById('title');
+        if(titleEl) titleEl.textContent = title;
+        if(windDir != null) D.windRef = windDir;
+        if(windKts != null) {
+          D.customWindKnots = windKts;
+          const wIn = document.getElementById('windKnIn');
+          if(wIn) wIn.value = windKts.toFixed(1);
+        }
+      }
+    }
+
+    if(status) {
+      status.style.color = '#16a34a';
+      status.textContent = '✓ Guardado con éxito';
+    }
+    setTimeout(() => {
+      const modal = document.getElementById('cloudEditModal');
+      if(modal) modal.hidden = true;
+      filterAndDisplayCloudList();
+      showMsg([{ t: `Ficha de «${title}» actualizada con éxito en la nube.`, cls: 'ok' }]);
+    }, 400);
+  } catch(err) {
+    if(status) { status.style.color = '#ef4444'; status.textContent = 'Error: ' + err.message; }
+    alert('Error al actualizar regata: ' + err.message);
   } finally {
     if(btn) btn.disabled = false;
   }
@@ -9085,7 +10593,44 @@ if(bigDataBoatSelect){
 }
 
 const btnSubmitCloudSave = document.getElementById('btnSubmitCloudSave');
-if(btnSubmitCloudSave) btnSubmitCloudSave.addEventListener('click', submitCloudSave);
+if(btnSubmitCloudSave) {
+  btnSubmitCloudSave.addEventListener('click', () => {
+    submitCloudSave(currentCloudRegata && currentCloudRegata.id ? 'overwrite' : 'new');
+  });
+}
+
+const btnSubmitCloudSaveAsNew = document.getElementById('btnSubmitCloudSaveAsNew');
+if(btnSubmitCloudSaveAsNew) {
+  btnSubmitCloudSaveAsNew.addEventListener('click', () => {
+    const titleIn = document.getElementById('cloudSaveTitle');
+    const curTitle = titleIn ? titleIn.value.trim() : '';
+    const defTitle = curTitle.includes('(Copia)') ? curTitle : (curTitle ? `${curTitle} (Copia)` : 'Nueva Regata');
+    const newTitle = prompt('Introduce el título para la nueva regata en la nube (se guardará una copia con un nuevo enlace):', defTitle);
+    if(newTitle === null) return;
+    if(!newTitle.trim()){
+      alert('Debes indicar un título válido para guardar como nueva regata.');
+      return;
+    }
+    if(titleIn) titleIn.value = newTitle.trim();
+    submitCloudSave('new');
+  });
+}
+
+const btnQuickSaveCloud = document.getElementById('btnQuickSaveCloud');
+if(btnQuickSaveCloud){
+  btnQuickSaveCloud.addEventListener('click', () => {
+    if(!currentCloudRegata || !currentCloudRegata.id) return;
+    openCloudModal('save');
+  });
+}
+
+const btnCloseCloudEdit = document.getElementById('btnCloseCloudEdit');
+const btnCancelCloudEdit = document.getElementById('btnCancelCloudEdit');
+const cloudEditModal = document.getElementById('cloudEditModal');
+if(btnCloseCloudEdit) btnCloseCloudEdit.addEventListener('click', () => { if(cloudEditModal) cloudEditModal.hidden = true; });
+if(btnCancelCloudEdit) btnCancelCloudEdit.addEventListener('click', () => { if(cloudEditModal) cloudEditModal.hidden = true; });
+const btnSaveCloudEdit = document.getElementById('btnSaveCloudEdit');
+if(btnSaveCloudEdit) btnSaveCloudEdit.addEventListener('click', submitCloudEditModal);
 
 const btnTestCloudConnection = document.getElementById('btnTestCloudConnection');
 if(btnTestCloudConnection) btnTestCloudConnection.addEventListener('click', testCloudConnection);
