@@ -148,6 +148,36 @@ select.num{width:auto}
 #btnHelp{font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:4px}
 #btnCloudModal{font-size:12px;padding:4px 11px;border-radius:6px;cursor:pointer;font-weight:600;background:rgba(2,132,199,0.1);border:1px solid #0284c7;color:#0284c7;display:inline-flex;align-items:center;gap:4px}
 #btnCloudModal:hover{background:#0284c7;color:#ffffff}
+#btnTopCoachAuth{font-size:12px;padding:4px 12px;border-radius:20px;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:all .15s ease;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);color:var(--ink);white-space:nowrap;margin-left:auto;margin-bottom:4px}
+#btnTopCoachAuth:hover{border-color:var(--muted);color:var(--ink);background:rgba(255,255,255,0.1)}
+#btnTopCoachAuth.coach-active{background:rgba(16,185,129,0.14);border:1px solid #10b981;color:#10b981;font-weight:700;box-shadow:0 0 10px rgba(16,185,129,0.15)}
+#btnTopCoachAuth.coach-active:hover{background:rgba(239,68,68,0.12);border-color:#ef4444;color:#ef4444}
+/* Widget de Usuario y Menú Desplegable Estilo Campus/Club */
+.user-profile-widget{margin-left:auto;display:inline-flex;align-items:center;position:relative}
+.user-nav-trigger{display:inline-flex;align-items:center;gap:9px;padding:3px 10px 3px 12px;border-radius:24px;background:rgba(255,255,255,0.06);border:1px solid var(--line, rgba(255,255,255,0.15));cursor:pointer;transition:all .15s ease;user-select:none;color:var(--ink);font-family:inherit}
+.user-nav-trigger:hover, .user-nav-trigger.active{background:rgba(255,255,255,0.12);border-color:var(--accent, #38bdf8);box-shadow:0 0 10px rgba(56,189,248,0.2)}
+.user-nav-name{font-size:13.5px;font-weight:600;color:var(--ink);white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+.user-nav-avatar{width:30px;height:30px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.08);border:1.5px solid var(--accent, #38bdf8);flex-shrink:0;font-size:15px;line-height:1;user-select:none}
+.user-nav-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.user-nav-caret{transition:transform .2s ease;color:var(--dim, #94a3b8);flex-shrink:0}
+.user-nav-trigger.active .user-nav-caret{transform:rotate(180deg)}
+.user-action-icon-btn{background:none;border:none;color:var(--dim, #94a3b8);cursor:pointer;padding:6px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;transition:color .15s, background .15s}
+.user-action-icon-btn:hover{color:var(--ink);background:rgba(255,255,255,0.08)}
+
+.user-dropdown{position:absolute;top:calc(100% + 8px);right:0;width:240px;background:var(--panel, #0f172a);border:1px solid var(--line, #334155);border-radius:8px;box-shadow:0 14px 40px rgba(0,0,0,0.55);padding:6px 0;z-index:999999;display:none;text-align:left}
+.user-dropdown.open, .user-dropdown.is-open{display:block !important}
+.user-dropdown-item{display:flex;align-items:center;gap:11px;width:100%;padding:9px 18px;background:transparent;border:none;color:var(--ink, #f1f5f9);font-family:inherit;font-size:13.5px;font-weight:500;text-align:left;cursor:pointer;transition:background .12s ease, color .12s ease;box-sizing:border-box}
+.user-dropdown-item:hover{background:var(--sel-soft, rgba(2,132,199,0.15));color:var(--accent, #38bdf8)}
+.user-dropdown-item span{font-size:15px;display:inline-flex;align-items:center;justify-content:center;width:20px;flex-shrink:0}
+.user-dropdown-item.danger{color:#ef4444}
+.user-dropdown-item.danger:hover{background:rgba(239,68,68,0.12);color:#ef4444}
+.user-dropdown-divider{height:1px;background:var(--line, rgba(255,255,255,0.1));margin:5px 0}
+.badge-role{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;display:inline-flex;align-items:center;gap:3px;letter-spacing:0.02em}
+.badge-role.admin{background:rgba(168,85,247,0.15);color:#c084fc;border:1px solid rgba(168,85,247,0.35)}
+.badge-role.coach{background:rgba(2,132,199,0.15);color:#38bdf8;border:1px solid rgba(2,132,199,0.35)}
+.badge-user-status{font-size:10px;font-weight:600;padding:1px 6px;border-radius:3px}
+.badge-user-status.active{background:rgba(16,185,129,0.15);color:#10b981}
+.badge-user-status.inactive{background:rgba(100,116,139,0.2);color:#94a3b8}
 .btn-cloud-tab{border:none;background:none;color:var(--dim);border-radius:6px;padding:6px 14px;cursor:pointer;transition:all .15s}
 .btn-cloud-tab[aria-pressed="true"]{background:var(--panel);color:#0284c7;box-shadow:0 1px 3px rgba(0,0,0,0.1);font-weight:700}
 .cat-pill{font-size:11.5px;padding:3px 10px;border-radius:20px;border:1px solid var(--line);background:var(--sub);color:var(--dim);cursor:pointer;transition:all .15s}
@@ -248,14 +278,134 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:0}
   margin-bottom:8px;
   flex-wrap:wrap;
 }
+.home-right-col{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.home-tools-hub{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.home-tools-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:10px;
+}
+@media (max-width: 1080px){
+  .home-tools-grid{
+    grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));
+  }
+}
+.home-tool-card{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  padding:12px 13px;
+  border-radius:10px;
+  text-decoration:none;
+  cursor:pointer;
+  transition:all .2s cubic-bezier(0.16, 1, 0.3, 1);
+  position:relative;
+  text-align:left;
+  width:100%;
+  box-sizing:border-box;
+}
+.home-tool-card.tool-bigdata{
+  background:linear-gradient(135deg, rgba(2, 132, 199, 0.16) 0%, rgba(2, 132, 199, 0.05) 100%);
+  border:1.5px solid rgba(2, 132, 199, 0.45);
+  box-shadow:0 3px 12px rgba(2, 132, 199, 0.1);
+}
+.home-tool-card.tool-bigdata:hover{
+  background:linear-gradient(135deg, rgba(2, 132, 199, 0.28) 0%, rgba(2, 132, 199, 0.12) 100%);
+  border-color:#0284c7;
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(2, 132, 199, 0.35);
+}
+.home-tool-card.tool-bigdata .tool-card-icon{
+  background:rgba(2, 132, 199, 0.25);
+  border:1px solid rgba(2, 132, 199, 0.55);
+  color:#38bdf8;
+}
+.home-tool-card.tool-bigdata .tool-card-title{
+  color:#38bdf8;
+}
+
+.home-tool-card.tool-analizador{
+  background:linear-gradient(135deg, rgba(0, 240, 255, 0.15) 0%, rgba(0, 180, 216, 0.04) 100%);
+  border:1.5px solid rgba(0, 240, 255, 0.45);
+  box-shadow:0 3px 12px rgba(0, 240, 255, 0.1);
+}
+.home-tool-card.tool-analizador:hover{
+  background:linear-gradient(135deg, rgba(0, 240, 255, 0.26) 0%, rgba(0, 180, 216, 0.12) 100%);
+  border-color:#00f0ff;
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(0, 240, 255, 0.35);
+}
+.home-tool-card.tool-analizador .tool-card-icon{
+  background:rgba(0, 240, 255, 0.25);
+  border:1px solid rgba(0, 240, 255, 0.55);
+  color:#00f0ff;
+}
+.home-tool-card.tool-analizador .tool-card-title{
+  color:#00f0ff;
+}
+
+.home-tool-card.tool-gps{
+  background:linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(5, 150, 105, 0.05) 100%);
+  border:1.5px solid rgba(16, 185, 129, 0.45);
+  box-shadow:0 3px 12px rgba(16, 185, 129, 0.1);
+}
+.home-tool-card.tool-gps:hover{
+  background:linear-gradient(135deg, rgba(16, 185, 129, 0.28) 0%, rgba(5, 150, 105, 0.12) 100%);
+  border-color:#10b981;
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(16, 185, 129, 0.35);
+}
+.home-tool-card.tool-gps .tool-card-icon{
+  background:rgba(16, 185, 129, 0.25);
+  border:1px solid rgba(16, 185, 129, 0.55);
+  color:#34d399;
+}
+.home-tool-card.tool-gps .tool-card-title{
+  color:#34d399;
+}
+.tool-card-icon{
+  width:32px;
+  height:32px;
+  border-radius:7px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  margin-bottom:7px;
+}
+.tool-card-title{
+  font-size:12px;
+  font-weight:700;
+  color:var(--ink);
+  line-height:1.25;
+  display:block;
+}
+.tool-card-desc{
+  font-size:10.5px;
+  color:var(--dim);
+  line-height:1.2;
+  margin-top:2px;
+  display:block;
+}
 .home-local-box{
   background:var(--panel);
   border:1px solid var(--line);
   border-radius:12px;
-  padding:20px 22px;
+  padding:14px 16px;
   display:flex;
   flex-direction:column;
-  justify-content:space-between;
 }
 .home-race-card{
   display:flex;
@@ -515,9 +665,20 @@ tr.qsep th{padding-top:4px}
   resize:vertical;
   min-height:36px;
   box-sizing:border-box;
+  transition:border-color .15s ease, background .15s ease;
 }
 .coach-notes-input:focus{
   border-color:var(--accent);
+  outline:none;
+}
+.coach-notes-input.is-locked{
+  background:var(--bg);
+  border-color:var(--line);
+  color:var(--ink);
+  cursor:default;
+}
+.coach-notes-input.is-locked:focus{
+  border-color:var(--line);
   outline:none;
 }
 
@@ -1602,10 +1763,65 @@ body.map-fullscreen-active {
 </style>
 
 <div class="app is-empty" id="app">
-  <nav class="main-tabs" role="tablist" aria-label="Modo de visualización">
+  <nav class="main-tabs" role="tablist" aria-label="Modo de visualización" style="position:relative">
     <button class="main-tab-btn is-active" id="mainTabTrack" role="tab" aria-selected="true">Visualizar el track</button>
     <button class="main-tab-btn" id="mainTabMetrics" role="tab" aria-selected="false">Métricas avanzadas</button>
     <button class="main-tab-btn" id="mainTabAnalysisV2" role="tab" aria-selected="false">Análisis V2</button>
+    <!-- Contenedor del Widget de Usuario estilo Campus/Club -->
+    <div class="user-profile-widget" id="userProfileWidget">
+      <!-- Iconos de Notificaciones y Mensajes cuando hay sesión activa -->
+      <div id="userTopActionIcons" style="display:none;align-items:center;gap:4px;margin-right:8px">
+        <button class="user-action-icon-btn" id="btnUserBell" type="button" title="Notificaciones del sistema y nube" aria-label="Notificaciones">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        </button>
+        <button class="user-action-icon-btn" id="btnUserChat" type="button" title="Debriefing táctico y anotaciones" aria-label="Mensajes">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </button>
+      </div>
+
+      <!-- Gatillo del botón / perfil de usuario -->
+      <button class="btn btn-coach-login" id="btnTopCoachAuth" type="button" title="Acceso para Entrenadores y Administradores · Iniciar sesión">
+        🔒 Acceso Entrenador
+      </button>
+
+      <!-- Menú desplegable completo estilo LMS / Campus -->
+      <div class="user-dropdown" id="userDropdownMenu" role="menu">
+        <button class="user-dropdown-item" id="btnDropdownProfile" type="button" role="menuitem">
+          <span>👤</span> Perfil
+        </button>
+        <div class="user-dropdown-divider"></div>
+        <button class="user-dropdown-item admin-only" id="btnDropdownCreateUser" type="button" role="menuitem" style="color:var(--accent);font-weight:700">
+          <span>➕</span> Crear nuevo usuario
+        </button>
+        <button class="user-dropdown-item admin-only" id="btnDropdownManageUsers" type="button" role="menuitem">
+          <span>👥</span> Gestión de usuarios
+        </button>
+        <div class="user-dropdown-divider admin-only"></div>
+        <button class="user-dropdown-item" id="btnDropdownEditProfile" type="button" role="menuitem">
+          <span>✏️</span> Editar perfil
+        </button>
+        <button class="user-dropdown-item" id="btnDropdownCalendar" type="button" role="menuitem">
+          <span>📅</span> Calendario
+        </button>
+        <button class="user-dropdown-item" id="btnDropdownConsole" type="button" role="menuitem">
+          <span>⚙️</span> Consola de servicios
+        </button>
+        <button class="user-dropdown-item" id="btnDropdownPrivateFiles" type="button" role="menuitem">
+          <span>📁</span> Archivos privados
+        </button>
+        <button class="user-dropdown-item" id="btnDropdownReports" type="button" role="menuitem">
+          <span>📊</span> Informes
+        </button>
+        <div class="user-dropdown-divider"></div>
+        <button class="user-dropdown-item" id="btnDropdownPreferences" type="button" role="menuitem">
+          <span>🔑</span> Preferencias
+        </button>
+        <div class="user-dropdown-divider"></div>
+        <button class="user-dropdown-item danger" id="btnDropdownLogout" type="button" role="menuitem">
+          <span>🚪</span> Cerrar sesión
+        </button>
+      </div>
+    </div>
   </nav>
 
   <header class="top">
@@ -1619,7 +1835,7 @@ body.map-fullscreen-active {
       <button class="btn" id="btnQuickSaveCloud" type="button" title="Guardar cambios directamente en la nube de Turso SQLite" style="display:none;font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;font-weight:600;background:rgba(2,132,199,0.12);border:1px solid #0284c7;color:#0284c7;align-items:center;gap:4px">💾 Guardar cambios</button>
       <button class="btn" id="btnShareCloudRegata" type="button" title="Copiar enlace directo para compartir esta regata por WhatsApp o redes" style="display:none;font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;font-weight:600;background:rgba(16,185,129,0.12);border:1px solid #10b981;color:#059669;align-items:center;gap:4px">🔗 Compartir</button>
       <button class="btn" id="btnHelp" type="button" title="Ver guía de uso e instrucciones para entrenadores">📖 Guía de uso</button>
-      <button class="btn" id="newSessionBtn" type="button" title="Borrar datos actuales y empezar una nueva regata de cero">Nueva sesión</button>
+      <button class="btn" id="newSessionBtn" type="button" title="Volver a la pantalla de inicio y cerrar la sesión actual">Inicio</button>
       <span class="chip real" id="chip">Datos reales</span>
       <div class="clock" id="clock"></div>
     </div>
@@ -1763,17 +1979,11 @@ body.map-fullscreen-active {
         Accede al historial central de regatas oficiales, mangas y entrenamientos de la flota Optimist del RCNGC. Visualiza tracks interactivos, velocidades, clasificaciones oficiales y análisis táctico V2 sin necesidad de procesar archivos.
       </p>
 
-      <!-- Botones de Acción de la Nube -->
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px">
-        <button class="btn primary" id="btnHomeOpenCloudModal" type="button" style="padding:10px 20px;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;background:#0284c7;border-color:#0284c7;color:#fff;border-radius:8px;cursor:pointer;box-shadow:0 2px 8px rgba(2,132,199,0.3)">
+      <!-- Botón Principal de la Nube -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <button class="btn primary" id="btnHomeOpenCloudModal" type="button" style="padding:10px 22px;font-size:13.5px;font-weight:700;display:inline-flex;align-items:center;gap:8px;background:#0284c7;border-color:#0284c7;color:#fff;border-radius:8px;cursor:pointer;box-shadow:0 2px 8px rgba(2,132,199,0.25)">
           ☁️ Explorar Biblioteca de Regatas
         </button>
-        <button class="btn" id="btnHomeBigData" type="button" style="padding:10px 15px;font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;border-radius:8px;cursor:pointer">
-          📊 Histórico y Big Data
-        </button>
-        <a href="gps-salidas/index.html" target="_blank" class="btn" style="padding:10px 15px;font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;border-radius:8px;cursor:pointer;text-decoration:none;border:1px solid #10b981;background:rgba(16,185,129,0.1);color:#059669" title="Abrir app móvil para marcar Comité y Pin en el agua con GPS">
-          📲 App Móvil Salidas GPS
-        </a>
       </div>
 
       <!-- Regatas recientes en la nube con acceso directo 1-clic -->
@@ -1794,39 +2004,74 @@ body.map-fullscreen-active {
       </div>
     </div>
 
-    <!-- BLOQUE SECUNDARIO: SUBIR ARCHIVOS LOCALES GPX -->
-    <div class="home-local-box">
-      <div style="margin-bottom:10px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-          <h3 id="imp-h" style="margin:0;font-size:15px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:6px">
-            <span>📁 ¿Subir nuevo entrenamiento?</span>
-          </h3>
-          <span style="font-size:11px;color:var(--dim);background:var(--sub);padding:1px 6px;border-radius:4px;border:1px solid var(--line)">Archivos locales</span>
+    <!-- COLUMNA DERECHA: HERRAMIENTAS DESTACADAS Y SUBIR NUEVA REGATA -->
+    <div class="home-right-col">
+      <!-- BLOQUE 1: ACCESOS DESTACADOS A SUITE DE HERRAMIENTAS Y APPS -->
+      <div class="home-tools-hub">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+          <span style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;display:flex;align-items:center;gap:6px">
+            ⚡ Herramientas y Apps Conectadas
+          </span>
+          <span style="font-size:10.5px;color:var(--dim);background:var(--sub);padding:1px 6px;border-radius:4px;border:1px solid var(--line)">RCNGC Suite</span>
         </div>
-        <p style="margin:0;font-size:12px;color:var(--dim);line-height:1.4">
-          Para analizar una sesión nueva del reloj (Zepp), móvil o Traccar.
-        </p>
+
+        <div class="home-tools-grid">
+          <!-- 1. Histórico y Big Data -->
+          <button class="home-tool-card tool-bigdata" id="btnHomeBigData" type="button" title="Abrir histórico central de estadísticas, viradas y rendimiento de la flota">
+            <div class="tool-card-icon" style="background:rgba(2,132,199,0.15);color:#0284c7">📊</div>
+            <strong class="tool-card-title">Histórico & Big Data</strong>
+            <span class="tool-card-desc">Estadísticas y flota</span>
+          </button>
+
+          <!-- 2. Analizador de Entrenamientos -->
+          <a href="analizador-entrenamientos/index.html" target="_blank" class="home-tool-card tool-analizador" title="Abrir Analizador de Entrenamientos, Polares VPP y debriefing de maniobras">
+            <div class="tool-card-icon" style="background:rgba(0,240,255,0.12);color:#00f0ff">🏋️</div>
+            <strong class="tool-card-title">Analizador Entrenamientos</strong>
+            <span class="tool-card-desc">Polares VPP & VMG</span>
+          </a>
+
+          <!-- 3. App Móvil Salidas GPS -->
+          <a href="gps-salidas/index.html" target="_blank" class="home-tool-card tool-gps" title="Abrir app móvil para marcar Comité y Pin en el agua con GPS">
+            <div class="tool-card-icon" style="background:rgba(16,185,129,0.15);color:#10b981">📲</div>
+            <strong class="tool-card-title">App Salidas GPS</strong>
+            <span class="tool-card-desc">Comité y Pin en agua</span>
+          </a>
+        </div>
       </div>
 
-      <div class="drop" id="drop" style="padding:18px 12px;border-radius:8px;cursor:pointer">
-        <span style="font-size:20px;margin-bottom:2px">📂</span>
-        <strong style="font-size:14px">Arrastra aquí la carpeta del día</strong>
-        <span style="font-size:11px">o archivos sueltos (.gpx, .xlsx, .csv, .kml)</span>
-      </div>
+      <!-- BLOQUE 2: SUBIR NUEVA REGATA (COMPACTO / LA MITAD DE GRANDE) -->
+      <div class="home-local-box">
+        <div style="margin-bottom:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+            <h3 id="imp-h" style="margin:0;font-size:13.5px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:6px">
+              <span>📁 ¿Subir nueva regata?</span>
+            </h3>
+            <span id="uploadCoachBadge" style="font-size:10.5px;color:var(--dim);background:var(--sub);padding:1px 7px;border-radius:4px;border:1px solid var(--line);display:inline-flex;align-items:center;gap:4px">🔒 Solo Entrenadores</span>
+          </div>
+          <p style="margin:0;font-size:11px;color:var(--dim);line-height:1.3">
+            Para analizar una sesión nueva del reloj (Zepp), móvil o Traccar. Requiere cuenta de entrenador o admin.
+          </p>
+        </div>
 
-      <div class="picks" style="margin-top:10px;display:flex;gap:8px">
-        <button class="btn" id="pickDir" type="button" style="flex:1;font-size:12px;padding:7px 10px;font-weight:600">📁 Elegir carpeta</button>
-        <button class="btn" id="pickFiles" type="button" style="flex:1;font-size:12px;padding:7px 10px;font-weight:600">📄 Elegir archivos</button>
-      </div>
+        <div class="drop" id="drop" style="padding:10px 12px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">
+          <span style="font-size:16px">📂</span>
+          <span style="font-size:11.5px;color:var(--ink)"><strong style="color:var(--ink)">Arrastra tracks o carpeta</strong> <span style="font-size:10.5px;color:var(--dim)">(.gpx, .xlsx, .csv, .kml)</span></span>
+        </div>
 
-      <div style="margin-top:12px;padding:9px 12px;background:var(--sub);border:1px solid var(--line);border-radius:6px;font-size:11.5px;color:var(--dim);line-height:1.4">
-        <strong style="color:var(--ink);display:block;margin-bottom:2px">💡 Importación local:</strong>
-        Pon el número de vela en el nombre (ej: <code>2318.gpx</code>). Los datos se procesan 100% en local en tu navegador.
-      </div>
+        <div class="picks" style="margin-top:7px;display:flex;gap:7px">
+          <button class="btn" id="pickDir" type="button" style="flex:1;font-size:11px;padding:5px 8px;font-weight:600">📁 Elegir carpeta</button>
+          <button class="btn" id="pickFiles" type="button" style="flex:1;font-size:11px;padding:5px 8px;font-weight:600">📄 Elegir archivos</button>
+        </div>
 
-      <input class="sr" type="file" id="dirIn" webkitdirectory directory multiple>
-      <input class="sr" type="file" id="fileIn" multiple accept=".xlsx,.xls,.ods,.csv,.gpx,.kml">
-      <div class="msg" id="importMsg" role="status"></div>
+        <div style="margin-top:6px;font-size:10.5px;color:var(--dim);display:flex;align-items:center;justify-content:space-between">
+          <span>💡 Vela en el nombre (ej: <code>2318.gpx</code>)</span>
+          <span style="opacity:0.75">Procesado 100% en local</span>
+        </div>
+
+        <input class="sr" type="file" id="dirIn" webkitdirectory directory multiple>
+        <input class="sr" type="file" id="fileIn" multiple accept=".xlsx,.xls,.ods,.csv,.gpx,.kml">
+        <div class="msg" id="importMsg" role="status"></div>
+      </div>
     </div>
   </section>
 
@@ -2130,7 +2375,7 @@ body.map-fullscreen-active {
   <!-- Pie de página general del programa (Versión y Créditos) -->
   <footer class="app-footer" aria-label="Información del programa y créditos">
     <div class="app-footer-left">
-      <span class="app-footer-badge">v1.6.0</span>
+      <span class="app-footer-badge">v1.9.0</span>
       <span class="app-footer-appname">Visor y Analizador de Regatas · Optimist RCNGC</span>
     </div>
     <div class="app-footer-right">
@@ -2236,14 +2481,14 @@ body.map-fullscreen-active {
         <li><strong>📋 Copiar para Excel:</strong> Exporta los datos con un clic para pegarlos directamente en una hoja de cálculo.</li>
       </ul>
 
-      <h3>💾 7. Memoria Automática y Nueva Sesión</h3>
+      <h3>💾 7. Memoria Automática y Volver al Inicio</h3>
       <ul>
         <li><strong>A prueba de F5:</strong> Todo se guarda automáticamente en la memoria privada de tu navegador. Si actualizas con <kbd>F5</kbd> o cierras la pestaña, recuperarás tus barcos, balizas y dibujos al instante.</li>
-        <li><strong>Nueva sesión:</strong> Para limpiar los datos y empezar un nuevo entrenamiento desde cero, pulsa el botón <strong>«Nueva sesión»</strong> arriba a la derecha.</li>
+        <li><strong>Inicio:</strong> Para volver a la pantalla de inicio y cargar otra regata o limpiar los datos, pulsa el botón <strong>«Inicio»</strong> arriba a la derecha.</li>
       </ul>
 
       <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap;gap:8px">
-        <span>Visor y Analizador de Regatas · Optimist RCNGC · <strong style="color:var(--accent)">v1.6.0</strong></span>
+        <span>Visor y Analizador de Regatas · Optimist RCNGC · <strong style="color:var(--accent)">v1.9.0</strong></span>
         <span>Desarrollado por <strong style="color:var(--ink)">Pablo Quintana Labarta</strong></span>
       </div>
     </div>
@@ -2363,12 +2608,13 @@ body.map-fullscreen-active {
         <div id="cloudSaveCoachLockCard" style="background:var(--sub);border:1px solid var(--line);border-radius:8px;padding:26px 20px;text-align:center;margin-bottom:16px">
           <div style="font-size:32px;margin-bottom:8px">🔒</div>
           <h4 style="margin:0 0 6px 0;font-size:15px;color:var(--ink)">Modo Entrenador Requerido</h4>
-          <p style="font-size:12.5px;color:var(--dim);max-width:440px;margin:0 auto 14px auto">
-            Para publicar o modificar regatas en la base de datos central del club, introduce el PIN de entrenador.
+          <p style="font-size:12.5px;color:var(--dim);max-width:460px;margin:0 auto 16px auto">
+            Para publicar o modificar regatas en la base de datos central del club, debes identificarte con tu cuenta de entrenador o administrador.
           </p>
-          <div style="display:inline-flex;gap:8px;align-items:center">
-            <input type="password" id="cloudUnlockPinInput" placeholder="PIN de entrenador" style="padding:7px 12px;border:1px solid var(--line);border-radius:6px;font-size:13px;width:180px;background:var(--panel);color:var(--ink)">
-            <button class="btn primary" id="btnUnlockCoachMode" type="button" style="padding:7px 14px;font-size:12.5px">Desbloquear</button>
+          <div style="display:inline-flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center">
+            <button class="btn primary" id="btnCloudLockLogin" type="button" style="padding:8px 18px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px">🔑 Iniciar sesión como Entrenador</button>
+            <input type="password" id="cloudUnlockPinInput" placeholder="O introduce tu PIN" style="padding:7px 12px;border:1px solid var(--line);border-radius:6px;font-size:13px;width:150px;background:var(--panel);color:var(--ink)">
+            <button class="btn" id="btnUnlockCoachMode" type="button" style="padding:7px 14px;font-size:12.5px">Desbloquear</button>
           </div>
           <div id="cloudUnlockStatusMsg" style="margin-top:8px;font-size:12px"></div>
         </div>
@@ -2444,8 +2690,8 @@ body.map-fullscreen-active {
             </div>
             <div>
               <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">PIN de Entrenador (Seguridad) *</label>
-              <input type="password" id="cloudSavePin" placeholder="Introduce el PIN de entrenador" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
-              <span style="font-size:11px;color:var(--dim)">Requerido para evitar modificaciones no autorizadas (por defecto: RCNGC2026).</span>
+              <input type="password" id="cloudSavePin" placeholder="Introduce tu PIN personal de entrenador" autocomplete="new-password" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+              <span style="font-size:11px;color:var(--dim);margin-top:4px;display:block">Introduce tu clave o PIN personal para autorizar el guardado.</span>
             </div>
           </div>
 
@@ -2645,93 +2891,480 @@ body.map-fullscreen-active {
   </div>
 </div>
 
+<!-- Modal: Perfil del Entrenador -->
+<div class="modal-overlay" id="modalCoachProfile" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalCoachProfileTitle" style="max-width:520px">
+    <div class="modal-head" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)">
+      <div>
+        <h3 id="modalCoachProfileTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px">
+          <span>👤</span> Perfil del Entrenador
+        </h3>
+        <div style="font-size:11.5px;color:var(--dim)">Ficha técnica y credenciales de acceso al Club</div>
+      </div>
+      <button class="modal-close" id="btnCloseCoachProfileModal" type="button" aria-label="Cerrar modal">✕</button>
+    </div>
+    <div class="modal-body" style="padding:22px 20px">
+      <div style="display:flex;align-items:center;gap:18px;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid var(--line)">
+        <div style="width:58px;height:58px;border-radius:50%;border:2px solid var(--accent);flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);font-size:28px" id="modalCoachProfileAvatarWrapper">
+          <span style="user-select:none">👤</span>
+        </div>
+        <div>
+          <h2 id="modalProfileFullName" style="margin:0 0 4px 0;font-size:18px;font-weight:700;color:var(--ink)">Pablo Luis Quintana Labarta</h2>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="badge-role admin" id="modalProfileRoleBadge">👑 Administrador Principal</span>
+            <span style="font-size:12px;color:var(--dim)" id="modalProfileUserHandle">@admin</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+        <div style="background:var(--subtle);padding:10px 14px;border-radius:8px;border:1px solid var(--line)">
+          <div style="font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px">Club Náutico</div>
+          <div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:2px">RCN de Gran Canaria</div>
+        </div>
+        <div style="background:var(--subtle);padding:10px 14px;border-radius:8px;border:1px solid var(--line)">
+          <div style="font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px">Flota Asignada</div>
+          <div style="font-size:13px;font-weight:700;color:var(--ink);margin-top:2px" id="modalProfileCategory">Grupo A Optimist</div>
+        </div>
+        <div style="background:var(--subtle);padding:10px 14px;border-radius:8px;border:1px solid var(--line)">
+          <div style="font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px">Email de Contacto</div>
+          <div style="font-size:13px;font-weight:600;color:var(--ink);margin-top:2px;overflow:hidden;text-overflow:ellipsis" id="modalProfileEmail">entrenadores@rcngc.es</div>
+        </div>
+        <div style="background:var(--subtle);padding:10px 14px;border-radius:8px;border:1px solid var(--line)">
+          <div style="font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:0.5px">Estado en Nube</div>
+          <div style="font-size:13px;font-weight:700;color:#10b981;margin-top:2px">● Conectado (Turso)</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(2,132,199,0.08);border:1px solid rgba(2,132,199,0.25);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--ink);line-height:1.5">
+        🚀 <strong>Herramientas y Servicios Habilitados:</strong> Edición y publicación de regatas en la nube, marcaje de balizas por satélite, debriefing táctico por tramos, anotaciones técnicas por regatista y sincronización con app móvil GPS de comités.
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--line);background:rgba(0,0,0,0.02)">
+      <div style="display:flex;gap:8px">
+        <button class="btn" id="btnProfileModalEdit" type="button" style="font-size:12px;padding:6px 14px">✏️ Editar Perfil</button>
+        <button class="btn" id="btnProfileModalChangePin" type="button" style="font-size:12px;padding:6px 14px">🔑 Cambiar PIN</button>
+      </div>
+      <button class="btn primary" id="btnCloseCoachProfileBottom" type="button" style="font-size:12px;padding:6px 18px">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Editar Perfil -->
+<div class="modal-overlay" id="modalEditProfile" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalEditProfileTitle" style="max-width:460px">
+    <div class="modal-head" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)">
+      <div>
+        <h3 id="modalEditProfileTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px">
+          <span>✏️</span> Editar Mi Perfil
+        </h3>
+        <div style="font-size:11.5px;color:var(--dim)">Actualiza tus datos públicos y de contacto en el club</div>
+      </div>
+      <button class="modal-close" id="btnCloseEditProfileModal" type="button" aria-label="Cerrar modal">✕</button>
+    </div>
+    <form id="formEditProfileModal" onsubmit="return false;" style="margin:0">
+      <div class="modal-body" style="padding:18px 20px">
+        <div style="margin-bottom:14px">
+          <label for="inpEditProfileNombre" style="display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:var(--ink)">Nombre y Apellidos *</label>
+          <input type="text" id="inpEditProfileNombre" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600">
+        </div>
+        <div style="margin-bottom:14px">
+          <label for="inpEditProfileEmail" style="display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:var(--ink)">Email de contacto</label>
+          <input type="email" id="inpEditProfileEmail" placeholder="ej: entrenador@rcngc.es" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+        </div>
+        <div style="margin-bottom:14px">
+          <label for="inpEditProfileCategory" style="display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:var(--ink)">Flota / Categoría Principal</label>
+          <select id="inpEditProfileCategory" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600">
+            <option value="Grupo A Optimist">Grupo A Optimist</option>
+            <option value="Grupo B Optimist">Grupo B Optimist</option>
+            <option value="Escuela / Iniciación">Escuela / Iniciación</option>
+            <option value="Equipo Regatas General">Equipo Regatas General</option>
+            <option value="Comité / Técnico">Comité / Técnico</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid var(--line);background:rgba(0,0,0,0.02)">
+        <button class="btn" id="btnCancelEditProfile" type="button" style="padding:7px 16px;font-size:12.5px">Cancelar</button>
+        <button class="btn primary" id="btnSaveEditProfile" type="submit" style="padding:7px 20px;font-size:12.5px;font-weight:700">💾 Guardar Cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Calendario de Regatas & Entrenamientos -->
+<div class="modal-overlay" id="modalCalendar" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalCalendarTitle" style="max-width:760px">
+    <div class="modal-head" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)">
+      <div>
+        <h3 id="modalCalendarTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px">
+          <span>📅</span> Calendario de Regatas & Entrenamientos RCNGC
+        </h3>
+        <div style="font-size:11.5px;color:var(--dim)">Sesiones programadas e histórico de mangas en la Nube Central</div>
+      </div>
+      <button class="modal-close" id="btnCloseCalendarModal" type="button" aria-label="Cerrar modal">✕</button>
+    </div>
+    <div class="modal-body" style="padding:18px 20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+        <div style="font-size:12.5px;color:var(--dim)">Sesiones registradas en el calendario del club:</div>
+        <button class="btn" id="btnRefreshCalendar" type="button" style="font-size:12px;padding:5px 12px">🔄 Actualizar</button>
+      </div>
+      <div id="calendarSessionsList" style="max-height:360px;overflow-y:auto;display:flex;flex-direction:column;gap:10px">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;padding:12px 20px;border-top:1px solid var(--line);background:rgba(0,0,0,0.02)">
+      <button class="btn" id="btnCloseCalendarBottom" type="button" style="padding:7px 18px;font-size:12.5px">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 1: Autenticación / Inicio de Sesión de Entrenador -->
+<div class="modal-overlay" id="modalAuth" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalAuthTitle" style="max-width:440px">
+    <div class="modal-head" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)">
+      <div>
+        <h3 id="modalAuthTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px">
+          <span>🔐</span> Acceso Entrenador & Admin
+        </h3>
+        <div style="font-size:11.5px;color:var(--dim)">Identifícate con tu PIN para desbloquear edición y gestión</div>
+      </div>
+      <button class="modal-close" id="btnCloseAuthModal" type="button" aria-label="Cerrar modal">✕</button>
+    </div>
+    <form id="formAuthModal" onsubmit="return false;" style="margin:0">
+      <div class="modal-body" style="padding:18px 20px">
+        <div id="authAlert" style="display:none;padding:10px 14px;border-radius:8px;font-size:12.5px;margin-bottom:14px;line-height:1.4"></div>
+        
+        <div style="margin-bottom:14px">
+          <label for="authSelectUser" style="display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:var(--ink)">
+            Entrenador / Usuario *
+          </label>
+          <div id="authSelectWrapper">
+            <select id="authSelectUser" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600">
+              <option value="">Cargando entrenadores...</option>
+            </select>
+          </div>
+          <div id="authManualWrapper" style="display:none;margin-top:6px">
+            <input type="text" id="authInputUser" placeholder="Nombre de usuario (ej. admin o pablo)" style="width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600">
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:4px">
+            <button type="button" id="btnToggleManualUser" style="background:none;border:none;color:var(--accent);font-size:11px;cursor:pointer;padding:0;text-decoration:underline">
+              Escribir usuario manualmente
+            </button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:14px">
+          <label for="authPin" style="display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:var(--ink)">
+            PIN de Acceso *
+          </label>
+          <div style="position:relative">
+            <input type="password" id="authPin" placeholder="Introduce tu PIN personal" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:9px 36px 9px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:14px;font-weight:600;letter-spacing:1px">
+            <button type="button" id="btnToggleAuthPinVisibility" title="Mostrar/ocultar PIN" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px;color:var(--dim);padding:4px">👁️</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:6px">
+          <label style="display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-size:12px;color:var(--ink);user-select:none">
+            <input type="checkbox" id="authRememberMe" checked style="accent-color:var(--accent);cursor:pointer">
+            <span>Mantener sesión iniciada en este navegador</span>
+          </label>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid var(--line);background:rgba(0,0,0,0.02)">
+        <button class="btn" id="btnCancelAuthModal" type="button" style="padding:7px 16px;font-size:12.5px">Cancelar</button>
+        <button class="btn primary" id="btnSubmitAuthModal" type="button" style="padding:7px 20px;font-size:12.5px;font-weight:700">🔓 Iniciar Sesión</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal 2: Panel de Administración de Entrenadores y Usuarios -->
+<div class="modal-overlay" id="modalAdminUsers" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalAdminUsersTitle" style="max-width:880px">
+    <div class="modal-head" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)">
+      <div>
+        <h3 id="modalAdminUsersTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px">
+          <span>👥</span> Gestión y Creación de Usuarios & Contraseñas
+        </h3>
+        <div style="font-size:11.5px;color:var(--dim)">Administración central de cuentas de entrenadores y permisos de la flota RCNGC</div>
+      </div>
+      <button class="modal-close" id="btnCloseAdminUsersModal" type="button" aria-label="Cerrar panel">✕</button>
+    </div>
+    <div class="modal-body" style="padding:18px 20px">
+      
+      <!-- Toolbar Superior -->
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="text" id="inpSearchAdminUsers" placeholder="🔍 Buscar por nombre o usuario..." style="padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:12.5px;width:230px">
+          <span id="adminUsersCountBadge" style="font-size:12px;color:var(--dim)"></span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn" id="btnRefreshAdminUsers" type="button" style="font-size:12px;padding:6px 14px">🔄 Actualizar</button>
+          <button class="btn primary" id="btnShowCreateUserForm" type="button" style="font-size:12px;padding:6px 18px;font-weight:700;background:#059669;border-color:#059669">➕ Crear Nuevo Usuario</button>
+        </div>
+      </div>
+
+      <!-- Formulario para Crear / Editar Usuario con Contraseña -->
+      <div id="adminUserFormContainer" style="display:none;background:var(--subtle);border:1.5px solid var(--accent);border-radius:10px;padding:18px 20px;margin-bottom:20px;box-shadow:0 8px 24px rgba(0,0,0,0.25)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <h4 id="adminUserFormTitle" style="margin:0;font-size:15px;color:var(--ink);display:flex;align-items:center;gap:8px">
+            <span>➕</span> <strong>Crear Nuevo Usuario con Contraseña</strong>
+          </h4>
+          <span style="font-size:11.5px;color:var(--dim)">Se guardará en la base de datos central de Turso</span>
+        </div>
+        <input type="hidden" id="adminUserId">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:14px;margin-bottom:14px">
+          <div>
+            <label for="adminUserNombre" style="display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:var(--ink)">
+              Nombre y Apellidos *
+            </label>
+            <input type="text" id="adminUserNombre" placeholder="Ej: Alejandro Bethencourt" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600">
+          </div>
+          <div>
+            <label for="adminUserUsuario" style="display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:var(--ink)">
+              Usuario de Acceso (Login) *
+            </label>
+            <input type="text" id="adminUserUsuario" placeholder="Ej: ale_coach" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600">
+            <div style="font-size:10.5px;color:var(--dim);margin-top:3px">Identificador único con el que iniciará sesión</div>
+          </div>
+          <div>
+            <label for="adminUserRol" style="display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:var(--ink)">
+              Rol del Usuario *
+            </label>
+            <select id="adminUserRol" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600">
+              <option value="entrenador">⛵ Entrenador (Análisis, notas y regatas)</option>
+              <option value="admin">👑 Administrador (Gestión total y usuarios)</option>
+            </select>
+          </div>
+          <div>
+            <label for="adminUserCategoria" style="display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:var(--ink)">
+              Flota / Categoría Asignada
+            </label>
+            <select id="adminUserCategoria" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600">
+              <option value="Grupo A Optimist">Grupo A Optimist</option>
+              <option value="Grupo B Optimist">Grupo B Optimist</option>
+              <option value="Escuela / Iniciación">Escuela / Iniciación</option>
+              <option value="Equipo Regatas General">Equipo Regatas General</option>
+              <option value="Comité / Técnico">Comité / Técnico</option>
+            </select>
+          </div>
+          <div style="grid-column: 1 / -1">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:14px">
+              <div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                  <label for="adminUserPin" style="font-size:12px;font-weight:700;color:var(--ink)">Contraseña de Acceso *</label>
+                  <button type="button" id="btnGenRandomPassword" style="background:none;border:none;color:var(--accent);font-size:11px;cursor:pointer;padding:0;text-decoration:underline">🎲 Generar contraseña</button>
+                </div>
+                <div style="position:relative">
+                  <input type="password" id="adminUserPin" placeholder="Introduce la contraseña" style="width:100%;box-sizing:border-box;padding:8px 36px 8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600">
+                  <button type="button" id="btnToggleAdminUserPin" title="Mostrar/ocultar contraseña" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:13px;color:var(--dim);padding:4px">👁️</button>
+                </div>
+              </div>
+              <div>
+                <label for="adminUserPinConfirm" style="display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:var(--ink)">Confirmar Contraseña *</label>
+                <input type="password" id="adminUserPinConfirm" placeholder="Repite la contraseña" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600">
+              </div>
+              <div>
+                <label for="adminUserEmail" style="display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:var(--ink)">Email de contacto (opcional)</label>
+                <input type="email" id="adminUserEmail" placeholder="entrenador@rcngc.es" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+              </div>
+            </div>
+          </div>
+          <div>
+            <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;color:var(--ink);margin-top:6px">
+              <input type="checkbox" id="adminUserActivo" checked style="accent-color:var(--accent);width:16px;height:16px">
+              <span><strong>Cuenta activa</strong> (permitir inicio de sesión inmediato)</span>
+            </label>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;padding-top:14px;border-top:1px solid var(--line)">
+          <button class="btn" id="btnCancelAdminUserForm" type="button" style="padding:7px 16px;font-size:12.5px">Cancelar</button>
+          <button class="btn primary" id="btnSaveAdminUser" type="button" style="padding:7px 22px;font-size:12.5px;font-weight:700">💾 Guardar Usuario en la Nube</button>
+        </div>
+      </div>
+
+      <!-- Tabla de usuarios -->
+      <div style="overflow-x:auto;border:1px solid var(--line);border-radius:8px">
+        <table style="width:100%;border-collapse:collapse;font-size:12.5px;text-align:left">
+          <thead>
+            <tr style="background:var(--subtle);border-bottom:1px solid var(--line);color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:0.5px">
+              <th style="padding:10px 12px">Usuario</th>
+              <th style="padding:10px 12px">Nombre Completo</th>
+              <th style="padding:10px 12px">Rol</th>
+              <th style="padding:10px 12px">Categoría</th>
+              <th style="padding:10px 12px">Contraseña</th>
+              <th style="padding:10px 12px">Estado</th>
+              <th style="padding:10px 12px;text-align:right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="adminUsersTableBody">
+            <tr>
+              <td colspan="7" style="padding:20px;text-align:center;color:var(--dim)">Cargando lista de usuarios...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="font-size:11px;color:var(--dim);margin-top:10px;display:flex;gap:14px;align-items:center">
+        <span>🛡️ <strong>Reglas de seguridad:</strong> No se puede eliminar ni desactivar al usuario actualmente conectado ni al último administrador activo del club.</span>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;padding:12px 20px;border-top:1px solid var(--line);background:rgba(0,0,0,0.02)">
+      <button class="btn" id="btnCloseAdminUsersBottom" type="button" style="padding:7px 18px;font-size:12.5px">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3: Cambiar Mi PIN Personal -->
+<div class="modal-overlay" id="modalChangePin" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalChangePinTitle" style="max-width:440px">
+    <div class="modal-head" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)">
+      <div>
+        <h3 id="modalChangePinTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px">
+          <span>🔑</span> Cambiar Mi PIN
+        </h3>
+        <div style="font-size:11.5px;color:var(--dim)">Actualiza tu clave de acceso personal para el club</div>
+      </div>
+      <button class="modal-close" id="btnCloseChangePinModal" type="button" aria-label="Cerrar modal">✕</button>
+    </div>
+    <form id="formChangePinModal" onsubmit="return false;" style="margin:0">
+      <div class="modal-body" style="padding:18px 20px">
+        <div id="changePinAlert" style="display:none;padding:10px 14px;border-radius:8px;font-size:12.5px;margin-bottom:14px;line-height:1.4"></div>
+        
+        <div style="background:var(--subtle);border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--ink);display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <strong id="changePinUserName">Entrenador</strong>
+            <div id="changePinUserMeta" style="font-size:11px;color:var(--dim)">usuario: @entrenador</div>
+          </div>
+          <span class="badge-role coach" id="changePinUserBadge">⛵ Entrenador</span>
+        </div>
+
+        <div style="margin-bottom:12px">
+          <label for="inpCurrentPin" style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--ink)">PIN Actual *</label>
+          <input type="password" id="inpCurrentPin" placeholder="Introduce tu PIN actual" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600">
+        </div>
+
+        <div style="margin-bottom:12px">
+          <label for="inpNewPin" style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--ink)">Nuevo PIN * (mínimo 3 caracteres)</label>
+          <input type="password" id="inpNewPin" placeholder="Introduce tu nuevo PIN" autocomplete="new-password" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600">
+        </div>
+
+        <div style="margin-bottom:8px">
+          <label for="inpConfirmNewPin" style="display:block;font-size:12px;font-weight:700;margin-bottom:4px;color:var(--ink)">Confirmar Nuevo PIN *</label>
+          <input type="password" id="inpConfirmNewPin" placeholder="Repite el nuevo PIN" autocomplete="new-password" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600">
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid var(--line);background:rgba(0,0,0,0.02)">
+        <button class="btn" id="btnCancelChangePinModal" type="button" style="padding:7px 16px;font-size:12.5px">Cancelar</button>
+        <button class="btn primary" id="btnSubmitChangePinModal" type="submit" style="padding:7px 20px;font-size:12.5px;font-weight:700">💾 Guardar Nuevo PIN</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="modal-overlay" id="polarModal" hidden>
-  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="polarModalTitle" style="max-width:840px">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="polarModalTitle" style="max-width:920px">
     <div class="modal-head">
-      <h2 id="polarModalTitle">⛵ Guía de Polares y Reglas de Medición · Optimist IOD95</h2>
+      <h2 id="polarModalTitle">⛵ Guía Oficial de Polares VPP y Rendimiento · Optimist (IOD95)</h2>
       <button class="modal-close" id="btnClosePolar" type="button" aria-label="Cerrar guía de polares">✕</button>
     </div>
     <div class="modal-body">
-      <div style="background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px">
+      <div style="background:rgba(2,132,199,0.08);border:1px solid rgba(2,132,199,0.3);color:var(--ink);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;line-height:1.5">
+        <strong>⛵ Modelo Oficial de Polares VPP y Rendimiento Paramétrico:</strong><br>
+        El sistema evalúa el rendimiento cinemático de la flota frente a las matrices <strong>VPP (Velocity Prediction Program)</strong> especializadas para la clase internacional Optimist (monotipo IOD95). Los objetivos teóricos de velocidad sobre el fondo (BSP), ángulo óptimo (TWA) y velocidad de avance neto al viento (VMG) se interpolan bilinealmente según el viento real (TWS de 4 a 20 nudos) y se adaptan paramétricamente al peso del regatista (de 30 a 55 kg).
+      </div>
+
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12.5px">
         <strong>⏱️ Regla de Medición Activa (Salida a Meta):</strong><br>
         Todas las métricas de rendimiento (velocidad media, velocidad máxima 5s, distancia navegada, viradas, duración y eficiencia de tramos IODA) se calculan <strong>estrictamente desde que cada regatista cruza la línea de salida hasta que corta la línea de llegada</strong>. Se descartan de forma automática los períodos de espera previos a la salida, calentamientos y el regreso a puerto / remolque.
       </div>
 
-      <h3>📊 Polares Teóricas de Referencia de la Clase Optimist</h3>
-      <p style="font-size:13px;color:var(--ink);line-height:1.5">
-        En la clase Optimist (IOD95) <strong>no existe un archivo VPP oficial rígido publicado por IODA u ORC</strong>, dado que el peso del regatista (de 35 a 52 kg), la caída de palo (<em>mast rake</em> 2.80–2.83 m), el cazado y la dinámica corporal con ola varían enormemente el rendimiento. No obstante, para el análisis telemétrico de competición se utilizan las siguientes <strong>Polares Empíricas Calibradas</strong> de alto rendimiento:
+      <h3>📊 Matriz Oficial VPP Optimist (Patrón de Referencia 42.5 kg)</h3>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:8px">
+        Valores estándar calibrados para casco reglamentario (35 kg barco + 3.5 kg aparejo) y velas oficiales (CD Sails, OneSails, Olimpic, North Sails):
       </p>
-
-      <div class="table-wrap" style="margin:14px 0">
-        <table class="metrics-table" style="font-size:12.5px">
+      <div class="table-wrap" style="margin:10px 0 18px 0">
+        <table class="metrics-table" style="font-size:12px">
           <thead>
             <tr>
-              <th style="text-align:left">Viento Real (TWS)</th>
-              <th>Ceñida: TWA Óptimo</th>
-              <th>Ceñida: SOG Obj.</th>
-              <th>Ceñida: VMG Obj.</th>
-              <th>Través: SOG Obj. (85°-95°)</th>
-              <th>Popa: TWA Óptimo</th>
-              <th>Popa: SOG Obj.</th>
-              <th>Popa: VMG Obj.</th>
+              <th style="text-align:left">Viento (TWS)</th>
+              <th>Ceñida: TWA Ópt.</th>
+              <th>Ceñida: Target BSP</th>
+              <th>Ceñida: Max VMG</th>
+              <th>Través 90°: BSP</th>
+              <th>Popa: TWA Ópt.</th>
+              <th>Popa: Target BSP</th>
+              <th>Popa: Max VMG</th>
+              <th>Manga Target (45 min)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>4 kn</strong></td><td>45.0°</td><td>1.91 kn</td><td><strong>1.35 kn</strong></td><td>2.42 kn</td><td>145.0°</td><td>2.30 kn</td><td><strong>1.88 kn</strong></td><td>1.25 NM</td></tr>
+            <tr><td><strong>6 kn</strong></td><td>44.0°</td><td>2.53 kn</td><td><strong>1.82 kn</strong></td><td>3.02 kn</td><td>160.0°</td><td>3.32 kn</td><td><strong>3.12 kn</strong></td><td>1.68 NM</td></tr>
+            <tr><td><strong>8 kn</strong></td><td>43.0°</td><td>2.87 kn</td><td><strong>2.10 kn</strong></td><td>3.36 kn</td><td>165.0°</td><td>3.80 kn</td><td><strong>3.67 kn</strong></td><td>2.05 NM</td></tr>
+            <tr><td><strong>10 kn</strong></td><td>42.0°</td><td>3.11 kn</td><td><strong>2.31 kn</strong></td><td>3.60 kn</td><td>167.0°</td><td>4.11 kn</td><td><strong>4.00 kn</strong></td><td>2.38 NM</td></tr>
+            <tr><td><strong>12 kn</strong></td><td>41.5°</td><td>3.25 kn</td><td><strong>2.43 kn</strong></td><td>3.82 kn</td><td>170.0°</td><td>4.25 kn</td><td><strong>4.18 kn</strong></td><td>2.65 NM</td></tr>
+            <tr><td><strong>14 kn</strong></td><td>41.0°</td><td>3.31 kn</td><td><strong>2.50 kn</strong></td><td>4.00 kn</td><td>171.0°</td><td>4.34 kn</td><td><strong>4.29 kn</strong></td><td>2.87 NM</td></tr>
+            <tr><td><strong>16 kn</strong></td><td>43.0°</td><td>3.28 kn</td><td><strong>2.40 kn</strong></td><td>4.10 kn</td><td>172.0°</td><td>4.50 kn</td><td><strong>4.46 kn</strong></td><td>3.02 NM</td></tr>
+            <tr><td><strong>18 kn</strong></td><td>44.5°</td><td>3.27 kn</td><td><strong>2.33 kn</strong></td><td>4.25 kn</td><td>173.0°</td><td>4.68 kn</td><td><strong>4.64 kn</strong></td><td>3.12 NM</td></tr>
+            <tr><td><strong>20 kn</strong></td><td>45.5°</td><td>3.10 kn</td><td><strong>2.17 kn</strong></td><td>4.38 kn</td><td>174.0°</td><td>4.80 kn</td><td><strong>4.77 kn</strong></td><td>3.18 NM</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>⚖️ Rendimiento Paramétrico por Peso del Regatista (30 kg – 55 kg)</h3>
+      <p style="font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:10px">
+        En vela infantil el peso del patrón representa entre el 45% y el 60% del desplazamiento total. El modelo calcula las variaciones cinemáticas en ángulo y VMG según la intensidad del viento:
+      </p>
+      <div class="table-wrap" style="margin:10px 0 18px 0">
+        <table class="metrics-table" style="font-size:12px">
+          <thead>
+            <tr>
+              <th style="text-align:left">Perfil de Peso</th>
+              <th>Brisa Ligera (6 kn)</th>
+              <th>Viento Medio (10 kn)</th>
+              <th>Viento Duro (16 kn)</th>
+              <th>Recomendaciones de Aparejo y Vela</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td><strong>6 nudos</strong> (Brisa suave)</td>
-              <td>45°</td>
-              <td>2.80 kn</td>
-              <td><strong>1.98 kn</strong></td>
-              <td>3.50 kn</td>
-              <td>152°</td>
-              <td>3.20 kn</td>
-              <td><strong>2.82 kn</strong></td>
+              <td><strong>Ligero (30 kg)</strong><br><span style="font-size:10.5px;color:var(--muted)">Iniciación / Sub 11</span></td>
+              <td><span style="color:#16a34a;font-weight:700">VMG +2.7% · 1.87 kn</span><br>Menor calado y rozamiento</td>
+              <td>VMG -1.5% · 2.28 kn<br>Equilibrio potencia/adrizamiento</td>
+              <td><span style="color:#ef4444;font-weight:700">VMG -9.6% · 2.17 kn</span><br>Abrir rumbo (footing 45°)</td>
+              <td>Vela plana: CD Sails Flat (&lt;37 kg) o OneSails Light.<br>Mast Rake base: 2.79 m. Pajarín 7-10 mm más cazado en agua plana.</td>
             </tr>
             <tr>
-              <td><strong>10 nudos</strong> (Viento medio)</td>
-              <td>44°</td>
-              <td>3.45 kn</td>
-              <td><strong>2.48 kn</strong></td>
-              <td>4.60 kn</td>
-              <td>150°</td>
-              <td>4.20 kn</td>
-              <td><strong>3.64 kn</strong></td>
+              <td><strong>Medio-Ligero (34 kg)</strong><br><span style="font-size:10.5px;color:var(--muted)">Sub 11 / Sub 13</span></td>
+              <td><span style="color:#16a34a;font-weight:700">VMG +1.9% · 1.85 kn</span></td>
+              <td>VMG -1.0% · 2.29 kn</td>
+              <td><span style="color:#f59e0b;font-weight:700">VMG -6.5% · 2.24 kn</span></td>
+              <td>CD Sails Semiradial DRS- (33-38 kg) o OneSails Standard.<br>Mast Rake: 2.80 m.</td>
             </tr>
             <tr>
-              <td><strong>14 nudos</strong> (Brisa fresca)</td>
-              <td>43°</td>
-              <td>3.85 kn</td>
-              <td><strong>2.81 kn</strong></td>
-              <td>5.30 kn</td>
-              <td>148°</td>
-              <td>4.85 kn</td>
-              <td><strong>4.11 kn</strong></td>
+              <td><strong>Medio (38 kg)</strong><br><span style="font-size:10.5px;color:var(--muted)">Sub 13 / Sub 16</span></td>
+              <td>VMG +1.0% · 1.84 kn</td>
+              <td>VMG -0.5% · 2.30 kn</td>
+              <td>VMG -3.4% · 2.32 kn</td>
+              <td>OneSails GMR (36-45 kg) o CD Sails Medium.<br>Mast Rake: 2.81 m.</td>
             </tr>
             <tr>
-              <td><strong>18+ nudos</strong> (Viento duro)</td>
-              <td>44°</td>
-              <td>4.05 kn</td>
-              <td><strong>2.91 kn</strong></td>
-              <td>5.80 kn</td>
-              <td>146°</td>
-              <td>5.30 kn</td>
-              <td><strong>4.27 kn</strong></td>
+              <td><strong>Base VPP (42.5 kg)</strong><br><span style="font-size:10.5px;color:var(--muted)">Estándar / Sub 16</span></td>
+              <td>VMG Base: 1.82 kn</td>
+              <td>VMG Base: 2.31 kn</td>
+              <td>VMG Base: 2.40 kn</td>
+              <td>Vela de competición All-Round (CD Sails Heavy / OneSails GMR).<br>Mast Rake: 2.82 – 2.83 m.</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <h3>🏁 Detección Telemétrica de Salida y Llegada</h3>
-      <ul>
-        <li><strong>Línea de Salida:</strong> Se define mediante el segmento entre la boya de Pin y el Barco de Comité (marcado en la pestaña «Táctica» o en «Recorrido IODA»). El visor analiza la trayectoria de cada barco y detecta el segundo exacto en el que cruza la línea hacia el campo de regatas.</li>
-        <li><strong>Línea de Llegada:</strong> Se define entre la boya de meta y el Comité de Llegada. En cada segundo, el algoritmo de intersección de segmentos vectoriales comprueba el cruce de meta. Cuando un barco pasa la línea, se fija su tiempo de llegada (Meta) y finaliza el intervalo de cómputo de sus métricas.</li>
-        <li><strong>Eficiencia Polar Target (%):</strong> En cada tramo de ceñida o empopada se compara la velocidad real obtenida frente al objetivo polar para ese ángulo y rango de viento: un valor &ge; 90% indica rendimiento óptimo de navegación.</li>
+      <h3>🏁 Diagnóstico Táctico y Detección de Cruces</h3>
+      <ul style="font-size:12.5px;line-height:1.6;color:var(--dim);margin-left:18px">
+        <li><strong>Modos de Ceñida:</strong> Se detecta si el regatista está en <em>Pinching (Sobreorzando con falta de potencia)</em>, <em>Footing (Rumbo excesivamente abierto)</em> o <em>In the Groove (Compromiso óptimo de ángulo y velocidad)</em>.</li>
+        <li><strong>Línea de Salida y Llegada:</strong> Intersección segundo a segundo con el vector de línea. Permite aislar la manga oficial sin interferencia de tiempos de espera ni remolques.</li>
+        <li><strong>Eficiencia Polar (% Target):</strong> Razón porcentual entre la velocidad telemétrica real y la velocidad polar teórica óptima para el viento y rumbo de cada tramo.</li>
       </ul>
-
-      <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap;gap:8px">
-        <span>Visor y Analizador de Regatas · Optimist RCNGC · <strong style="color:var(--accent)">v1.6.0</strong></span>
-        <span>Desarrollado por <strong style="color:var(--ink)">Pablo Quintana Labarta</strong></span>
-      </div>
     </div>
   </div>
 </div>
@@ -5327,28 +5960,53 @@ function evaluateSailorTactics(boatIdx, legs, maneuvers, fleetSummary){
     });
     if(upwindTwaCount > 20){
       const avgTwa = upwindTwaSum / upwindTwaCount;
+      const twsCurr = (typeof getWindSpeedKnots === 'function') ? getWindSpeedKnots(state.t || D.startT || 0) : 10;
+      const polarTarget = (typeof getOptimistPolarTarget === 'function') ? getOptimistPolarTarget('UPWIND', twsCurr) : { twa: 43.0, targetVmg: 2.3 };
+      const optTwa = polarTarget.twa || 43.0;
       const avgPolarTarget = upwindLegs.reduce((a,l)=>a+l.polarTargetPct,0)/upwindLegs.length;
-      if(avgTwa < 41.0 && avgPolarTarget < 87.0){
+
+      if(avgTwa < optTwa - 2.5 && avgPolarTarget < 88.0){
         findings.push({
           code: 'PINCHING',
           severity: 'warning',
-          tag: '⚠️ Iba muy punteado/a',
-          text: `Ángulo medio de ceñida muy cerrado (${Math.round(avgTwa)}° TWA): barco punteado con pérdida continua de potencia y velocidad frente al objetivo polar.`
+          tag: '⚠️ Sobreorzando (Pinching)',
+          text: `Ángulo medio de ceñida muy cerrado (${avgTwa.toFixed(1)}° TWA vs óptimo VPP ${optTwa.toFixed(1)}°): barco falto de potencia y aceleración en ola frente al objetivo polar.`
         });
-      } else if(avgTwa > 48.0){
+      } else if(avgTwa > optTwa + 3.2){
         findings.push({
           code: 'BEARING_AWAY',
           severity: 'info',
-          tag: 'ℹ️ Ceñida abierta',
-          text: `Ceñida muy abierta (${Math.round(avgTwa)}° TWA): buena aceleración pero regalando ángulo de ascenso hacia barlovento.`
+          tag: 'ℹ️ Ceñida abierta (Footing)',
+          text: `Ceñida muy abierta (${avgTwa.toFixed(1)}° TWA vs óptimo VPP ${optTwa.toFixed(1)}°): aceleración elevada pero regalando distancia hacia barlovento.`
         });
-      } else if(avgTwa >= 42.5 && avgTwa <= 45.5 && avgPolarTarget >= 88.0){
+      } else if(Math.abs(avgTwa - optTwa) <= 2.2 && avgPolarTarget >= 88.0){
         findings.push({
           code: 'OPTIMAL_TWA',
           severity: 'success',
-          tag: '✅ Ángulo óptimo',
-          text: `Excelente ángulo de ceñida (${Math.round(avgTwa)}° TWA): compromiso ideal entre velocidad de navegación y ganancia a barlovento.`
+          tag: '✅ In the Groove (Ángulo óptimo)',
+          text: `Excelente ángulo de ceñida (${avgTwa.toFixed(1)}° TWA frente al óptimo VPP ${optTwa.toFixed(1)}° a ${twsCurr.toFixed(1)} kn): compromiso ideal entre velocidad y ganancia a barlovento.`
         });
+      }
+
+      // Rendimiento VMG en ceñida frente al target VPP
+      if(polarTarget.targetVmg > 0){
+        const avgVmg = upwindLegs.reduce((a,l)=>a+(l.avgVmgKnots||0),0)/upwindLegs.length;
+        const vmgPct = Math.round((avgVmg / polarTarget.targetVmg) * 100);
+        if(vmgPct >= 96){
+          findings.push({
+            code: 'VMG_EXCELLENT',
+            severity: 'success',
+            tag: '🚀 VMG Sobresaliente',
+            text: `VMG media de ${fmt2(avgVmg)} kn (${vmgPct}% del target VPP ${fmt2(polarTarget.targetVmg)} kn a ${twsCurr.toFixed(1)} kn). Excelente ajuste de escota y dinámica corporal.`
+          });
+        } else if(vmgPct < 78){
+          findings.push({
+            code: 'VMG_DEFICIT',
+            severity: 'warning',
+            tag: '📉 Pérdida neta de VMG',
+            text: `VMG media de ${fmt2(avgVmg)} kn (${vmgPct}% del target VPP ${fmt2(polarTarget.targetVmg)} kn). Conviene revisar ángulo de cazado o velocidad tras viradas.`
+          });
+        }
       }
     }
   }
@@ -5520,16 +6178,38 @@ function circularDiff(a, b){
  * Target Time oficial: 45 minutos (límites reglamentarios: 42.75 a 47.25 min).
  */
 function getRyaPace(tws){
-  const w = Number(tws) || 10;
-  if(w < 8){
-    return { upwind: 32, run: 18, reach: 20, band: '5-8 kn', vmgUp: 1.88, vmgRun: 3.33 };
-  } else if(w < 12){
-    return { upwind: 26, run: 15, reach: 17, band: '8-12 kn', vmgUp: 2.31, vmgRun: 4.00 };
-  } else if(w < 15){
-    return { upwind: 24, run: 14, reach: 15, band: '12-15 kn', vmgUp: 2.50, vmgRun: 4.29 };
-  } else {
-    return { upwind: 26, run: 13, reach: 14, band: '15+ kn', vmgUp: 2.31, vmgRun: 4.62 };
+  const w = Math.max(4, Math.min(20, Number(tws) || 10));
+  if(typeof OPTIMIST_POLAR_DATA !== 'undefined' && OPTIMIST_POLAR_DATA.targets_by_tws){
+    const b = OPTIMIST_POLAR_DATA.targets_by_tws;
+    const cols = OPTIMIST_POLAR_DATA.tws_columns || [4, 6, 8, 10, 12, 14, 16, 18, 20];
+    let i1 = 0;
+    for(let i = 0; i < cols.length - 1; i++){
+      if(w >= cols[i] && w <= cols[i + 1]){ i1 = i; break; }
+    }
+    const i2 = Math.min(i1 + 1, cols.length - 1);
+    const w1 = cols[i1], w2 = cols[i2];
+    const f = (w2 === w1) ? 0 : (w - w1) / (w2 - w1);
+    const t1 = b[String(w1)] || b[w1.toFixed(1)];
+    const t2 = b[String(w2)] || b[w2.toFixed(1)];
+
+    const lerp = (p1, p2) => p1 + (p2 - p1) * f;
+    const vmgUp = lerp(t1.upwind_max_vmg_kts, t2.upwind_max_vmg_kts);
+    const vmgRun = lerp(t1.downwind_max_vmg_kts, t2.downwind_max_vmg_kts);
+    const reachBsp = lerp(t1.reach_90_bsp_kts, t2.reach_90_bsp_kts);
+
+    return {
+      upwind: Number((60 / vmgUp).toFixed(1)),
+      run: Number((60 / vmgRun).toFixed(1)),
+      reach: Number((60 / reachBsp).toFixed(1)),
+      band: `${Math.round(w)} kn (VPP)`,
+      vmgUp: Number(vmgUp.toFixed(2)),
+      vmgRun: Number(vmgRun.toFixed(2))
+    };
   }
+  if(w < 8) return { upwind: 32.9, run: 18.0, reach: 20.1, band: '5-8 kn', vmgUp: 1.82, vmgRun: 3.33 };
+  if(w < 12) return { upwind: 26.0, run: 15.0, reach: 16.7, band: '8-12 kn', vmgUp: 2.31, vmgRun: 4.00 };
+  if(w < 15) return { upwind: 24.0, run: 14.0, reach: 15.0, band: '12-15 kn', vmgUp: 2.50, vmgRun: 4.29 };
+  return { upwind: 25.0, run: 13.5, reach: 14.6, band: '15+ kn', vmgUp: 2.40, vmgRun: 4.46 };
 }
 
 /**
@@ -6514,6 +7194,8 @@ function renderAnalysisV2View(){
           </div>
         `;
 
+        const isCoach = isCoachModeActive();
+
         return `
           <div class="sailor-analysis-card" data-boatid="${r.id}">
             <div class="sailor-card-header">
@@ -6540,15 +7222,19 @@ function renderAnalysisV2View(){
             <!-- Notas del Entrenador -->
             <div class="sailor-coach-notes">
               <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px">📝 Anotaciones del Entrenador:</div>
-              <textarea class="coach-notes-input" placeholder="Escribe observaciones para este regatista (se guardan automáticamente)..." data-noteskey="${storageKey}">${esc(savedNote)}</textarea>
+              <textarea class="coach-notes-input${isCoach ? '' : ' is-locked'}" ${isCoach ? '' : 'readonly'} placeholder="" data-noteskey="${storageKey}">${esc(savedNote)}</textarea>
             </div>
           </div>
         `;
       }).join('');
 
-      // Auto-guardar notas del entrenador
+      // Auto-guardar notas del entrenador (solo en Modo Entrenador)
       gridEl.querySelectorAll('.coach-notes-input').forEach(ta => {
         ta.addEventListener('input', e => {
+          if(!isCoachModeActive()){
+            e.preventDefault();
+            return;
+          }
           const k = e.target.dataset.noteskey;
           if(k){
             localStorage.setItem(k, e.target.value);
@@ -6623,27 +7309,38 @@ function estimateFleetWindSpeed(){
   if(D.windKnVal != null && isFinite(D.windKnVal) && D.windKnVal > 0) return D.windKnVal;
 
   const boatUpwindSpeeds = [];
+  const boatDownwindSpeeds = [];
+  const boatMaxSpeeds = [];
+
   for(let i = 0; i < D.N; i++){
     const kine = getBoatKinematics(i);
     if(!kine) continue;
     const rInt = getBoatRaceInterval(i);
     const s0 = Math.max(0, rInt.sStart);
     const s1 = Math.min(D.T - 1, rInt.sEnd);
-    let sum = 0, cnt = 0;
+    let sumUp = 0, cntUp = 0;
+    let sumDown = 0, cntDown = 0;
+    let maxS = 0;
+
     for(let s = s0; s <= s1; s++){
       if(!ok(i, s)) continue;
       const twaAbs = Math.abs(kine.twa[s]);
       const sog = kine.sogEma[s];
+      if(sog > maxS) maxS = sog;
       if(twaAbs >= 36 && twaAbs <= 55 && sog >= 1.2){
-        sum += sog;
-        cnt++;
+        sumUp += sog;
+        cntUp++;
+      } else if(twaAbs >= 135 && twaAbs <= 180 && sog >= 1.5){
+        sumDown += sog;
+        cntDown++;
       }
     }
-    if(cnt >= 15){
-      boatUpwindSpeeds.push(sum / cnt);
-    }
+    if(cntUp >= 15) boatUpwindSpeeds.push(sumUp / cntUp);
+    if(cntDown >= 15) boatDownwindSpeeds.push(sumDown / cntDown);
+    if(maxS > 1.0) boatMaxSpeeds.push(maxS);
   }
 
+  // Estimación de contingencia si no hay suficientes puntos de ceñida
   if(!boatUpwindSpeeds.length){
     const allSpeeds = [];
     for(let i = 0; i < D.N; i++){
@@ -6657,36 +7354,59 @@ function estimateFleetWindSpeed(){
     if(!allSpeeds.length) return 10.0;
     allSpeeds.sort((a,b) => a - b);
     const medSpd = allSpeeds[Math.floor(allSpeeds.length * 0.5)];
-    if(medSpd <= 2.5) return 6.0;
-    if(medSpd <= 3.2) return 10.0;
-    if(medSpd <= 3.8) return 14.0;
-    return 18.0;
+    if(medSpd <= 2.2) return 5.0;
+    if(medSpd <= 2.8) return 8.0;
+    if(medSpd <= 3.4) return 11.0;
+    if(medSpd <= 4.0) return 14.0;
+    return 17.0;
   }
 
   boatUpwindSpeeds.sort((a,b) => a - b);
   const topHalf = boatUpwindSpeeds.slice(Math.floor(boatUpwindSpeeds.length / 2));
   const vUp = topHalf[Math.floor(topHalf.length / 2)] || boatUpwindSpeeds[0];
 
+  boatMaxSpeeds.sort((a,b) => a - b);
+  const vMaxFleet = boatMaxSpeeds.length ? boatMaxSpeeds[Math.floor(boatMaxSpeeds.length * 0.75)] : 0;
+
+  boatDownwindSpeeds.sort((a,b) => a - b);
+  const vDown = boatDownwindSpeeds.length ? boatDownwindSpeeds[Math.floor(boatDownwindSpeeds.length / 2)] : 0;
+
+  // Detección de viento fresco/duro (>=14 kn) donde la ceñida del Optimist se satura a ~3.2-3.3 kn pero la popa y través se disparan
+  const isHeavy = (vMaxFleet >= 5.2) || (vDown >= 4.4);
+
   let estimatedTws = 10.0;
-  if(vUp <= 2.20){
-    estimatedTws = Math.max(4.0, 4.0 + (vUp - 1.20) * 2.0);
-  } else if(vUp <= 2.80){
-    estimatedTws = 6.0 + ((vUp - 2.20) / (2.80 - 2.20)) * 1.5;
-  } else if(vUp <= 3.45){
-    estimatedTws = 7.5 + ((vUp - 2.80) / (3.45 - 2.80)) * 3.5;
-  } else if(vUp <= 3.85){
-    estimatedTws = 11.0 + ((vUp - 3.45) / (3.85 - 3.45)) * 4.0;
-  } else if(vUp <= 4.10){
-    estimatedTws = 15.0 + ((vUp - 3.85) / (4.10 - 3.85)) * 4.0;
+  if(!isHeavy){
+    if(vUp <= 1.91){
+      estimatedTws = Math.max(3.5, 4.0 * (vUp / 1.91));
+    } else if(vUp <= 2.53){
+      estimatedTws = 4.0 + ((vUp - 1.91) / (2.53 - 1.91)) * 2.0;
+    } else if(vUp <= 2.87){
+      estimatedTws = 6.0 + ((vUp - 2.53) / (2.87 - 2.53)) * 2.0;
+    } else if(vUp <= 3.11){
+      estimatedTws = 8.0 + ((vUp - 2.87) / (3.11 - 2.87)) * 2.0;
+    } else if(vUp <= 3.25){
+      estimatedTws = 10.0 + ((vUp - 3.11) / (3.25 - 3.11)) * 2.0;
+    } else {
+      estimatedTws = 12.0 + ((vUp - 3.25) / (3.31 - 3.25)) * 2.0;
+    }
   } else {
-    estimatedTws = Math.min(25.0, 19.0 + (vUp - 4.10) * 8.0);
+    if(vDown >= 3.5){
+      if(vDown <= 4.34) estimatedTws = 14.0;
+      else if(vDown <= 4.50) estimatedTws = 14.0 + ((vDown - 4.34) / (4.50 - 4.34)) * 2.0;
+      else if(vDown <= 4.68) estimatedTws = 16.0 + ((vDown - 4.50) / (4.68 - 4.50)) * 2.0;
+      else if(vDown <= 4.80) estimatedTws = 18.0 + ((vDown - 4.68) / (4.80 - 4.68)) * 2.0;
+      else estimatedTws = Math.min(25.0, 20.0 + (vDown - 4.80) * 5.0);
+    } else {
+      if(vMaxFleet <= 5.4) estimatedTws = 14.0;
+      else if(vMaxFleet <= 5.8) estimatedTws = 16.0;
+      else if(vMaxFleet <= 6.3) estimatedTws = 18.0;
+      else estimatedTws = 20.0;
+    }
   }
+
   return Number(estimatedTws.toFixed(1));
 }
 
-/**
- * Obtiene la velocidad del viento en nudos activa para un instante t o para la sesión.
- */
 function getWindSpeedKnots(t){
   if(D){
     if(D.windKnVal != null && isFinite(D.windKnVal) && D.windKnVal > 0){
@@ -6920,48 +7640,173 @@ function estimateTWD(boatIndex){
  * Polares empíricas de referencia para la clase Optimist (IOD95).
  * Devuelve valores objetivo de TWA, SOG y VMG según el tipo de tramo y la intensidad de viento (TWS).
  */
-function getOptimistPolarTarget(legType, tws){
-  const w = Math.max(4, Math.min(25, Number(tws) || 10));
-  const type = String(legType || 'UPWIND').toUpperCase();
+const OPTIMIST_POLAR_DATA = {"boat_class":"International Optimist Dinghy (IOD95)","hull_specs":{"loa_m":2.3,"lwl_m":2.18,"beam_m":1.13,"sail_area_m2":3.5,"hull_weight_kg":35,"ideal_skipper_weight_kg":[40,45],"competitive_skipper_weight_range_kg":[35,55],"rya_pn":1646,"us_dpn":123.6},"units":{"tws":"knots","twa":"degrees","bsp":"knots","vmg":"knots"},"tws_columns":[4,6,8,10,12,14,16,18,20],"twa_rows":[0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180],"targets_by_tws":{"4":{"upwind_target_twa_deg":45,"upwind_target_bsp_kts":1.91,"upwind_max_vmg_kts":1.35,"reach_70_bsp_kts":2.26,"reach_90_bsp_kts":2.42,"reach_125_bsp_kts":2.44,"downwind_target_twa_deg":145,"downwind_target_bsp_kts":2.3,"downwind_max_vmg_kts":1.88,"run_180_bsp_kts":1.76},"6":{"upwind_target_twa_deg":44,"upwind_target_bsp_kts":2.53,"upwind_max_vmg_kts":1.82,"reach_70_bsp_kts":2.9,"reach_90_bsp_kts":3.02,"reach_125_bsp_kts":3.18,"downwind_target_twa_deg":160,"downwind_target_bsp_kts":3.32,"downwind_max_vmg_kts":3.12,"run_180_bsp_kts":3.06},"8":{"upwind_target_twa_deg":43,"upwind_target_bsp_kts":2.87,"upwind_max_vmg_kts":2.1,"reach_70_bsp_kts":3.28,"reach_90_bsp_kts":3.42,"reach_125_bsp_kts":3.6,"downwind_target_twa_deg":164,"downwind_target_bsp_kts":3.77,"downwind_max_vmg_kts":3.62,"run_180_bsp_kts":3.56},"10":{"upwind_target_twa_deg":42,"upwind_target_bsp_kts":3.11,"upwind_max_vmg_kts":2.31,"reach_70_bsp_kts":3.5,"reach_90_bsp_kts":3.6,"reach_125_bsp_kts":3.84,"downwind_target_twa_deg":167,"downwind_target_bsp_kts":4.11,"downwind_max_vmg_kts":4,"run_180_bsp_kts":3.95},"12":{"upwind_target_twa_deg":41,"upwind_target_bsp_kts":3.25,"upwind_max_vmg_kts":2.45,"reach_70_bsp_kts":3.7,"reach_90_bsp_kts":3.85,"reach_125_bsp_kts":4.08,"downwind_target_twa_deg":169,"downwind_target_bsp_kts":4.26,"downwind_max_vmg_kts":4.18,"run_180_bsp_kts":4.14},"14":{"upwind_target_twa_deg":41,"upwind_target_bsp_kts":3.31,"upwind_max_vmg_kts":2.5,"reach_70_bsp_kts":3.82,"reach_90_bsp_kts":4,"reach_125_bsp_kts":4.2,"downwind_target_twa_deg":171,"downwind_target_bsp_kts":4.34,"downwind_max_vmg_kts":4.29,"run_180_bsp_kts":4.25},"16":{"upwind_target_twa_deg":43,"upwind_target_bsp_kts":3.28,"upwind_max_vmg_kts":2.4,"reach_70_bsp_kts":3.85,"reach_90_bsp_kts":4.1,"reach_125_bsp_kts":4.33,"downwind_target_twa_deg":172,"downwind_target_bsp_kts":4.5,"downwind_max_vmg_kts":4.46,"run_180_bsp_kts":4.42},"18":{"upwind_target_twa_deg":45,"upwind_target_bsp_kts":3.27,"upwind_max_vmg_kts":2.31,"reach_70_bsp_kts":3.86,"reach_90_bsp_kts":4.18,"reach_125_bsp_kts":4.46,"downwind_target_twa_deg":173,"downwind_target_bsp_kts":4.65,"downwind_max_vmg_kts":4.62,"run_180_bsp_kts":4.58},"20":{"upwind_target_twa_deg":46,"upwind_target_bsp_kts":3.1,"upwind_max_vmg_kts":2.15,"reach_70_bsp_kts":3.8,"reach_90_bsp_kts":4.2,"reach_125_bsp_kts":4.56,"downwind_target_twa_deg":174,"downwind_target_bsp_kts":4.78,"downwind_max_vmg_kts":4.75,"run_180_bsp_kts":4.71},"4.0":{"upwind_target_twa_deg":45,"upwind_target_bsp_kts":1.91,"upwind_max_vmg_kts":1.35,"reach_70_bsp_kts":2.26,"reach_90_bsp_kts":2.42,"reach_125_bsp_kts":2.44,"downwind_target_twa_deg":145,"downwind_target_bsp_kts":2.3,"downwind_max_vmg_kts":1.88,"run_180_bsp_kts":1.76},"6.0":{"upwind_target_twa_deg":44,"upwind_target_bsp_kts":2.53,"upwind_max_vmg_kts":1.82,"reach_70_bsp_kts":2.9,"reach_90_bsp_kts":3.02,"reach_125_bsp_kts":3.18,"downwind_target_twa_deg":160,"downwind_target_bsp_kts":3.32,"downwind_max_vmg_kts":3.12,"run_180_bsp_kts":3.06},"8.0":{"upwind_target_twa_deg":43,"upwind_target_bsp_kts":2.87,"upwind_max_vmg_kts":2.1,"reach_70_bsp_kts":3.28,"reach_90_bsp_kts":3.42,"reach_125_bsp_kts":3.6,"downwind_target_twa_deg":164,"downwind_target_bsp_kts":3.77,"downwind_max_vmg_kts":3.62,"run_180_bsp_kts":3.56},"10.0":{"upwind_target_twa_deg":42,"upwind_target_bsp_kts":3.11,"upwind_max_vmg_kts":2.31,"reach_70_bsp_kts":3.5,"reach_90_bsp_kts":3.6,"reach_125_bsp_kts":3.84,"downwind_target_twa_deg":167,"downwind_target_bsp_kts":4.11,"downwind_max_vmg_kts":4,"run_180_bsp_kts":3.95},"12.0":{"upwind_target_twa_deg":41,"upwind_target_bsp_kts":3.25,"upwind_max_vmg_kts":2.45,"reach_70_bsp_kts":3.7,"reach_90_bsp_kts":3.85,"reach_125_bsp_kts":4.08,"downwind_target_twa_deg":169,"downwind_target_bsp_kts":4.26,"downwind_max_vmg_kts":4.18,"run_180_bsp_kts":4.14},"14.0":{"upwind_target_twa_deg":41,"upwind_target_bsp_kts":3.31,"upwind_max_vmg_kts":2.5,"reach_70_bsp_kts":3.82,"reach_90_bsp_kts":4,"reach_125_bsp_kts":4.2,"downwind_target_twa_deg":171,"downwind_target_bsp_kts":4.34,"downwind_max_vmg_kts":4.29,"run_180_bsp_kts":4.25},"16.0":{"upwind_target_twa_deg":43,"upwind_target_bsp_kts":3.28,"upwind_max_vmg_kts":2.4,"reach_70_bsp_kts":3.85,"reach_90_bsp_kts":4.1,"reach_125_bsp_kts":4.33,"downwind_target_twa_deg":172,"downwind_target_bsp_kts":4.5,"downwind_max_vmg_kts":4.46,"run_180_bsp_kts":4.42},"18.0":{"upwind_target_twa_deg":45,"upwind_target_bsp_kts":3.27,"upwind_max_vmg_kts":2.31,"reach_70_bsp_kts":3.86,"reach_90_bsp_kts":4.18,"reach_125_bsp_kts":4.46,"downwind_target_twa_deg":173,"downwind_target_bsp_kts":4.65,"downwind_max_vmg_kts":4.62,"run_180_bsp_kts":4.58},"20.0":{"upwind_target_twa_deg":46,"upwind_target_bsp_kts":3.1,"upwind_max_vmg_kts":2.15,"reach_70_bsp_kts":3.8,"reach_90_bsp_kts":4.2,"reach_125_bsp_kts":4.56,"downwind_target_twa_deg":174,"downwind_target_bsp_kts":4.78,"downwind_max_vmg_kts":4.75,"run_180_bsp_kts":4.71}},"ioda_course_time_benchmarks":{"5_8_kts":{"upwind_min_per_nm":32,"upwind_vmg_kts":1.88,"reach_min_per_nm":20,"reach_bsp_kts":3,"run_min_per_nm":18,"run_vmg_kts":3.33},"8_12_kts":{"upwind_min_per_nm":26,"upwind_vmg_kts":2.31,"reach_min_per_nm":17,"reach_bsp_kts":3.53,"run_min_per_nm":15,"run_vmg_kts":4},"12_15_kts":{"upwind_min_per_nm":24,"upwind_vmg_kts":2.5,"reach_min_per_nm":15,"reach_bsp_kts":4,"run_min_per_nm":14,"run_vmg_kts":4.29},"15_plus_kts":{"upwind_min_per_nm":26,"upwind_vmg_kts":2.31,"reach_min_per_nm":14,"reach_bsp_kts":4.29,"run_min_per_nm":13,"run_vmg_kts":4.62}},"polar_matrix_bsp":{"4":[0,0,0,0,0,0,0.59,1.25,1.63,1.91,2.02,2.08,2.14,2.21,2.26,2.31,2.35,2.39,2.42,2.44,2.46,2.47,2.48,2.47,2.46,2.44,2.41,2.38,2.34,2.3,2.24,2.18,2.11,2.03,1.95,1.86,1.76],"6":[0,0,0,0,0,0,0.8,1.69,2.24,2.57,2.67,2.72,2.78,2.85,2.9,2.94,2.97,2.99,3.02,3.05,3.07,3.1,3.12,3.14,3.16,3.18,3.19,3.21,3.22,3.25,3.28,3.31,3.32,3.3,3.25,3.16,3.06],"8":[0,0,0,0,0,0,0.92,1.95,2.65,2.95,3.03,3.08,3.15,3.22,3.28,3.32,3.36,3.39,3.42,3.45,3.47,3.5,3.52,3.55,3.57,3.6,3.62,3.64,3.66,3.68,3.71,3.74,3.76,3.76,3.73,3.65,3.56],"10":[0,0,0,0,0,0,1.01,2.14,2.97,3.22,3.29,3.34,3.4,3.46,3.5,3.53,3.55,3.58,3.6,3.63,3.66,3.69,3.72,3.76,3.8,3.84,3.88,3.92,3.95,3.99,4.02,4.06,4.09,4.1,4.09,4.03,3.95],"12":[0,0,0,0,0,0,1.08,2.27,3.19,3.37,3.44,3.5,3.57,3.64,3.7,3.74,3.78,3.82,3.85,3.88,3.92,3.95,3.98,4.01,4.05,4.08,4.11,4.14,4.16,4.18,4.21,4.23,4.24,4.26,4.26,4.21,4.14],"14":[0,0,0,0,0,0,1.1,2.32,3.25,3.44,3.52,3.58,3.66,3.75,3.82,3.87,3.92,3.96,4,4.03,4.06,4.09,4.12,4.15,4.18,4.2,4.22,4.24,4.26,4.28,4.3,4.31,4.33,4.34,4.34,4.32,4.25],"16":[0,0,0,0,0,0,1.05,2.23,3.02,3.37,3.47,3.54,3.64,3.75,3.85,3.92,3.99,4.05,4.1,4.14,4.18,4.21,4.24,4.27,4.3,4.33,4.36,4.38,4.4,4.42,4.44,4.46,4.48,4.5,4.5,4.49,4.42],"18":[0,0,0,0,0,0,1.01,2.14,2.79,3.27,3.43,3.48,3.59,3.73,3.86,3.96,4.04,4.12,4.18,4.23,4.27,4.31,4.35,4.39,4.43,4.46,4.49,4.52,4.55,4.57,4.59,4.61,4.63,4.65,4.65,4.65,4.58],"20":[0,0,0,0,0,0,0.94,1.99,2.56,3.02,3.25,3.35,3.49,3.66,3.8,3.92,4.03,4.12,4.2,4.26,4.32,4.37,4.42,4.47,4.52,4.56,4.6,4.63,4.66,4.68,4.71,4.73,4.75,4.76,4.77,4.77,4.71]}};
 
-  // Polares calibradas para la clase Optimist (IOD95) en condiciones reales de regata
-  const polarTable = [
-    { tws: 6,  upwind: { twa: 45, sog: 2.80, vmg: 1.98 }, reach: { sog: 3.50 }, downwind: { twa: 152, sog: 3.20, vmg: 2.82 } },
-    { tws: 10, upwind: { twa: 44, sog: 3.45, vmg: 2.48 }, reach: { sog: 4.60 }, downwind: { twa: 150, sog: 4.20, vmg: 3.64 } },
-    { tws: 14, upwind: { twa: 43, sog: 3.85, vmg: 2.81 }, reach: { sog: 5.30 }, downwind: { twa: 148, sog: 4.85, vmg: 4.11 } },
-    { tws: 18, upwind: { twa: 44, sog: 4.05, vmg: 2.91 }, reach: { sog: 5.80 }, downwind: { twa: 146, sog: 5.30, vmg: 4.27 } }
-  ];
+const OPTIMIST_PARAMETRIC_WEIGHT_MODEL = {"reference_skipper_weight_kg":42.5,"rigged_hull_weight_kg":38.5,"valid_lightweight_range_kg":[30,38],"full_supported_weight_range_kg":[30,55],"recommended_sail_cuts_under_38kg":{"CD_Sails":"Flat (<37 kg) / Semiradial DRS- (33-38 kg)","OneSails":"Standard Light (<36 kg) / GMR (36-45 kg)","North_Sails":"Mast Rake base <40 kg: 2.79 m (7-10 mm tighter outhaul in flat water)"}};
 
-  let rowA = polarTable[0], rowB = polarTable[0], f = 0;
-  if(w <= polarTable[0].tws){
-    rowA = polarTable[0]; rowB = polarTable[0]; f = 0;
-  }else if(w >= polarTable[polarTable.length - 1].tws){
-    rowA = polarTable[polarTable.length - 1]; rowB = polarTable[polarTable.length - 1]; f = 0;
-  }else{
-    for(let i = 0; i < polarTable.length - 1; i++){
-      if(w >= polarTable[i].tws && w <= polarTable[i+1].tws){
-        rowA = polarTable[i];
-        rowB = polarTable[i+1];
-        f = (w - rowA.tws) / (rowB.tws - rowA.tws);
-        break;
-      }
+/**
+ * Calcula BSP Teórica, % Polar, VMG Real y % Target VMG para un punto de Optimist
+ */
+function evaluateOptimistPerformance(tws, twa, sog, polarData = OPTIMIST_POLAR_DATA) {
+  const twsCols = polarData.tws_columns;
+  const twaRows = polarData.twa_rows;
+  const absTwa = Math.min(180, Math.max(0, Math.abs(twa)));
+  const clampedTws = Math.min(twsCols[twsCols.length - 1], Math.max(twsCols[0], tws));
+
+  let i1 = 0;
+  for (let i = 0; i < twsCols.length - 1; i++) {
+    if (clampedTws >= twsCols[i] && clampedTws <= twsCols[i + 1]) {
+      i1 = i; break;
     }
   }
+  const i2 = Math.min(i1 + 1, twsCols.length - 1);
+  const tws1 = twsCols[i1], tws2 = twsCols[i2];
+  const wTws = (tws2 === tws1) ? 0 : (clampedTws - tws1) / (tws2 - tws1);
 
+  const j1 = Math.min(Math.floor(absTwa / 5), twaRows.length - 2);
+  const j2 = j1 + 1;
+  const twa1 = twaRows[j1], twa2 = twaRows[j2];
+  const wTwa = (absTwa - twa1) / (twa2 - twa1);
+
+  const col1 = polarData.polar_matrix_bsp[String(tws1)] || polarData.polar_matrix_bsp[Number(tws1).toFixed(1)];
+  const col2 = polarData.polar_matrix_bsp[String(tws2)] || polarData.polar_matrix_bsp[Number(tws2).toFixed(1)];
+
+  const bspTws1 = col1[j1] + wTwa * (col1[j2] - col1[j1]);
+  const bspTws2 = col2[j1] + wTwa * (col2[j2] - col2[j1]);
+  const targetPolarBsp = bspTws1 + wTws * (bspTws2 - bspTws1);
+
+  const t1 = polarData.targets_by_tws[String(tws1)] || polarData.targets_by_tws[Number(tws1).toFixed(1)] || polarData.targets_by_tws[String(tws1)+'.0'];
+  const t2 = polarData.targets_by_tws[String(tws2)] || polarData.targets_by_tws[Number(tws2).toFixed(1)] || polarData.targets_by_tws[String(tws2)+'.0'];
+  const isUpwind = absTwa <= 90;
+
+  const maxVmg = isUpwind
+    ? t1.upwind_max_vmg_kts + wTws * (t2.upwind_max_vmg_kts - t1.upwind_max_vmg_kts)
+    : t1.downwind_max_vmg_kts + wTws * (t2.downwind_max_vmg_kts - t1.downwind_max_vmg_kts);
+
+  const optTwa = isUpwind
+    ? t1.upwind_target_twa_deg + wTws * (t2.upwind_target_twa_deg - t1.upwind_target_twa_deg)
+    : t1.downwind_target_twa_deg + wTws * (t2.downwind_target_twa_deg - t1.downwind_target_twa_deg);
+
+  const vmgReal = Math.abs(sog * Math.cos((absTwa * Math.PI) / 180));
+  const polarPct = targetPolarBsp > 0.1 ? (sog / targetPolarBsp) * 100 : 0;
+  const vmgPct = maxVmg > 0.1 ? (vmgReal / maxVmg) * 100 : 0;
+
+  const mode = absTwa < 65 
+    ? (absTwa < optTwa - 2.0 ? 'Pinching (Sobreorzando)' : (absTwa > optTwa + 2.5 ? 'Footing (Abierto)' : 'In the Groove (Óptimo)')) 
+    : 'Portantes / Largo';
+
+  return {
+    targetPolarBsp: Number(targetPolarBsp.toFixed(2)),
+    polarPercentage: Number(polarPct.toFixed(1)),
+    realVmg: Number(vmgReal.toFixed(2)),
+    targetMaxVmg: Number(maxVmg.toFixed(2)),
+    optimalTwa: Number(optTwa.toFixed(1)),
+    vmgPercentage: Number(vmgPct.toFixed(1)),
+    mode
+  };
+}
+
+/**
+ * Calcula BSP Teórica, % Polar y % Target VMG ajustados paramétricamente al peso del regatista (30 a 55 kg)
+ */
+function evaluateOptimistByWeight(tws, twa, sog, weightKg = 42.5, basePolar = OPTIMIST_POLAR_DATA) {
+  const wClamped = Math.min(55.0, Math.max(30.0, Number(weightKg) || 42.5));
+  const deltaW = 42.5 - wClamped;
+  const baseEval = evaluateOptimistPerformance(tws, twa, sog, basePolar);
+  const absTwa = Math.min(180, Math.max(0, Math.abs(twa)));
+
+  const dTwaUp = tws <= 7
+    ? -0.04 * deltaW * ((7 - tws) / 3.0)
+    : 0.26 * deltaW * Math.pow((tws - 7.0) / 13.0, 1.35);
+
+  const kVmgUp = tws <= 8.5
+    ? 1.0 + 0.0038 * deltaW * Math.pow((8.5 - tws) / 4.5, 0.9)
+    : 1.0 - 0.0125 * deltaW * Math.pow((tws - 8.5) / 11.5, 1.15);
+
+  const k90 = tws <= 13.0
+    ? 1.0 + 0.0030 * deltaW * Math.pow((13.0 - tws) / 9.0, 0.8)
+    : 1.0 - 0.0035 * deltaW * ((tws - 13.0) / 7.0);
+
+  const kDn = tws <= 16.0
+    ? 1.0 + 0.0038 * deltaW * (1.0 - 0.25 * (Math.abs(tws - 8.0) / 8.0))
+    : 1.0 + 0.0020 * deltaW * (1.0 - 0.6 * ((tws - 16.0) / 4.0));
+
+  let kBsp = 1.0;
+  if (absTwa <= 50) {
+    kBsp = kVmgUp;
+  } else if (absTwa <= 90) {
+    const w = (absTwa - 50) / 40.0;
+    kBsp = kVmgUp * (1 - w) + k90 * w;
+  } else if (absTwa <= 140) {
+    const w = (absTwa - 90) / 50.0;
+    kBsp = k90 * (1 - w) + kDn * w;
+  } else {
+    kBsp = kDn;
+  }
+
+  const targetPolarBsp = baseEval.targetPolarBsp * kBsp;
+  const isUpwind = absTwa <= 90;
+  const targetMaxVmg = isUpwind ? baseEval.targetMaxVmg * kVmgUp : baseEval.targetMaxVmg * kDn;
+  const optimalTwa = isUpwind ? baseEval.optimalTwa + dTwaUp : baseEval.optimalTwa - (tws >= 14 ? 0.15 * deltaW : 0);
+
+  const polarPct = targetPolarBsp > 0.1 ? (sog / targetPolarBsp) * 100 : 0;
+  const vmgPct = targetMaxVmg > 0.1 ? (baseEval.realVmg / targetMaxVmg) * 100 : 0;
+
+  return {
+    skipperWeightKg: wClamped,
+    targetPolarBsp: Number(targetPolarBsp.toFixed(2)),
+    polarPercentage: Number(polarPct.toFixed(1)),
+    realVmg: baseEval.realVmg,
+    targetMaxVmg: Number(targetMaxVmg.toFixed(2)),
+    optimalTwa: Number(optimalTwa.toFixed(1)),
+    vmgPercentage: Number(vmgPct.toFixed(1)),
+    mode: baseEval.mode
+  };
+}
+
+/**
+ * Devuelve valores objetivo de TWA, SOG y VMG para un tramo de regata (UPWIND, REACH, DOWNWIND)
+ * usando el modelo VPP oficial de Optimist y ajuste paramétrico de peso opcional.
+ */
+function getOptimistPolarTarget(legType, tws, weightKg = 42.5) {
+  const w = Math.max(4, Math.min(20, Number(tws) || 10));
+  const type = String(legType || 'UPWIND').toUpperCase();
+  const polarData = OPTIMIST_POLAR_DATA;
+  const twsCols = polarData.tws_columns;
+
+  let i1 = 0;
+  for (let i = 0; i < twsCols.length - 1; i++) {
+    if (w >= twsCols[i] && w <= twsCols[i + 1]) {
+      i1 = i; break;
+    }
+  }
+  const i2 = Math.min(i1 + 1, twsCols.length - 1);
+  const tws1 = twsCols[i1], tws2 = twsCols[i2];
+  const f = (tws2 === tws1) ? 0 : (w - tws1) / (tws2 - tws1);
+
+  const t1 = polarData.targets_by_tws[String(tws1)] || polarData.targets_by_tws[Number(tws1).toFixed(1)];
+  const t2 = polarData.targets_by_tws[String(tws2)] || polarData.targets_by_tws[Number(tws2).toFixed(1)];
   const lerp = (a, b) => a + (b - a) * f;
 
-  if(type === 'UPWIND'){
-    const twa = lerp(rowA.upwind.twa, rowB.upwind.twa);
-    const targetSog = lerp(rowA.upwind.sog, rowB.upwind.sog);
-    const targetVmg = lerp(rowA.upwind.vmg, rowB.upwind.vmg);
+  const wClamped = Math.min(55.0, Math.max(30.0, Number(weightKg) || 42.5));
+  const deltaW = 42.5 - wClamped;
+  const dTwaUp = w <= 7 ? -0.04 * deltaW * ((7 - w) / 3.0) : 0.26 * deltaW * Math.pow((w - 7.0) / 13.0, 1.35);
+  const kVmgUp = w <= 8.5 ? 1.0 + 0.0038 * deltaW * Math.pow((8.5 - w) / 4.5, 0.9) : 1.0 - 0.0125 * deltaW * Math.pow((w - 8.5) / 11.5, 1.15);
+  const k90 = w <= 13.0 ? 1.0 + 0.0030 * deltaW * Math.pow((13.0 - w) / 9.0, 0.8) : 1.0 - 0.0035 * deltaW * ((w - 13.0) / 7.0);
+  const kDn = w <= 16.0 ? 1.0 + 0.0038 * deltaW * (1.0 - 0.25 * (Math.abs(w - 8.0) / 8.0)) : 1.0 + 0.0020 * deltaW * (1.0 - 0.6 * ((w - 16.0) / 4.0));
+
+  if (type === 'UPWIND') {
+    const twa = Number((lerp(t1.upwind_target_twa_deg, t2.upwind_target_twa_deg) + dTwaUp).toFixed(1));
+    const targetSog = Number((lerp(t1.upwind_target_bsp_kts, t2.upwind_target_bsp_kts) * kVmgUp).toFixed(2));
+    const targetVmg = Number((lerp(t1.upwind_max_vmg_kts, t2.upwind_max_vmg_kts) * kVmgUp).toFixed(2));
     return { type, twa, targetSog, targetVmg };
-  } else if(type === 'DOWNWIND'){
-    const twa = lerp(rowA.downwind.twa, rowB.downwind.twa);
-    const targetSog = lerp(rowA.downwind.sog, rowB.downwind.sog);
-    const targetVmg = lerp(rowA.downwind.vmg, rowB.downwind.vmg);
+  } else if (type === 'DOWNWIND') {
+    const twa = Number((lerp(t1.downwind_target_twa_deg, t2.downwind_target_twa_deg) - (w >= 14 ? 0.15 * deltaW : 0)).toFixed(1));
+    const targetSog = Number((lerp(t1.downwind_target_bsp_kts, t2.downwind_target_bsp_kts) * kDn).toFixed(2));
+    const targetVmg = Number((lerp(t1.downwind_max_vmg_kts, t2.downwind_max_vmg_kts) * kDn).toFixed(2));
     return { type, twa, targetSog, targetVmg };
   } else {
-    const targetSog = lerp(rowA.reach.sog, rowB.reach.sog);
+    const targetSog = Number((lerp(t1.reach_90_bsp_kts, t2.reach_90_bsp_kts) * k90).toFixed(2));
     return { type: 'REACH', twa: 90, targetSog, targetVmg: 0 };
   }
 }
@@ -7619,23 +8464,21 @@ function renderSailorPolarChart(boatIdx, twd){
   ctx.textBaseline='bottom';
   ctx.fillText('Boat speed in knots',14,h-10);
 
-  // 3. Polar Teórica de Referencia de Optimist (línea discontinua azul)
-  const targetPolar=[
-    {twa:36,kn:0.5},
-    {twa:43,kn:3.85},
-    {twa:55,kn:4.25},
-    {twa:70,kn:4.60},
-    {twa:90,kn:4.90},
-    {twa:110,kn:4.75},
-    {twa:130,kn:4.45},
-    {twa:145,kn:4.15},
-    {twa:160,kn:3.80},
-    {twa:180,kn:3.45}
-  ];
+  // 3. Polar Teórica Oficial VPP Optimist para el viento y peso activos
+  const currentTws = (typeof getWindSpeedKnots === 'function') ? getWindSpeedKnots(state.t != null ? state.t : (D.startT || 0)) : 10;
+  const bData = (D.boats && D.boats[boatIdx]) ? D.boats[boatIdx] : {};
+  const sailorWeightKg = Number(bData.weightKg || bData.peso || 42.5);
+
+  const targetPolar = [];
+  targetPolar.push({ twa: 30, kn: evaluateOptimistByWeight(currentTws, 30, 0, sailorWeightKg).targetPolarBsp });
+  for(let deg = 35; deg <= 180; deg += 5){
+    const evalRes = evaluateOptimistByWeight(currentTws, deg, 0, sailorWeightKg);
+    targetPolar.push({ twa: deg, kn: evalRes.targetPolarBsp });
+  }
 
   ctx.setLineDash([4,4]);
   ctx.strokeStyle='#0284c7';
-  ctx.lineWidth=2;
+  ctx.lineWidth=2.2;
 
   // Teórica en Estribor
   ctx.beginPath();
@@ -7659,6 +8502,13 @@ function renderSailorPolarChart(boatIdx, twd){
   });
   ctx.stroke();
   ctx.setLineDash([]);
+
+  // Rótulo informativo de la Polar VPP activa
+  ctx.fillStyle='#0284c7';
+  ctx.font='bold 10px system-ui, sans-serif';
+  ctx.textAlign='left';
+  ctx.textBaseline='top';
+  ctx.fillText(`VPP ${currentTws.toFixed(1)} kn (${sailorWeightKg} kg)`, 14, 12);
 
   // 4. Datos del Regatista: Nube de puntos y Curva Empírica Polar (Rojo sólido)
   const kine=getBoatKinematics(boatIdx);
@@ -7700,19 +8550,17 @@ function renderSailorPolarChart(boatIdx, twd){
     ctx.arc(sx,sy,2,0,2*Math.PI);
     ctx.fill();
 
-    const tgt=targetPolar.find(tp=>Math.abs(tp.twa-twaAbs)<=7);
-    if(tgt){
-      totalSogReal+=sog;
-      totalSogTarget+=tgt.kn;
-      nEval++;
-    }
+    totalSogReal += sog;
+    const evalPt = evaluateOptimistByWeight(currentTws, twaAbs, sog, sailorWeightKg);
+    totalSogTarget += evalPt.targetPolarBsp;
+    nEval++;
   }
 
   const effBadge=document.getElementById('polarEfficiencyBadge');
   if(effBadge){
     if(nEval>15){
       const eff=Math.round((totalSogReal/totalSogTarget)*100);
-      effBadge.textContent=`${eff}% Rendimiento Polar`;
+      effBadge.textContent=`${eff}% Rendimiento Polar (VPP ${currentTws.toFixed(1)} kn)`;
       effBadge.className=eff>=90?'chip-good':(eff>=80?'':'chip-alert');
     }else{
       effBadge.textContent='Evaluando...';
@@ -9097,6 +9945,10 @@ const msgEl=document.getElementById('importMsg'),fileIn=document.getElementById(
 function showMsg(lines){msgEl.innerHTML=lines.map(l=>`<span class="${l.cls||''}">${esc(l.t)}</span>`).join('');}
 const OKEXT=['gpx','kml','xlsx','xls','ods','csv'];
 async function handleFiles(files){
+  if(!isCoachModeActive()){
+    requireCoachAuthForUpload(() => handleFiles(files));
+    return;
+  }
   currentCloudRegata = null;
   updateCloudHeaderButtons();
   if(window.location.search){
@@ -9184,12 +10036,40 @@ async function filesFromDrop(dt){
   if(!entries.length)return [...dt.files];
   const out=[];for(const e of entries)await readEntry(e,out);return out;
 }
-drop.addEventListener('click',()=>dirIn.click());
-document.getElementById('pickDir').addEventListener('click',()=>dirIn.click());
-document.getElementById('pickFiles').addEventListener('click',()=>fileIn.click());
+function requireCoachAuthForUpload(onAuthorized){
+  if(isCoachModeActive()){
+    if(typeof onAuthorized === 'function') onAuthorized();
+    return true;
+  }
+  showMsg([{ t: '🔒 Acceso restringido: Debes iniciar sesión como entrenador o administrador para subir tracks y crear regatas.', cls: 'warn' }]);
+  openLoginModal(() => {
+    if(typeof onAuthorized === 'function') onAuthorized();
+  });
+  return false;
+}
+
+drop.addEventListener('click', () => {
+  requireCoachAuthForUpload(() => dirIn.click());
+});
+document.getElementById('pickDir').addEventListener('click', (e) => {
+  e.stopPropagation();
+  requireCoachAuthForUpload(() => dirIn.click());
+});
+document.getElementById('pickFiles').addEventListener('click', (e) => {
+  e.stopPropagation();
+  requireCoachAuthForUpload(() => fileIn.click());
+});
 ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
 ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
-drop.addEventListener('drop',async e=>{handleFiles(await filesFromDrop(e.dataTransfer));});
+drop.addEventListener('drop',async e=>{
+  e.preventDefault();
+  drop.classList.remove('over');
+  const droppedFiles = await filesFromDrop(e.dataTransfer);
+  if(!droppedFiles || !droppedFiles.length) return;
+  requireCoachAuthForUpload(() => {
+    handleFiles(droppedFiles);
+  });
+});
 
 /* ---------- cargar un conjunto de datos ---------- */
 function loadDataset(nd){
@@ -9270,7 +10150,16 @@ async function clearDBSession(){
 function saveCurrentSession(){
   if(!D||!lastLoad)return;
   const customSails={};
-  D.boats.forEach(b=>{customSails[b.name]=b.sail;});
+  const sailorNotes={};
+  D.boats.forEach(b=>{
+    customSails[b.name]=b.sail;
+    const s = (b.sail || b.name || '').trim();
+    if(s){
+      const k = `coach_notes_${(D.title||'regata').replace(/\s+/g,'_')}_${s}`;
+      const val = localStorage.getItem(k);
+      if(val) sailorNotes[s] = val;
+    }
+  });
   const data={
     all:lastLoad.all,
     used:lastLoad.used,
@@ -9287,13 +10176,14 @@ function saveCurrentSession(){
     },
     tactics:state.tactics,
     customSails,
+    sailorNotes,
     currentCloudRegata: currentCloudRegata || null
   };
   saveSessionToDB(data);
 }
 
 function clearSession(){
-  if(confirm('¿Quieres borrar la sesión actual y empezar un entrenamiento nuevo de cero?')){
+  if(confirm('¿Quieres volver a la pantalla de Inicio y cerrar la sesión actual?')){
     clearDBSession();
     currentCloudRegata = null;
     updateCloudHeaderButtons();
@@ -9358,6 +10248,14 @@ async function initSession(){
         }
         if(saved.customSails){
           D.boats.forEach(b=>{if(saved.customSails[b.name])b.sail=saved.customSails[b.name];});
+        }
+        if(saved.sailorNotes && typeof saved.sailorNotes === 'object'){
+          Object.entries(saved.sailorNotes).forEach(([s, val]) => {
+            if(s && val){
+              const k = `coach_notes_${(D.title||'regata').replace(/\s+/g,'_')}_${s}`;
+              if(!localStorage.getItem(k)) localStorage.setItem(k, val);
+            }
+          });
         }
         if(saved.tactics){
           state.tactics=Object.assign({lines:[],arrows:[],boats:[],startLine:null,showStartGrid:true,laylines:false,threeLengths:false,manualZones:[]}, saved.tactics);
@@ -9618,40 +10516,899 @@ function generateSailorCode(name){
 }
 let bigDataActiveChartTab = 'starts';
 
+// =========================================================================
+// SISTEMA DE USUARIOS, ROLES Y AUTENTICACIÓN (RCNGC)
+// =========================================================================
+
+let clubUsersCache = null;
+let pendingAuthCallback = null;
+
+function getCurrentUser(){
+  try {
+    const raw = sessionStorage.getItem('rcngc_current_user') || localStorage.getItem('rcngc_current_user');
+    if(!raw) return null;
+    return JSON.parse(raw);
+  } catch(_) {
+    return null;
+  }
+}
+
+function setCurrentUser(user, remember = false){
+  if(user){
+    const json = JSON.stringify(user);
+    sessionStorage.setItem('rcngc_current_user', json);
+    sessionStorage.setItem('rcngc_coach_unlocked', '1');
+    if(remember){
+      localStorage.setItem('rcngc_current_user', json);
+      localStorage.setItem('rcngc_coach_unlocked', '1');
+    } else {
+      localStorage.removeItem('rcngc_current_user');
+      localStorage.removeItem('rcngc_coach_unlocked');
+    }
+  } else {
+    sessionStorage.removeItem('rcngc_current_user');
+    sessionStorage.removeItem('rcngc_coach_unlocked');
+    localStorage.removeItem('rcngc_current_user');
+    localStorage.removeItem('rcngc_coach_unlocked');
+  }
+}
+
 function isCoachModeActive(){
-  return sessionStorage.getItem('rcngc_coach_unlocked') === '1' || localStorage.getItem('rcngc_coach_unlocked') === '1';
+  return !!getCurrentUser() || sessionStorage.getItem('rcngc_coach_unlocked') === '1' || localStorage.getItem('rcngc_coach_unlocked') === '1';
+}
+
+function isAdminUser(){
+  const u = getCurrentUser();
+  if(!u) return false;
+  return (u.rol === 'admin' || u.usuario === 'admin');
 }
 
 function setCoachMode(active){
   if(active){
     sessionStorage.setItem('rcngc_coach_unlocked', '1');
   } else {
-    sessionStorage.removeItem('rcngc_coach_unlocked');
-    localStorage.removeItem('rcngc_coach_unlocked');
+    setCurrentUser(null);
   }
   updateCoachModeUI();
 }
 
+async function fetchClubUsers(forceRefresh = false){
+  if(clubUsersCache && !forceRefresh) return clubUsersCache;
+  try {
+    const rows = await executeTurso("SELECT id, usuario, nombre, pin, rol, categoria, email, activo, creado_en, ultimo_login FROM usuarios_club ORDER BY rol DESC, nombre ASC;");
+    if(rows && rows.length){
+      clubUsersCache = rows;
+      return rows;
+    }
+  } catch(e) {
+    console.warn('Error al cargar usuarios de Turso, reintentando con schema...', e);
+    try {
+      await ensureTursoSchema();
+      const rows = await executeTurso("SELECT id, usuario, nombre, pin, rol, categoria, email, activo, creado_en, ultimo_login FROM usuarios_club ORDER BY rol DESC, nombre ASC;");
+      if(rows && rows.length){
+        clubUsersCache = rows;
+        return rows;
+      }
+    } catch(_) {}
+  }
+  // Fallback seguro si no hay red o tabla vacía
+  if(!clubUsersCache || !clubUsersCache.length){
+    clubUsersCache = [
+      { id: 'usr_admin_rcngc', usuario: 'admin', nombre: 'Pablo Quintana (Admin)', pin: '0405', rol: 'admin', categoria: 'Grupo A Optimist', activo: 1 },
+      { id: 'usr_entrenador_rcngc', usuario: 'entrenador', nombre: 'Entrenador RCNGC', pin: 'RCNGC2026', rol: 'entrenador', categoria: 'Grupo A Optimist', activo: 1 }
+    ];
+  }
+  return clubUsersCache;
+}
+
+function renderUsersInAuthSelect(users){
+  const sel = document.getElementById('authSelectUser');
+  if(!sel) return;
+  const currentVal = sel.value;
+  sel.innerHTML = '<option value="">-- Selecciona tu usuario o perfil --</option>';
+  const activeUsers = users.filter(u => Number(u.activo) !== 0);
+  activeUsers.forEach(u => {
+    const opt = document.createElement('option');
+    opt.value = u.usuario;
+    const roleIcon = u.rol === 'admin' ? '👑' : '⛵';
+    opt.textContent = `${roleIcon} ${u.nombre} (${u.categoria || u.rol})`;
+    sel.appendChild(opt);
+  });
+  const prev = getCurrentUser();
+  if(currentVal && Array.from(sel.options).some(o => o.value === currentVal)){
+    sel.value = currentVal;
+  } else if(prev && prev.usuario && Array.from(sel.options).some(o => o.value === prev.usuario)){
+    sel.value = prev.usuario;
+  } else if(activeUsers.length === 1) {
+    sel.selectedIndex = 1;
+  }
+}
+
+async function openLoginModal(callback = null){
+  pendingAuthCallback = callback;
+  const modal = document.getElementById('modalAuth');
+  if(!modal) return;
+  const alertEl = document.getElementById('authAlert');
+  if(alertEl) { alertEl.style.display = 'none'; alertEl.textContent = ''; }
+  const pinInp = document.getElementById('authPin');
+  if(pinInp) pinInp.value = '';
+
+  modal.hidden = false;
+
+  // Pre-poblar inmediatamente con lista en caché o inicial para respuesta instantánea
+  const initialList = clubUsersCache || [
+    { id: 'usr_admin_rcngc', usuario: 'admin', nombre: 'Pablo Quintana (Admin)', pin: '0405', rol: 'admin', categoria: 'Grupo A Optimist', activo: 1 },
+    { id: 'usr_entrenador_rcngc', usuario: 'entrenador', nombre: 'Entrenador RCNGC', pin: 'RCNGC2026', rol: 'entrenador', categoria: 'Grupo A Optimist', activo: 1 }
+  ];
+  renderUsersInAuthSelect(initialList);
+
+  if(pinInp) pinInp.focus();
+
+  // Sincronizar en segundo plano con la base de datos
+  populateLoginUsersSelect();
+}
+
+function closeLoginModal(){
+  const modal = document.getElementById('modalAuth');
+  if(modal) modal.hidden = true;
+  pendingAuthCallback = null;
+}
+
+async function populateLoginUsersSelect(){
+  try {
+    const users = await fetchClubUsers();
+    renderUsersInAuthSelect(users);
+  } catch(err) {
+    console.warn('populateLoginUsersSelect error:', err);
+  }
+}
+
+function toggleManualUserAuth(showManual){
+  const selWrap = document.getElementById('authSelectWrapper');
+  const manWrap = document.getElementById('authManualWrapper');
+  const btn = document.getElementById('btnToggleManualUser');
+  if(!selWrap || !manWrap || !btn) return;
+  if(showManual === undefined){
+    showManual = manWrap.style.display === 'none';
+  }
+  if(showManual){
+    selWrap.style.display = 'none';
+    manWrap.style.display = 'block';
+    btn.textContent = 'Seleccionar de la lista de entrenadores';
+    const inp = document.getElementById('authInputUser');
+    if(inp) inp.focus();
+  } else {
+    selWrap.style.display = 'block';
+    manWrap.style.display = 'none';
+    btn.textContent = 'Escribir usuario manualmente';
+    const sel = document.getElementById('authSelectUser');
+    if(sel) sel.focus();
+  }
+}
+
+async function handleLoginSubmit(e){
+  if(e && e.preventDefault) e.preventDefault();
+  const alertEl = document.getElementById('authAlert');
+  const showErr = (msg) => {
+    if(alertEl){
+      alertEl.style.display = 'block';
+      alertEl.style.background = '#fef2f2';
+      alertEl.style.border = '1px solid #fecaca';
+      alertEl.style.color = '#991b1b';
+      alertEl.textContent = msg;
+    } else {
+      alert(msg);
+    }
+  };
+
+  const selWrap = document.getElementById('authSelectWrapper');
+  const isManual = selWrap && selWrap.style.display === 'none';
+  let username = '';
+  if(isManual){
+    username = (document.getElementById('authInputUser')?.value || '').trim();
+  } else {
+    username = (document.getElementById('authSelectUser')?.value || '').trim();
+  }
+  const pin = (document.getElementById('authPin')?.value || '').trim();
+  const remember = document.getElementById('authRememberMe')?.checked ?? true;
+
+  if(!username){
+    showErr('Por favor, selecciona o escribe tu nombre de usuario.');
+    return;
+  }
+  if(!pin){
+    showErr('Por favor, introduce tu PIN de seguridad.');
+    return;
+  }
+
+  const submitBtn = document.getElementById('btnSubmitAuthModal');
+  if(submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '⏳ Verificando...'; }
+
+  try {
+    const users = await fetchClubUsers(true);
+    const user = users.find(u => u.usuario.toLowerCase() === username.toLowerCase());
+
+    if(!user){
+      showErr(`No se encontró ningún usuario con el identificador "${username}".`);
+      return;
+    }
+
+    if(Number(user.activo) === 0){
+      showErr('Esta cuenta de entrenador ha sido desactivada. Consulta con el administrador.');
+      return;
+    }
+
+    const pinMatch = (String(user.pin).trim() === pin);
+    if(!pinMatch){
+      showErr('El PIN o contraseña introducido es incorrecto.');
+      const pinInp = document.getElementById('authPin');
+      if(pinInp){ pinInp.value = ''; pinInp.focus(); }
+      return;
+    }
+
+    const loggedUser = {
+      id: user.id,
+      usuario: user.usuario,
+      nombre: user.nombre,
+      pin: user.pin,
+      rol: user.rol,
+      categoria: user.categoria || 'Grupo A Optimist',
+      activo: user.activo
+    };
+
+    if(loggedUser.id){
+      executeTurso("UPDATE usuarios_club SET ultimo_login = CURRENT_TIMESTAMP WHERE id = ?;", [loggedUser.id]).catch(() => {});
+    }
+
+    setCurrentUser(loggedUser, remember);
+
+    // Auto-rellenar autor en formulario de subida de regata (PIN siempre vacío por seguridad)
+    const saveAuthor = document.getElementById('cloudSaveAuthor');
+    if(saveAuthor){
+      saveAuthor.value = loggedUser.nombre;
+    }
+    const savePin = document.getElementById('cloudSavePin');
+    if(savePin){
+      savePin.value = '';
+    }
+
+    closeLoginModal();
+    updateCoachModeUI();
+
+    showMsg([{
+      t: `¡Bienvenido, ${loggedUser.nombre}! Modo ${loggedUser.rol === 'admin' ? 'Administrador' : 'Entrenador'} activado.`,
+      cls: 'ok'
+    }]);
+
+    if(typeof pendingAuthCallback === 'function'){
+      const cb = pendingAuthCallback;
+      pendingAuthCallback = null;
+      cb();
+    }
+  } catch(err) {
+    console.error('Error al iniciar sesión:', err);
+    showErr('Ocurrió un error al verificar las credenciales: ' + err.message);
+  } finally {
+    if(submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '🔓 Iniciar Sesión'; }
+  }
+}
+
+function logoutUser(){
+  const u = getCurrentUser();
+  setCurrentUser(null);
+  closeUserDropdown();
+  updateCoachModeUI();
+  showMsg([{ t: 'Sesión cerrada. Has vuelto al Modo Regatista (solo lectura).', cls: 'ok' }]);
+}
+
+function toggleUserDropdown(e){
+  if(e){
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const menu = document.getElementById('userDropdownMenu');
+  const trigger = document.getElementById('btnTopCoachAuth');
+  if(!menu) return;
+  const isCurrentlyOpen = menu.classList.contains('open') || menu.classList.contains('is-open');
+  if(isCurrentlyOpen){
+    closeUserDropdown();
+  } else {
+    menu.classList.add('open', 'is-open');
+    if(trigger) trigger.classList.add('active');
+  }
+}
+
+function closeUserDropdown(){
+  const menu = document.getElementById('userDropdownMenu');
+  const trigger = document.getElementById('btnTopCoachAuth');
+  if(menu) menu.classList.remove('open', 'is-open');
+  if(trigger) trigger.classList.remove('active');
+}
+
+function handleTopCoachAuthClick(e){
+  if(isCoachModeActive()){
+    toggleUserDropdown(e);
+  } else {
+    openLoginModal();
+  }
+}
+
+// Modal Perfil de Entrenador
+function openCoachProfileModal(){
+  closeUserDropdown();
+  const u = getCurrentUser();
+  if(!u){
+    openLoginModal();
+    return;
+  }
+  const modal = document.getElementById('modalCoachProfile');
+  if(!modal) return;
+  modal.hidden = false;
+
+  const nameEl = document.getElementById('modalProfileFullName');
+  if(nameEl) nameEl.textContent = u.nombre || 'Pablo Luis Quintana Labarta';
+
+  const roleEl = document.getElementById('modalProfileRoleBadge');
+  if(roleEl){
+    roleEl.className = u.rol === 'admin' ? 'badge-role admin' : 'badge-role coach';
+    roleEl.textContent = u.rol === 'admin' ? '👑 Administrador Principal' : '⛵ Entrenador RCNGC';
+  }
+
+  const handleEl = document.getElementById('modalProfileUserHandle');
+  if(handleEl) handleEl.textContent = '@' + (u.usuario || 'entrenador');
+
+  const catEl = document.getElementById('modalProfileCategory');
+  if(catEl) catEl.textContent = u.categoria || 'Grupo A Optimist';
+
+  const emailEl = document.getElementById('modalProfileEmail');
+  if(emailEl) emailEl.textContent = u.email || 'entrenadores@rcngc.es';
+}
+
+function closeCoachProfileModal(){
+  const modal = document.getElementById('modalCoachProfile');
+  if(modal) modal.hidden = true;
+}
+
+// Modal Editar Perfil
+function openEditProfileModal(){
+  closeUserDropdown();
+  closeCoachProfileModal();
+  const u = getCurrentUser();
+  if(!u){
+    openLoginModal();
+    return;
+  }
+  const modal = document.getElementById('modalEditProfile');
+  if(!modal) return;
+  modal.hidden = false;
+
+  const inpNom = document.getElementById('inpEditProfileNombre');
+  if(inpNom) inpNom.value = u.nombre || '';
+  const inpMail = document.getElementById('inpEditProfileEmail');
+  if(inpMail) inpMail.value = u.email || '';
+  const inpCat = document.getElementById('inpEditProfileCategory');
+  if(inpCat) inpCat.value = u.categoria || 'Grupo A Optimist';
+}
+
+function closeEditProfileModal(){
+  const modal = document.getElementById('modalEditProfile');
+  if(modal) modal.hidden = true;
+}
+
+async function saveEditProfile(){
+  const u = getCurrentUser();
+  if(!u) return;
+
+  const nom = (document.getElementById('inpEditProfileNombre')?.value || '').trim();
+  const mail = (document.getElementById('inpEditProfileEmail')?.value || '').trim();
+  const cat = document.getElementById('inpEditProfileCategory')?.value || 'Grupo A Optimist';
+
+  if(!nom){
+    alert('Por favor, indica tu nombre completo.');
+    return;
+  }
+
+  try {
+    if(u.id){
+      await executeTurso("UPDATE usuarios_club SET nombre = ?, email = ?, categoria = ? WHERE id = ?;", [nom, mail, cat, u.id]);
+    }
+    u.nombre = nom;
+    u.email = mail;
+    u.categoria = cat;
+    const remember = !!localStorage.getItem('rcngc_current_user');
+    setCurrentUser(u, remember);
+    updateCoachModeUI();
+    closeEditProfileModal();
+    showMsg([{ t: '¡Perfil actualizado correctamente!', cls: 'ok' }]);
+  } catch(err) {
+    alert('Error al guardar el perfil: ' + err.message);
+  }
+}
+
+// Modal Calendario
+async function openCalendarModal(){
+  closeUserDropdown();
+  const modal = document.getElementById('modalCalendar');
+  if(!modal) return;
+  modal.hidden = false;
+  renderCalendarSessions();
+}
+
+function closeCalendarModal(){
+  const modal = document.getElementById('modalCalendar');
+  if(modal) modal.hidden = true;
+}
+
+async function renderCalendarSessions(){
+  const listEl = document.getElementById('calendarSessionsList');
+  if(!listEl) return;
+  listEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--dim)">Cargando regatas y calendario...</div>';
+  try {
+    const races = await fetchCloudRacesList();
+    if(!races || !races.length){
+      listEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--dim)">No hay regatas guardadas en el calendario.</div>';
+      return;
+    }
+    let html = '';
+    races.forEach(r => {
+      html += `
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--subtle);border:1px solid var(--line);border-radius:8px;padding:12px 16px;flex-wrap:wrap;gap:10px">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-size:14px;font-weight:700;color:var(--ink)">${esc(r.titulo || 'Regata')}</span>
+              <span class="badge-cat equipo-a" style="font-size:10px">${esc(r.categoria || 'Optimist')}</span>
+            </div>
+            <div style="font-size:12px;color:var(--dim);margin-top:3px;display:flex;gap:12px">
+              <span>📅 ${esc(r.fecha_regata || 'Fecha N/D')}</span>
+              <span>⛵ ${r.num_barcos || 0} barcos</span>
+              <span>💨 ${r.viento_dir || 0}° · ${r.viento_kts || 0} kn</span>
+              <span>👤 ${esc(r.autor || 'Club')}</span>
+            </div>
+          </div>
+          <button class="btn primary" style="font-size:12px;padding:5px 14px;font-weight:700" onclick="closeCalendarModal(); loadCloudRaceById('${r.id}')">
+            ⚡ Cargar en visor
+          </button>
+        </div>
+      `;
+    });
+    listEl.innerHTML = html;
+  } catch(e) {
+    listEl.innerHTML = `<div style="padding:20px;text-align:center;color:#ef4444">Error al cargar calendario: ${esc(e.message)}</div>`;
+  }
+}
 function promptCoachAccess(callback){
   if(isCoachModeActive()){
     if(callback) callback();
     return;
   }
-  const pin = prompt('Introduce el PIN de entrenador para desbloquear funciones de edición:');
-  if(pin === null) return;
-  if(pin.trim() === getCoachPin()){
-    setCoachMode(true);
-    const savePin = document.getElementById('cloudSavePin');
-    if(savePin && !savePin.value) savePin.value = pin.trim();
-    showMsg([{ t: '¡Modo Entrenador activado correctamente!', cls: 'ok' }]);
-    if(callback) callback();
-  } else {
-    alert('PIN incorrecto. Se requiere clave de entrenador.');
+  openLoginModal(callback);
+}
+
+// Panel de Administración de Usuarios
+function openAdminUsersModal(openCreateForm = false){
+  closeUserDropdown();
+  if(!isAdminUser()){
+    alert('Acceso restringido: Se requieren permisos de Administrador.');
+    return;
   }
+  const modal = document.getElementById('modalAdminUsers');
+  if(!modal) return;
+  modal.hidden = false;
+  if(openCreateForm){
+    showAdminUserForm(false);
+  } else {
+    hideAdminUserForm();
+  }
+  renderAdminUsersTable();
+}
+
+function closeAdminUsersModal(){
+  const modal = document.getElementById('modalAdminUsers');
+  if(modal) modal.hidden = true;
+}
+
+function generateRandomPassword(){
+  const words = ['Vela', 'Optimist', 'Nautico', 'RCNGC', 'Regata', 'Viento', 'Proa'];
+  const word = words[Math.floor(Math.random() * words.length)];
+  const num = Math.floor(1000 + Math.random() * 9000);
+  return `${word}${num}`;
+}
+
+async function renderAdminUsersTable(filterText = ''){
+  const tbody = document.getElementById('adminUsersTableBody');
+  if(!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--dim)">Cargando lista de usuarios...</td></tr>';
+  try {
+    const users = await fetchClubUsers(true);
+    if(!users || !users.length){
+      tbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--dim)">No hay usuarios registrados.</td></tr>';
+      return;
+    }
+    const currentU = getCurrentUser();
+    const query = (filterText || (document.getElementById('inpSearchAdminUsers')?.value || '')).trim().toLowerCase();
+    const filtered = query
+      ? users.filter(u => (u.nombre || '').toLowerCase().includes(query) || (u.usuario || '').toLowerCase().includes(query) || (u.categoria || '').toLowerCase().includes(query))
+      : users;
+
+    const countBadge = document.getElementById('adminUsersCountBadge');
+    if(countBadge){
+      const activeCount = users.filter(u => Number(u.activo) !== 0).length;
+      countBadge.textContent = `${users.length} usuarios (${activeCount} activos)`;
+    }
+
+    if(!filtered.length){
+      tbody.innerHTML = '<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--dim)">No se encontraron usuarios que coincidan con la búsqueda.</td></tr>';
+      return;
+    }
+
+    let html = '';
+    filtered.forEach(u => {
+      const isActive = Number(u.activo) !== 0;
+      const isAdmin = u.rol === 'admin';
+      const isSelf = currentU && currentU.usuario === u.usuario;
+      const roleBadge = isAdmin
+        ? '<span class="badge-role admin">👑 Admin</span>'
+        : '<span class="badge-role coach">⛵ Entrenador</span>';
+      const statusBadge = isActive
+        ? '<span class="badge-user-status active">● Activo</span>'
+        : '<span class="badge-user-status inactive">○ Inactivo</span>';
+
+      html += `
+        <tr style="border-bottom:1px solid var(--line);${!isActive ? 'opacity:0.6;' : ''}">
+          <td style="padding:10px 12px;font-weight:700;color:var(--ink)">
+            ${esc(u.usuario)} ${isSelf ? '<span style="font-size:10px;background:rgba(2,132,199,0.15);color:#0284c7;padding:1px 5px;border-radius:4px;margin-left:4px">Tú</span>' : ''}
+          </td>
+          <td style="padding:10px 12px;color:var(--ink)">${esc(u.nombre)}</td>
+          <td style="padding:10px 12px">${roleBadge}</td>
+          <td style="padding:10px 12px;color:var(--dim);font-size:12px">${esc(u.categoria || 'General')}</td>
+          <td style="padding:10px 12px;font-family:monospace;font-size:12px;color:var(--dim)">
+            <span class="user-pin-masked" data-pin="${esc(u.pin)}">••••</span>
+            <button type="button" class="btn-reveal-pin" style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--accent);margin-left:4px" title="Mostrar/ocultar contraseña">👁️</button>
+          </td>
+          <td style="padding:10px 12px">${statusBadge}</td>
+          <td style="padding:10px 12px;text-align:right;white-space:nowrap">
+            <button class="btn" style="padding:3px 8px;font-size:11px;margin-right:4px" onclick="openEditUserForm('${esc(u.id)}')">✏️ Editar</button>
+            ${!isSelf ? `
+              <button class="btn" style="padding:3px 8px;font-size:11px;margin-right:4px" onclick="toggleUserActiveState('${esc(u.id)}', ${isActive ? 0 : 1})">
+                ${isActive ? '⏸️ Desactivar' : '▶️ Activar'}
+              </button>
+              <button class="btn danger" style="padding:3px 8px;font-size:11px" onclick="deleteClubUser('${esc(u.id)}', '${esc(u.usuario)}')">🗑️</button>
+            ` : ''}
+          </td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html;
+
+    tbody.querySelectorAll('.btn-reveal-pin').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const span = e.currentTarget.previousElementSibling;
+        if(!span) return;
+        if(span.textContent === '••••'){
+          span.textContent = span.getAttribute('data-pin') || '';
+        } else {
+          span.textContent = '••••';
+        }
+      });
+    });
+  } catch(err) {
+    console.error('Error renderAdminUsersTable:', err);
+    tbody.innerHTML = `<tr><td colspan="7" style="padding:20px;text-align:center;color:#ef4444">Error al cargar usuarios: ${esc(err.message)}</td></tr>`;
+  }
+}
+
+function showAdminUserForm(isEdit = false, user = null){
+  const form = document.getElementById('adminUserFormContainer');
+  if(!form) return;
+  form.style.display = 'block';
+  const title = document.getElementById('adminUserFormTitle');
+  if(title) title.innerHTML = isEdit ? '<span>✏️</span> <strong>Editar Usuario</strong>' : '<span>➕</span> <strong>Crear Nuevo Usuario con Contraseña</strong>';
+
+  document.getElementById('adminUserId').value = user ? user.id : '';
+  document.getElementById('adminUserNombre').value = user ? user.nombre : '';
+  const uInp = document.getElementById('adminUserUsuario');
+  uInp.value = user ? user.usuario : '';
+  uInp.disabled = isEdit;
+  document.getElementById('adminUserRol').value = user ? user.rol : 'entrenador';
+  document.getElementById('adminUserCategoria').value = user ? (user.categoria || 'Grupo A Optimist') : 'Grupo A Optimist';
+  document.getElementById('adminUserPin').value = user ? user.pin : '';
+  const confirmInp = document.getElementById('adminUserPinConfirm');
+  if(confirmInp) confirmInp.value = user ? user.pin : '';
+  document.getElementById('adminUserEmail').value = user ? (user.email || '') : '';
+  document.getElementById('adminUserActivo').checked = user ? (Number(user.activo) !== 0) : true;
+
+  form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  document.getElementById('adminUserNombre').focus();
+}
+
+function hideAdminUserForm(){
+  const form = document.getElementById('adminUserFormContainer');
+  if(form) form.style.display = 'none';
+}
+
+function openEditUserForm(userId){
+  const user = (clubUsersCache || []).find(u => u.id === userId);
+  if(!user){
+    alert('Usuario no encontrado.');
+    return;
+  }
+  showAdminUserForm(true, user);
+}
+
+async function saveAdminUserForm(){
+  const id = document.getElementById('adminUserId').value.trim();
+  const nombre = document.getElementById('adminUserNombre').value.trim();
+  const usuario = document.getElementById('adminUserUsuario').value.trim().toLowerCase();
+  const rol = document.getElementById('adminUserRol').value;
+  const categoria = document.getElementById('adminUserCategoria').value;
+  const pin = document.getElementById('adminUserPin').value.trim();
+  const pinConfirm = document.getElementById('adminUserPinConfirm')?.value?.trim();
+  const email = document.getElementById('adminUserEmail').value.trim();
+  const activo = document.getElementById('adminUserActivo').checked ? 1 : 0;
+
+  if(!nombre){
+    alert('Por favor, indica el nombre y apellidos del usuario.');
+    document.getElementById('adminUserNombre')?.focus();
+    return;
+  }
+  if(!usuario){
+    alert('Por favor, indica un identificador de usuario de acceso.');
+    document.getElementById('adminUserUsuario')?.focus();
+    return;
+  }
+  if(!id || pin){
+    if(!pin || pin.length < 3){
+      alert('La contraseña debe tener al menos 3 caracteres.');
+      document.getElementById('adminUserPin')?.focus();
+      return;
+    }
+    if(pinConfirm !== undefined && pinConfirm !== '' && pin !== pinConfirm){
+      alert('La contraseña y su confirmación no coinciden.');
+      document.getElementById('adminUserPinConfirm')?.focus();
+      return;
+    }
+  }
+
+  // Comprobar colisión de usuario si es nuevo
+  if(!id && clubUsersCache){
+    const exists = clubUsersCache.some(u => u.usuario.toLowerCase() === usuario);
+    if(exists){
+      alert(`El nombre de usuario "${usuario}" ya existe en el club. Elige otro identificador diferente.`);
+      document.getElementById('adminUserUsuario')?.focus();
+      return;
+    }
+  }
+
+  const saveBtn = document.getElementById('btnSaveAdminUser');
+  if(saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Guardando en la nube...'; }
+
+  try {
+    if(id){
+      await executeTurso(
+        "UPDATE usuarios_club SET nombre = ?, rol = ?, categoria = ?, pin = ?, email = ?, activo = ? WHERE id = ?;",
+        [nombre, rol, categoria, pin, email, activo, id]
+      );
+      const curr = getCurrentUser();
+      if(curr && curr.id === id){
+        curr.nombre = nombre;
+        curr.rol = rol;
+        curr.categoria = categoria;
+        curr.pin = pin;
+        curr.email = email;
+        const remember = !!localStorage.getItem('rcngc_current_user');
+        setCurrentUser(curr, remember);
+        updateCoachModeUI();
+      }
+      showMsg([{ t: `Usuario "${nombre}" (@${usuario}) actualizado correctamente.`, cls: 'ok' }]);
+    } else {
+      const newId = 'usr_' + usuario.replace(/[^a-z0-9]/g, '_') + '_' + Math.random().toString(36).substr(2, 4);
+      await executeTurso(
+        "INSERT INTO usuarios_club (id, usuario, nombre, pin, rol, categoria, email, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
+        [newId, usuario, nombre, pin, rol, categoria, email, activo]
+      );
+      showMsg([{ t: `🎉 ¡Usuario "${nombre}" (@${usuario}) creado con éxito con su contraseña!`, cls: 'ok' }]);
+    }
+
+    hideAdminUserForm();
+    await renderAdminUsersTable();
+  } catch(err) {
+    console.error('Error saveAdminUserForm:', err);
+    alert('Error al guardar el usuario en la base de datos: ' + err.message);
+  } finally {
+    if(saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Guardar Usuario en la Nube'; }
+  }
+}
+
+async function toggleUserActiveState(userId, newActive){
+  const currentU = getCurrentUser();
+  if(currentU && currentU.id === userId){
+    alert('No puedes desactivar tu propia cuenta mientras estás conectado.');
+    return;
+  }
+  try {
+    await executeTurso("UPDATE usuarios_club SET activo = ? WHERE id = ?;", [newActive, userId]);
+    await renderAdminUsersTable();
+  } catch(err) {
+    alert('Error al cambiar estado del usuario: ' + err.message);
+  }
+}
+
+async function deleteClubUser(userId, username){
+  const currentU = getCurrentUser();
+  if(currentU && (currentU.id === userId || currentU.usuario === username)){
+    alert('No puedes eliminar tu propia cuenta conectada.');
+    return;
+  }
+  const admins = (clubUsersCache || []).filter(u => u.rol === 'admin' && Number(u.activo) !== 0);
+  const targetUser = (clubUsersCache || []).find(u => u.id === userId);
+  if(targetUser && targetUser.rol === 'admin' && admins.length <= 1){
+    alert('No puedes eliminar el único administrador activo del club. Crea o asigna otro administrador antes.');
+    return;
+  }
+
+  if(!confirm(`¿Estás seguro de que deseas eliminar permanentemente la cuenta de "${username}"? Esta acción no se puede deshacer.`)){
+    return;
+  }
+
+  try {
+    await executeTurso("DELETE FROM usuarios_club WHERE id = ?;", [userId]);
+    await renderAdminUsersTable();
+    showMsg([{ t: `Cuenta de ${username} eliminada correctamente.`, cls: 'ok' }]);
+  } catch(err) {
+    alert('Error al eliminar usuario: ' + err.message);
+  }
+}
+// Modal Cambiar Mi PIN
+function openChangeMyPinModal(){
+  closeUserDropdown();
+  const u = getCurrentUser();
+  if(!u){
+    openLoginModal();
+    return;
+  }
+  const modal = document.getElementById('modalChangePin');
+  if(!modal) return;
+  modal.hidden = false;
+
+  document.getElementById('changePinUserName').textContent = u.nombre;
+  document.getElementById('changePinUserMeta').textContent = `usuario: @${u.usuario}`;
+  const badge = document.getElementById('changePinUserBadge');
+  if(badge){
+    badge.className = u.rol === 'admin' ? 'badge-role admin' : 'badge-role coach';
+    badge.textContent = u.rol === 'admin' ? '👑 Administrador' : '⛵ Entrenador';
+  }
+
+  const alertEl = document.getElementById('changePinAlert');
+  if(alertEl) { alertEl.style.display = 'none'; alertEl.textContent = ''; }
+  document.getElementById('inpCurrentPin').value = '';
+  document.getElementById('inpNewPin').value = '';
+  document.getElementById('inpConfirmNewPin').value = '';
+  document.getElementById('inpCurrentPin').focus();
+}
+
+function closeChangeMyPinModal(){
+  const modal = document.getElementById('modalChangePin');
+  if(modal) modal.hidden = true;
+}
+
+async function submitChangeMyPin(){
+  const u = getCurrentUser();
+  if(!u) return;
+  const alertEl = document.getElementById('changePinAlert');
+  const showErr = (msg) => {
+    if(alertEl){
+      alertEl.style.display = 'block';
+      alertEl.style.background = '#fef2f2';
+      alertEl.style.border = '1px solid #fecaca';
+      alertEl.style.color = '#991b1b';
+      alertEl.textContent = msg;
+    } else {
+      alert(msg);
+    }
+  };
+
+  const currPin = document.getElementById('inpCurrentPin').value.trim();
+  const newPin = document.getElementById('inpNewPin').value.trim();
+  const confirmPin = document.getElementById('inpConfirmNewPin').value.trim();
+
+  if(!currPin){
+    showErr('Introduce tu PIN actual.');
+    return;
+  }
+  if(!newPin || newPin.length < 3){
+    showErr('El nuevo PIN debe tener al menos 3 caracteres.');
+    return;
+  }
+  if(newPin !== confirmPin){
+    showErr('El nuevo PIN y su confirmación no coinciden.');
+    return;
+  }
+
+  const btn = document.getElementById('btnSubmitChangePinModal');
+  if(btn) { btn.disabled = true; btn.textContent = 'Actualizando...'; }
+
+  try {
+    const users = await fetchClubUsers(true);
+    const dbUser = users.find(x => x.usuario === u.usuario || x.id === u.id);
+    const validCurr = (dbUser && String(dbUser.pin).trim() === currPin);
+    if(!validCurr){
+      showErr('El PIN actual introducido no es correcto.');
+      return;
+    }
+
+    if(dbUser && dbUser.id){
+      await executeTurso("UPDATE usuarios_club SET pin = ? WHERE id = ?;", [newPin, dbUser.id]);
+    }
+    if(u.usuario === 'admin'){
+      localStorage.setItem('rcngc_coach_pin', newPin);
+    }
+
+    u.pin = newPin;
+    const remember = !!localStorage.getItem('rcngc_current_user');
+    setCurrentUser(u, remember);
+
+    closeChangeMyPinModal();
+    showMsg([{ t: '¡PIN personal actualizado con éxito!', cls: 'ok' }]);
+  } catch(err) {
+    showErr('Error al actualizar el PIN: ' + err.message);
+  } finally {
+    if(btn) { btn.disabled = false; btn.textContent = '💾 Guardar Nuevo PIN'; }
+  }
+}
+
+function updateSailorNotesInputsLockState(){
+  const isCoach = isCoachModeActive();
+  const gridEl = document.getElementById('v2MultiBoatGrid');
+  if(!gridEl) return;
+  gridEl.querySelectorAll('.sailor-analysis-card').forEach(card => {
+    const textarea = card.querySelector('.coach-notes-input');
+    if(textarea){
+      textarea.readOnly = !isCoach;
+      textarea.classList.toggle('is-locked', !isCoach);
+      textarea.placeholder = '';
+      if(isCoach){
+        textarea.title = 'Anotaciones del entrenador · Se guardan automáticamente';
+      } else {
+        textarea.removeAttribute('title');
+      }
+    }
+  });
 }
 
 function updateCoachModeUI(skipStats = false){
   const isCoach = isCoachModeActive();
+  const u = getCurrentUser();
+
+  const btnTopCoach = document.getElementById('btnTopCoachAuth');
+  const userTopActionIcons = document.getElementById('userTopActionIcons');
+
+  if(btnTopCoach){
+    if(isCoach && u){
+      btnTopCoach.className = 'user-nav-trigger';
+      if(userTopActionIcons) userTopActionIcons.style.display = 'inline-flex';
+      const fullName = u.nombre || 'Pablo Luis Quintana Labarta';
+      
+      btnTopCoach.innerHTML = `
+        <span class="user-nav-name" title="${esc(fullName)}">${esc(fullName)}</span>
+        <div class="user-nav-avatar" aria-label="Avatar de usuario">
+          <span style="font-size:15px;line-height:1;user-select:none">👤</span>
+        </div>
+        <svg class="user-nav-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      `;
+      btnTopCoach.title = `Sesión iniciada: ${fullName} (${u.rol === 'admin' ? 'Administrador' : 'Entrenador'}) · Clic para abrir opciones`;
+    } else {
+      btnTopCoach.className = 'btn btn-coach-login';
+      btnTopCoach.innerHTML = '🔒 Acceso Entrenador';
+      btnTopCoach.title = 'Modo Regatista (solo lectura) · Clic para iniciar sesión como Entrenador (PIN)';
+      if(userTopActionIcons) userTopActionIcons.style.display = 'none';
+    }
+  }
+
+  const isAdmin = isAdminUser();
+  document.querySelectorAll('.admin-only').forEach(el => {
+    el.style.display = isAdmin ? (el.classList.contains('user-dropdown-divider') ? 'block' : 'flex') : 'none';
+  });
+
   const badge = document.getElementById('coachModeBadge');
   const btnToggle = document.getElementById('btnCoachModeToggle');
   const title = document.getElementById('coachModeStatusTitle');
@@ -9659,24 +11416,39 @@ function updateCoachModeUI(skipStats = false){
   const btnAuth = document.getElementById('btnToggleCoachModeAuth');
   const lockCard = document.getElementById('cloudSaveCoachLockCard');
   const saveForm = document.getElementById('cloudSaveForm');
+  const uploadCoachBadge = document.getElementById('uploadCoachBadge');
+
+  if(uploadCoachBadge){
+    if(isCoach){
+      uploadCoachBadge.innerHTML = '🔒 Entrenador / Admin <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#10b981;margin-left:4px" title="Modo Entrenador Activo"></span>';
+      uploadCoachBadge.style.borderColor = 'rgba(16,185,129,0.4)';
+      uploadCoachBadge.style.color = 'var(--ink)';
+    } else {
+      uploadCoachBadge.innerHTML = '🔒 Solo Entrenadores <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#f59e0b;margin-left:4px" title="Requiere iniciar sesión"></span>';
+      uploadCoachBadge.style.borderColor = 'var(--line)';
+      uploadCoachBadge.style.color = 'var(--dim)';
+    }
+  }
 
   if(badge){
     badge.className = isCoach ? 'badge-cat equipo-a' : 'badge-cat general';
-    badge.textContent = isCoach ? '🔓 Modo Entrenador' : '🔒 Modo Regatista';
+    badge.textContent = isCoach ? (isAdminUser() ? '👑 Administrador' : '🔓 Modo Entrenador') : '🔒 Modo Regatista';
   }
   if(btnToggle){
     btnToggle.textContent = isCoach ? 'Cerrar sesión' : 'Acceso Entrenador';
   }
   if(title){
-    title.textContent = isCoach ? 'Estado actual: 🔓 Modo Entrenador (Escritura y Gestión)' : 'Estado actual: 🔒 Modo Regatista (Solo Lectura)';
+    title.textContent = isCoach
+      ? `Estado actual: 🔓 ${u ? u.nombre : 'Entrenador'} (${isAdminUser() ? 'Administrador' : 'Entrenador'})`
+      : 'Estado actual: 🔒 Modo Regatista (Solo Lectura)';
   }
   if(desc){
     desc.textContent = isCoach
-      ? 'Tienes permisos activos para publicar nuevas regatas y eliminar sesiones de la base de datos central.'
+      ? 'Tienes permisos activos para publicar nuevas regatas, editar notas y gestionar datos del club.'
       : 'Modo seguro para regatistas y familias. Los botones de borrado y publicación están protegidos.';
   }
   if(btnAuth){
-    btnAuth.textContent = isCoach ? '🔒 Bloquear / Volver a Modo Regatista' : '🔓 Desbloquear Modo Entrenador';
+    btnAuth.textContent = isCoach ? '🔒 Cerrar Sesión' : '🔓 Iniciar Sesión Entrenador';
     btnAuth.className = isCoach ? 'btn' : 'btn primary';
   }
   if(lockCard && saveForm){
@@ -9695,7 +11467,6 @@ function updateCoachModeUI(skipStats = false){
     renderBigDataStatsView();
   }
 
-  // La pestaña de Conexión y Seguridad solo es visible en Modo Entrenador
   const tabConfig = document.getElementById('tabCloudConfig');
   if(tabConfig){
     tabConfig.style.display = isCoach ? 'inline-flex' : 'none';
@@ -9704,6 +11475,8 @@ function updateCoachModeUI(skipStats = false){
   if(!isCoach && secConfig && !secConfig.hidden){
     switchCloudTab('list');
   }
+
+  updateSailorNotesInputsLockState();
 }
 
 function switchCloudTab(tabName, optSail = null){
@@ -9798,8 +11571,15 @@ function updateCloudSaveForm(){
   if(typeIn && isEditingExisting && (currentCloudRegata.tipo_manga || currentCloudRegata.tipoManga)){
     typeIn.value = currentCloudRegata.tipo_manga || currentCloudRegata.tipoManga;
   }
-  if(authorIn && isEditingExisting && currentCloudRegata.autor){
-    authorIn.value = currentCloudRegata.autor;
+  const currUser = getCurrentUser();
+  if(authorIn){
+    if(currUser && currUser.nombre){
+      authorIn.value = currUser.nombre;
+    } else if(isEditingExisting && currentCloudRegata.autor){
+      authorIn.value = currentCloudRegata.autor;
+    } else {
+      authorIn.value = 'Entrenador RCNGC';
+    }
   }
   if(notesIn && isEditingExisting && currentCloudRegata.notas){
     notesIn.value = currentCloudRegata.notas;
@@ -9811,9 +11591,9 @@ function updateCloudSaveForm(){
     const spd = (typeof getWindSpeedKnots === 'function') ? getWindSpeedKnots(D.startT || 0) : 10;
     windKnIn.value = spd.toFixed(1);
   }
-  if(pinIn && !pinIn.value){
-    const savedPin = localStorage.getItem('rcngc_coach_pin');
-    if(savedPin) pinIn.value = savedPin;
+  if(pinIn){
+    // Nunca auto-rellenar PIN: cada entrenador debe poner su clave personal
+    pinIn.value = '';
   }
 
   if(summary){
@@ -9884,6 +11664,23 @@ async function ensureTursoSchema(){
   try { await executeTurso("ALTER TABLE regatas_barcos_stats ADD COLUMN t_recuperacion_s REAL;"); } catch(_) {}
   try { await executeTurso("ALTER TABLE regatas_barcos_stats ADD COLUMN eficiencia_derrota REAL;"); } catch(_) {}
   try { await executeTurso("ALTER TABLE regatas_barcos_stats ADD COLUMN codigo_regatista TEXT;"); } catch(_) {}
+  try {
+    await executeTurso(`
+      CREATE TABLE IF NOT EXISTS usuarios_club (
+        id TEXT PRIMARY KEY,
+        usuario TEXT UNIQUE NOT NULL,
+        nombre TEXT NOT NULL,
+        pin TEXT NOT NULL,
+        rol TEXT NOT NULL DEFAULT 'entrenador',
+        email TEXT,
+        categoria TEXT DEFAULT 'Grupo A Optimist',
+        activo INTEGER DEFAULT 1,
+        creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        ultimo_login TIMESTAMP
+      );
+    `);
+    await executeTurso("CREATE INDEX IF NOT EXISTS idx_usuarios_club_usuario ON usuarios_club(usuario);");
+  } catch(_) {}
   try {
     await executeTurso(`
       CREATE TABLE IF NOT EXISTS regatistas_club (
@@ -11571,7 +13368,7 @@ async function renderBigDataStatsView(chosenSailOrCode){
               return `
                 <tr style="border-bottom:1px solid var(--line)">
                   <td style="padding:8px 10px;font-weight:600">${esc(r.fecha || '-')}</td>
-                  <td style="padding:8px 10px;font-weight:700;color:var(--ink)">${esc(r.regata_titulo || 'Regata')}</td>
+                  <td style="padding:8px 10px;font-weight:700;color:var(--ink)">${(r.tipo_sesion === 'Entrenamiento' || (r.regata_titulo||'').toLowerCase().includes('entren')) ? '<span style="background:rgba(0,240,255,0.12);color:#00f0ff;border:1px solid rgba(0,240,255,0.3);padding:1px 6px;border-radius:10px;font-size:10px;font-weight:800;margin-right:5px">🏋️ Entreno</span>' : '<span style="background:rgba(234,179,8,0.12);color:#b45309;border:1px solid rgba(234,179,8,0.3);padding:1px 6px;border-radius:10px;font-size:10px;font-weight:800;margin-right:5px">⛵ Regata</span>'}${esc(r.regata_titulo || 'Regata')}</td>
                   <td style="padding:8px 10px;font-weight:700;color:var(--accent)">⛵ ${esc(r.vela || '-')}</td>
                   <td style="padding:8px 10px">${windIcon} ${wKn ? wKn.toFixed(0) + ' kn' : '-'} ${r.viento_dir ? '· ' + Math.round(r.viento_dir) + '°' : ''}</td>
                   <td style="padding:8px 10px;text-align:center">${posBadge}</td>
@@ -11582,7 +13379,7 @@ async function renderBigDataStatsView(chosenSailOrCode){
                   <td style="padding:8px 10px;font-weight:700;color:#7c3aed">${!isNaN(vmgUpVal) ? vmgUpVal.toFixed(2) + ' kn' : '-'}</td>
                   <td style="padding:8px 10px;color:#ea580c;font-weight:600">${!isNaN(tackLossVal) ? '-' + tackLossVal.toFixed(1) + ' kn' : '-'}</td>
                   <td style="padding:8px 10px;white-space:nowrap">
-                    <button class="btn primary btn-bigdata-load" data-id="${r.regata_id}" data-title="${esc(r.regata_titulo)}" type="button" style="padding:4px 9px;font-size:11px">
+                    <button class="btn primary btn-bigdata-load" data-id="${r.regata_id}" data-title="${esc(r.regata_titulo)}" data-type="${(r.tipo_sesion === 'Entrenamiento' || (r.regata_titulo||'').toLowerCase().includes('entren')) ? 'entrenamiento' : 'regata'}" type="button" style="padding:4px 9px;font-size:11px">
                       📥 Cargar
                     </button>
                     ${isCoach && r.id ? `
@@ -11902,7 +13699,11 @@ async function renderBigDataStatsView(chosenSailOrCode){
 
   container.querySelectorAll('.btn-bigdata-load').forEach(btn => {
     btn.addEventListener('click', () => {
-      loadCloudSession(btn.dataset.id, btn.dataset.title);
+      if(btn.dataset.type === 'entrenamiento'){
+        window.open('analizador-entrenamientos/index.html?id=' + encodeURIComponent(btn.dataset.id), '_blank');
+      } else {
+        loadCloudSession(btn.dataset.id, btn.dataset.title);
+      }
     });
   });
 }
@@ -11936,6 +13737,14 @@ async function loadCloudSession(id, titulo){
     if(D){
       if(saved.customSails){
         D.boats.forEach(b => { if(saved.customSails[b.name]) b.sail = saved.customSails[b.name]; });
+      }
+      if(saved.sailorNotes && typeof saved.sailorNotes === 'object'){
+        Object.entries(saved.sailorNotes).forEach(([s, val]) => {
+          if(s && val){
+            const k = `coach_notes_${(realTitle||D.title||'regata').replace(/\s+/g,'_')}_${s}`;
+            localStorage.setItem(k, val);
+          }
+        });
       }
       if(saved.tactics){
         state.tactics = Object.assign({lines:[],arrows:[],boats:[],startLine:null,showStartGrid:true,laylines:false,threeLengths:false,manualZones:[]}, saved.tactics);
@@ -12003,6 +13812,11 @@ async function submitCloudSave(mode = 'auto'){
     alert('No hay ninguna sesión activa para guardar.');
     return;
   }
+  if(!isCoachModeActive()){
+    alert('Debes iniciar sesión con tu cuenta de entrenador o administrador para publicar o modificar regatas en la nube.');
+    openLoginModal();
+    return;
+  }
   const title = (document.getElementById('cloudSaveTitle')?.value || '').trim();
   if(!title){
     alert('Por favor, indica un título para la regata.');
@@ -12010,16 +13824,44 @@ async function submitCloudSave(mode = 'auto'){
     return;
   }
 
-  const pin = (document.getElementById('cloudSavePin')?.value || '').trim();
-  if(pin !== getCoachPin()){
-    alert('PIN de entrenador incorrecto. Solo los entrenadores autorizados pueden guardar o modificar regatas en la nube.');
-    document.getElementById('cloudSavePin')?.focus();
+  const pinInp = document.getElementById('cloudSavePin');
+  const pin = (pinInp?.value || '').trim();
+  if(!pin){
+    alert('Por favor, introduce tu PIN personal de entrenador para autorizar el guardado.');
+    pinInp?.focus();
+    return;
+  }
+
+  const curr = getCurrentUser();
+  if(!curr){
+    alert('Debes iniciar sesión con tu cuenta de entrenador o administrador para guardar regatas en la nube.');
+    return;
+  }
+  let isPinValid = false;
+  if(curr.pin && String(curr.pin).trim() === pin){
+    isPinValid = true;
+  } else {
+    const users = clubUsersCache || [];
+    const dbUser = users.find(u => (u.id === curr.id || u.usuario === curr.usuario) && Number(u.activo) !== 0);
+    if(dbUser && String(dbUser.pin).trim() === pin){
+      isPinValid = true;
+    }
+  }
+
+  if(!isPinValid){
+    alert('PIN de entrenador incorrecto. La clave introducida no coincide con tu clave autorizada de entrenador.');
+    if(pinInp){
+      pinInp.value = '';
+      pinInp.focus();
+    }
     return;
   }
 
   const date = (document.getElementById('cloudSaveDate')?.value || '').trim() || new Date().toISOString().slice(0, 10);
-  const author = (document.getElementById('cloudSaveAuthor')?.value || '').trim() || 'Entrenador RCNGC';
+  const authorInpVal = (document.getElementById('cloudSaveAuthor')?.value || '').trim();
+  const author = authorInpVal || (curr && curr.nombre) || 'Entrenador RCNGC';
   const notes = (document.getElementById('cloudSaveNotes')?.value || '').trim();
+  const notas = notes;
   const categoria = (document.getElementById('cloudSaveCategory')?.value || 'Grupo A Optimist').trim();
   const tipoManga = (document.getElementById('cloudSaveType')?.value || 'Entrenamiento').trim();
 
@@ -12051,7 +13893,16 @@ async function submitCloudSave(mode = 'auto'){
 
   try {
     const customSails = {};
-    D.boats.forEach(b => { customSails[b.name] = b.sail; });
+    const sailorNotes = {};
+    D.boats.forEach(b => {
+      customSails[b.name] = b.sail;
+      const s = (b.sail || b.name || '').trim();
+      if(s){
+        const k = `coach_notes_${(D.title||'regata').replace(/\s+/g,'_')}_${s}`;
+        const val = localStorage.getItem(k);
+        if(val) sailorNotes[s] = val;
+      }
+    });
     const sessionPayload = {
       all: lastLoad.all,
       used: lastLoad.used,
@@ -12067,6 +13918,7 @@ async function submitCloudSave(mode = 'auto'){
       },
       tactics: state.tactics,
       customSails,
+      sailorNotes,
       categoria,
       tipoManga
     };
@@ -12330,7 +14182,7 @@ async function submitCloudSave(mode = 'auto'){
       viento_kts: windKts,
       num_barcos: D.N,
       autor: author,
-      notas,
+      notas: notes,
       categoria,
       tipo_manga: tipoManga,
       barcos_lista: barcosLista
@@ -12357,6 +14209,7 @@ async function submitCloudSave(mode = 'auto'){
       { t: isOverwrite ? `Regata «${title}» actualizada con éxito en la nube de Turso (${D.N} barcos).` : `Nueva regata «${title}» guardada con éxito en la nube (${D.N} barcos).`, cls: 'ok' },
       { t: `Enlace directo activo: ${shareUrl}`, cls: 'ok' }
     ]);
+    if(pinInp) pinInp.value = '';
     setTimeout(() => {
       if(status) status.textContent = '';
       switchCloudTab('list');
@@ -12510,9 +14363,21 @@ async function submitCloudEditModal(){
 }
 
 async function deleteCloudRegata(id, titulo){
-  const pin = prompt(`Introduce el PIN de entrenador para eliminar «${titulo}» de la nube:`);
+  const pin = prompt(`Introduce tu PIN de entrenador para eliminar «${titulo}» de la nube:`);
   if(pin === null) return;
-  if(pin.trim() !== getCoachPin()){
+  const curr = getCurrentUser();
+  const entered = pin.trim();
+  let valid = false;
+  if(curr && curr.pin && String(curr.pin).trim() === entered){
+    valid = true;
+  } else {
+    const users = clubUsersCache || [];
+    const dbUser = curr ? users.find(u => (u.id === curr.id || u.usuario === curr.usuario) && Number(u.activo) !== 0) : null;
+    if(dbUser && String(dbUser.pin).trim() === entered){
+      valid = true;
+    }
+  }
+  if(!valid){
     alert('PIN incorrecto. No se ha eliminado la regata.');
     return;
   }
@@ -12636,7 +14501,7 @@ async function renderCloudLinesList(){
   try {
     const rows = await executeTurso(`
       SELECT id, fecha, nombre, categoria, comite_lat, comite_lon, comite_prec, pin_lat, pin_lon, pin_prec,
-             viento_dir, longitud_m, sesgo_lado, sesgo_grados, baliza1_lat, baliza1_lon, baliza1_prec, creado_por, creado_en
+             viento_dir, viento_kts, longitud_m, sesgo_lado, sesgo_grados, baliza1_lat, baliza1_lon, baliza1_prec, creado_por, creado_en
       FROM lineas_salida
       ORDER BY creado_en DESC
       LIMIT 30;
@@ -12689,7 +14554,7 @@ async function renderCloudLinesList(){
             <div><strong>⛵ Barco Comité:</strong> ${r.comite_lat != null ? `${r.comite_lat.toFixed(5)}, ${r.comite_lon.toFixed(5)}` : '-'}</div>
             <div><strong>🚩 Boya de Pin:</strong> ${r.pin_lat != null ? `${r.pin_lat.toFixed(5)}, ${r.pin_lon.toFixed(5)}` : '-'}</div>
             <div><strong>📏 Longitud:</strong> ${lenStr}</div>
-            <div><strong>💨 Viento marcado:</strong> ${r.viento_dir != null ? Math.round(r.viento_dir) + '°' : '-'}</div>
+            <div><strong>💨 Viento marcado:</strong> ${(r.viento_dir != null ? Math.round(r.viento_dir) + '°' : '-') + (r.viento_kts != null ? ' · ' + Number(r.viento_kts).toFixed(1) + ' kn' : '')}</div>
           </div>
 
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;flex-wrap:wrap;gap:8px">
@@ -12775,9 +14640,16 @@ function applyMobileStartLine(line){
     D.course.ioda.b1 = { x: b1X, y: b1Y, lat: line.baliza1_lat, lon: line.baliza1_lon };
   }
 
-  // Si se registró dirección del viento
+  // Si se registró dirección e intensidad del viento
   if(line.viento_dir != null){
     D.windRef = line.viento_dir;
+    const wIn = document.getElementById('windIn');
+    if(wIn) wIn.value = Math.round(((line.viento_dir % 360) + 360) % 360);
+  }
+  if(line.viento_kts != null){
+    D.windKnVal = Number(line.viento_kts);
+    const wKnIn = document.getElementById('windKnIn');
+    if(wKnIn) wKnIn.value = Number(line.viento_kts).toFixed(1);
   }
 
   boatKinematicsCache.clear();
@@ -12789,7 +14661,8 @@ function applyMobileStartLine(line){
   const modal = document.getElementById('cloudModal');
   if(modal) modal.hidden = true;
 
-  showMsg([{ t: `✅ ¡Línea de salida "${line.nombre || 'Manga'}" aplicada con éxito desde el móvil! (Comité y Pin situados en GPS real).`, cls: 'ok' }]);
+  const wInfo = (line.viento_dir != null ? `${Math.round(line.viento_dir)}°` : '') + (line.viento_kts != null ? ` · ${Number(line.viento_kts).toFixed(1)} kn` : '');
+  showMsg([{ t: `✅ ¡Línea de salida "${line.nombre || 'R1'}" aplicada con éxito! (Comité y Pin situados en GPS real${wInfo ? ' · Viento: ' + wInfo : ''}).`, cls: 'ok' }]);
 }
 
 const tabCloudList = document.getElementById('tabCloudList');
@@ -12912,28 +14785,47 @@ if(cloudTypeFilterSelect){
 }
 
 // Desbloqueo y Seguridad de Modo Entrenador (Paso 4)
-function handleCoachUnlock(){
+async function handleCoachUnlock(){
   const pinIn = document.getElementById('cloudUnlockPinInput');
   const status = document.getElementById('cloudUnlockStatusMsg');
   const val = (pinIn ? pinIn.value : '').trim();
   if(!val){
-    if(status){ status.style.color = '#ef4444'; status.textContent = 'Introduce el PIN de entrenador.'; }
+    if(status){ status.style.color = '#ef4444'; status.textContent = 'Introduce tu PIN de entrenador.'; }
     return;
   }
-  if(val === getCoachPin()){
+  let users = clubUsersCache;
+  if(!users || !users.length){
+    try {
+      users = await fetchClubUsers(false);
+    } catch(_) {
+      users = clubUsersCache || [];
+    }
+  }
+  const match = (users || []).find(u => String(u.pin).trim() === val && Number(u.activo) !== 0);
+  if(match){
+    setCurrentUser(match, true);
     setCoachMode(true);
-    if(status){ status.style.color = '#16a34a'; status.textContent = '✓ ¡PIN correcto! Modo Entrenador activado.'; }
+    if(status){ status.style.color = '#16a34a'; status.textContent = `✓ ¡Bienvenido, ${match.nombre}! Modo Entrenador activado.`; }
     if(pinIn) pinIn.value = '';
     const savePin = document.getElementById('cloudSavePin');
-    if(savePin && !savePin.value) savePin.value = val;
+    if(savePin) savePin.value = '';
     updateCloudSaveForm();
   } else {
-    if(status){ status.style.color = '#ef4444'; status.textContent = 'PIN incorrecto. Revisa el código de seguridad o consulta con el cuerpo técnico.'; }
+    if(status){ status.style.color = '#ef4444'; status.textContent = 'PIN incorrecto. Revisa tu clave de entrenador o inicia sesión con tu usuario.'; }
   }
 }
 
 const btnUnlockCoachMode = document.getElementById('btnUnlockCoachMode');
 if(btnUnlockCoachMode) btnUnlockCoachMode.addEventListener('click', handleCoachUnlock);
+
+const btnCloudLockLogin = document.getElementById('btnCloudLockLogin');
+if(btnCloudLockLogin){
+  btnCloudLockLogin.addEventListener('click', () => {
+    openLoginModal(() => {
+      updateCloudSaveForm();
+    });
+  });
+}
 
 const cloudUnlockPinInput = document.getElementById('cloudUnlockPinInput');
 if(cloudUnlockPinInput){
@@ -12945,31 +14837,270 @@ if(cloudUnlockPinInput){
   });
 }
 
-function toggleCoachModePrompt(){
-  if(isCoachModeActive()){
-    if(confirm('¿Deseas cerrar la sesión de entrenador y volver al Modo Regatista (solo lectura)?')){
-      setCoachMode(false);
-      showMsg([{ t: 'Has vuelto al Modo Regatista (solo lectura).', cls: 'ok' }]);
-    }
-  } else {
-    const pin = prompt('Introduce el PIN de entrenador para desbloquear permisos de publicación y eliminación:');
-    if(pin === null) return;
-    if(pin.trim() === getCoachPin()){
-      setCoachMode(true);
-      const savePin = document.getElementById('cloudSavePin');
-      if(savePin && !savePin.value) savePin.value = pin.trim();
-      showMsg([{ t: '¡Modo Entrenador activado correctamente!', cls: 'ok' }]);
-    } else {
-      alert('PIN incorrecto. No se han modificado los permisos.');
-    }
-  }
-}
-
+// Eventos del sistema de usuarios y login
 const btnCoachModeToggle = document.getElementById('btnCoachModeToggle');
-if(btnCoachModeToggle) btnCoachModeToggle.addEventListener('click', toggleCoachModePrompt);
+if(btnCoachModeToggle) btnCoachModeToggle.addEventListener('click', () => {
+  if(isCoachModeActive()) logoutUser(); else openLoginModal();
+});
 
 const btnToggleCoachModeAuth = document.getElementById('btnToggleCoachModeAuth');
-if(btnToggleCoachModeAuth) btnToggleCoachModeAuth.addEventListener('click', toggleCoachModePrompt);
+if(btnToggleCoachModeAuth) btnToggleCoachModeAuth.addEventListener('click', () => {
+  if(isCoachModeActive()) logoutUser(); else openLoginModal();
+});
+
+const btnTopCoachAuth = document.getElementById('btnTopCoachAuth');
+if(btnTopCoachAuth) btnTopCoachAuth.addEventListener('click', handleTopCoachAuthClick);
+
+// Menú desplegable completo estilo LMS / Campus
+const btnDropdownProfile = document.getElementById('btnDropdownProfile');
+if(btnDropdownProfile) btnDropdownProfile.addEventListener('click', openCoachProfileModal);
+
+const btnDropdownCreateUser = document.getElementById('btnDropdownCreateUser');
+if(btnDropdownCreateUser) btnDropdownCreateUser.addEventListener('click', () => {
+  openAdminUsersModal(true);
+});
+
+const btnDropdownManageUsers = document.getElementById('btnDropdownManageUsers');
+if(btnDropdownManageUsers) btnDropdownManageUsers.addEventListener('click', () => {
+  openAdminUsersModal(false);
+});
+
+const btnDropdownEditProfile = document.getElementById('btnDropdownEditProfile');
+if(btnDropdownEditProfile) btnDropdownEditProfile.addEventListener('click', openEditProfileModal);
+
+const btnDropdownCalendar = document.getElementById('btnDropdownCalendar');
+if(btnDropdownCalendar) btnDropdownCalendar.addEventListener('click', openCalendarModal);
+
+const btnDropdownConsole = document.getElementById('btnDropdownConsole');
+if(btnDropdownConsole) btnDropdownConsole.addEventListener('click', () => {
+  closeUserDropdown();
+  if(isAdminUser()){
+    openAdminUsersModal();
+  } else {
+    openCoachProfileModal();
+  }
+});
+
+const btnDropdownPrivateFiles = document.getElementById('btnDropdownPrivateFiles');
+if(btnDropdownPrivateFiles) btnDropdownPrivateFiles.addEventListener('click', () => {
+  closeUserDropdown();
+  openCloudModal('list');
+});
+
+const btnDropdownReports = document.getElementById('btnDropdownReports');
+if(btnDropdownReports) btnDropdownReports.addEventListener('click', () => {
+  closeUserDropdown();
+  const tabAnalysis = document.getElementById('mainTabAnalysisV2');
+  if(tabAnalysis) tabAnalysis.click();
+  setTimeout(() => {
+    const reportBtn = document.getElementById('btnPrintAnalysisV2');
+    if(reportBtn) reportBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
+});
+
+const btnDropdownPreferences = document.getElementById('btnDropdownPreferences');
+if(btnDropdownPreferences) btnDropdownPreferences.addEventListener('click', () => {
+  closeUserDropdown();
+  openChangeMyPinModal();
+});
+
+const btnDropdownLogout = document.getElementById('btnDropdownLogout');
+if(btnDropdownLogout) btnDropdownLogout.addEventListener('click', logoutUser);
+
+// Clic fuera del menú desplegable o widget para cerrarlo
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('userDropdownMenu');
+  const widget = document.getElementById('userProfileWidget');
+  if(menu && (menu.classList.contains('open') || menu.classList.contains('is-open'))){
+    if(widget && !widget.contains(e.target)){
+      closeUserDropdown();
+    }
+  }
+});
+
+// Eventos de iconos de cabecera
+const btnUserBell = document.getElementById('btnUserBell');
+if(btnUserBell) btnUserBell.addEventListener('click', () => {
+  showMsg([{ t: '🔔 Sistema Nube RCNGC conectado (Turso SQLite Serverless). Todo sincronizado.', cls: 'ok' }]);
+});
+
+const btnUserChat = document.getElementById('btnUserChat');
+if(btnUserChat) btnUserChat.addEventListener('click', () => {
+  const tabAnalysis = document.getElementById('mainTabAnalysisV2');
+  if(tabAnalysis) tabAnalysis.click();
+  setTimeout(() => {
+    const firstNote = document.querySelector('.coach-notes-input');
+    if(firstNote) {
+      firstNote.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      firstNote.focus();
+    }
+  }, 100);
+});
+
+// Eventos modales extra
+const btnCloseCoachProfileModal = document.getElementById('btnCloseCoachProfileModal');
+if(btnCloseCoachProfileModal) btnCloseCoachProfileModal.addEventListener('click', closeCoachProfileModal);
+const btnCloseCoachProfileBottom = document.getElementById('btnCloseCoachProfileBottom');
+if(btnCloseCoachProfileBottom) btnCloseCoachProfileBottom.addEventListener('click', closeCoachProfileModal);
+const btnProfileModalEdit = document.getElementById('btnProfileModalEdit');
+if(btnProfileModalEdit) btnProfileModalEdit.addEventListener('click', openEditProfileModal);
+const btnProfileModalChangePin = document.getElementById('btnProfileModalChangePin');
+if(btnProfileModalChangePin) btnProfileModalChangePin.addEventListener('click', () => {
+  closeCoachProfileModal();
+  openChangeMyPinModal();
+});
+
+const btnCloseEditProfileModal = document.getElementById('btnCloseEditProfileModal');
+if(btnCloseEditProfileModal) btnCloseEditProfileModal.addEventListener('click', closeEditProfileModal);
+const btnCancelEditProfile = document.getElementById('btnCancelEditProfile');
+if(btnCancelEditProfile) btnCancelEditProfile.addEventListener('click', closeEditProfileModal);
+const formEditProfileModal = document.getElementById('formEditProfileModal');
+if(formEditProfileModal) formEditProfileModal.addEventListener('submit', saveEditProfile);
+const btnSaveEditProfile = document.getElementById('btnSaveEditProfile');
+if(btnSaveEditProfile) btnSaveEditProfile.addEventListener('click', saveEditProfile);
+
+const btnCloseCalendarModal = document.getElementById('btnCloseCalendarModal');
+if(btnCloseCalendarModal) btnCloseCalendarModal.addEventListener('click', closeCalendarModal);
+const btnCloseCalendarBottom = document.getElementById('btnCloseCalendarBottom');
+if(btnCloseCalendarBottom) btnCloseCalendarBottom.addEventListener('click', closeCalendarModal);
+const btnRefreshCalendar = document.getElementById('btnRefreshCalendar');
+if(btnRefreshCalendar) btnRefreshCalendar.addEventListener('click', renderCalendarSessions);
+
+// Exportar globalmente
+window.openCoachProfileModal = openCoachProfileModal;
+window.closeCoachProfileModal = closeCoachProfileModal;
+window.openEditProfileModal = openEditProfileModal;
+window.closeEditProfileModal = closeEditProfileModal;
+window.openCalendarModal = openCalendarModal;
+window.closeCalendarModal = closeCalendarModal;
+window.toggleUserDropdown = toggleUserDropdown;
+window.closeUserDropdown = closeUserDropdown;
+
+// Modal de Login
+const btnCloseAuthModal = document.getElementById('btnCloseAuthModal');
+if(btnCloseAuthModal) btnCloseAuthModal.addEventListener('click', closeLoginModal);
+
+const btnCancelAuthModal = document.getElementById('btnCancelAuthModal');
+if(btnCancelAuthModal) btnCancelAuthModal.addEventListener('click', closeLoginModal);
+
+const formAuthModal = document.getElementById('formAuthModal');
+if(formAuthModal) formAuthModal.addEventListener('submit', handleLoginSubmit);
+
+const btnSubmitAuthModal = document.getElementById('btnSubmitAuthModal');
+if(btnSubmitAuthModal) btnSubmitAuthModal.addEventListener('click', handleLoginSubmit);
+
+const btnToggleManualUser = document.getElementById('btnToggleManualUser');
+if(btnToggleManualUser) btnToggleManualUser.addEventListener('click', () => toggleManualUserAuth());
+
+const btnToggleAuthPinVisibility = document.getElementById('btnToggleAuthPinVisibility');
+if(btnToggleAuthPinVisibility) {
+  btnToggleAuthPinVisibility.addEventListener('click', () => {
+    const pinInp = document.getElementById('authPin');
+    if(pinInp){
+      pinInp.type = pinInp.type === 'password' ? 'text' : 'password';
+    }
+  });
+}
+
+const modalAuth = document.getElementById('modalAuth');
+if(modalAuth){
+  modalAuth.addEventListener('click', (e) => {
+    if(e.target === modalAuth) closeLoginModal();
+  });
+}
+
+// Modal Admin de Usuarios
+const btnCloseAdminUsersModal = document.getElementById('btnCloseAdminUsersModal');
+if(btnCloseAdminUsersModal) btnCloseAdminUsersModal.addEventListener('click', closeAdminUsersModal);
+
+const btnCloseAdminUsersBottom = document.getElementById('btnCloseAdminUsersBottom');
+if(btnCloseAdminUsersBottom) btnCloseAdminUsersBottom.addEventListener('click', closeAdminUsersModal);
+
+const btnRefreshAdminUsers = document.getElementById('btnRefreshAdminUsers');
+if(btnRefreshAdminUsers) btnRefreshAdminUsers.addEventListener('click', () => renderAdminUsersTable());
+
+const btnShowCreateUserForm = document.getElementById('btnShowCreateUserForm');
+if(btnShowCreateUserForm) btnShowCreateUserForm.addEventListener('click', () => showAdminUserForm(false));
+
+const btnGenRandomPassword = document.getElementById('btnGenRandomPassword');
+if(btnGenRandomPassword) {
+  btnGenRandomPassword.addEventListener('click', () => {
+    const pwd = generateRandomPassword();
+    const pinInp = document.getElementById('adminUserPin');
+    const confirmInp = document.getElementById('adminUserPinConfirm');
+    if(pinInp) { pinInp.value = pwd; pinInp.type = 'text'; }
+    if(confirmInp) { confirmInp.value = pwd; confirmInp.type = 'text'; }
+  });
+}
+
+const btnToggleAdminUserPin = document.getElementById('btnToggleAdminUserPin');
+if(btnToggleAdminUserPin) {
+  btnToggleAdminUserPin.addEventListener('click', () => {
+    const pinInp = document.getElementById('adminUserPin');
+    const confirmInp = document.getElementById('adminUserPinConfirm');
+    if(pinInp) pinInp.type = pinInp.type === 'password' ? 'text' : 'password';
+    if(confirmInp) confirmInp.type = confirmInp.type === 'password' ? 'text' : 'password';
+  });
+}
+
+const inpSearchAdminUsers = document.getElementById('inpSearchAdminUsers');
+if(inpSearchAdminUsers) {
+  inpSearchAdminUsers.addEventListener('input', (e) => {
+    renderAdminUsersTable(e.target.value);
+  });
+}
+
+const btnCancelAdminUserForm = document.getElementById('btnCancelAdminUserForm');
+if(btnCancelAdminUserForm) btnCancelAdminUserForm.addEventListener('click', hideAdminUserForm);
+
+const btnSaveAdminUser = document.getElementById('btnSaveAdminUser');
+if(btnSaveAdminUser) btnSaveAdminUser.addEventListener('click', saveAdminUserForm);
+
+const modalAdminUsers = document.getElementById('modalAdminUsers');
+if(modalAdminUsers){
+  modalAdminUsers.addEventListener('click', (e) => {
+    if(e.target === modalAdminUsers) closeAdminUsersModal();
+  });
+}
+
+// Modal Cambiar PIN
+const btnCloseChangePinModal = document.getElementById('btnCloseChangePinModal');
+if(btnCloseChangePinModal) btnCloseChangePinModal.addEventListener('click', closeChangeMyPinModal);
+
+const btnCancelChangePinModal = document.getElementById('btnCancelChangePinModal');
+if(btnCancelChangePinModal) btnCancelChangePinModal.addEventListener('click', closeChangeMyPinModal);
+
+const formChangePinModal = document.getElementById('formChangePinModal');
+if(formChangePinModal) formChangePinModal.addEventListener('submit', submitChangeMyPin);
+
+const btnSubmitChangePinModal = document.getElementById('btnSubmitChangePinModal');
+if(btnSubmitChangePinModal) btnSubmitChangePinModal.addEventListener('click', submitChangeMyPin);
+
+const modalChangePin = document.getElementById('modalChangePin');
+if(modalChangePin){
+  modalChangePin.addEventListener('click', (e) => {
+    if(e.target === modalChangePin) closeChangeMyPinModal();
+  });
+}
+
+// Exportar globalmente para eventos inline
+window.openLoginModal = openLoginModal;
+window.handleLoginSubmit = handleLoginSubmit;
+window.toggleUserDropdown = toggleUserDropdown;
+window.openCoachProfileModal = openCoachProfileModal;
+window.closeLoginModal = closeLoginModal;
+window.logoutUser = logoutUser;
+window.openAdminUsersModal = openAdminUsersModal;
+window.closeAdminUsersModal = closeAdminUsersModal;
+window.openChangeMyPinModal = openChangeMyPinModal;
+window.closeChangeMyPinModal = closeChangeMyPinModal;
+window.openEditUserForm = openEditUserForm;
+window.toggleUserActiveState = toggleUserActiveState;
+window.deleteClubUser = deleteClubUser;
+window.getCurrentUser = getCurrentUser;
+window.isAdminUser = isAdminUser;
+window.fetchClubUsers = fetchClubUsers;
+window.executeTurso = executeTurso;
 
 updateCoachModeUI();
 
@@ -12984,6 +15115,8 @@ window.switchCloudTab = switchCloudTab;
 window.setCoachMode = setCoachMode;
 window.isCoachModeActive = isCoachModeActive;
 window.filterAndDisplayCloudList = filterAndDisplayCloudList;
+window.updateSailorNotesInputsLockState = updateSailorNotesInputsLockState;
+window.updateCoachModeUI = updateCoachModeUI;
 
 })();
 </script>

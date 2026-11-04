@@ -137,9 +137,174 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.9.1] - Blindaje de Seguridad en Autenticación y Sustitución de Avatar por Emoji 👤
+* **Seguridad Estricta en el Inicio de Sesión Multi-Usuario**:
+  * **Eliminación total del bypass maestro (`isMasterMatch`)**: Se erradicó por completo la vulnerabilidad que permitía iniciar sesión en la cuenta del administrador (`admin`) utilizando la contraseña genérica o PIN del entrenador (`RCNGC2026`).
+  * **Autenticación estricta 1:1 por usuario**: Cada perfil (`admin`, `entrenador`, etc.) valida su contraseña única y exclusivamente contra su PIN individual registrado en la base de datos central de Turso (`usuarios_club`). Para entrar como `admin`, es indispensable introducir el PIN personal de administrador (`0405`).
+  * **Saneamiento de fallbacks y puntos de seguridad**: Actualizadas las listas de respaldo en memoria y los controles de autorización en guardado de regatas (`submitCloudSave`), borrado en la nube (`deleteCloudRegata`), cambio de clave (`btnSubmitChangePinModal`) y desbloqueo de paso 4 (`handleCoachUnlock`) para impedir cualquier elevación de privilegios no autorizada.
+* **Sustitución de Avatar por Emoji Personal 👤**:
+  * **Pastilla de usuario en cabecera**: Eliminada la imagen circular de perfil (base64) del botón `#btnTopCoachAuth`, reemplazándola por el emoji `👤` con centrado y tipografía proporcionada.
+  * **Ficha del Entrenador en Modal**: En `#modalCoachProfile`, la imagen estática ha sido sustituida por el avatar con emoji `👤`, manteniendo el nombre del usuario autenticado, su flota y sus credenciales de club.
+  * **Limpieza de código**: Eliminada la constante de imagen pesada `DEFAULT_COACH_AVATAR`, reduciendo el peso de la página y mejorando la consistencia visual.
+* **Verificación Automatizada E2E con Microsoft Edge CDP**:
+  * Suite de 6 pruebas automatizadas ejecutadas directamente en el navegador validando rechazos con PIN cruzado, login exitoso con credenciales legítimas, menús desplegables y avatares.
+
+### [v1.9.0] - Integración Integral de Polares VPP Oficiales Optimist (IOD95), Modelo Paramétrico por Peso del Regatista y Motor Cinemático Naval
+* **Matriz Oficial VPP Optimist (IOD95)**:
+  * Incorporación directa del modelo de predicción de velocidad VPP oficial para Optimist a partir de la documentación técnica y bases telemétricas de `Sailing knowledge/`.
+  * Matriz continua bidimensional con 37 ángulos (de 0° a 180° cada 5°) y 9 columnas de intensidad de viento (4, 6, 8, 10, 12, 14, 16, 18 y 20 nudos).
+  * Sustitución definitiva de la tabla estática anterior por el cálculo bilineal exacto de velocidad teórica sobre el fondo (`targetPolarBsp`), velocidad de avance neto (`targetMaxVmg`) y ángulo óptimo de ceñida y empopada (`optimalTwa`).
+* **Modelo Paramétrico Continuo por Peso del Patrón (30 kg a 55 kg; Ref. 42.5 kg)**:
+  * Modelado hidrodinámico y aerodinámico en función del peso:
+    * **Patrones ligeros (30–34 kg / Sub 11)**: Bonificación de VMG en brisas suaves (<8.5 kn) gracias a su menor superficie mojada y calado, y penalización progresiva en viento duro (>14 kn) por falta de momento adrizante, aconsejando abrir rumbo (*footing* a 45° TWA).
+    * **Patrones consolidados (40–48 kg / Sub 16)**: Máxima capacidad de aplanado en ceñida con viento fresco (>12 kn), manteniendo rumbos más cerrados (41°–42° TWA) y mayor ganancia a barlovento.
+  * Inclusión de perfiles y pautas técnicas para entrenadores en la guía oficial: recomendaciones de corte de vela (CD Sails Flat/DRS-, OneSails Light/GMR) y caída de palo (*mast rake* 2.79 m a 2.83 m).
+* **Inversión Analítica VPP para Deducir la Intensidad del Viento (`estimateFleetWindSpeed`)**:
+  * Deducción de la velocidad del viento de la sesión evaluando la velocidad en ceñida de la flota frente a la curva teórica VPP del Optimist.
+  * Algoritmo de desambiguación para viento duro (>=14 kn): dado que la velocidad de ceñida del Optimist se satura en torno a 3.2–3.3 kn por el oleaje y la forma de la proa cajón, el sistema comprueba automáticamente las velocidades máximas y de popa para diferenciar con total fiabilidad una brisa media (10 kn) de un viento fuerte (16–18 kn).
+* **Gráfica Polar Interactiva Dinámica**:
+  * Dibuja en tiempo real la curva teórica VPP azul discontinua adaptada a la intensidad de viento de la sesión y peso del regatista, tanto en amura de estribor como de babor.
+  * Comparación segundo a segundo de cada punto GPS (1 Hz) frente al objetivo teórico, calculando el `% Rendimiento Polar (VPP X.X kn)`.
+  * Tooltip interactivo con lectura de la velocidad polar teórica en cualquier ángulo TWA.
+* **Debriefing Táctico Avanzado en «Análisis V2»**:
+  * Clasificación automática de modos de ceñida:
+    * `⚠️ Sobreorzando (Pinching)`: Si el regatista navega más cerrado que el ángulo óptimo VPP, perdiendo potencia y velocidad en la ola.
+    * `ℹ️ Ceñida abierta (Footing)`: Si abre rumbo en exceso, regalando distancia hacia barlovento.
+    * `✅ In the Groove (Ángulo óptimo)`: Compromiso ideal entre velocidad y punteo acorde a la polar.
+  * Auditoría porcentual de VMG en ceñida frente al target oficial VPP (`🚀 VMG Sobresaliente` vs `📉 Pérdida neta de VMG`).
+* **Ritmos de Regata y Benchmarks IODA Continuos (`getRyaPace`)**:
+  * Interpolación matemática continua sobre los estándares de duración oficial IODA (manga target de 45 minutos) para dimensionar campos de regata y evaluar la eficiencia de la flota.
+* **Guía y Modales de Polares Actualizados**:
+  * Desglose completo de la matriz VPP y de la tabla de pesos y ajustes de aparejo tanto en el Visor de Regatas principal como en la app *Analizador de Entrenamientos*.
+
+### [v1.8.2] - Homogeneización Visual del Analizador de Entrenamientos con el Visor de Regatas RCNGC
+* **Diseño y Estructura Idéntica al Visor de Regatas**:
+  * Adopción de la paleta cromática náutica oficial (`#0a1315`, `#101c1f`, `#0d272c`), tipografías oficiales (`Barlow Condensed`, `IBM Plex Sans`, `IBM Plex Mono`) y disposición en rejilla de consola técnica.
+  * Pestañas superiores unificadas: `Visualizar el track`, `Métricas avanzadas` y `Análisis V2`.
+  * Botón de `🔒 Acceso Entrenador` ubicado en la esquina superior derecha de la barra de navegación, idéntico al visor de regatas.
+  * Encabezado con cinta `EQUIPO DE REGATAS RCNGC · OPTIMIST`, título dinámico, lista de barcos y barra de utilidades (`☁ Nube RCNGC`, `💾 Guardar cambios`, `🔗 Compartir`, `Guía de uso`, `Nueva sesión`, badge `DATOS REALES` y reloj digital).
+* **Modo Pantalla Completa Cinemático**:
+  * Activación mediante el botón `⛶` en la barra de herramientas del mapa o pulsando la tecla `F`.
+  * Barra de reproducción flotante inferior estilo YouTube con desenfoque de fondo, auto-ocultación por inactividad y botón de salida rápida.
+* **Tarjeta de Barco Seleccionado y Mini Gráfica Sparkline**:
+  * Panel inferior derecho con cuadrícula de 6 métricas (Velocidad, Rumbo, Tramo, Navegado, Viradas y % Polar) y mini gráfico sparkline con botones temporales (`5 min`, `15 min`, `30 min`, `Toda`).
+* **Diseño Técnico Profesional**:
+  * Eliminación de emojis innecesarios en pestañas, tablas y cabeceras para una apariencia náutica rigurosa.
+  * Pie de página oficial con insignia de versión y créditos: `Equipo de Regatas RCNGC · Desarrollado por Pablo Quintana Labarta`.
+
+### [v1.8.1] - Rediseño de la Pantalla Principal: Hub de Herramientas Destacadas con Degradados y Tarjeta de Subida Compacta
+* **Hub Superior de Herramientas y Apps Oficiales**:
+  * Se reubicaron los 3 accesos principales de la plataforma en un panel destacado propio en la columna derecha de la pantalla de bienvenida, otorgándoles máxima visibilidad y jerarquía visual:
+    1. **📊 Histórico & Big Data**: Abre la consola central de rendimiento acumulado de la flota, comparativa y filtros por barco.
+    2. **🏋️ Analizador Entrenamientos**: Abre la app especializada en análisis de sesiones libres, debriefing táctico y Polares VPP Optimist.
+    3. **📲 App Salidas GPS**: Abre la aplicación móvil para entrenadores y comités para geolocalizar boyas en el agua en tiempo real.
+  * **Estilización cromática con degradados luminosos estilo Nube**:
+    * Cada tarjeta posee fondos con gradientes dinámicos (`linear-gradient`), bordes brillantes y sombras de neón al pasar el cursor, inspiradas en la estética visual de la caja principal de la Nube RCNGC:
+      * **Histórico & Big Data**: Degradado azul océano (`#0284c7` / `#38bdf8`), con icono y títulos iluminados.
+      * **Analizador Entrenamientos**: Degradado cian eléctrico (`#00f0ff` / `#00b4d8`), con icono y tipografía neón.
+      * **App Salidas GPS**: Degradado verde esmeralda (`#10b981` / `#34d399`), con icono y rótulos en verde flúor.
+* **Limpieza de Pestañas Superiores de Navegación**:
+  * Se retiró el enlace redundante `🏋️ Entrenamientos ↗` de la barra superior izquierda para dejar una cabecera más limpia y ordenada con las tres vistas fundamentales (`Visualizar el track`, `Métricas avanzadas`, `Análisis V2`), canalizando el acceso de forma atractiva desde la pantalla de bienvenida y el menú desplegable del perfil de entrenador.
+* **Tarjeta de Subida Compacta («¿Subir nueva regata?»)**:
+  * El bloque de importación local se ha reducido a la mitad de su tamaño original (`padding` ajustado, zona de arrastre compacta y botones en línea).
+  * Se renombró el encabezado a **«📁 ¿Subir nueva regata?»** para mantener consistencia terminológica en toda la plataforma.
+  * Mantiene la protección estricta con control de acceso (`🔒 Solo Entrenadores`).
+
+### [v1.8.0] - Analizador de Entrenamientos Dedicado, Motor de Polares VPP Optimist y Comparador de Flota
+* **Nueva Aplicación Dedicada: «Analizador de Entrenamientos» (`analizador-entrenamientos/` y `Analizador Entrenamientos Optimist.html`)**:
+  * Diseñada específicamente para sesiones libres de entrenamiento en el agua sin necesidad de marcar línea de salida ni recorrido oficial entre balizas.
+  * Compatible con archivos GPX, CSV (Traccar/Excel), XLSX y KML de cualquier reloj GPS o móvil.
+  * **Acceso Público de Lectura**: Cualquier regatista o familia puede abrir y reproducir las sesiones, consultar métricas y ver comparativas de barcos sin usuario ni contraseña.
+  * **Control de Creación para Entrenadores y Administrador**: Solo los usuarios con sesión activa de entrenador/admin pueden subir nuevos archivos, editar parámetros y publicar entrenamientos en la Nube Turso.
+* **Integración del Motor de Polares Oficiales Optimist (VPP IOD95)**:
+  * Incorpora la matriz completa de polares hidrodinámicas de Optimist (4 a 20 nudos de viento real, de 0° a 180° TWA).
+  * **Ajuste Paramétrico por Peso del Regatista (30 a 55 kg)**: Modela el rendimiento según el peso del tripulante (ej. 30-34 kg para regatistas ligeros con ventaja en ventolinas, y 45-50 kg con mayor adrizamiento en viento fresco).
+  * **Cálculo de Eficiencia**: % de rendimiento contra la velocidad objetivo del barco (BSP) y % de VMG respecto al óptimo de ceñida o empopada.
+  * **Diagnóstico Táctico de Ceñida**: Clasificación segundo a segundo entre *In the Groove* (ángulo óptimo), *Pinching* (sobreorzando) y *Footing* (rápido y abierto).
+* **Visualización de Mapas, Estelas y Rosa de Vientos Interactiva**:
+  * Lienzo de mapa en 2D con estelas coloreables: **Por Rumbo** (Ceñida en azul, Través en turquesa, Largo en ámbar, Popa en rojo), **Por Velocidad** (termografía verde/amarillo/rojo) o **Color de Barco**.
+  * Selector de longitud de estela (1 min, 3 min, 5 min o toda la sesión).
+  * Rosa de los vientos interactiva con ajuste manual (±1°, ±5°, ±10°) y botón **«🎯 Auto»** para calcular el viento real automáticamente mediante la bisectriz de viradas de la flota.
+  * Gráfica de velocidad sincronizada con el mapa en la parte inferior del reproductor.
+* **Pestaña de Rendimiento & Curva Polar**:
+  * Desglose completo de rumbos navegados (Ceñida, Través, Largo, Empopada) con porcentaje de tiempo, SOG media, SOG máxima, VMG y % de cumplimiento polar.
+  * Gráfico polar polar en lienzo: dibuja la curva teórica VPP y superpone los puntos reales registrados por el GPS en amuras de babor y estribor.
+  * **Análisis Detallado de Maniobras**: Tabla interactiva de viradas y trasluchadas con velocidad previa ($V_{target}$), velocidad mínima en el giro ($V_{min}$), ratio de velocidad retenida, tiempo de recuperación y metros perdidos (*Tack Loss*). Al pulsar en cualquier maniobra, el mapa se sitúa automáticamente en ese instante.
+* **Pestaña de Comparativa de Embarcaciones (Cara a Cara & Flota)**:
+  * Tabla comparativa con ordenación por VMG, velocidades por rumbo y calidad de maniobras entre todos los barcos trackeados.
+  * Botón directo **«📋 Copiar para Excel»**.
+* **Cruce con la Ficha de los Regatistas (Big Data RCNGC)**:
+  * Las sesiones de entrenamiento se guardan en Turso SQLite con `tipo_sesion = 'Entrenamiento'`.
+  * En la Ficha del Regatista tanto del Visor como del Analizador aparecen sus entrenamientos con distintivo azul `[🏋️ Entreno]` y botón `📥 Cargar` para abrirlos directamente.
+* **Navegación Fluida entre Herramientas**:
+  * Botón `🏋️ Entrenamientos ↗` en la cabecera y en la pantalla de bienvenida del Visor de Regatas.
+  * Botón `⛵ Visor de Regatas` en la cabecera del Analizador de Entrenamientos.
+
+### [v1.7.1] - Control de Acceso a Subida de Tracks y Seguridad de Guardado con Clave Personal de Entrenador
+* **Bloqueo de Subida de Tracks para Usuarios no Autenticados (Solo Entrenadores y Admins)**:
+  * A partir de esta versión, es obligatorio contar con sesión activa como entrenador o administrador para subir nuevos archivos, carpetas o arrastrar tracks GPS al visor con el fin de crear o analizar regatas.
+  * Si un usuario en Modo Regatista (solo lectura) pulsa **«📁 Elegir carpeta»**, **«📄 Elegir archivos»**, hace clic sobre la zona de arrastre o arrastra tracks sobre la tarjeta de importación, el programa bloquea el selector de archivos y abre automáticamente el modal de autenticación (`modalAuth`), preservando los archivos arrastrados o la acción seleccionada para procesarla de inmediato una vez completado el inicio de sesión.
+  * La tarjeta de carga en la pantalla principal incorpora un indicador de estado dinámico (`#uploadCoachBadge`):
+    * **Modo Regatista**: `🔒 Solo Entrenadores ●` (indicador ámbar y texto de restricción).
+    * **Modo Entrenador / Admin**: `🔒 Entrenador / Admin ●` (indicador verde de autorización activa).
+* **Firma Obligatoria con Clave Personal de Entrenador para Publicar y Modificar en la Nube**:
+  * En el modal de subida y guardado de regatas a la Nube Central (Turso SQLite):
+    * **Autor / Entrenador predeterminado**: El campo muestra por defecto el nombre real del entrenador que ha iniciado sesión (`getCurrentUser()?.nombre`), garantizando la autoría de cada prueba registrada.
+    * **Eliminación del texto y PIN por defecto**: Se eliminó completamente la referencia histórica `(por defecto: RCNGC2026)`. El texto de ayuda ahora indica claramente: *«Introduce tu clave o PIN personal para autorizar el guardado.»*.
+    * **Campo de PIN vacío por defecto**: El campo de PIN de seguridad permanece siempre vacío (`value = ''`), exigiendo que cada entrenador introduzca manualmente su clave personal para firmar y validar la publicación o sobrescritura de la regata.
+    * **Validación criptográfica por usuario**: Al pulsar *«Guardar en la Nube»* o *«Guardar cambios (Sobrescribir)»*, el sistema comprueba contra la base de datos de usuarios (`usuarios_club`) que la clave introducida coincida estrictamente con la contraseña/PIN personal del entrenador con la sesión abierta (o clave maestra para el administrador). Si el PIN no coincide, la operación se cancela de inmediato informando al usuario.
+    * **Desbloqueo rápido unificado en pestaña Guardar**: La tarjeta de bloqueo para usuarios no identificados incorpora el botón directo *«🔑 Iniciar sesión como Entrenador»*, permitiendo acceder al formulario con un solo clic.
+* **Corrección en Guardado / Sobrescritura de Regatas**:
+  * Se subsanó una discrepancia de identificadores de variable (`notas` vs `notes`) en el ámbito de `submitCloudSave`, garantizando que al pulsar *«Guardar cambios (Sobrescribir)»* o guardar como nueva regata las observaciones del día y metadatos se sincronicen en Turso SQLite con total fluidez y sin interrupciones.
+
+### [v1.7.0] - Sistema Multi-Usuario con Roles (Admin / Entrenador), Creación Autónoma de Cuentas y Contraseñas, Menú Campus/Club y Suite de Servicios
+* **Creación de Usuarios con Contraseña desde el Propio Programa (Acceso Administrador)**:
+  * El administrador puede crear nuevos usuarios y entrenadores directamente desde el visor, asignándoles su nombre, identificador de acceso (login), contraseña personalizada o generada automáticamente, rol (`admin` o `entrenador`), categoría de flota y email.
+  * Formulario completo con generador aleatorio de contraseñas seguras (`🎲 Generar contraseña`), confirmación de clave y botón de visualización con icono de ojo (👁️).
+  * Opciones dedicadas y directas en el menú desplegable superior del administrador: **«➕ Crear nuevo usuario»** (abre el formulario enfocado) y **«👥 Gestión de usuarios»** (abre la lista de cuentas con buscador en tiempo real).
+  * Validación estricta contra colisiones de usuarios duplicados, longitud mínima de clave y confirmación idéntica.
+  * Los usuarios creados se sincronizan inmediatamente en la base de datos central de Turso SQLite y pueden iniciar sesión al instante desde cualquier terminal.
+* **Gatillo de Perfil de Usuario en Barra Superior con Avatar & Notificaciones**:
+  * Diseñado siguiendo la estética de portales deportivos y campus de entrenamiento (LMS): muestra el nombre completo del entrenador (**Pablo Luis Quintana Labarta**), avatar circular con foto náutica, flecha indicadora (*chevron*) y botones de acceso rápido a **Notificaciones del Sistema** (🔔) y **Anotaciones Técnicas & Debriefing** (💬).
+  * En modo de solo lectura (Modo Regatista), se presenta como el botón `🔒 Acceso Entrenador` para iniciar sesión con PIN/contraseña.
+* **Menú Desplegable Estructurado de Servicios & Herramientas**:
+  * Diseñado para facilitar la integración de futuras herramientas, aplicaciones conectadas y módulos de regatas:
+    1. **👤 Perfil**: Ficha técnica completa del entrenador con credenciales, club náutico (RCNGC), grupo/flota asignada, email de contacto y estado de sincronización en la nube.
+    2. **➕ Crear nuevo usuario** (Solo Admin): Despliega directamente el formulario de alta de nuevos usuarios con contraseña.
+    3. **👥 Gestión de usuarios** (Solo Admin): Tabla con buscador en tiempo real, visor de contraseñas, edición de perfiles y activación/desactivación de cuentas.
+    4. **✏️ Editar perfil**: Modal interactivo para actualizar de forma autónoma el nombre y apellidos, email y categoría principal directamente en Turso SQLite.
+    5. **📅 Calendario**: Visor interactivo del calendario de regatas y entrenamientos del club con acceso directo (*1-clic*) para cargar cualquier sesión histórica en el mapa.
+    6. **⚙️ Consola de servicios**: Acceso rápido al panel de administración de cuentas, gestión de roles y control de la base de datos central Turso.
+    7. **📁 Archivos privados**: Acceso directo a la biblioteca central de regatas guardadas, copias de seguridad y descargas.
+    8. **📊 Informes**: Salto directo a la pestaña de Análisis V2 con enfoque automático sobre las herramientas de generación de informes imprimibles y exportación para Excel.
+    9. **🔑 Preferencias**: Acceso al panel de configuración personal y actualización autónoma de la contraseña de seguridad.
+    10. **🚪 Cerrar sesión**: Cierre de sesión seguro y retorno inmediato al Modo Regatista (solo lectura).
+* **Arquitectura de Base de Datos Turso SQLite (`usuarios_club`)**:
+  * Soporte de cuentas persistentes con roles (`admin` y `entrenador`), auto-atribución de autor en guardados en la nube, y control estricto de salvaguardas (imposibilidad de suprimir al usuario en sesión o al único administrador activo).
+
+## [v1.6.1] - Control de Acceso y Protección de Anotaciones del Entrenador (Modo Entrenador vs Modo Regatista)
+* **Botón de Acceso en la Barra de Navegación Superior Principal (`nav.main-tabs`)**:
+  * Situado en la barra superior de navegación al extremo derecho, alineado horizontalmente con las pestañas *«Visualizar el track»*, *«Métricas avanzadas»* y *«Análisis V2»*, como botón de inicio de sesión global permanente de la aplicación.
+  * Permite desbloquear las credenciales de entrenador introduciendo el PIN de seguridad (por defecto `RCNGC2026`).
+  * Al desbloquearse, el botón adopta una tonalidad verde esmeralda (`.coach-active`) y permite cerrar sesión en cualquier instante con confirmación para retornar al modo seguro de solo lectura.
+* **Bloqueo y Protección Limpia de Anotaciones en Análisis V2**:
+  * En la cuadrícula multi-barco de Análisis V2, los recuadros de **«📝 Anotaciones del Entrenador»** quedan protegidos en modo de solo lectura (`readonly`, clase `.is-locked`) si el usuario no ha iniciado sesión como entrenador, impidiendo que regatistas, familias o usuarios anónimos modifiquen o borren las notas técnicas del equipo.
+  * **Diseño Limpio, Minimalista y Sin Ruido Visual**:
+    * Eliminados los distintivos rojos de "Solo lectura", candados invasivos y textos de "Iniciar sesión como entrenador" en cada tarjeta individual.
+    * Eliminado el texto de marcador (*placeholder*) cuando la casilla está vacía: si no hay anotaciones para un regatista, la casilla se muestra limpia y neutra sin carteles ni avisos de advertencia.
+    * Si el entrenador redacta observaciones, el texto se visualiza con total nitidez y elegancia para todos los usuarios.
+  * **Persistencia y Sincronización en la Nube**: Las notas redactadas por el entrenador se auto-guardan en tiempo real en la memoria del navegador y se empaquetan dentro de la regata al sincronizar con la base de datos central de Turso SQLite, permitiendo que los regatistas consulten las anotaciones en sus propios dispositivos en modo seguro de solo lectura.
+
 ### [v1.6.0] - App Móvil PWA para Entrenadores: Marcado GPS de Comité y Pin en el Agua y Sincronización en la Nube con Turso
 * **Aplicación Móvil Web PWA para Entrenadores (`gps-salidas/`)**:
   * **Diseñada para el Agua y la Neumática**: Interfaz táctil adaptada para uso en lancha de apoyo con salpicaduras, viento y sol brillante. Incluye botones de marcado gigantes, feedback háptico (vibración en el teléfono) y conmutador de **«Modo Sol (Alto Contraste)»** para máxima legibilidad bajo luz diurna intensa.
+  * **Botón de Reset Rápido («🔄 Reset»)**: Permite reiniciar los datos de Comité, Pin y Baliza 1 con una confirmación de seguridad para empezar una nueva salida limpia sin recargar la página.
+  * **Botón de Eliminación para Baliza 1 («✕ Eliminar»)**: En el recuadro de Baliza 1 se incorpora un botón específico para cancelar la baliza 1 de forma aislada, evitando confusiones o pulsaciones accidentales sin afectar a las marcas de Pin o Comité.
+  * **Nomenclatura Oficial de Regatas (R1, R2, R3...)**: Sustituido el término «Manga» por la denominación náutica estándar internacional (`R1`, `R2`, `R3`, `R4`, `R5`, `R6` y `Entreno`) con botones táctiles de 1 toque.
+  * **Terminología Náutica (Compás)**: Sustituida la palabra «brújula» por **«compás»** (apuntar móvil de cara al viento mediante compás magnético interno).
+  * **Registro Dual de Viento (Dirección + Intensidad en Nudos)**:
+    * Se añade la casilla de **Intensidad del Viento** en nudos (`kn`) junto a la de Dirección (`TWD`), con escalones táctiles de ±1 y ±2 nudos.
+    * Ambos parámetros se persisten localmente y se transfieren a la nube de Turso y al visor de tracking.
   * **Instalable en Teléfonos (PWA Nativa)**: Compatible con iPhone (Safari: *«Añadir a pantalla de inicio»*) y Android (Chrome: *«Instalar aplicación»*), con iconos náuticos propios del RCNGC en alta resolución.
   * **Funcionamiento 100% Offline (Sin Cobertura)**: Incorpora Service Worker para cargar de inmediato en medio del mar sin señal 4G. Si no hay conexión en el agua, las marcas se almacenan de forma segura en la memoria del teléfono y se suben a la nube automáticamente al recuperar cobertura.
   * **Seguimiento GPS de Alta Precisión en Tiempo Real**:
@@ -149,16 +314,16 @@ Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan
     * ⛵ **«MARCAR BARCO COMITÉ»**: Captura la posición exacta de la neumática fondeada o abarloada al Comité (extremo de estribor).
     * 🚩 **«MARCAR PIN (BOYA)»**: Captura la posición de la boya de salida (extremo de babor).
     * 📍 **«MARCAR BALIZA 1 (BARLOVENTO)»** *(Opcional)*: Permite geolocalizar la boya de ceñida si el entrenador acude al barlovento.
-    * 💨 **«DIRECCIÓN DEL VIENTO»**: Ajuste rápido mediante pulsadores de ±5°/±10° o captura instantánea orientando el teléfono hacia el viento con la brújula interna del móvil.
+    * 💨 **«DIRECCIÓN E INTENSIDAD DEL VIENTO»**: Ajuste rápido mediante pulsadores de ±5°/±10° e intensidad en nudos, o captura instantánea orientando el teléfono hacia el viento con el compás del móvil.
   * **Cálculo Táctico en Vivo en la Neumática**:
     * **Longitud de la Línea**: Distancia en metros y en esloras equivalentes de la clase Optimist (~2,3 m).
     * **Eje de la Línea**: Marcación geográfica Comité ↔ Pin.
     * **Veredicto de Favorecido (Sesgo)**: Dictamina si la línea está *«PIN FAVORECIDO»*, *«COMITÉ FAVORECIDO»* o *«LÍNEA CUADRADA (±1°)»*, indicando los grados de sesgo y la ventaja estimada en metros hacia barlovento, acompañado de un esquema gráfico en lienzo miniatura.
 * **Integración en la Nube de Turso (`lineas_salida`)**:
-  * Nueva tabla relacional en la base de datos central de Turso para almacenar el histórico de líneas y mangas del club con fecha, manga, coordenadas GPS, precisión y sesgo táctico.
+  * Nueva tabla relacional en la base de datos central de Turso para almacenar el histórico de líneas y pruebas del club con fecha, prueba (R1, R2...), coordenadas GPS, precisión, dirección de viento (`viento_dir`), intensidad (`viento_kts`), longitud y sesgo táctico.
 * **Sincronización con el Programa de Tracking (`Visor Regata Optimist_Entrenadores v1.html`)**:
-  * **Pestaña «📡 Salidas GPS Móvil» en la Nube RCNGC**: Visualiza todas las salidas grabadas por los entrenadores ordenadas cronológicamente, con sus coordenadas, distancia, viento y dictamen táctico.
-  * **Aplicar con 1 Clic**: El visor proyecta las coordenadas GPS reales al origen local del mapa de la regata, colocando automáticamente el Comité y el Pin con precisión satelital y recalculando los cruces de salida de todos los barcos.
+  * **Pestaña «📡 Salidas GPS Móvil» en la Nube RCNGC**: Visualiza todas las salidas grabadas por los entrenadores ordenadas cronológicamente, con sus coordenadas, distancia, viento completo (grados y nudos) y dictamen táctico.
+  * **Aplicar con 1 Clic**: El visor proyecta las coordenadas GPS reales al origen local del mapa de la regata, colocando automáticamente el Comité, el Pin y la Baliza 1, y fijando automáticamente la dirección e intensidad de viento en las herramientas cinemáticas del visor.
   * **Botón Directo en el Recorrido**: Botón **«📡 Importar Salida GPS Móvil»** en el panel de configuración de la línea de salida del visor.
   * **Acceso Rápido desde la Pantalla de Inicio**: Botón directo **«📲 App Móvil Salidas GPS»** en la tarjeta de bienvenida del programa de tracking.
 

@@ -626,6 +626,7 @@
       </div>
     </div>
     <div class="header-actions">
+      <button class="btn-icon" id="btnResetData" title="Resetear datos y empezar nueva salida" style="color:#ff7043;border-color:rgba(255,112,67,0.4)">🔄 Reset</button>
       <button class="btn-icon" id="btnSunMode" title="Alternar Modo Sol / Contraste">☀️ Sol</button>
       <button class="btn-icon" id="btnSettings" title="Ajustes de Conexión Turso">⚙️</button>
     </div>
@@ -646,7 +647,7 @@
   <!-- TARJETA DE SESIÓN / MANGA -->
   <div class="card session-card">
     <div class="session-row">
-      <input type="text" class="session-input" id="sessionNameInput" value="Manga 1" placeholder="Nombre de la manga o sesión">
+      <input type="text" class="session-input" id="sessionNameInput" value="R1" placeholder="Nombre de la prueba (ej. R1)">
       <select id="categorySelect" style="background:var(--bg);color:var(--text);border:1px solid var(--surface-border);padding:9px 10px;border-radius:8px;font-weight:700;outline:none;">
         <option value="Optimist">Optimist</option>
         <option value="ILCA 4">ILCA 4</option>
@@ -656,10 +657,12 @@
       </select>
     </div>
     <div class="quick-mangas">
-      <button class="btn-manga active" data-manga="Manga 1">Manga 1</button>
-      <button class="btn-manga" data-manga="Manga 2">Manga 2</button>
-      <button class="btn-manga" data-manga="Manga 3">Manga 3</button>
-      <button class="btn-manga" data-manga="Manga 4">Manga 4</button>
+      <button class="btn-manga active" data-manga="R1">R1</button>
+      <button class="btn-manga" data-manga="R2">R2</button>
+      <button class="btn-manga" data-manga="R3">R3</button>
+      <button class="btn-manga" data-manga="R4">R4</button>
+      <button class="btn-manga" data-manga="R5">R5</button>
+      <button class="btn-manga" data-manga="R6">R6</button>
       <button class="btn-manga" data-manga="Entreno">Entreno</button>
     </div>
   </div>
@@ -735,22 +738,31 @@
         <span class="mark-badge" style="background:var(--green);color:#031118;">Opcional</span>
       </div>
       <div class="mark-sub">Si fondeas o subes a barlovento</div>
-      <div class="mark-saved-box" id="boxSavedB1" style="display:none;">
-        <span>Fijado: <strong class="mark-saved-coords" id="coordsB1">--</strong></span>
-        <span id="timeB1" style="color:var(--text-dim);">--:--</span>
+      <div class="mark-saved-box" id="boxSavedB1" style="display:none;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span>Fijado: <strong class="mark-saved-coords" id="coordsB1">--</strong></span>
+          <span id="timeB1" style="color:var(--text-dim);font-size:11px">--:--</span>
+        </div>
+        <button id="btnDeleteB1" type="button" style="background:#ff3d00;border:none;color:#fff;font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:6px;cursor:pointer;margin-left:8px" title="Quitar Baliza 1 si se pulsó por error">✕ Eliminar</button>
       </div>
     </button>
 
   </div>
 
-  <!-- DIRECCIÓN DEL VIENTO -->
+  <!-- VIENTO: DIRECCIÓN E INTENSIDAD -->
   <div class="card wind-card">
-    <div class="wind-row">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <span style="font-size:12px;font-weight:700;text-transform:uppercase;color:var(--text-dim);letter-spacing:0.5px">💨 Viento · Dirección e Intensidad</span>
+      <span style="font-size:11px;color:var(--text-dim);font-family:var(--f-mono)">Campo de Regatas</span>
+    </div>
+
+    <!-- Fila 1: Dirección (TWD) -->
+    <div class="wind-row" style="padding-bottom:8px;border-bottom:1px solid var(--surface-border)">
       <div>
-        <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:var(--text-dim);">💨 Dirección del Viento</div>
-        <div style="font-size:11.5px;color:var(--text-dim);">¿De dónde sopla en grados?</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">Dirección (TWD)</div>
+        <div style="font-size:11px;color:var(--text-dim)">De dónde sopla en grados</div>
       </div>
-      <div class="wind-row" style="gap:6px;">
+      <div class="wind-row" style="gap:4px;">
         <div class="wind-steppers">
           <button class="btn-step" id="btnWindSub10">−10°</button>
           <button class="btn-step" id="btnWindSub5">−5°</button>
@@ -765,8 +777,32 @@
         </div>
       </div>
     </div>
-    <button class="btn-compass" id="btnCompassWind">
-      <span>🧭</span> Apuntar Móvil de Cara al Viento (Brújula)
+
+    <!-- Fila 2: Intensidad (Fuerza en nudos) -->
+    <div class="wind-row" style="padding-top:4px">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">Intensidad (Fuerza)</div>
+        <div style="font-size:11px;color:var(--text-dim)">Velocidad en nudos (kn)</div>
+      </div>
+      <div class="wind-row" style="gap:4px;">
+        <div class="wind-steppers">
+          <button class="btn-step" id="btnWindKnSub2">−2</button>
+          <button class="btn-step" id="btnWindKnSub1">−1</button>
+        </div>
+        <div class="wind-input-box">
+          <input type="number" class="wind-input" id="windKnInput" value="12.0" min="0" max="50" step="0.5" style="width:58px">
+          <span style="font-weight:800;color:var(--cyan);font-size:12px">kn</span>
+        </div>
+        <div class="wind-steppers">
+          <button class="btn-step" id="btnWindKnAdd1">+1</button>
+          <button class="btn-step" id="btnWindKnAdd2">+2</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fila 3: Compás -->
+    <button class="btn-compass" id="btnCompassWind" style="margin-top:8px">
+      <span>🧭</span> Apuntar Móvil de Cara al Viento (Compás)
     </button>
   </div>
 
@@ -862,8 +898,9 @@ const state = {
   pin: null,
   b1: null,
   windDir: 45,
+  windKn: 12.0,
   
-  sessionName: 'Manga 1',
+  sessionName: 'R1',
   category: 'Optimist',
   
   isSunMode: false,
@@ -1225,6 +1262,64 @@ function drawMiniTacticsCanvas(dx, dy, lenM, twd, brgPinToRc) {
   ctx.fillText('COMITÉ', rcX, rcY + 20);
 }
 
+// BOTÓN DE RESETEAR DATOS DE SALIDA
+const btnReset = document.getElementById('btnResetData');
+if (btnReset) {
+  btnReset.addEventListener('click', () => {
+    if (confirm('¿Quieres resetear los datos de Comité, Pin y Baliza 1 para empezar una nueva salida de regata de cero?')) {
+      state.comite = null;
+      state.pin = null;
+      state.b1 = null;
+      updateMarksUI();
+      calculateTactics();
+      saveLocalState();
+      showToast('🔄 Salida reseteada. Listo para marcar de nuevo.', 'info');
+      hapticFeedback('warn');
+    }
+  });
+}
+
+// BOTÓN PARA ELIMINAR BALIZA 1 (POR SI SE MARCÓ POR ERROR)
+const btnDeleteB1 = document.getElementById('btnDeleteB1');
+if (btnDeleteB1) {
+  btnDeleteB1.addEventListener('click', (e) => {
+    e.stopPropagation();
+    state.b1 = null;
+    updateMarksUI();
+    saveLocalState();
+    showToast('Baliza 1 eliminada correctamente', 'info');
+    hapticFeedback('warn');
+  });
+}
+
+// CONTROL DE INTENSIDAD DE VIENTO (NUDOS)
+const windKnInput = document.getElementById('windKnInput');
+if (windKnInput) {
+  windKnInput.addEventListener('change', () => {
+    let val = parseFloat(windKnInput.value);
+    if (isNaN(val) || val < 0) val = 0;
+    state.windKn = parseFloat(val.toFixed(1));
+    windKnInput.value = state.windKn.toFixed(1);
+    saveLocalState();
+  });
+}
+
+function adjustWindKn(delta) {
+  let val = Math.max(0, Math.min(50, state.windKn + delta));
+  state.windKn = parseFloat(val.toFixed(1));
+  if (windKnInput) windKnInput.value = state.windKn.toFixed(1);
+  saveLocalState();
+}
+
+const btnKnSub2 = document.getElementById('btnWindKnSub2');
+if (btnKnSub2) btnKnSub2.addEventListener('click', () => adjustWindKn(-2));
+const btnKnSub1 = document.getElementById('btnWindKnSub1');
+if (btnKnSub1) btnKnSub1.addEventListener('click', () => adjustWindKn(-1));
+const btnKnAdd1 = document.getElementById('btnWindKnAdd1');
+if (btnKnAdd1) btnKnAdd1.addEventListener('click', () => adjustWindKn(1));
+const btnKnAdd2 = document.getElementById('btnWindKnAdd2');
+if (btnKnAdd2) btnKnAdd2.addEventListener('click', () => adjustWindKn(2));
+
 // CONTROL DE VIENTO
 const windInput = document.getElementById('windInput');
 windInput.addEventListener('change', () => {
@@ -1255,11 +1350,11 @@ document.getElementById('btnCompassWind').addEventListener('click', async () => 
     try {
       const perm = await DeviceOrientationEvent.requestPermission();
       if (perm !== 'granted') {
-        showToast('Permiso de brújula denegado', 'warn');
+        showToast('Permiso de compás denegado', 'warn');
         return;
       }
     } catch (e) {
-      console.warn('Error al solicitar permiso de brújula:', e);
+      console.warn('Error al solicitar permiso de compás:', e);
     }
   }
 
@@ -1280,7 +1375,7 @@ document.getElementById('btnCompassWind').addEventListener('click', async () => 
       calculateTactics();
       saveLocalState();
       window.removeEventListener('deviceorientation', handleOrientation);
-      showToast(`🧭 Viento fijado por brújula en ${wVal}°`, 'success');
+      showToast(`🧭 Viento fijado por compás en ${wVal}°`, 'success');
       hapticFeedback('success');
     }
   }
@@ -1329,6 +1424,7 @@ function saveLocalState() {
     pin: state.pin,
     b1: state.b1,
     windDir: state.windDir,
+    windKn: state.windKn,
     sessionName: state.sessionName,
     category: state.category,
     isSunMode: state.isSunMode
@@ -1347,6 +1443,11 @@ function loadLocalState() {
       if (data.windDir != null) {
         state.windDir = data.windDir;
         windInput.value = data.windDir;
+      }
+      if (data.windKn != null) {
+        state.windKn = data.windKn;
+        const wKnIn = document.getElementById('windKnInput');
+        if (wKnIn) wKnIn.value = Number(data.windKn).toFixed(1);
       }
       if (data.sessionName) {
         state.sessionName = data.sessionName;
@@ -1471,10 +1572,10 @@ btnSync.addEventListener('click', async () => {
       id, fecha, nombre, categoria,
       comite_lat, comite_lon, comite_prec,
       pin_lat, pin_lon, pin_prec,
-      viento_dir, longitud_m, sesgo_lado, sesgo_grados,
+      viento_dir, viento_kts, longitud_m, sesgo_lado, sesgo_grados,
       baliza1_lat, baliza1_lon, baliza1_prec,
       creado_por, creado_en, actualizado_en
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
   `;
 
   const args = [
@@ -1489,6 +1590,7 @@ btnSync.addEventListener('click', async () => {
     state.pin ? state.pin.lon : null,
     state.pin ? state.pin.acc : null,
     state.windDir,
+    state.windKn != null ? state.windKn : null,
     lenM,
     sesgoLado,
     sesgoGrados,
