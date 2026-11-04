@@ -137,6 +137,102 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.6.0] - App Móvil PWA para Entrenadores: Marcado GPS de Comité y Pin en el Agua y Sincronización en la Nube con Turso
+* **Aplicación Móvil Web PWA para Entrenadores (`gps-salidas/`)**:
+  * **Diseñada para el Agua y la Neumática**: Interfaz táctil adaptada para uso en lancha de apoyo con salpicaduras, viento y sol brillante. Incluye botones de marcado gigantes, feedback háptico (vibración en el teléfono) y conmutador de **«Modo Sol (Alto Contraste)»** para máxima legibilidad bajo luz diurna intensa.
+  * **Instalable en Teléfonos (PWA Nativa)**: Compatible con iPhone (Safari: *«Añadir a pantalla de inicio»*) y Android (Chrome: *«Instalar aplicación»*), con iconos náuticos propios del RCNGC en alta resolución.
+  * **Funcionamiento 100% Offline (Sin Cobertura)**: Incorpora Service Worker para cargar de inmediato en medio del mar sin señal 4G. Si no hay conexión en el agua, las marcas se almacenan de forma segura en la memoria del teléfono y se suben a la nube automáticamente al recuperar cobertura.
+  * **Seguimiento GPS de Alta Precisión en Tiempo Real**:
+    * Lectura viva de coordenadas de satélite (latitud y longitud a 6 decimales), velocidad de la embarcación en nudos (SOG) y precisión de posición en metros.
+    * Semáforo de calidad de señal: Verde (precisión excelente < 4 m), Amarillo (aceptable 4-10 m) y Rojo (buscando satélites).
+  * **Botones Principales de Marcado Náutico**:
+    * ⛵ **«MARCAR BARCO COMITÉ»**: Captura la posición exacta de la neumática fondeada o abarloada al Comité (extremo de estribor).
+    * 🚩 **«MARCAR PIN (BOYA)»**: Captura la posición de la boya de salida (extremo de babor).
+    * 📍 **«MARCAR BALIZA 1 (BARLOVENTO)»** *(Opcional)*: Permite geolocalizar la boya de ceñida si el entrenador acude al barlovento.
+    * 💨 **«DIRECCIÓN DEL VIENTO»**: Ajuste rápido mediante pulsadores de ±5°/±10° o captura instantánea orientando el teléfono hacia el viento con la brújula interna del móvil.
+  * **Cálculo Táctico en Vivo en la Neumática**:
+    * **Longitud de la Línea**: Distancia en metros y en esloras equivalentes de la clase Optimist (~2,3 m).
+    * **Eje de la Línea**: Marcación geográfica Comité ↔ Pin.
+    * **Veredicto de Favorecido (Sesgo)**: Dictamina si la línea está *«PIN FAVORECIDO»*, *«COMITÉ FAVORECIDO»* o *«LÍNEA CUADRADA (±1°)»*, indicando los grados de sesgo y la ventaja estimada en metros hacia barlovento, acompañado de un esquema gráfico en lienzo miniatura.
+* **Integración en la Nube de Turso (`lineas_salida`)**:
+  * Nueva tabla relacional en la base de datos central de Turso para almacenar el histórico de líneas y mangas del club con fecha, manga, coordenadas GPS, precisión y sesgo táctico.
+* **Sincronización con el Programa de Tracking (`Visor Regata Optimist_Entrenadores v1.html`)**:
+  * **Pestaña «📡 Salidas GPS Móvil» en la Nube RCNGC**: Visualiza todas las salidas grabadas por los entrenadores ordenadas cronológicamente, con sus coordenadas, distancia, viento y dictamen táctico.
+  * **Aplicar con 1 Clic**: El visor proyecta las coordenadas GPS reales al origen local del mapa de la regata, colocando automáticamente el Comité y el Pin con precisión satelital y recalculando los cruces de salida de todos los barcos.
+  * **Botón Directo en el Recorrido**: Botón **«📡 Importar Salida GPS Móvil»** en el panel de configuración de la línea de salida del visor.
+  * **Acceso Rápido desde la Pantalla de Inicio**: Botón directo **«📲 App Móvil Salidas GPS»** en la tarjeta de bienvenida del programa de tracking.
+
+### [v1.5.0] - Modo Pantalla Completa Cinemático, Reproductor YouTube y Corrección Táctica de Sesgo de Recorrido
+* **Selector Desplegable de Tramo en la Rosa del Viento (Toda la regata / T1 / T4)**:
+  * Incorporado un botón desplegable compacto (`Toda la regata`, `T1 · Ceñida a B1`, `T4 · Ceñida a Llegada`) en la cabecera de la Rosa del Tramo para filtrar la evolución del viento y velocidad de forma global o enfocada exclusivamente en los tramos de ceñida clave.
+  * Al seleccionar un tramo, el abanico SVG, la media angular, los roles máximos (izquierda/derecha), la horquilla de oscilación y la tarjeta de SOG medio se recalculan en tiempo real para esa ventana temporal específica.
+* **Clarificación de Métricas (Eliminación de la palabra "Presión")**:
+  * Sustituida la etiqueta técnica `Presión: SOG medio flota` por una nomenclatura náutica directa: **`SOG MEDIO FLOTA`** y nota explicativa **`Velocidad media medida ciñendo`**, eliminando términos ambiguos para mayor claridad del entrenador.
+* **Calibración Táctica del Sesgo de Recorrido y Alerta de Comité (T1, T4 y Popa T3)**:
+  * **Alerta en Rojo por Desvío del Comité (≥ 10°)**: Si el eje fondeado en Ceñida a B1 (T1), Ceñida a Llegada (T4) o Popa a Puerta 3 (T3) presenta un desvío angular de 10° o más frente al viento real medio detectado (|desvío| ≥ 10°), el distintivo se resalta automáticamente en **rojo** (`.bias-tag.warning`) con la indicación `(Error comité ≥10°)`, mientras que los sesgos moderados (< 10°) conservan su distintivo verde/neutro.
+  * **Corrección Táctica en Popas hacia Puerta 3 (Eje de Sotavento)**:
+    * **Viento desviado a la izquierda**: Se dictamina **«⛵ Montar de natural»** (descender en el bordo natural amurado a estribor sin trasluchar, para aproar directamente a la boya favorecida con máxima VMG).
+    * **Viento desviado a la derecha**: Se dictamina **«🔄 Jibeset favorecido»** (trasluchar de inmediato en barlovento para descender amurado a babor hacia la boya favorecida).
+    * La decisión táctica se calcula rigurosamente a partir del eje real donde se encuentra fondeada la puerta de sotavento y el vector de popa teórica (TWD + 180°).
+* **Modo Pantalla Completa en el Mapa (Teatro / Cinema)**:
+  * **Botón de Pantalla Completa en el Mapa**: Incorporado botón de pantalla completa `⛶` directamente en la botonera flotante superior derecha del mapa (junto a `+`, `−`, `Flota`, `Seguir` y `Norte/Viento`), y botón `⛶ Pantalla completa` en el extremo de la barra de tiempo.
+  * **Atajos de Teclado**: Tecla `F` para entrar/salir de pantalla completa, tecla `Esc` para salir, y tecla `Espacio` para reproducir/pausar la regata. Soporte nativo para Fullscreen API de navegadores con fallback automático en CSS fixed para entornos incrustados.
+  * **Vista Inmersiva y Limpia**: Al activar pantalla completa, se ocultan cabeceras, pestañas superiores, panel lateral de clasificación y pie de página, dedicando el 100% del área de pantalla (100vw × 100vh) exclusivamente al mapa y campo de regatas.
+* **Barra de Reproducción Flotante Estilo YouTube**:
+  * **Diseño Translúcido Frosted Glass**: Barra inferior anclada con degradado oscuro suave, efecto de desenfoque `backdrop-filter: blur(14px)`, borde superior tenue y sombra difusa.
+  * **Barra Cronograma Scrubber a Todo lo Ancho**: El deslizador de tiempo (`#scrub`) se expande horizontalmente al 100% del ancho de pantalla en la parte superior del reproductor, facilitando el arrastre milimétrico y la visualización de las marcas temporales (`Salida`, `B1`, `B2`, `Puerta 3`, `1º Llega`, marcas horarias).
+  * **Fila de Mandos Inferior**:
+    * Botón de reproducción/pausa prominente de alto contraste (`▶` / `⏸`).
+    * Lectura horaria sincronizada en tipografía monoespaciada (`HORA 14:12:17`).
+    * Píldora identificativa de la prueba (`⛵ [Nombre de Regata] · N barcos`).
+* **Desplegable de Velocidad y Tramos (Ajustes de Reproducción)**:
+  * Sustitución de los botones horizontales por un menú desplegable emergente hacia arriba (`⚙️ Velocidad y Tramos [ 30× · Toda ] ▾`), manteniendo la barra inferior despejada y limpia.
+  * **Selector de Velocidad**: `1×`, `5×`, `30×`, `60×`, `120×` con resaltado activo azul turquesa.
+  * **Selector de Estela / Tramos**: `1 min`, `5 min`, `Tramo actual` y `Toda la regata`.
+  * **Opciones Rápidas**: Conmutador para números de vela en los barcos y conmutador de orientación del mapa (`Norte Arriba` / `Viento Arriba`).
+  * Sincronización bidireccional automática en tiempo real con los controles del visor estándar.
+* **Auto-Hide Cinemático por Inactividad**:
+  * Tras 3.5 segundos sin movimiento del ratón, la barra de reproducción y los botones flotantes del mapa se desvanecen suavemente y el cursor se oculta automáticamente.
+  * Al mover el ratón, presionar una tecla o interactuar con el reproductor, los controles reaparecen al instante. Si el desplegable está abierto o se está interactuando con la barra, se mantiene siempre visible.
+* **Botón de Salida Inmediata**:
+  * Botón rojo suave `✕ Salir (Esc)` en el extremo derecho del reproductor y conmutador `⤢` en el mapa para volver con un clic a la vista convencional de tres columnas.
+
+### [v1.4.2] - Análisis del Comportamiento de Regata: Rosa del Tramo (TWD), Presión, Sesgo de Recorrido y Diagnóstico Oficial RYA Optimist
+* **Evolución del Viento Estimado (TWD · Rosa del Tramo)**:
+  * **Gráfico de Sector / Abanico Polar SVG (Radar Arc)**: Renderizado dinámico de la oscilación del viento con marcas de rumbo en grados (cada 5° y etiquetas cada 10°), 5 arcos concéntricos de progresión de regata (0%, 25%, 50%, 75%, 100%), línea media discontinua en el TWD medio, y trayectoria del viento trazada mediante 10 nodos y sombreado traslúcido para visualizar el área de role de un vistazo.
+  * **Cálculo Telemétrico a partir de Toda la Flota**: La prueba se divide en 10 ventanas temporales proporcionales; para cada ventana se extraen los rumbos COG y velocidades SOG de todos los regatistas que navegan en ceñida amurados a estribor y babor, calculando la bisectriz angular mediante trigonometría circular para obtener el viento real instantáneo sin depender de sensores externos.
+  * **Indicadores de Desvío Angular y Horquilla**: Visualización destacada de `← máx. izquierda XXX° (-X°)`, `media XXX°`, `máx. derecha → XXX° (+X°)` y resumen de oscilación (`De XXX° a YYY°; Z° a la derecha/izquierda · horquilla H°`).
+* **Monitorización de Presión de Viento (SOG Medio de la Flota en Ceñida)**:
+  * Tarjeta widget superior con indicador de tendencia porcentual (`% ↑` o `% ↓`), SOG medio instantáneo de la flota, variación neta frente a la media de la prueba (`+X,XX kn` o `-X,XX kn`) y valor de referencia global con indicación de color relativo al rendimiento.
+* **Métricas Tácticas Globales de la Flota**:
+  * **Vmed Ceñida (SOG)**: Velocidad media real sobre el fondo (Speed Over Ground) alcanzada por toda la flota en los tramos contra el viento en nudos.
+  * **Vmed Popa (SOG)**: Velocidad media real sobre el fondo (SOG) de la flota descendiendo hacia la puerta de sotavento en nudos.
+  * **% de Eficiencia de la Derrota de la Flota**: Promedio de eficiencia de la flota calculada frente a la derrota teórica mínima en laylines, destacando el valor mínimo y máximo con el número de vela y nombre del regatista correspondiente (ej: *🔻 Mín: 33,9% (3461 · Mari) · 🔺 Máx: 98,3% (3532 · Alba)*).
+* **Orientación y Sesgo del Recorrido vs Viento Real Detectado**:
+  * **Ceñida a B1 (Tramo 1)**: Marcación geográfica del eje Salida ➔ B1 contrastada con el viento real medio (TWD), indicando los grados de desvío y el lado favorecido del campo: si el viento tiene desvío negativo (-) respecto al eje indica `Izquierda favorecida`, y si tiene desvío positivo (+) indica `Derecha favorecida`.
+  * **Ceñida a Llegada (Tramo 4)**: Marcación entre Puerta 3 y Meta contrastada con el TWD, reportando el sesgo angular y el bordo favorecido hacia la línea de llegada.
+  * **Popa a Puerta 3 (Tramo 3 - Eje de Sotavento)**: Cálculo del desvío del eje de popa respecto a la empopada pura ($TWD + 180^\circ$) con recomendación táctica automática:
+    * **«⛵ Montar de natural»**: Eje escorado a estribor $\ge +4^\circ$, recomendando mantener el bordo natural amurado a estribor hacia la baliza derecha de sotavento con rumbo directo.
+    * **«🔄 Jibeset favorecido»**: Viento desviado a la izquierda $\le -4^\circ$, alertando de que continuar en amurado natural aleja del layline y recomendando trasluchar de inmediato en barlovento para descender amurado a babor hacia la boya favorecida.
+    * **«⚖️ Eje equilibrado»**: Desvío neutro ($< 4^\circ$), indicando que la elección de boya dependerá de la presión local o el tráfico de la flota.
+* **Diagnóstico Oficial RYA Optimist (Olympic Trapezoid / IODA)**:
+  * Incorporación del baremo oficial de la *Royal Yachting Association* (RYA) con Target Time reglamentario de 45 minutos (límites oficiales de 42.75 a 47.25 min) y velocidades nominales según intensidad (5-8 kn, 8-12 kn, 12-15 kn y 15+ kn).
+  * **Diagnóstico de Dimensionado del Recorrido (Comité de Regata)**: Evalúa si las millas náuticas totales fondeadas por los oficiales se ajustan al tiempo reglamentario (`✓ BIEN DIMENSIONADO`), o si el campo fue excesivo (`⚠️ SOBREDIMENSIONADO (+X min)`) o corto (`⚠️ CORTO / SUBDIMENSIONADO (-X min)`).
+  * **Diagnóstico de Eficiencia de la Flota (Rendimiento Deportivo)**: Compara el tiempo real del vencedor y grupo de cabeza con el tiempo teórico RYA para la distancia fondeada, identificando si el ritmo fue acorde (`✓ RENDIMIENTO ACORDE AL ESTÁNDAR RYA`), sobresaliente (`⚡ RENDIMIENTO SOBRESALIENTE`) o si la flota presentó un déficit de VMG/laylines (`📉 EFICIENCIA INSUFICIENTE (+X% de tiempo)`).
+* **Modal de Metodología y Criterios («ⓘ Cómo se calcula»)**:
+  * Ventana explicativa con la formulación matemática de la trigonometría circular en la Rosa del Tramo, el significado táctico del desvío en popa y las tablas oficiales RYA.
+* **Actualización de Versión a v1.4.2**:
+  * Actualizada la versión a **v1.4.2** en el pie de página general, cabeceras y sincronización íntegra entre archivos raíz y subcarpeta del club.
+
+
+### [v1.4.1] - Rediseño de Pantalla de Inicio: Protagonismo Total a la Nube Central y Acceso Directo 1-Clic a Regatas Recientes
+* **Jerarquía Visual Invertida en la Pantalla de Bienvenida**:
+  * **Hero Card Destacado para la Nube Central**: La opción principal en la pantalla inicial ahora es la **Nube de Regatas RCNGC (Turso SQLite)**, ocupando la posición dominante con fondo náutico degradado, badge distintivo y botones de acción rápida (`☁️ Explorar Biblioteca de Regatas` y `📊 Histórico y Big Data`).
+  * **Acceso Directo 1-Clic a Regatas Recientes**: Consulta en tiempo real a la base de datos central que presenta en la pantalla de inicio las 4 últimas sesiones guardadas por el club (con título, categoría, fecha, número de barcos, intensidad de viento y tipo de manga), permitiendo abrir cualquier regata con un solo clic en `📥 Cargar` sin abrir previamente el modal.
+  * **Subida de Archivos Locales como Opción Secundaria**: El bloque de importación de ficheros GPX / Traccar se reorganizó en un panel secundario compacto a la derecha (`📁 ¿Subir nuevo entrenamiento?`), con zona de arrastre estilizada y proporcionada, conservando intacta toda la funcionalidad de arrastrar carpetas o archivos.
+* **Limpieza y Neutralidad del Encabezado en Estado Inicial**:
+  * Al arrancar sin sesión activa o al pulsar «Nueva sesión» (`clearSession()`), el título principal y la descripción se restablecen automáticamente a «Visor y Analizador de Regatas», eliminando textos residuales de la regata anterior.
+
 ### [v1.4.0] - Sistema de Edición y "Guardar / Guardar como..." en la Nube, Modificación Rápida de Fichas de Regata, Ajuste de Viento y Recálculo en Cascada
 * **Opciones de «Guardar cambios» (Sobrescribir) vs «Guardar como nueva regata...»**:
   * **Sobrescribir regata existente (`💾 Guardar cambios`)**: Permite actualizar cualquier regata cargada desde la nube de Turso sin tener que guardarla desde cero ni borrar la original. Mantiene intacto el identificador único (`id`) y el enlace compartido (`?regata=...`).

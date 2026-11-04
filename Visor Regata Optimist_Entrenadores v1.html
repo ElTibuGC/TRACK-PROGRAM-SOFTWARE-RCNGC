@@ -142,7 +142,7 @@ select.num{width:auto}
 .picks{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .app.is-empty .map,.app.is-empty .side,.app.is-empty .tl,.app.is-empty .summary{display:none}
 .app.is-empty .import{padding:28px 24px}
-.app.is-empty .drop{padding:56px 16px}
+.app.is-empty .drop{padding:20px 14px}
 .app.is-empty #chip,.app.is-empty #clock,.app.is-empty #newSessionBtn,.app.is-empty #btnShareCloudRegata,.app.is-empty #btnQuickSaveCloud{display:none}
 #newSessionBtn{font-size:12px;padding:4px 11px;border-radius:6px;cursor:pointer;font-weight:600}
 #btnHelp{font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:4px}
@@ -230,7 +230,52 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:0}
 .chk{display:flex;align-items:center;gap:6px;font-size:12.5px;cursor:pointer}
 
 /* import */
-.import{padding:16px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;align-items:start}
+.import{padding:16px;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(310px,1fr);gap:22px;align-items:stretch}
+.home-cloud-box{
+  background:linear-gradient(135deg,rgba(2,132,199,0.08) 0%,rgba(13,95,91,0.05) 100%);
+  border:1.5px solid rgba(2,132,199,0.32);
+  border-radius:12px;
+  padding:22px 24px;
+  display:flex;
+  flex-direction:column;
+  box-shadow:0 3px 14px rgba(0,0,0,0.04);
+}
+.home-cloud-badge{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+  flex-wrap:wrap;
+}
+.home-local-box{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:20px 22px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.home-race-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:9px 12px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:7px;
+  transition:transform .12s,border-color .15s,box-shadow .15s;
+}
+.home-race-card:hover{
+  border-color:#0284c7;
+  transform:translateY(-1px);
+  box-shadow:0 3px 10px rgba(0,0,0,0.06);
+}
+@media (max-width:920px){
+  .import{grid-template-columns:minmax(0,1fr)!important}
+}
 .import ol{margin:8px 0 0;padding-left:20px;font-size:13px;display:flex;flex-direction:column;gap:4px;max-width:62ch}
 .import ol code{font-family:var(--f-mono);font-size:12px;background:var(--bg);padding:1px 5px;border-radius:4px}
 .drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;border:1.5px dashed var(--muted);border-radius:10px;padding:26px 16px;cursor:pointer;background:var(--bg);transition:border-color .15s,background .15s}
@@ -475,6 +520,310 @@ tr.qsep th{padding-top:4px}
   border-color:var(--accent);
   outline:none;
 }
+
+/* ---------- Estilos Análisis Comportamiento de Regata (Rosa del Tramo & RYA) ---------- */
+.analysis-v2-race-behavior{
+  margin-top:24px;
+  margin-bottom:24px;
+  background:var(--sub, #0b1522);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:20px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+.behavior-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:12px;
+  margin-bottom:18px;
+}
+.behavior-header h3{
+  margin:0;
+  font-size:17px;
+  color:var(--ink);
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.behavior-header .hint{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:3px;
+}
+.behavior-layout{
+  display:grid;
+  grid-template-columns:minmax(340px, 430px) 1fr;
+  gap:20px;
+  align-items:stretch;
+}
+@media (max-width: 1080px){
+  .behavior-layout{
+    grid-template-columns:1fr;
+  }
+}
+.wind-rose-card{
+  background:rgba(0,0,0,0.28);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:10px;
+  padding:16px 16px 12px 16px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.wind-rose-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:8px;
+}
+.wind-rose-title{
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:0.04em;
+  color:#f8fafc;
+  text-transform:uppercase;
+}
+.wind-rose-sub{
+  font-size:11.5px;
+  color:#38bdf8;
+  font-weight:600;
+  margin-top:2px;
+}
+.pressure-card{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:8px;
+  padding:6px 10px;
+  text-align:right;
+  min-width:140px;
+}
+.pressure-lbl{
+  font-size:10px;
+  font-weight:700;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:0.03em;
+  margin-bottom:2px;
+}
+.pressure-row{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:6px;
+}
+.pressure-badge{
+  font-size:10px;
+  font-weight:800;
+  padding:2px 5px;
+  border-radius:4px;
+}
+.pressure-badge.down{background:rgba(239,68,68,0.2);color:#f87171;}
+.pressure-badge.up{background:rgba(16,185,129,0.2);color:#34d399;}
+.pressure-badge.even{background:rgba(148,163,184,0.2);color:#94a3b8;}
+.pressure-val{
+  font-size:18px;
+  font-weight:800;
+  color:var(--ink);
+  line-height:1;
+}
+.pressure-delta{
+  font-size:12px;
+  font-weight:700;
+}
+.pressure-delta.neg{color:#ef4444;}
+.pressure-delta.pos{color:#10b981;}
+.pressure-mean{
+  font-size:10.5px;
+  color:var(--muted);
+  margin-top:2px;
+}
+.pressure-note{
+  font-size:9.5px;
+  color:rgba(148,163,184,0.7);
+  margin-top:2px;
+}
+.wind-rose-svg-wrap{
+  position:relative;
+  margin:10px auto;
+  width:100%;
+  max-width:440px;
+}
+.wind-rose-bottom{
+  border-top:1px solid rgba(255,255,255,0.08);
+  padding-top:10px;
+  margin-top:6px;
+}
+.wind-rose-shifts{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  font-size:11.5px;
+  color:var(--muted);
+}
+.wind-rose-shifts .shift-left{color:#f87171;font-weight:600;}
+.wind-rose-shifts .shift-center{color:var(--ink);font-weight:800;font-size:14px;}
+.wind-rose-shifts .shift-right{color:#38bdf8;font-weight:600;}
+.wind-rose-summary{
+  font-size:11.5px;
+  color:var(--muted);
+  text-align:center;
+  margin-top:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+.wind-rose-how-btn{
+  background:none;
+  border:none;
+  color:#38bdf8;
+  font-size:11.5px;
+  cursor:pointer;
+  padding:0;
+  text-decoration:underline;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.wind-rose-how-btn:hover{color:#7dd3fc;}
+
+.behavior-right-panels{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.behavior-card{
+  background:rgba(0,0,0,0.22);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:10px;
+  padding:14px 16px;
+}
+.behavior-card-title{
+  font-size:12.5px;
+  font-weight:700;
+  color:var(--ink);
+  text-transform:uppercase;
+  letter-spacing:0.04em;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.fleet-tactics-kpis{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+  gap:10px;
+}
+.fleet-tactics-kpi{
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px 12px;
+}
+.fleet-tactics-kpi .lbl{
+  font-size:11px;
+  color:var(--muted);
+  font-weight:600;
+  margin-bottom:3px;
+}
+.fleet-tactics-kpi .val{
+  font-size:19px;
+  font-weight:800;
+  color:var(--ink);
+  line-height:1.1;
+}
+.fleet-tactics-kpi .sub{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:4px;
+  line-height:1.3;
+}
+
+.course-bias-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));
+  gap:10px;
+}
+.course-bias-item{
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px 12px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.bias-leg-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:4px;
+}
+.bias-leg-name{
+  font-size:12px;
+  font-weight:700;
+  color:var(--ink);
+}
+.bias-tag{
+  font-size:10.5px;
+  font-weight:700;
+  padding:2px 7px;
+  border-radius:4px;
+}
+.bias-tag.favored{background:rgba(16,185,129,0.18);color:#34d399;}
+.bias-tag.warning{background:rgba(239,68,68,0.22);color:#ef4444;border:1px solid rgba(239,68,68,0.45);font-weight:700;}
+.bias-tag.neutral{background:rgba(148,163,184,0.18);color:#cbd5e1;}
+.bias-tag.natural{background:rgba(14,165,233,0.18);color:#38bdf8;}
+.bias-tag.jibeset{background:rgba(245,158,11,0.18);color:#fbbf24;}
+
+.bias-details{
+  font-size:11.5px;
+  color:var(--muted);
+  line-height:1.4;
+  margin-top:4px;
+}
+
+.rya-diagnostics-box{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+  gap:10px;
+}
+.rya-card{
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px 14px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.rya-badge{
+  font-size:11px;
+  font-weight:800;
+  padding:3px 8px;
+  border-radius:4px;
+  display:inline-block;
+  margin-bottom:6px;
+}
+.rya-badge.success{background:rgba(16,185,129,0.2);color:#34d399;border:1px solid rgba(16,185,129,0.3);}
+.rya-badge.warning{background:rgba(245,158,11,0.2);color:#fbbf24;border:1px solid rgba(245,158,11,0.3);}
+.rya-badge.danger{background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.3);}
+.rya-desc{
+  font-size:12px;
+  color:var(--ink);
+  line-height:1.45;
+}
+.rya-sub{
+  font-size:11px;
+  color:var(--muted);
+  margin-top:6px;
+}
+
 
 /* ---------- Pie de página del programa (Versión y Créditos) ---------- */
 .app-footer{
@@ -874,9 +1223,385 @@ tr.qsep th{padding-top:4px}
     margin:1.4cm;
   }
 }
+
+/* ========================================================
+   MODO PANTALLA COMPLETA ESTILO YOUTUBE THEATER / PLAYER
+   ======================================================== */
+.btn-fs-normal {
+  background: var(--sub);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  transition: all .15s ease;
+}
+.btn-fs-normal:hover {
+  background: var(--sel);
+  border-color: var(--accent);
+  color: #fff;
+}
+.btn-fs-normal svg {
+  display: block;
+}
+
+/* Estado activo de Pantalla Completa */
+body.map-fullscreen-active {
+  overflow: hidden !important;
+}
+
+.app.map-fullscreen-active {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #050a12 !important;
+  z-index: 999990 !important;
+  display: block !important;
+  overflow: hidden !important;
+}
+
+/* Ocultar elementos secundarios en pantalla completa */
+.app.map-fullscreen-active > header.top,
+.app.map-fullscreen-active > nav.main-tabs,
+.app.map-fullscreen-active > aside.side,
+.app.map-fullscreen-active > section.import,
+.app.map-fullscreen-active > section.advanced-metrics-view,
+.app.map-fullscreen-active > section.analysis-v2-view,
+.app.map-fullscreen-active > .app-footer,
+.app.map-fullscreen-active > .summary {
+  display: none !important;
+}
+
+/* El mapa llena la pantalla */
+.app.map-fullscreen-active #map {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100vh !important;
+  border-radius: 0 !important;
+  border: none !important;
+  z-index: 1 !important;
+}
+
+/* Barra de reproducción inferior cinematográfica estilo YouTube */
+.app.map-fullscreen-active .card.tl {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  z-index: 1000 !important;
+  border-radius: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-bottom: none !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: linear-gradient(180deg, rgba(7, 13, 22, 0) 0%, rgba(7, 13, 22, 0.85) 24%, rgba(7, 13, 22, 0.97) 100%) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  box-shadow: 0 -10px 32px rgba(0, 0, 0, 0.65) !important;
+  padding: 6px 24px 14px 24px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 12px !important;
+  transition: opacity .35s ease, transform .35s ease;
+}
+
+/* Ocultar en la barra los controles normales para sustituirlos por el desplegable */
+.app.map-fullscreen-active #speedsGrp,
+.app.map-fullscreen-active #trailsGrp,
+.app.map-fullscreen-active #timeGrp,
+.app.map-fullscreen-active #labelsChk,
+.app.map-fullscreen-active #btnTimelineFullscreen {
+  display: none !important;
+}
+
+/* Mostrar controles específicos de pantalla completa */
+.app.map-fullscreen-active #fsRacePill,
+.app.map-fullscreen-active #fsSpacer,
+.app.map-fullscreen-active #fsDropdownWrap,
+.app.map-fullscreen-active #fsExitBtn {
+  display: flex !important;
+}
+.app.map-fullscreen-active #fsSpacer {
+  display: block !important;
+}
+
+/* Fila 1: Scrubber timeline a 100% del ancho estilo YouTube */
+.app.map-fullscreen-active .scrub {
+  order: 1 !important;
+  flex: 0 0 100% !important;
+  width: 100% !important;
+  margin: 0 0 4px 0 !important;
+  padding-top: 20px !important;
+}
+
+/* Fila 2: Elementos de control */
+.app.map-fullscreen-active #play {
+  order: 2 !important;
+  width: 44px !important;
+  height: 44px !important;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4) !important;
+}
+.app.map-fullscreen-active .manual-time-grp {
+  order: 3 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+.app.map-fullscreen-active .manual-time-input {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #fff !important;
+}
+.app.map-fullscreen-active #fsRacePill {
+  order: 4 !important;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.app.map-fullscreen-active #fsSpacer {
+  order: 5 !important;
+}
+.app.map-fullscreen-active #fsDropdownWrap {
+  order: 6 !important;
+  position: relative !important;
+}
+.app.map-fullscreen-active #fsExitBtn {
+  order: 7 !important;
+}
+
+/* Botón desplegable estilo YouTube Settings */
+.fs-dropdown-trigger {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #f1f5f9;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all .15s ease;
+}
+.fs-dropdown-trigger:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.fs-badge {
+  background: #0284c7;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+.fs-caret {
+  transition: transform .2s ease;
+}
+.fs-dropdown-trigger[aria-expanded="true"] .fs-caret {
+  transform: rotate(180deg);
+}
+
+/* Menú flotante desplegable hacia arriba */
+.fs-dropdown-menu {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  width: 290px;
+  background: rgba(13, 22, 36, 0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  padding: 12px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fsMenuIn .15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes fsMenuIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fs-menu-header {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  padding-bottom: 4px;
+}
+.fs-menu-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+.fs-btn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(46px, 1fr));
+  gap: 5px;
+}
+.fs-opt-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all .15s ease;
+}
+.fs-opt-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+.fs-opt-btn.active {
+  background: #0284c7 !important;
+  border-color: #38bdf8 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 10px rgba(2, 132, 199, 0.5) !important;
+}
+.fs-menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 2px 0;
+}
+.fs-menu-extras {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.fs-check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #e2e8f0;
+  cursor: pointer;
+  user-select: none;
+}
+.fs-opt-link {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #cbd5e1;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background .15s ease;
+}
+.fs-opt-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+.fs-opt-link strong {
+  color: #38bdf8;
+}
+
+/* Botón de salir de pantalla completa */
+.btn-fs-exit {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all .15s ease;
+}
+.btn-fs-exit:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+  color: #fff;
+}
+
+/* Auto-hide cinematográfico estilo YouTube al estar inactivo */
+.app.map-fullscreen-active.yt-idle .card.tl,
+.app.map-fullscreen-active.yt-idle .tools {
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+}
+.app.map-fullscreen-active.yt-idle #map {
+  cursor: none !important;
+}
+
+.wind-range-select {
+  background: var(--sub);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 3px 8px 3px 6px;
+  cursor: pointer;
+  outline: none;
+  transition: all .15s ease;
+  vertical-align: middle;
+}
+.wind-range-select:hover {
+  background: rgba(2, 132, 199, 0.12);
+  border-color: #0284c7;
+  color: #fff;
+}
+.wind-range-select:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.35);
+}
+.wind-range-select option {
+  background: #0f172a;
+  color: #f1f5f9;
+  font-size: 12px;
+}
 </style>
 
-<div class="app is-empty">
+<div class="app is-empty" id="app">
   <nav class="main-tabs" role="tablist" aria-label="Modo de visualización">
     <button class="main-tab-btn is-active" id="mainTabTrack" role="tab" aria-selected="true">Visualizar el track</button>
     <button class="main-tab-btn" id="mainTabMetrics" role="tab" aria-selected="false">Métricas avanzadas</button>
@@ -886,8 +1611,8 @@ tr.qsep th{padding-top:4px}
   <header class="top">
     <div>
       <div class="eyebrow" id="eyebrow">Equipo de Regatas RCNGC · Optimist</div>
-      <h1 id="title">Análisis de track V2</h1>
-      <div class="meta" id="meta">Carga la carpeta con los GPX del día para ver la sesión.</div>
+      <h1 id="title">Visor y Analizador de Regatas</h1>
+      <div class="meta" id="meta">Abre una regata guardada de la nube o carga archivos GPX para analizar la sesión.</div>
     </div>
     <div class="top-right">
       <button class="btn btn-cloud" id="btnCloudModal" type="button" title="Acceder a la Nube Central de Regatas (Turso SQLite)">☁️ Nube RCNGC</button>
@@ -908,6 +1633,9 @@ tr.qsep th{padding-top:4px}
       <button class="tool" id="fit">Flota</button>
       <button class="tool" id="follow" aria-pressed="false">Seguir</button>
       <button class="tool" id="btnOrientation" type="button" title="Orientación del mapa: Norte Arriba (North Up) · Clic para cambiar a Viento Arriba (Wind Up)" aria-pressed="false" style="font-size:11.5px;font-weight:600;padding:0 6px;white-space:nowrap;">Norte</button>
+      <button class="tool" id="btnMapFullscreen" type="button" title="Modo Pantalla Completa (F) · Vista cinematográfica del mapa" aria-label="Pantalla completa" style="font-size:15px">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
     </div>
     <div class="placing-msg" id="placingMsg" hidden>
       <span id="placingMsgText">Toca el mapa para colocar la baliza</span>
@@ -934,7 +1662,7 @@ tr.qsep th{padding-top:4px}
     <div class="card boat" id="boat"></div>
   </aside>
 
-  <div class="card tl">
+  <div class="card tl" id="timelineBar">
     <button class="play" id="play" aria-label="Reproducir"></button>
     <div class="grp manual-time-grp">
       <span>Hora</span>
@@ -944,36 +1672,158 @@ tr.qsep th{padding-top:4px}
       <div class="ticks" id="ticks"></div>
       <input type="range" id="scrub" min="0" max="100" step="0.1" value="0" aria-label="Tiempo de la sesión">
     </div>
-    <div class="grp"><span>Velocidad</span><div class="seg" id="speeds"></div></div>
-    <div class="grp"><span>Estela</span><div class="seg" id="trails"></div></div>
+    <div class="grp" id="speedsGrp"><span>Velocidad</span><div class="seg" id="speeds"></div></div>
+    <div class="grp" id="trailsGrp"><span>Estela</span><div class="seg" id="trails"></div></div>
     <div class="grp" id="timeGrp" hidden><span>Tiempo</span><div class="seg" id="timeMode"><button type="button" data-m="real">Hora real</button><button type="button" data-m="align">Desde el inicio</button></div></div>
-    <label class="chk"><input type="checkbox" id="labels" checked> Números de vela</label>
+    <label class="chk" id="labelsChk"><input type="checkbox" id="labels" checked> Números de vela</label>
+
+    <!-- Elementos del modo Pantalla Completa estilo YouTube -->
+    <div class="fs-race-pill" id="fsRacePill" style="display:none">
+      <span class="fs-race-icon">⛵</span>
+      <span class="fs-race-name" id="fsRacePillName">Regata Optimist</span>
+    </div>
+    <div class="fs-spacer" id="fsSpacer" style="display:none;flex:1"></div>
+
+    <!-- Desplegable estilo YouTube de Velocidad y Tramos -->
+    <div class="fs-dropdown-wrap" id="fsDropdownWrap" style="display:none">
+      <button type="button" class="fs-dropdown-trigger" id="fsDropdownTrigger" title="Ajustes de reproducción: Velocidad y Tramos" aria-haspopup="true" aria-expanded="false">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        <span>Velocidad y Tramos</span>
+        <span class="fs-badge" id="fsActiveBadge">5× · 5 min</span>
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" class="fs-caret"><path d="M7 10l5 5 5-5z"/></svg>
+      </button>
+
+      <div class="fs-dropdown-menu" id="fsDropdownMenu" hidden>
+        <div class="fs-menu-header">
+          <span>⚙️ Ajustes de Reproducción</span>
+        </div>
+        
+        <div class="fs-menu-section">
+          <div class="fs-menu-title">VELOCIDAD DE REPRODUCCIÓN</div>
+          <div class="fs-btn-grid" id="fsSpeedGrid">
+            <button type="button" class="fs-opt-btn" data-v="1">1×</button>
+            <button type="button" class="fs-opt-btn" data-v="5">5×</button>
+            <button type="button" class="fs-opt-btn" data-v="30">30×</button>
+            <button type="button" class="fs-opt-btn" data-v="60">60×</button>
+            <button type="button" class="fs-opt-btn" data-v="120">120×</button>
+          </div>
+        </div>
+
+        <div class="fs-menu-divider"></div>
+
+        <div class="fs-menu-section">
+          <div class="fs-menu-title">ESTELA Y TRAMOS</div>
+          <div class="fs-btn-grid" id="fsTrailGrid">
+            <button type="button" class="fs-opt-btn" data-v="60">1 min</button>
+            <button type="button" class="fs-opt-btn" data-v="300">5 min</button>
+            <button type="button" class="fs-opt-btn" data-v="leg">Tramo</button>
+            <button type="button" class="fs-opt-btn" data-v="Infinity">Toda</button>
+          </div>
+        </div>
+
+        <div class="fs-menu-divider"></div>
+
+        <div class="fs-menu-section fs-menu-extras">
+          <label class="fs-check-item">
+            <input type="checkbox" id="fsLabelsCheck" checked>
+            <span>Números de vela</span>
+          </label>
+          <button type="button" class="fs-opt-link" id="fsOrientationBtn">
+            <span>Orientación: <strong id="fsOrientationTxt">Norte Arriba</strong></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón de salir de pantalla completa (estilo YouTube) -->
+    <button type="button" class="btn-fs-exit" id="fsExitBtn" title="Salir de pantalla completa (Esc o F)" style="display:none">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+      <span>Salir (Esc)</span>
+    </button>
+
+    <!-- Botón de entrar en pantalla completa en la barra normal -->
+    <button type="button" class="btn-fs-normal" id="btnTimelineFullscreen" title="Ver mapa en Pantalla Completa (F)">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      <span>Pantalla completa</span>
+    </button>
   </div>
 
-  <section class="card import" aria-labelledby="imp-h">
-    <div>
-      <h2 id="imp-h">Cargar el entrenamiento del día</h2>
-      <ol>
-        <li>Guarda en una carpeta un GPX por barco: los del reloj (Zepp), los del móvil o los exportados de Traccar.</li>
-        <li>Si puedes, pon a cada archivo el número de vela, por ejemplo <code>2318.gpx</code>. Si no, podrás renombrarlos en la pestaña <code>Barcos</code>.</li>
-        <li>Pulsa <code>Elegir carpeta</code> o arrastra aquí la carpeta entera.</li>
-      </ol>
-      <p class="privacy">Los archivos se leen en tu navegador y no se suben a ningún sitio. También admite Excel o CSV exportados de Traccar.</p>
-    </div>
-    <div>
-      <div class="drop" id="drop">
-        <strong>Arrastra aquí la carpeta del día</strong>
-        <span>o los archivos sueltos · .gpx · .xlsx · .csv · .kml</span>
+  <section class="card import" id="homeImportSection" aria-labelledby="imp-cloud-title">
+    <!-- BLOQUE PRINCIPAL DESTACADO: NUBE CENTRAL RCNGC -->
+    <div class="home-cloud-box">
+      <div class="home-cloud-badge">
+        <span class="badge" style="background:#0284c7;color:#fff;font-weight:700;font-size:11px;padding:3px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:0.04em">⭐ Opción Principal · Nube Central</span>
+        <span style="font-size:11.5px;color:var(--dim)">Turso Serverless SQLite</span>
       </div>
-      <div class="picks">
-        <button class="btn primary" id="pickDir" type="button">Elegir carpeta</button>
-        <button class="btn" id="pickFiles" type="button">Elegir archivos</button>
-      </div>
-      <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);text-align:center">
-        <button class="btn" id="btnCloudOpenBanner" type="button" style="width:100%;font-weight:700;padding:9px 16px;background:rgba(2,132,199,0.08);border:1px solid #0284c7;color:#0284c7;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:8px;cursor:pointer">
-          ☁️ Abrir regata guardada en la Nube del Club (Turso SQLite)
+
+      <h2 id="imp-cloud-title" style="margin:8px 0 6px 0;font-size:22px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px">
+        <span>☁️ Regatas y Entrenamientos en la Nube</span>
+      </h2>
+      <p style="margin:0 0 16px 0;font-size:13px;color:var(--dim);line-height:1.45">
+        Accede al historial central de regatas oficiales, mangas y entrenamientos de la flota Optimist del RCNGC. Visualiza tracks interactivos, velocidades, clasificaciones oficiales y análisis táctico V2 sin necesidad de procesar archivos.
+      </p>
+
+      <!-- Botones de Acción de la Nube -->
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+        <button class="btn primary" id="btnHomeOpenCloudModal" type="button" style="padding:10px 20px;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;background:#0284c7;border-color:#0284c7;color:#fff;border-radius:8px;cursor:pointer;box-shadow:0 2px 8px rgba(2,132,199,0.3)">
+          ☁️ Explorar Biblioteca de Regatas
         </button>
+        <button class="btn" id="btnHomeBigData" type="button" style="padding:10px 15px;font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;border-radius:8px;cursor:pointer">
+          📊 Histórico y Big Data
+        </button>
+        <a href="gps-salidas/index.html" target="_blank" class="btn" style="padding:10px 15px;font-size:12.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;border-radius:8px;cursor:pointer;text-decoration:none;border:1px solid #10b981;background:rgba(16,185,129,0.1);color:#059669" title="Abrir app móvil para marcar Comité y Pin en el agua con GPS">
+          📲 App Móvil Salidas GPS
+        </a>
       </div>
+
+      <!-- Regatas recientes en la nube con acceso directo 1-clic -->
+      <div class="home-recent-section" style="border-top:1px solid var(--line);padding-top:12px;margin-top:auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-weight:700;font-size:12px;color:var(--ink);display:flex;align-items:center;gap:6px">
+            ⏱️ Últimas regatas disponibles para abrir con 1 clic:
+          </span>
+          <button class="btn-link" id="btnRefreshHomeRecent" type="button" style="background:none;border:none;color:var(--accent);font-size:11.5px;cursor:pointer;padding:0;text-decoration:underline">
+            🔄 Actualizar
+          </button>
+        </div>
+        <div id="homeRecentRacesList" style="display:flex;flex-direction:column;gap:7px">
+          <div style="text-align:center;padding:16px;color:var(--dim);font-size:12px">
+            ⏳ Conectando con Turso SQLite...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOQUE SECUNDARIO: SUBIR ARCHIVOS LOCALES GPX -->
+    <div class="home-local-box">
+      <div style="margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <h3 id="imp-h" style="margin:0;font-size:15px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:6px">
+            <span>📁 ¿Subir nuevo entrenamiento?</span>
+          </h3>
+          <span style="font-size:11px;color:var(--dim);background:var(--sub);padding:1px 6px;border-radius:4px;border:1px solid var(--line)">Archivos locales</span>
+        </div>
+        <p style="margin:0;font-size:12px;color:var(--dim);line-height:1.4">
+          Para analizar una sesión nueva del reloj (Zepp), móvil o Traccar.
+        </p>
+      </div>
+
+      <div class="drop" id="drop" style="padding:18px 12px;border-radius:8px;cursor:pointer">
+        <span style="font-size:20px;margin-bottom:2px">📂</span>
+        <strong style="font-size:14px">Arrastra aquí la carpeta del día</strong>
+        <span style="font-size:11px">o archivos sueltos (.gpx, .xlsx, .csv, .kml)</span>
+      </div>
+
+      <div class="picks" style="margin-top:10px;display:flex;gap:8px">
+        <button class="btn" id="pickDir" type="button" style="flex:1;font-size:12px;padding:7px 10px;font-weight:600">📁 Elegir carpeta</button>
+        <button class="btn" id="pickFiles" type="button" style="flex:1;font-size:12px;padding:7px 10px;font-weight:600">📄 Elegir archivos</button>
+      </div>
+
+      <div style="margin-top:12px;padding:9px 12px;background:var(--sub);border:1px solid var(--line);border-radius:6px;font-size:11.5px;color:var(--dim);line-height:1.4">
+        <strong style="color:var(--ink);display:block;margin-bottom:2px">💡 Importación local:</strong>
+        Pon el número de vela en el nombre (ej: <code>2318.gpx</code>). Los datos se procesan 100% en local en tu navegador.
+      </div>
+
       <input class="sr" type="file" id="dirIn" webkitdirectory directory multiple>
       <input class="sr" type="file" id="fileIn" multiple accept=".xlsx,.xls,.ods,.csv,.gpx,.kml">
       <div class="msg" id="importMsg" role="status"></div>
@@ -1248,6 +2098,9 @@ tr.qsep th{padding-top:4px}
       </table>
     </div>
 
+    <!-- ==================== BLOQUE ANÁLISIS COMPORTAMIENTO DE REGATA & RYA ==================== -->
+    <div class="analysis-v2-race-behavior" id="v2RaceBehavior"></div>
+
     <!-- Sección Multi-Barco: Desglose individual de cada regatista con su tabla de tramos y diagnóstico -->
     <div class="metrics-section-title" style="margin-top:28px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
       <div>
@@ -1277,7 +2130,7 @@ tr.qsep th{padding-top:4px}
   <!-- Pie de página general del programa (Versión y Créditos) -->
   <footer class="app-footer" aria-label="Información del programa y créditos">
     <div class="app-footer-left">
-      <span class="app-footer-badge">v1.4.0</span>
+      <span class="app-footer-badge">v1.6.0</span>
       <span class="app-footer-appname">Visor y Analizador de Regatas · Optimist RCNGC</span>
     </div>
     <div class="app-footer-right">
@@ -1286,6 +2139,43 @@ tr.qsep th{padding-top:4px}
   </footer>
 </div>
 
+<div class="modal-overlay" id="raceBehaviorHelpModal" hidden style="z-index:99999">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="raceBehaviorHelpTitle" style="max-width:680px;max-height:85vh;overflow-y:auto">
+    <div class="modal-head">
+      <h2 id="raceBehaviorHelpTitle" style="font-size:18px;margin:0">🧭 Metodología: Rosa del Tramo, Eje del Campo y Baremo RYA</h2>
+      <button class="modal-close" id="btnCloseRaceBehaviorHelp" type="button" aria-label="Cerrar modal">✕</button>
+    </div>
+    <div class="modal-body" style="font-size:13px;line-height:1.6;color:var(--ink);display:flex;flex-direction:column;gap:14px">
+      <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.2);border-radius:8px;padding:12px">
+        <h4 style="margin:0 0 4px;color:#38bdf8">1. 🌬️ Evolución del Viento Real (TWD Rosa del Tramo)</h4>
+        <p style="margin:0;color:var(--muted)">La prueba se divide en 10 ventanas temporales proporcionales (0% a 100% del tiempo de regata de la flota). Para cada ventana, el motor de telemetría extrae los vectores cinemáticos COG y SOG de todos los regatistas que navegan en ceñida amurados a estribor y babor. La bisectriz trigonométrica de ambos rumbos calcula el TWD instantáneo real, revelando oscilaciones, roles y la horquilla angular total.</p>
+      </div>
+      <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:12px">
+        <h4 style="margin:0 0 4px;color:#34d399">2. 💨 Velocidad de la Flota (SOG Medio en Ceñida)</h4>
+        <p style="margin:0;color:var(--muted)">Monitorea la velocidad media sobre el fondo (SOG) del grupo en cada tramo contra el viento. Una caída porcentual (ej: <code>5% ↓</code>, delta negativo) cuantifica el desvente o pérdida de presión que sufrió la flota durante la oscilación.</p>
+      </div>
+      <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:12px">
+        <h4 style="margin:0 0 4px;color:#fbbf24">3. 📐 Sesgo del Recorrido y Táctica en Puerta (T1, T4 y T3)</h4>
+        <p style="margin:0;color:var(--muted)">Compara la marcación geográfica real entre las balizas fondeadas y el viento real medio (TWD):</p>
+        <ul style="margin:6px 0 0 18px;padding:0;color:var(--muted)">
+          <li><strong>Ceñidas (T1 y T4):</strong> Compara el eje de balizas con el viento real detectado. Si el desvío es negativo (viento a la izquierda del eje), queda la <strong>«Izquierda favorecida»</strong>. Si es positivo (viento a la derecha), queda la <strong>«Derecha favorecida»</strong>. Si el desvío es de 10° o más (≥ 10° o ≤ -10°), se resalta en <strong>rojo</strong> por tratarse de un error del comité de regata.</li>
+          <li><strong>Popa a Puerta 3 (T3):</strong> Evalúa el desvío entre el eje hacia la puerta de sotavento y la dirección del viento (popa teórica TWD + 180°). Si el viento está desviado a la <strong>izquierda</strong> respecto al eje, la recomendación táctica es <strong>«Montar de natural (no trasluchar)»</strong> (descender amurado a estribor hacia la boya favorecida). Si el viento está desviado a la <strong>derecha</strong>, dictamina <strong>«Jibeset favorecido (trasluchar)»</strong> (trasluchada inmediata en barlovento amurado a babor hacia la boya favorecida). Si el desvío supera los 10°, se alerta en rojo por desalineación del comité.</li>
+        </ul>
+      </div>
+      <div style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:8px;padding:12px">
+        <h4 style="margin:0 0 4px;color:#818cf8">4. ⏱️ Estándar Oficial RYA Optimist (Olympic Trapezoid)</h4>
+        <p style="margin:0;color:var(--muted)">Aplica la tabla oficial de la Royal Yachting Association (RYA) con un <strong>Target Time de 45 minutos</strong> (límites oficiales 42.75 a 47.25 min). Se calculan los minutos teóricos requeridos para las distancias fondeadas según el baremo de ritmo (min/milla en ceñida, popa y través) para el rango de viento:</p>
+        <ul style="margin:6px 0 0 18px;padding:0;color:var(--muted)">
+          <li><strong>Diagnóstico de Recorrido:</strong> Detecta si el Comité de Regata montó un campo adecuado, sobredimensionado o corto.</li>
+          <li><strong>Eficiencia de la Flota:</strong> Analiza si los regatistas navegaron dentro de los tiempos esperados o si tuvieron un déficit de velocidad/VMG frente al baremo oficial.</li>
+        </ul>
+      </div>
+      <div style="text-align:right;margin-top:6px">
+        <button class="btn primary" id="btnOkRaceBehaviorHelp" type="button" style="padding:7px 18px">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="modal-overlay" id="helpModal" hidden>
   <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
     <div class="modal-head">
@@ -1353,7 +2243,7 @@ tr.qsep th{padding-top:4px}
       </ul>
 
       <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap;gap:8px">
-        <span>Visor y Analizador de Regatas · Optimist RCNGC · <strong style="color:var(--accent)">v1.4.0</strong></span>
+        <span>Visor y Analizador de Regatas · Optimist RCNGC · <strong style="color:var(--accent)">v1.6.0</strong></span>
         <span>Desarrollado por <strong style="color:var(--ink)">Pablo Quintana Labarta</strong></span>
       </div>
     </div>
@@ -1377,6 +2267,7 @@ tr.qsep th{padding-top:4px}
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn btn-cloud-tab" id="tabCloudList" type="button" aria-pressed="true">📚 Regatas guardadas</button>
         <button class="btn btn-cloud-tab" id="tabCloudStats" type="button" aria-pressed="false">📊 Histórico y Big Data</button>
+        <button class="btn btn-cloud-tab" id="tabCloudLines" type="button" aria-pressed="false">📡 Salidas GPS Móvil</button>
         <button class="btn btn-cloud-tab" id="tabCloudSave" type="button" aria-pressed="false">💾 Guardar sesión actual</button>
         <button class="btn btn-cloud-tab" id="tabCloudConfig" type="button" aria-pressed="false" style="display:none">⚙️ Conexión y Seguridad</button>
       </div>
@@ -1436,6 +2327,34 @@ tr.qsep th{padding-top:4px}
 
         <div id="cloudListContainer" style="display:flex;flex-direction:column;gap:10px">
           <div style="text-align:center;padding:40px 10px;color:var(--dim)">Cargando regatas desde Turso SQLite...</div>
+        </div>
+      </div>
+
+      <!-- Section 5: Salidas GPS Móvil marcadas en el agua -->
+      <div id="cloudSectionLines" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+          <div>
+            <h3 style="margin:0;font-size:15px;color:var(--ink)">📡 Salidas GPS marcadas con la App Móvil en el Agua</h3>
+            <div style="font-size:12px;color:var(--dim)">Líneas de salida (Comité y Pin) sincronizadas directamente desde las lanchas del club (Turso SQLite).</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn" id="btnRefreshCloudLines" type="button" style="display:inline-flex;align-items:center;gap:6px">🔄 Actualizar</button>
+            <a href="gps-salidas/index.html" target="_blank" class="btn primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;background:#0284c7">📲 Abrir App Móvil</a>
+          </div>
+        </div>
+
+        <!-- Banner explicativo / enlace rápido con QR -->
+        <div style="background:linear-gradient(135deg, rgba(2,132,199,0.08) 0%, rgba(16,185,129,0.08) 100%);border:1px solid rgba(2,132,199,0.25);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div style="font-size:12.5px;color:var(--ink);max-width:560px;line-height:1.4">
+            <strong>📱 ¿Cómo marcar en el agua?</strong> Abre <code>gps-salidas/</code> en el navegador de tu teléfono móvil, pulsa <em>«Añadir a pantalla de inicio»</em> y fija Comité y Pin con 1 toque en la neumática.
+          </div>
+          <div style="font-size:12px;font-weight:700;color:#059669;display:flex;align-items:center;gap:6px">
+            ✨ Funciona 100% offline sin cobertura en el mar
+          </div>
+        </div>
+
+        <div id="cloudLinesListContainer" style="display:flex;flex-direction:column;gap:10px">
+          <div style="text-align:center;padding:30px;color:var(--dim)">Cargando líneas de salida desde Turso SQLite...</div>
         </div>
       </div>
 
@@ -1810,7 +2729,7 @@ tr.qsep th{padding-top:4px}
       </ul>
 
       <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap;gap:8px">
-        <span>Visor y Analizador de Regatas · Optimist RCNGC · <strong style="color:var(--accent)">v1.4.0</strong></span>
+        <span>Visor y Analizador de Regatas · Optimist RCNGC · <strong style="color:var(--accent)">v1.6.0</strong></span>
         <span>Desarrollado por <strong style="color:var(--ink)">Pablo Quintana Labarta</strong></span>
       </div>
     </div>
@@ -3707,6 +4626,8 @@ function renderCoursePane(){
         </button>
         <button class="btn" id="btnMoveStPin" aria-pressed="${state.activeTool==='ioda_start_pin'}">${(stLine&&stLine.pin)?'📍 Mover Pin':'📍 Pin'}</button>
         <button class="btn" id="btnMoveStRC" aria-pressed="${state.activeTool==='ioda_start_rc'}">${(stLine&&stLine.rc)?'📍 Mover Comité':'📍 Comité'}</button>
+        <button class="btn" id="btnImportGpsStartLine" style="background:rgba(2,132,199,0.12);border-color:#0284c7;color:#0284c7;font-weight:600" title="Cargar Comité y Pin fijados por GPS con la app móvil desde Turso">📡 Importar Salida GPS Móvil</button>
+        <a href="gps-salidas/index.html" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px" title="Abrir app móvil en una pestaña nueva o teléfono">📲 App Móvil</a>
         ${(stLine&&(stLine.pin||stLine.rc))?'<button class="btn" id="btnClearStLine" style="color:#ef4444">🗑️ Quitar salida</button>':''}
       </div>
       ${hasStLine?`
@@ -3842,6 +4763,8 @@ function renderCoursePane(){
 
   const btnPlcSt=courseEl.querySelector('#btnPlaceStartLine');
   if(btnPlcSt)btnPlcSt.addEventListener('click',()=>setTacticsTool(state.activeTool==='course_start_line'||state.activeTool==='start'?null:'course_start_line'));
+  const btnImpSt=courseEl.querySelector('#btnImportGpsStartLine');
+  if(btnImpSt)btnImpSt.addEventListener('click',()=>openCloudModal('lines'));
   const bStPin=courseEl.querySelector('#btnMoveStPin');
   if(bStPin)bStPin.addEventListener('click',()=>setTacticsTool(state.activeTool==='ioda_start_pin'?null:'ioda_start_pin'));
   const bStRC=courseEl.querySelector('#btnMoveStRC');
@@ -4584,6 +5507,754 @@ function computeTacticalLegs(boatIndex, twdVal, mans){
   return analyzeIODALegs(boatIndex, t, m);
 }
 
+
+/**
+ * Diferencia angular circular en [-180, 180).
+ */
+function circularDiff(a, b){
+  return ((a - b + 540) % 360) - 180;
+}
+
+/**
+ * Ritmos oficiales RYA para la clase Optimist (Olympic Trapezoid / IODA).
+ * Target Time oficial: 45 minutos (límites reglamentarios: 42.75 a 47.25 min).
+ */
+function getRyaPace(tws){
+  const w = Number(tws) || 10;
+  if(w < 8){
+    return { upwind: 32, run: 18, reach: 20, band: '5-8 kn', vmgUp: 1.88, vmgRun: 3.33 };
+  } else if(w < 12){
+    return { upwind: 26, run: 15, reach: 17, band: '8-12 kn', vmgUp: 2.31, vmgRun: 4.00 };
+  } else if(w < 15){
+    return { upwind: 24, run: 14, reach: 15, band: '12-15 kn', vmgUp: 2.50, vmgRun: 4.29 };
+  } else {
+    return { upwind: 26, run: 13, reach: 14, band: '15+ kn', vmgUp: 2.31, vmgRun: 4.62 };
+  }
+}
+
+/**
+ * Computa el análisis exhaustivo del comportamiento de la regata:
+ * 1. Evolución del viento estimado (TWD rosa del tramo en 10 ventanas) y presión (SOG flota).
+ * 2. VMG media ceñida, VMG media popa y % de eficiencia de la derrota (media, mín y máx con regatista).
+ * 3. Orientación y sesgo del recorrido (T1, T4 vs viento real, y T3 montar de natural vs jibeset).
+ * 4. Diagnóstico RYA Optimist (recorrido dimensionado vs rendimiento de flota).
+ */
+function computeRaceBehaviorAnalysis(v2Rows, twdCoach, currentKnots, rangeMode = 'all'){
+  if(!D || !D.boats || !D.boats.length || !v2Rows || !v2Rows.length){
+    return null;
+  }
+
+  const coachWind = Math.round(((twdCoach % 360) + 360) % 360);
+  const tws = Number(currentKnots) || 10;
+  const pace = getRyaPace(tws);
+
+  // --- 1. INTERVALO TEMPORAL SEGÚN RANGO SELECCIONADO (all / t1 / t4) ---
+  let tStart = 0;
+  let tEnd = D.T - 1;
+
+  if(rangeMode === 't1'){
+    const tInList = v2Rows.map(r => (r.legsData && r.legsData[0] && r.legsData[0].tIn != null) ? r.legsData[0].tIn : null).filter(t => t != null && t >= 0);
+    const tOutList = v2Rows.map(r => (r.legsData && r.legsData[0] && r.legsData[0].tOut != null) ? r.legsData[0].tOut : null).filter(t => t != null && t > 0);
+    if(tInList.length && tOutList.length){
+      tStart = Math.min(...tInList);
+      tEnd = Math.max(...tOutList);
+    }
+  } else if(rangeMode === 't4'){
+    const tInList = v2Rows.map(r => {
+      if(!r.legsData) return null;
+      const l4 = r.legsData[3] || r.legsData.filter(l => l.type === 'UPWIND' && l.legIndex > 0).pop();
+      return (l4 && l4.tIn != null) ? l4.tIn : null;
+    }).filter(t => t != null && t >= 0);
+    const tOutList = v2Rows.map(r => {
+      if(!r.legsData) return null;
+      const l4 = r.legsData[3] || r.legsData.filter(l => l.type === 'UPWIND' && l.legIndex > 0).pop();
+      return (l4 && l4.tOut != null) ? l4.tOut : null;
+    }).filter(t => t != null && t > 0);
+    if(tInList.length && tOutList.length){
+      tStart = Math.min(...tInList);
+      tEnd = Math.max(...tOutList);
+    }
+  } else {
+    // 'all' (Toda la regata)
+    tStart = D.startT != null && D.startT > 0 ? Math.round(D.startT) : 0;
+    const startCrossings = v2Rows.filter(r => r.rInt && r.rInt.crossedStart && r.rInt.sStart > 0).map(r => r.rInt.sStart);
+    if(startCrossings.length) tStart = Math.min(...startCrossings);
+
+    tEnd = D.T - 1;
+    const finishes = v2Rows.filter(r => r.rInt && r.rInt.finished && r.rInt.sEnd > tStart).map(r => r.rInt.sEnd);
+    if(finishes.length) tEnd = Math.max(...finishes);
+  }
+
+  if(tEnd <= tStart + 20){
+    tStart = Math.max(0, (D.startT || 0));
+    tEnd = Math.max(tStart + 20, D.T - 1);
+  }
+
+  const numSlices = 10;
+  const rawWindPoints = [];
+  const rawSogPoints = [];
+  const allUpwindSogs = [];
+
+  const dtSlice = (tEnd - tStart) / (numSlices - 1);
+
+  for(let k = 0; k < numSlices; k++){
+    const tCenter = tStart + k * dtSlice;
+    const halfWin = Math.max(12, Math.round(dtSlice * 0.55));
+    const s0 = Math.max(0, Math.round(tCenter - halfWin));
+    const s1 = Math.min(D.T - 1, Math.round(tCenter + halfWin));
+
+    const portCogs = [];
+    const stbdCogs = [];
+    const sliceSogs = [];
+
+    for(let bIdx = 0; bIdx < D.N; bIdx++){
+      const kine = getBoatKinematics(bIdx);
+      if(!kine) continue;
+      for(let s = s0; s <= s1; s++){
+        if(!ok(bIdx, s)) continue;
+        const sog = kine.sogEma[s];
+        if(sog < 1.2) continue;
+        const cog = kine.cogEma[s];
+        const diff = ((cog - coachWind + 540) % 360) - 180;
+
+        if(diff >= 24 && diff <= 75){
+          portCogs.push(cog);
+          sliceSogs.push(sog);
+          allUpwindSogs.push(sog);
+        } else if(diff <= -24 && diff >= -75){
+          stbdCogs.push(cog);
+          sliceSogs.push(sog);
+          allUpwindSogs.push(sog);
+        }
+      }
+    }
+
+    let twdEst = coachWind;
+    if(portCogs.length >= 3 && stbdCogs.length >= 3){
+      const mPort = circularMean(portCogs);
+      const mStbd = circularMean(stbdCogs);
+      const diffPS = ((mPort - mStbd + 360) % 360);
+      twdEst = Math.round(((mStbd + diffPS / 2) % 360 + 360) % 360);
+    } else if(portCogs.length >= 3){
+      twdEst = Math.round(((circularMean(portCogs) - 44) % 360 + 360) % 360);
+    } else if(stbdCogs.length >= 3){
+      twdEst = Math.round(((circularMean(stbdCogs) + 44) % 360 + 360) % 360);
+    } else if(rawWindPoints.length > 0){
+      twdEst = rawWindPoints[rawWindPoints.length - 1];
+    }
+
+    const avgSog = sliceSogs.length ? (sliceSogs.reduce((a, b) => a + b, 0) / sliceSogs.length) : (tws * 0.28);
+    rawWindPoints.push(twdEst);
+    rawSogPoints.push(avgSog);
+  }
+
+  // Suavizado circular de 3 puntos
+  const smoothWindPoints = [];
+  for(let k = 0; k < numSlices; k++){
+    const prev = rawWindPoints[Math.max(0, k - 1)];
+    const curr = rawWindPoints[k];
+    const next = rawWindPoints[Math.min(numSlices - 1, k + 1)];
+    smoothWindPoints.push(circularMean([prev, curr, curr, next]));
+  }
+
+  const meanTwd = circularMean(smoothWindPoints);
+
+  // Roles respecto a la media
+  const deltas = smoothWindPoints.map(w => circularDiff(w, meanTwd));
+  const minShift = Math.round(Math.min(...deltas));
+  const maxShift = Math.round(Math.max(...deltas));
+  const minTwd = Math.round(((meanTwd + minShift) % 360 + 360) % 360);
+  const maxTwd = Math.round(((meanTwd + maxShift) % 360 + 360) % 360);
+  const horquilla = Math.round(Math.abs(maxShift - minShift));
+
+  const netShift = Math.round(circularDiff(smoothWindPoints[numSlices - 1], smoothWindPoints[0]));
+  let shiftText = '';
+  if(netShift > 0){
+    shiftText = Math.abs(netShift) + '° a la derecha';
+  } else if(netShift < 0){
+    shiftText = Math.abs(netShift) + '° a la izquierda';
+  } else {
+    shiftText = 'viento estable';
+  }
+  const oscillationSummary = 'De ' + deg3(minTwd) + ' a ' + deg3(maxTwd) + '; ' + shiftText + ' · horquilla ' + horquilla + '°';
+
+  // Presión
+  const meanFleetUpwindSog = allUpwindSogs.length ? (allUpwindSogs.reduce((a, b) => a + b, 0) / allUpwindSogs.length) : (rawSogPoints.reduce((a, b) => a + b, 0) / rawSogPoints.length);
+  const currentSog = rawSogPoints[numSlices - 1];
+  const deltaSog = currentSog - meanFleetUpwindSog;
+  const pctChange = Math.round((deltaSog / Math.max(0.5, meanFleetUpwindSog)) * 100);
+
+  // --- 2. VMG MEDIA FLOTA Y EFICIENCIA DE DERROTA ---
+  const upwindVmgs = [];
+  const downwindVmgs = [];
+  const upwindSogs = [];
+  const downwindSogs = [];
+
+  v2Rows.forEach(r => {
+    let sumEffDist = 0, sumDist = 0;
+    (r.legsData || []).forEach(l => {
+      if(l.type === 'UPWIND' && l.avgSogKnots != null && l.avgSogKnots > 0.4){
+        upwindSogs.push(l.avgSogKnots);
+      }
+      if(l.type === 'DOWNWIND' && l.avgSogKnots != null && l.avgSogKnots > 0.4){
+        downwindSogs.push(l.avgSogKnots);
+      }
+      if(l.type === 'UPWIND' && l.avgVmgKnots != null && l.avgVmgKnots > 0.4){
+        upwindVmgs.push(l.avgVmgKnots);
+      }
+      if(l.type === 'DOWNWIND' && l.avgVmgKnots != null && l.avgVmgKnots > 0.4){
+        downwindVmgs.push(l.avgVmgKnots);
+      }
+      const dist = l.distanceReal || l.distReal || 0;
+      const eff = (l.rhumblineEfficiencyPct != null) ? l.rhumblineEfficiencyPct : (l.rhumbEff != null ? l.rhumbEff : null);
+      if(dist > 20 && eff != null && eff > 10){
+        sumEffDist += eff * dist;
+        sumDist += dist;
+      }
+    });
+    r.trackEfficiency = sumDist > 0 ? Number((sumEffDist / sumDist).toFixed(1)) : 80.0;
+  });
+
+  const fleetAvgUpwindSog = upwindSogs.length ? (upwindSogs.reduce((a, b) => a + b, 0) / upwindSogs.length) : (tws * 0.28);
+  const fleetAvgDownwindSog = downwindSogs.length ? (downwindSogs.reduce((a, b) => a + b, 0) / downwindSogs.length) : (tws * 0.38);
+  const fleetAvgUpwindVmg = upwindVmgs.length ? (upwindVmgs.reduce((a, b) => a + b, 0) / upwindVmgs.length) : pace.vmgUp;
+  const fleetAvgDownwindVmg = downwindVmgs.length ? (downwindVmgs.reduce((a, b) => a + b, 0) / downwindVmgs.length) : pace.vmgRun;
+
+  const validEffRows = v2Rows.filter(r => r.trackEfficiency > 20);
+  const fleetAvgEfficiency = validEffRows.length ? (validEffRows.reduce((a, r) => a + r.trackEfficiency, 0) / validEffRows.length) : 80;
+
+  let minEffRow = validEffRows[0] || v2Rows[0];
+  let maxEffRow = validEffRows[0] || v2Rows[0];
+  validEffRows.forEach(r => {
+    if(r.trackEfficiency < minEffRow.trackEfficiency) minEffRow = r;
+    if(r.trackEfficiency > maxEffRow.trackEfficiency) maxEffRow = r;
+  });
+
+  // --- 3. ORIENTACIÓN Y SESGO DEL RECORRIDO ---
+  const io = (D.course && D.course.ioda) ? D.course.ioda : null;
+  const marks = (D.course && D.course.marks) ? D.course.marks : [];
+  const stLine = (typeof getActiveStartLine === 'function') ? getActiveStartLine() : null;
+  const finLine = (typeof getActiveFinishLine === 'function') ? getActiveFinishLine() : null;
+
+  let pStart = (stLine && stLine.pin && stLine.rc) ? { x: (stLine.pin.x + stLine.rc.x) / 2, y: (stLine.pin.y + stLine.rc.y) / 2 } : null;
+  let pB1 = (io && io.b1) ? io.b1 : (marks[0] || null);
+  let pB2 = (io && io.b2) ? io.b2 : (marks[1] || null);
+  let pGate3 = (io && io.gate3s && io.gate3p) ? { x: (io.gate3s.x + io.gate3p.x) / 2, y: (io.gate3s.y + io.gate3p.y) / 2 } : ((io && (io.gate3s || io.gate3p)) ? (io.gate3s || io.gate3p) : (marks[2] || null));
+  let pFinish = (finLine && finLine.pin && finLine.rc) ? { x: (finLine.pin.x + finLine.rc.x) / 2, y: (finLine.pin.y + finLine.rc.y) / 2 } : null;
+
+  if(!pStart && v2Rows.length){
+    let sx = 0, sy = 0, sn = 0;
+    v2Rows.forEach(r => {
+      const bIdx = r.id;
+      const s0 = r.rInt ? r.rInt.sStart : 0;
+      if(ok(bIdx, s0)){ sx += D.X[bIdx*D.stride + s0]; sy += D.Y[bIdx*D.stride + s0]; sn++; }
+    });
+    if(sn) pStart = { x: sx / sn, y: sy / sn };
+  }
+  if(!pB1 && v2Rows.length){
+    let bx = 0, by = 0, bn = 0;
+    v2Rows.forEach(r => {
+      const leg0 = r.legsData[0];
+      if(leg0 && leg0.tOut > 0){
+        const bIdx = r.id;
+        const s = leg0.tOut;
+        if(ok(bIdx, s)){ bx += D.X[bIdx*D.stride + s]; by += D.Y[bIdx*D.stride + s]; bn++; }
+      }
+    });
+    if(bn) pB1 = { x: bx / bn, y: by / bn };
+  }
+  if(!pGate3 && v2Rows.length){
+    let gx = 0, gy = 0, gn = 0;
+    v2Rows.forEach(r => {
+      const leg2 = r.legsData[2];
+      if(leg2 && leg2.tOut > 0){
+        const bIdx = r.id;
+        const s = leg2.tOut;
+        if(ok(bIdx, s)){ gx += D.X[bIdx*D.stride + s]; gy += D.Y[bIdx*D.stride + s]; gn++; }
+      }
+    });
+    if(gn) pGate3 = { x: gx / gn, y: gy / gn };
+  }
+  if(!pFinish && v2Rows.length){
+    let fx = 0, fy = 0, fn = 0;
+    v2Rows.forEach(r => {
+      const bIdx = r.id;
+      const sEnd = r.rInt ? r.rInt.sEnd : (D.T - 1);
+      if(ok(bIdx, sEnd)){ fx += D.X[bIdx*D.stride + sEnd]; fy += D.Y[bIdx*D.stride + sEnd]; fn++; }
+    });
+    if(fn) pFinish = { x: fx / fn, y: fy / fn };
+  }
+
+  // T1 (Ceñida a B1):
+  let biasT1 = null;
+  if(pStart && pB1){
+    const brgT1 = Math.round(((bearing(pB1.x - pStart.x, pB1.y - pStart.y) % 360) + 360) % 360);
+    const deltaT1 = Math.round(circularDiff(meanTwd, brgT1));
+    const absD1 = Math.abs(deltaT1);
+    const isErrorComite = absD1 >= 10;
+    let favText = '';
+    let tagClass = isErrorComite ? 'warning' : 'favored';
+    if(deltaT1 <= -3){
+      favText = absD1 + '° a la izquierda · Izquierda favorecida' + (isErrorComite ? ' (Error comité ≥10°)' : '');
+    } else if(deltaT1 >= 3){
+      favText = '+' + deltaT1 + '° a la derecha · Derecha favorecida' + (isErrorComite ? ' (Error comité ≥10°)' : '');
+    } else {
+      favText = absD1 + '° · Eje perfectamente alineado';
+      tagClass = 'neutral';
+    }
+    biasT1 = { brg: brgT1, delta: deltaT1, favText, tagClass, isErrorComite };
+  }
+
+  // T4 (Ceñida a Llegada):
+  let biasT4 = null;
+  const pGate3OrB1 = pGate3 || pB1;
+  if(pGate3OrB1 && pFinish){
+    const brgT4 = Math.round(((bearing(pFinish.x - pGate3OrB1.x, pFinish.y - pGate3OrB1.y) % 360) + 360) % 360);
+    const deltaT4 = Math.round(circularDiff(meanTwd, brgT4));
+    const absD4 = Math.abs(deltaT4);
+    const isErrorComite = absD4 >= 10;
+    let favText = '';
+    let tagClass = isErrorComite ? 'warning' : 'favored';
+    if(deltaT4 <= -3){
+      favText = absD4 + '° a la izquierda · Izquierda favorecida' + (isErrorComite ? ' (Error comité ≥10°)' : '');
+    } else if(deltaT4 >= 3){
+      favText = '+' + deltaT4 + '° a la derecha · Derecha favorecida' + (isErrorComite ? ' (Error comité ≥10°)' : '');
+    } else {
+      favText = absD4 + '° · Eje de meta alineado';
+      tagClass = 'neutral';
+    }
+    biasT4 = { brg: brgT4, delta: deltaT4, favText, tagClass, isErrorComite };
+  }
+
+  // T3 (Popa a Puerta 3):
+  let biasT3 = null;
+  const pTop = pB2 || pB1;
+  if(pTop && pGate3){
+    const brgT3 = Math.round(((bearing(pGate3.x - pTop.x, pGate3.y - pTop.y) % 360) + 360) % 360);
+    const downwindTwd = (meanTwd + 180) % 360;
+    const deltaT3 = Math.round(circularDiff(downwindTwd, brgT3));
+    const absD3 = Math.abs(deltaT3);
+    const isErrorComite = absD3 >= 10;
+    let tacticTag = '';
+    let tacticDesc = '';
+    let tagClass = '';
+    if(deltaT3 <= -4){
+      // Viento desviado a la izquierda respecto al eje hacia la puerta: Bordo natural amurado a estribor
+      tacticTag = '⛵ Montar de natural';
+      tagClass = 'natural';
+      tacticDesc = 'Viento desviado a la izquierda (' + absD3 + '° respecto al eje de la puerta). Ir de natural amurado a estribor (no trasluchar) hacia la boya favorecida.' + (isErrorComite ? ' <span style="color:#ef4444;font-weight:700">(Error comité ≥10°)</span>' : '');
+    } else if(deltaT3 >= 4){
+      // Viento desviado a la derecha respecto al eje hacia la puerta: Jibeset amurado a babor
+      tacticTag = '🔄 Jibeset favorecido';
+      tagClass = 'jibeset';
+      tacticDesc = 'Viento desviado a la derecha (+' + deltaT3 + '° respecto al eje de la puerta). Jibeset (trasluchar de inmediato en barlovento amurado a babor) hacia la boya favorecida.' + (isErrorComite ? ' <span style="color:#ef4444;font-weight:700">(Error comité ≥10°)</span>' : '');
+    } else {
+      tacticTag = '⚖️ Eje equilibrado';
+      tagClass = 'neutral';
+      tacticDesc = 'Desvío mínimo (' + deltaT3 + '°). Puerta neutra: selección de baliza según presión o desmarque táctico de la flota.';
+    }
+    biasT3 = { brg: brgT3, delta: deltaT3, tacticTag, tacticDesc, tagClass, isErrorComite };
+  }
+
+  // --- 4. DIAGNÓSTICO RYA OPTIMIST (RECORRIDO VS RENDIMIENTO) ---
+  let distT1Meters = (pStart && pB1) ? Math.hypot(pB1.x - pStart.x, pB1.y - pStart.y) : 650;
+  let distT2Meters = (pB1 && pB2) ? Math.hypot(pB2.x - pB1.x, pB2.y - pB1.y) : (io && io.b2 ? 400 : 0);
+  let distT3Meters = (pTop && pGate3) ? Math.hypot(pGate3.x - pTop.x, pGate3.y - pTop.y) : 600;
+  let distT4Meters = (pGate3OrB1 && pFinish) ? Math.hypot(pFinish.x - pGate3OrB1.x, pFinish.y - pGate3OrB1.y) : 550;
+
+  if(v2Rows.length && v2Rows[0].legsData && v2Rows[0].legsData.length){
+    const l0 = v2Rows.map(r => r.legsData[0] ? r.legsData[0].distReal : 0).filter(d => d > 50);
+    const l1 = v2Rows.map(r => r.legsData[1] ? r.legsData[1].distReal : 0).filter(d => d > 50);
+    const l2 = v2Rows.map(r => r.legsData[2] ? r.legsData[2].distReal : 0).filter(d => d > 50);
+    const l3 = v2Rows.map(r => r.legsData[3] ? r.legsData[3].distReal : 0).filter(d => d > 50);
+    if(l0.length) distT1Meters = (l0.reduce((a,b)=>a+b,0)/l0.length) / 1.39;
+    if(l1.length) distT2Meters = (l1.reduce((a,b)=>a+b,0)/l1.length);
+    if(l2.length) distT3Meters = (l2.reduce((a,b)=>a+b,0)/l2.length) / 1.18;
+    if(l3.length) distT4Meters = (l3.reduce((a,b)=>a+b,0)/l3.length) / 1.39;
+  }
+
+  const nmT1 = distT1Meters / 1852;
+  const nmT2 = distT2Meters / 1852;
+  const nmT3 = distT3Meters / 1852;
+  const nmT4 = distT4Meters / 1852;
+
+  const upwindMiles = nmT1 + nmT4;
+  const runMiles = nmT3;
+  const reachMiles = nmT2;
+  const totalMiles = upwindMiles + runMiles + reachMiles;
+
+  const ryaTargetMin = (upwindMiles * pace.upwind) + (runMiles * pace.run) + (reachMiles * pace.reach);
+
+  const finisherDurs = v2Rows.filter(r => r.rInt && r.rInt.finished && r.dur > 60).map(r => r.dur);
+  const actualWinnerSec = finisherDurs.length ? Math.min(...finisherDurs) : Math.min(...v2Rows.map(r => r.dur));
+  const actualWinnerMin = actualWinnerSec / 60.0;
+
+  // Diagnóstico 1: Dimensionado del Recorrido por el Comité
+  let courseStatusBadge = '';
+  let courseStatusText = '';
+  let courseStatusClass = '';
+
+  if(ryaTargetMin > 47.25){
+    courseStatusBadge = '⚠️ SOBREDIMENSIONADO (+' + (ryaTargetMin - 45).toFixed(1) + ' min)';
+    courseStatusClass = 'warning';
+    courseStatusText = 'La distancia total (' + fmt2(totalMiles) + ' NM) requiere ' + fmt1(ryaTargetMin) + ' min según el estándar RYA para ' + pace.band + ', superando el límite oficial de 47.25 min. El Comité fondeó barlovento con exceso de distancia para el viento existente.';
+  } else if(ryaTargetMin < 42.75){
+    courseStatusBadge = '⚠️ CORTO / SUBDIMENSIONADO (-' + (45 - ryaTargetMin).toFixed(1) + ' min)';
+    courseStatusClass = 'danger';
+    courseStatusText = 'La distancia fondeada (' + fmt2(totalMiles) + ' NM) solo requiere ' + fmt1(ryaTargetMin) + ' min a ritmo RYA para ' + pace.band + ', quedando por debajo del target de 45 min.';
+  } else {
+    courseStatusBadge = '✓ BIEN DIMENSIONADO';
+    courseStatusClass = 'success';
+    courseStatusText = 'La distancia montada (' + fmt2(totalMiles) + ' NM) encaja con precisión en el target oficial RYA (' + fmt1(ryaTargetMin) + ' min para ' + pace.band + ', dentro del margen reglamentario 42.75 - 47.25 min).';
+  }
+
+  // Diagnóstico 2: Eficiencia de la Flota vs Estándar RYA
+  const fleetRatio = actualWinnerMin / Math.max(1, ryaTargetMin);
+  let fleetStatusBadge = '';
+  let fleetStatusText = '';
+  let fleetStatusClass = '';
+
+  if(fleetRatio > 1.15){
+    fleetStatusBadge = '📉 EFICIENCIA INSUFICIENTE (+' + Math.round((fleetRatio - 1) * 100) + '% de tiempo)';
+    fleetStatusClass = 'warning';
+    fleetStatusText = 'La cabeza de la flota tardó ' + fmt1(actualWinnerMin) + ' min frente a los ' + fmt1(ryaTargetMin) + ' min previstos por la RYA. La VMG en ceñida (' + fmt2(fleetAvgUpwindVmg) + ' kn vs estándar ' + fmt2(pace.vmgUp) + ' kn) refleja pérdidas por laylines excesivas, viradas adicionales o falta de velocidad.';
+  } else if(fleetRatio < 0.90){
+    fleetStatusBadge = '⚡ RENDIMIENTO SOBRESALIENTE (-' + Math.round((1 - fleetRatio) * 100) + '% de tiempo)';
+    fleetStatusClass = 'success';
+    fleetStatusText = 'La cabeza de la flota completó el recorrido en ' + fmt1(actualWinnerMin) + ' min, un ' + Math.round((1 - fleetRatio) * 100) + '% más rápido que el baremo RYA (' + fmt1(ryaTargetMin) + ' min). Gran velocidad sobre laylines y lectura táctica del campo.';
+  } else {
+    fleetStatusBadge = '✓ RENDIMIENTO ACORDE AL ESTÁNDAR RYA';
+    fleetStatusClass = 'success';
+    fleetStatusText = 'El tiempo del líder (' + fmt1(actualWinnerMin) + ' min) concuerda con las previsiones oficiales de la RYA para ' + pace.band + ' (' + fmt1(ryaTargetMin) + ' min). Rendimiento táctico y de velocidad óptimo.';
+  }
+
+  return {
+    coachWind,
+    meanTwd,
+    minTwd,
+    maxTwd,
+    minShift,
+    maxShift,
+    horquilla,
+    oscillationSummary,
+    smoothWindPoints,
+    rawSogPoints,
+    meanFleetUpwindSog,
+    currentSog,
+    deltaSog,
+    pctChange,
+    fleetAvgUpwindSog,
+    fleetAvgDownwindSog,
+    fleetAvgUpwindVmg,
+    fleetAvgDownwindVmg,
+    fleetAvgEfficiency,
+    minEffRow,
+    maxEffRow,
+    biasT1,
+    biasT4,
+    biasT3,
+    pace,
+    upwindMiles,
+    runMiles,
+    reachMiles,
+    totalMiles,
+    ryaTargetMin,
+    actualWinnerMin,
+    courseStatusBadge,
+    courseStatusClass,
+    courseStatusText,
+    fleetStatusBadge,
+    fleetStatusClass,
+    fleetStatusText
+  };
+}
+
+/**
+ * Genera el SVG del abanico polar (Rosa del Tramo).
+ */
+function generateWindFanSvg(b){
+  const meanTwd = b.meanTwd != null ? b.meanTwd : 325;
+  const smoothWindPoints = (b.smoothWindPoints && b.smoothWindPoints.length) ? b.smoothWindPoints : [323,324,322,325,327,326,329,328,330,331];
+  const width = 430, height = 265;
+  const centerTwd = Math.round(meanTwd / 5) * 5;
+  const halfSpan = 25;
+  const startDeg = centerTwd - halfSpan;
+  const endDeg = centerTwd + halfSpan;
+  const cx = width / 2;
+  const cy = height + 40;
+  const rMin = 70;
+  const rMax = 225;
+
+  function toScreen(r, twd){
+    const diff = ((twd - centerTwd + 540) % 360) - 180;
+    const rad = (-90 + diff) * D2R;
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  }
+
+  function arcPath(r, a1, a2){
+    const pStart = toScreen(r, a2);
+    const pEnd = toScreen(r, a1);
+    return 'M ' + pStart.x.toFixed(1) + ' ' + pStart.y.toFixed(1) + ' A ' + r + ' ' + r + ' 0 0 0 ' + pEnd.x.toFixed(1) + ' ' + pEnd.y.toFixed(1);
+  }
+
+  const pL0 = toScreen(rMin, startDeg), pL1 = toScreen(rMax, startDeg);
+  const pR0 = toScreen(rMin, endDeg), pR1 = toScreen(rMax, endDeg);
+  const boundsSvg = '<line x1="' + pL0.x.toFixed(1) + '" y1="' + pL0.y.toFixed(1) + '" x2="' + pL1.x.toFixed(1) + '" y2="' + pL1.y.toFixed(1) + '" stroke="rgba(255,255,255,0.22)" stroke-width="1.2" />' +
+    '<line x1="' + pR0.x.toFixed(1) + '" y1="' + pR0.y.toFixed(1) + '" x2="' + pR1.x.toFixed(1) + '" y2="' + pR1.y.toFixed(1) + '" stroke="rgba(255,255,255,0.22)" stroke-width="1.2" />';
+
+  const rings = [0, 0.25, 0.50, 0.75, 1.0];
+  let ringsSvg = '';
+  rings.forEach(pct => {
+    const r = rMin + pct * (rMax - rMin);
+    const strokeDash = (pct === 0 || pct === 1) ? 'none' : '2,3';
+    ringsSvg += '<path d="' + arcPath(r, startDeg, endDeg) + '" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="' + strokeDash + '" />\n';
+
+  });
+
+  let ticksSvg = '';
+  for(let deg = startDeg; deg <= endDeg; deg += 5){
+    const isMajor = deg % 10 === 0;
+    const rTickInner = isMajor ? rMax - 8 : rMax - 4;
+    const p1 = toScreen(rTickInner, deg);
+    const p2 = toScreen(rMax, deg);
+    ticksSvg += '<line x1="' + p1.x.toFixed(1) + '" y1="' + p1.y.toFixed(1) + '" x2="' + p2.x.toFixed(1) + '" y2="' + p2.y.toFixed(1) + '" stroke="rgba(255,255,255,0.4)" stroke-width="' + (isMajor ? 1.5 : 1) + '" />\n';
+    if(isMajor){
+      const pLbl = toScreen(rMax + 14, deg);
+      ticksSvg += '<text x="' + pLbl.x.toFixed(1) + '" y="' + pLbl.y.toFixed(1) + '" fill="#94a3b8" font-size="10" font-weight="600" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">' + deg + '°</text>\n';
+    }
+  }
+
+  const pCenter0 = toScreen(rMin, meanTwd);
+  const pCenter1 = toScreen(rMax, meanTwd);
+  const centerLineSvg = '<line x1="' + pCenter0.x.toFixed(1) + '" y1="' + pCenter0.y.toFixed(1) + '" x2="' + pCenter1.x.toFixed(1) + '" y2="' + pCenter1.y.toFixed(1) + '" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="4,4" />';
+
+  const screenPts = smoothWindPoints.map((twd, idx) => {
+    const pct = idx / (smoothWindPoints.length - 1);
+    const r = rMin + pct * (rMax - rMin);
+    return toScreen(r, twd);
+  });
+
+  let polyD = 'M ' + screenPts[0].x.toFixed(1) + ' ' + screenPts[0].y.toFixed(1);
+  for(let i = 1; i < screenPts.length; i++){
+    polyD += ' L ' + screenPts[i].x.toFixed(1) + ' ' + screenPts[i].y.toFixed(1);
+  }
+  const lastCenter = toScreen(rMax, meanTwd);
+  const firstCenter = toScreen(rMin, meanTwd);
+  polyD += ' L ' + lastCenter.x.toFixed(1) + ' ' + lastCenter.y.toFixed(1) + ' L ' + firstCenter.x.toFixed(1) + ' ' + firstCenter.y.toFixed(1) + ' Z';
+  const shadedSvg = '<path d="' + polyD + '" fill="rgba(56, 189, 248, 0.22)" stroke="none" />';
+
+  let pathD = 'M ' + screenPts[0].x.toFixed(1) + ' ' + screenPts[0].y.toFixed(1);
+  for(let i = 1; i < screenPts.length; i++){
+    pathD += ' L ' + screenPts[i].x.toFixed(1) + ' ' + screenPts[i].y.toFixed(1);
+  }
+  const pathSvg = '<path d="' + pathD + '" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />';
+
+  let nodesSvg = '';
+  screenPts.forEach((pt, idx) => {
+    const isFirstOrLast = idx === 0 || idx === screenPts.length - 1;
+    const rNode = isFirstOrLast ? 4.5 : 3.8;
+    nodesSvg += '<circle cx="' + pt.x.toFixed(1) + '" cy="' + pt.y.toFixed(1) + '" r="' + rNode + '" fill="#ffffff" stroke="#0284c7" stroke-width="2" />';
+  });
+
+  return '<svg viewBox="0 0 ' + width + ' ' + height + '" style="width:100%;max-width:' + width + 'px;height:auto;display:block;margin:0 auto;overflow:visible">' +
+    boundsSvg + ringsSvg + ticksSvg + centerLineSvg + shadedSvg + pathSvg + nodesSvg + '</svg>';
+}
+
+/**
+ * Renderiza el bloque de Análisis del Comportamiento de Regata (Rosa del Tramo & RYA).
+ */
+let currentWindRoseRange = 'all';
+
+function renderRaceBehaviorView(v2Rows, twdCoach, currentKnots, rangeMode = currentWindRoseRange){
+  const el = document.getElementById('v2RaceBehavior');
+  if(!el) return;
+
+  const data = computeRaceBehaviorAnalysis(v2Rows, twdCoach, currentKnots, rangeMode);
+  if(!data){
+    el.innerHTML = '';
+    el.hidden = true;
+    return;
+  }
+  el.hidden = false;
+
+  const fanSvg = generateWindFanSvg(data);
+
+  const deltaSign = data.deltaSog >= 0 ? '+' : '';
+  const deltaClass = data.deltaSog >= 0 ? 'pos' : 'neg';
+  const badgeClass = data.pctChange > 2 ? 'up' : (data.pctChange < -2 ? 'down' : 'even');
+  const badgeArrow = data.pctChange > 0 ? '↑' : (data.pctChange < 0 ? '↓' : '→');
+
+  const minDeltaSign = data.minShift >= 0 ? '+' : '';
+  const maxDeltaSign = data.maxShift >= 0 ? '+' : '';
+
+  el.innerHTML = `
+    <div class="behavior-header">
+      <div>
+        <h3>🧭 Análisis del Comportamiento de la Regata y Condiciones del Campo</h3>
+        <div class="hint">Evolución del viento real (TWD), velocidad de la flota, sesgo de recorrido y contraste con el estándar oficial RYA</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="wind-rose-how-btn" id="btnHowWindCalculated" type="button" title="Ver cómo se calculan estas métricas">
+          <span style="font-size:14px">ⓘ</span> Cómo se calcula
+        </button>
+      </div>
+    </div>
+
+    <div class="behavior-layout">
+      <!-- Panel Izquierdo: Rosa del Tramo & Presión -->
+      <div class="wind-rose-card">
+        <div class="wind-rose-top">
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <div class="wind-rose-title">Evolución del Viento Estimado</div>
+              <select id="selWindRoseRange" class="wind-range-select" aria-label="Visualizar tramo">
+                <option value="all" ${rangeMode === 'all' ? 'selected' : ''}>Toda la regata</option>
+                <option value="t1" ${rangeMode === 't1' ? 'selected' : ''}>T1 · Ceñida a B1</option>
+                <option value="t4" ${rangeMode === 't4' ? 'selected' : ''}>T4 · Ceñida a Llegada</option>
+              </select>
+            </div>
+            <div class="wind-rose-sub">TWD · rosa del tramo${rangeMode === 't1' ? ' (T1)' : (rangeMode === 't4' ? ' (T4)' : '')}</div>
+          </div>
+          <div class="pressure-card">
+            <div class="pressure-lbl">SOG MEDIO FLOTA</div>
+            <div class="pressure-row">
+              <span class="pressure-badge ${badgeClass}">${Math.abs(data.pctChange)}% ${badgeArrow}</span>
+              <span class="pressure-val">${fmt2(data.currentSog)}</span>
+              <span class="pressure-delta ${deltaClass}">${deltaSign}${fmt2(data.deltaSog)}</span>
+            </div>
+            <div class="pressure-mean">Media ${fmt2(data.meanFleetUpwindSog)} kn.</div>
+            <div class="pressure-note">Velocidad media medida ciñendo</div>
+          </div>
+        </div>
+
+        <div class="wind-rose-svg-wrap">
+          ${fanSvg}
+        </div>
+
+        <div class="wind-rose-bottom">
+          <div class="wind-rose-shifts">
+            <span class="shift-left">← máx. izquierda ${deg3(data.minTwd)} (${minDeltaSign}${data.minShift}°)</span>
+            <span class="shift-center">media ${deg3(data.meanTwd)}</span>
+            <span class="shift-right">máx. derecha → ${deg3(data.maxTwd)} (${maxDeltaSign}${data.maxShift}°)</span>
+          </div>
+          <div class="wind-rose-summary">
+            <span>${esc(data.oscillationSummary)}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel Derecho: 3 Bloques (Métricas Tácticas, Eje Recorrido, Diagnóstico RYA) -->
+      <div class="behavior-right-panels">
+        <!-- Bloque 1: Métricas Tácticas Globales -->
+        <div class="behavior-card">
+          <div class="behavior-card-title">⚡ Métricas Tácticas Globales de la Flota</div>
+          <div class="fleet-tactics-kpis">
+            <div class="fleet-tactics-kpi">
+              <div class="lbl">Vmed Ceñida (SOG)</div>
+              <div class="val">${fmt2(data.fleetAvgUpwindSog)} <span style="font-size:12px;color:var(--muted)">kn</span></div>
+              <div class="sub">Velocidad media ciñendo</div>
+            </div>
+            <div class="fleet-tactics-kpi">
+              <div class="lbl">Vmed Popa (SOG)</div>
+              <div class="val">${fmt2(data.fleetAvgDownwindSog)} <span style="font-size:12px;color:var(--muted)">kn</span></div>
+              <div class="sub">Velocidad media bajando viento</div>
+            </div>
+            <div class="fleet-tactics-kpi" style="grid-column:1/-1">
+              <div class="lbl">% Eficiencia de Derrota de la Flota</div>
+              <div class="val" style="color:var(--accent)">${fmt1(data.fleetAvgEfficiency)}% <span style="font-size:12px;color:var(--muted)">promedio</span></div>
+              <div class="sub" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:6px">
+                <span style="color:#f87171">🔻 Mín: <strong>${fmt1(data.minEffRow.trackEfficiency)}%</strong> (${esc(data.minEffRow.sail)}${data.minEffRow.sailorName ? ' · ' + esc(data.minEffRow.sailorName) : ''})</span>
+                <span style="color:#34d399">🔺 Máx: <strong>${fmt1(data.maxEffRow.trackEfficiency)}%</strong> (${esc(data.maxEffRow.sail)}${data.maxEffRow.sailorName ? ' · ' + esc(data.maxEffRow.sailorName) : ''})</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloque 2: Orientación y Sesgo del Recorrido -->
+        <div class="behavior-card">
+          <div class="behavior-card-title">📐 Orientación del Recorrido vs Viento Real Detectado</div>
+          <div class="course-bias-grid">
+            <!-- T1 -->
+            <div class="course-bias-item">
+              <div class="bias-leg-head">
+                <span class="bias-leg-name">Tramo 1 · Ceñida a B1</span>
+                ${data.biasT1 ? '<span class="bias-tag ' + data.biasT1.tagClass + '"' + (data.biasT1.isErrorComite ? ' title="Desvío excesivo del comité (≥ 10°)"' : '') + '>' + (data.biasT1.delta > 0 ? '+' : '') + data.biasT1.delta + '°</span>' : '<span class="bias-tag neutral">—</span>'}
+              </div>
+              <div class="bias-details">
+                ${data.biasT1 ? 'Eje del recorrido a <strong>' + deg3(data.biasT1.brg) + '</strong> vs Viento <strong>' + deg3(data.meanTwd) + '</strong>.<br><div style="margin-top:3px">' + esc(data.biasT1.favText) + '</div>' : 'Balizas de salida o B1 no fijadas.'}
+              </div>
+            </div>
+
+            <!-- T4 -->
+            <div class="course-bias-item">
+              <div class="bias-leg-head">
+                <span class="bias-leg-name">Tramo 4 · Ceñida a Llegada</span>
+                ${data.biasT4 ? '<span class="bias-tag ' + data.biasT4.tagClass + '"' + (data.biasT4.isErrorComite ? ' title="Desvío excesivo del comité (≥ 10°)"' : '') + '>' + (data.biasT4.delta > 0 ? '+' : '') + data.biasT4.delta + '°</span>' : '<span class="bias-tag neutral">—</span>'}
+              </div>
+              <div class="bias-details">
+                ${data.biasT4 ? 'Eje a <strong>' + deg3(data.biasT4.brg) + '</strong> vs Viento <strong>' + deg3(data.meanTwd) + '</strong>.<br><div style="margin-top:3px">' + esc(data.biasT4.favText) + '</div>' : 'Balizas de llegada no fijadas.'}
+              </div>
+            </div>
+
+            <!-- T3 -->
+            <div class="course-bias-item" style="grid-column:1/-1">
+              <div class="bias-leg-head">
+                <span class="bias-leg-name">Tramo 3 · Popa a Puerta 3 (Eje de Sotavento)</span>
+                ${data.biasT3 ? (data.biasT3.isErrorComite ? '<span class="bias-tag warning" style="margin-right:6px" title="Desvío excesivo del comité (≥ 10°)">' + (data.biasT3.delta > 0 ? '+' : '') + data.biasT3.delta + '°</span>' : '') + '<span class="bias-tag ' + data.biasT3.tagClass + '">' + esc(data.biasT3.tacticTag) + '</span>' : '<span class="bias-tag neutral">—</span>'}
+              </div>
+              <div class="bias-details">
+                ${data.biasT3 ? 'Eje de popa a <strong>' + deg3(data.biasT3.brg) + '</strong> vs Popa teórica <strong>' + deg3((data.meanTwd+180)%360) + '</strong> (' + (data.biasT3.delta > 0 ? '+' : '') + data.biasT3.delta + '° desvío).<br><div style="margin-top:3px">' + data.biasT3.tacticDesc + '</div>' : 'Puerta 3 no definida.'}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloque 3: Diagnóstico RYA Optimist -->
+        <div class="behavior-card">
+          <div class="behavior-card-title">
+            <span>🏆 Diagnóstico RYA Optimist (Olympic Trapezoid / IODA)</span>
+            <span style="font-size:10.5px;color:var(--muted);text-transform:none;font-weight:400">Target 45 min · Baremo ${esc(data.pace.band)}</span>
+          </div>
+          <div class="rya-diagnostics-box">
+            <div class="rya-card">
+              <div>
+                <span class="rya-badge ${data.courseStatusClass}">${data.courseStatusBadge}</span>
+                <div class="rya-desc">${esc(data.courseStatusText)}</div>
+              </div>
+              <div class="rya-sub">
+                Distancia fondeada: <strong>${fmt2(data.totalMiles)} NM</strong> (${fmt2(data.upwindMiles)} NM ceñida, ${fmt2(data.runMiles)} NM popa${data.reachMiles > 0 ? ', ' + fmt2(data.reachMiles) + ' NM través' : ''}) · Tiempo teórico RYA: <strong>${fmt1(data.ryaTargetMin)} min</strong>
+              </div>
+            </div>
+            <div class="rya-card">
+              <div>
+                <span class="rya-badge ${data.fleetStatusClass}">${data.fleetStatusBadge}</span>
+                <div class="rya-desc">${esc(data.fleetStatusText)}</div>
+              </div>
+              <div class="rya-sub">
+                Tiempo ganador / cabeza: <strong>${fmt1(data.actualWinnerMin)} min</strong> (Target RYA: ${fmt1(data.ryaTargetMin)} min · Límites 42.75 - 47.25 min)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const btnHow = document.getElementById('btnHowWindCalculated');
+  const modalHow = document.getElementById('raceBehaviorHelpModal');
+  if(btnHow && modalHow){
+    btnHow.onclick = () => { modalHow.hidden = false; };
+  }
+
+  const rangeSel = document.getElementById('selWindRoseRange');
+  if(rangeSel){
+    rangeSel.addEventListener('change', (e) => {
+      currentWindRoseRange = e.target.value;
+      renderRaceBehaviorView(v2Rows, twdCoach, currentKnots, currentWindRoseRange);
+    });
+  }
+}
+
 /**
  * Renderiza la vista principal de Análisis V2.
  */
@@ -4602,6 +6273,8 @@ function renderAnalysisV2View(){
     if(tableWrap) tableWrap.hidden = true;
     if(kpisEl) kpisEl.innerHTML = '';
     if(gridEl) gridEl.innerHTML = '';
+    const raceBehaviorEl = document.getElementById('v2RaceBehavior');
+    if(raceBehaviorEl){ raceBehaviorEl.innerHTML = ''; raceBehaviorEl.hidden = true; }
     return;
   }
 
@@ -4801,6 +6474,9 @@ function renderAnalysisV2View(){
       `;
     }).join('');
   }
+
+  // 4.5. Renderizar Análisis de Comportamiento de Regata (Rosa del Tramo, Eje, Flota y RYA)
+  renderRaceBehaviorView(v2RowsData, twd, currentKnots);
 
   // 5. Renderizar Tarjetas Multi-Barco (Grid con buscador)
   if(gridEl){
@@ -7030,7 +8706,287 @@ function seg(id,opts,key,lab){
 function syncSeg(key){const s=segs[key];[...s.el.children].forEach((c,k)=>c.setAttribute('aria-pressed',String(s.opts[k]===state[key])));}
 seg('speeds',[1,5,30,60,120],'speed',v=>v+'×');
 seg('trails',[60,300,'leg',Infinity],'trail',v=>v==='leg'?'Tramo':(v===Infinity?'Toda':(v/60)+' min'));
-document.getElementById('labels').addEventListener('change',e=>state.labels=e.target.checked);
+document.getElementById('labels').addEventListener('change',e=>{
+  state.labels=e.target.checked;
+  const fsChk = document.getElementById('fsLabelsCheck');
+  if(fsChk) fsChk.checked = state.labels;
+});
+
+/* ========================================================
+   CONTROLADOR PANTALLA COMPLETA Y DESPLEGABLE ESTILO YOUTUBE
+   ======================================================== */
+let ytIdleTimer = null;
+let isHoveringTimeline = false;
+
+function updateFsSettingsBadge(){
+  const badge = document.getElementById('fsActiveBadge');
+  if(badge){
+    const spd = (state.speed != null ? state.speed : 5) + '×';
+    let trl = 'Toda';
+    if(state.trail === 60) trl = '1 min';
+    else if(state.trail === 300) trl = '5 min';
+    else if(state.trail === 'leg') trl = 'Tramo';
+    else if(state.trail === Infinity) trl = 'Toda';
+    badge.textContent = `${spd} · ${trl}`;
+  }
+
+  // Sincronizar botones activos en el desplegable
+  const speedGrid = document.getElementById('fsSpeedGrid');
+  if(speedGrid){
+    [...speedGrid.children].forEach(btn => {
+      btn.classList.toggle('active', String(btn.dataset.v) === String(state.speed));
+    });
+  }
+  const trailGrid = document.getElementById('fsTrailGrid');
+  if(trailGrid){
+    [...trailGrid.children].forEach(btn => {
+      const v = btn.dataset.v;
+      const match = (v === 'leg' && state.trail === 'leg') ||
+                    (v === 'Infinity' && state.trail === Infinity) ||
+                    (Number(v) === state.trail);
+      btn.classList.toggle('active', match);
+    });
+  }
+
+  // Sincronizar etiqueta de orientación
+  const orientTxt = document.getElementById('fsOrientationTxt');
+  if(orientTxt){
+    orientTxt.textContent = state.orientation === 'wind' ? 'Viento Arriba' : 'Norte Arriba';
+  }
+
+  // Sincronizar checkbox de velas
+  const fsChk = document.getElementById('fsLabelsCheck');
+  if(fsChk && state.labels !== undefined){
+    fsChk.checked = state.labels;
+  }
+
+  // Sincronizar píldora de regata
+  const pillName = document.getElementById('fsRacePillName');
+  if(pillName && typeof D !== 'undefined' && D){
+    const rName = (D.name || 'Regata Optimist') + (D.N ? ` · ${D.N} barcos` : '');
+    pillName.textContent = rName;
+  }
+}
+
+function resetYtIdleTimer(){
+  const appEl = document.getElementById('app') || document.querySelector('.app');
+  if(!appEl || !appEl.classList.contains('map-fullscreen-active')) return;
+
+  appEl.classList.remove('yt-idle');
+  clearTimeout(ytIdleTimer);
+
+  const menu = document.getElementById('fsDropdownMenu');
+  const isMenuOpen = menu && !menu.hidden;
+  if(isMenuOpen || scrubbing || isHoveringTimeline) return;
+
+  ytIdleTimer = setTimeout(() => {
+    if(appEl.classList.contains('map-fullscreen-active') && !isMenuOpen && !scrubbing && !isHoveringTimeline){
+      appEl.classList.add('yt-idle');
+    }
+  }, 3500);
+}
+
+function toggleMapFullscreen(force){
+  const appEl = document.getElementById('app') || document.querySelector('.app');
+  const isCurrentlyFs = document.body.classList.contains('map-fullscreen-active');
+  const targetState = (typeof force === 'boolean') ? force : !isCurrentlyFs;
+
+  if(targetState){
+    document.body.classList.add('map-fullscreen-active');
+    appEl.classList.add('map-fullscreen-active');
+
+    // Intentar solicitar pantalla completa nativa del navegador
+    const docEl = document.documentElement;
+    const req = docEl.requestFullscreen || docEl.webkitRequestFullscreen || docEl.mozRequestFullScreen || docEl.msRequestFullscreen;
+    if(req && !document.fullscreenElement && !document.webkitFullscreenElement){
+      req.call(docEl).catch(() => {});
+    }
+
+    // Actualizar icono y título del botón en el mapa
+    const mapFsBtn = document.getElementById('btnMapFullscreen');
+    if(mapFsBtn){
+      mapFsBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>';
+      mapFsBtn.title = 'Salir de pantalla completa (Esc o F)';
+      mapFsBtn.setAttribute('aria-label', 'Salir de pantalla completa');
+    }
+    updateFsSettingsBadge();
+    resetYtIdleTimer();
+  }else{
+    document.body.classList.remove('map-fullscreen-active');
+    appEl.classList.remove('map-fullscreen-active');
+    appEl.classList.remove('yt-idle');
+    clearTimeout(ytIdleTimer);
+
+    // Cerrar desplegable si estaba abierto
+    const menu = document.getElementById('fsDropdownMenu');
+    if(menu) menu.hidden = true;
+    const trigger = document.getElementById('fsDropdownTrigger');
+    if(trigger) trigger.setAttribute('aria-expanded', 'false');
+
+    // Salir de pantalla completa nativa del navegador
+    const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+    if(exit && (document.fullscreenElement || document.webkitFullscreenElement)){
+      document.exitFullscreen().catch(() => {});
+    }
+
+    // Restaurar icono y título del botón en el mapa
+    const mapFsBtn = document.getElementById('btnMapFullscreen');
+    if(mapFsBtn){
+      mapFsBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>';
+      mapFsBtn.title = 'Modo Pantalla Completa (F) · Vista cinematográfica del mapa';
+      mapFsBtn.setAttribute('aria-label', 'Pantalla completa');
+    }
+  }
+
+  // Recalcular dimensiones y canvas
+  setTimeout(() => {
+    if(typeof fit === 'function') fit();
+    if(typeof renderTicks === 'function') renderTicks();
+    if(typeof updateFsSettingsBadge === 'function') updateFsSettingsBadge();
+  }, 60);
+}
+
+// Botones para activar/desactivar pantalla completa
+const btnMapFs = document.getElementById('btnMapFullscreen');
+if(btnMapFs) btnMapFs.addEventListener('click', () => toggleMapFullscreen());
+
+const btnTlFs = document.getElementById('btnTimelineFullscreen');
+if(btnTlFs) btnTlFs.addEventListener('click', () => toggleMapFullscreen(true));
+
+const fsExitBtn = document.getElementById('fsExitBtn');
+if(fsExitBtn) fsExitBtn.addEventListener('click', () => toggleMapFullscreen(false));
+
+// Desplegable de velocidad y tramos
+const fsDropdownTrigger = document.getElementById('fsDropdownTrigger');
+const fsDropdownMenu = document.getElementById('fsDropdownMenu');
+
+if(fsDropdownTrigger && fsDropdownMenu){
+  fsDropdownTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const willOpen = fsDropdownMenu.hidden;
+    fsDropdownMenu.hidden = !willOpen;
+    fsDropdownTrigger.setAttribute('aria-expanded', String(willOpen));
+    if(willOpen) updateFsSettingsBadge();
+    resetYtIdleTimer();
+  });
+}
+
+// Clic fuera para cerrar desplegable
+document.addEventListener('click', (e) => {
+  const wrap = document.getElementById('fsDropdownWrap');
+  if(wrap && fsDropdownMenu && !fsDropdownMenu.hidden){
+    if(!wrap.contains(e.target)){
+      fsDropdownMenu.hidden = true;
+      if(fsDropdownTrigger) fsDropdownTrigger.setAttribute('aria-expanded', 'false');
+      resetYtIdleTimer();
+    }
+  }
+});
+
+// Selección de velocidad en el desplegable
+const fsSpeedGrid = document.getElementById('fsSpeedGrid');
+if(fsSpeedGrid){
+  fsSpeedGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.fs-opt-btn');
+    if(!btn) return;
+    const v = Number(btn.dataset.v);
+    state.speed = v;
+    if(typeof syncSeg === 'function') syncSeg('speed');
+    updateFsSettingsBadge();
+    resetYtIdleTimer();
+  });
+}
+
+// Selección de estela/tramos en el desplegable
+const fsTrailGrid = document.getElementById('fsTrailGrid');
+if(fsTrailGrid){
+  fsTrailGrid.addEventListener('click', (e) => {
+    const btn = e.target.closest('.fs-opt-btn');
+    if(!btn) return;
+    const v = btn.dataset.v;
+    state.trail = (v === 'leg') ? 'leg' : (v === 'Infinity' ? Infinity : Number(v));
+    if(typeof syncSeg === 'function') syncSeg('trail');
+    updateFsSettingsBadge();
+    resetYtIdleTimer();
+  });
+}
+
+// Checkbox números de vela en desplegable
+const fsLabelsCheck = document.getElementById('fsLabelsCheck');
+if(fsLabelsCheck){
+  fsLabelsCheck.addEventListener('change', (e) => {
+    state.labels = e.target.checked;
+    const mainChk = document.getElementById('labels');
+    if(mainChk) mainChk.checked = state.labels;
+    resetYtIdleTimer();
+  });
+}
+
+// Orientación en desplegable
+const fsOrientationBtn = document.getElementById('fsOrientationBtn');
+if(fsOrientationBtn){
+  fsOrientationBtn.addEventListener('click', () => {
+    const mainOrientBtn = document.getElementById('btnOrientation');
+    if(mainOrientBtn) mainOrientBtn.click();
+    updateFsSettingsBadge();
+    resetYtIdleTimer();
+  });
+}
+
+// Sincronizar hover en la barra para que no se oculte mientras interactúa
+const tlBarEl = document.getElementById('timelineBar');
+if(tlBarEl){
+  tlBarEl.addEventListener('mouseenter', () => { isHoveringTimeline = true; resetYtIdleTimer(); });
+  tlBarEl.addEventListener('mouseleave', () => { isHoveringTimeline = false; resetYtIdleTimer(); });
+}
+
+// Eventos de ratón y teclado para el auto-hide de YouTube
+window.addEventListener('mousemove', resetYtIdleTimer);
+window.addEventListener('touchstart', resetYtIdleTimer);
+window.addEventListener('keydown', (e) => {
+  resetYtIdleTimer();
+
+  // Ignorar si el usuario está escribiendo en un input o textarea
+  const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+  if(tag === 'input' || tag === 'textarea' || tag === 'select' || (e.target && e.target.isContentEditable)){
+    if(e.key === 'Escape' && document.body.classList.contains('map-fullscreen-active')){
+      e.target.blur();
+    }
+    return;
+  }
+
+  if(e.key === 'Escape'){
+    if(fsDropdownMenu && !fsDropdownMenu.hidden){
+      fsDropdownMenu.hidden = true;
+      if(fsDropdownTrigger) fsDropdownTrigger.setAttribute('aria-expanded', 'false');
+    }else if(document.body.classList.contains('map-fullscreen-active')){
+      toggleMapFullscreen(false);
+    }
+  }else if(e.key === 'f' || e.key === 'F'){
+    if(!e.ctrlKey && !e.metaKey && !e.altKey){
+      e.preventDefault();
+      toggleMapFullscreen();
+    }
+  }else if(e.key === ' ' || e.key === 'Spacebar'){
+    // Tecla espacio para reproducir / pausar como YouTube
+    e.preventDefault();
+    if(playBtn) playBtn.click();
+  }
+});
+
+// Listener del evento nativo del navegador para pantalla completa
+document.addEventListener('fullscreenchange', () => {
+  const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  if(!isFs && document.body.classList.contains('map-fullscreen-active')){
+    toggleMapFullscreen(false);
+  }
+});
+document.addEventListener('webkitfullscreenchange', () => {
+  const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  if(!isFs && document.body.classList.contains('map-fullscreen-active')){
+    toggleMapFullscreen(false);
+  }
+});
 
 function renderTicks(){
   const el=document.getElementById('ticks');el.innerHTML='';const add=(t,l,cls)=>{const d=document.createElement('span');d.className='tick'+(cls?' '+cls:'');d.style.left=(t/(D.T-1)*100)+'%';d.textContent=l;el.appendChild(d);};
@@ -7346,6 +9302,12 @@ function clearSession(){
     }
     D=null;lastLoad=null;
     document.querySelector('.app').classList.add('is-empty');
+    const titleEl = document.getElementById('title');
+    if(titleEl) titleEl.textContent = 'Visor y Analizador de Regatas';
+    const metaEl = document.getElementById('meta');
+    if(metaEl) metaEl.textContent = 'Abre una regata guardada de la nube o carga archivos GPX para analizar la sesión.';
+    const eyebrowEl = document.getElementById('eyebrow');
+    if(eyebrowEl) eyebrowEl.textContent = 'Equipo de Regatas RCNGC · Optimist';
     showMsg([]);
     toggleOrientation('north');
     state.activeTool=null;
@@ -7359,8 +9321,11 @@ function clearSession(){
     fileIn.value='';
     switchMainView('track');
     renderAdvancedMetrics();
+    loadHomeRecentRaces();
   }
 }
+
+
 
 async function initSession(){
   const urlParams = new URLSearchParams(window.location.search);
@@ -7407,6 +9372,9 @@ async function initSession(){
       }
     }catch(err){console.warn('Error restaurando sesión:',err);}
   }
+  if(!D){
+    loadHomeRecentRaces();
+  }
 }
 
 const newSessionBtn=document.getElementById('newSessionBtn');
@@ -7415,6 +9383,13 @@ if(newSessionBtn)newSessionBtn.addEventListener('click',clearSession);
 const helpModal=document.getElementById('helpModal'),btnHelp=document.getElementById('btnHelp'),btnCloseHelp=document.getElementById('btnCloseHelp');
 if(btnHelp&&helpModal)btnHelp.addEventListener('click',()=>{helpModal.hidden=false;});
 if(btnCloseHelp&&helpModal)btnCloseHelp.addEventListener('click',()=>{helpModal.hidden=true;});
+const raceBehaviorHelpModal=document.getElementById('raceBehaviorHelpModal');
+const btnCloseRaceBehaviorHelp=document.getElementById('btnCloseRaceBehaviorHelp');
+const btnOkRaceBehaviorHelp=document.getElementById('btnOkRaceBehaviorHelp');
+if(btnCloseRaceBehaviorHelp&&raceBehaviorHelpModal)btnCloseRaceBehaviorHelp.addEventListener('click',()=>{raceBehaviorHelpModal.hidden=true;});
+if(btnOkRaceBehaviorHelp&&raceBehaviorHelpModal)btnOkRaceBehaviorHelp.addEventListener('click',()=>{raceBehaviorHelpModal.hidden=true;});
+if(raceBehaviorHelpModal)raceBehaviorHelpModal.addEventListener('click',e=>{if(e.target===raceBehaviorHelpModal)raceBehaviorHelpModal.hidden=true;});
+
 if(helpModal)helpModal.addEventListener('click',e=>{if(e.target===helpModal)helpModal.hidden=true;});
 
 const polarModal=document.getElementById('polarModal'),btnShowPolar=document.getElementById('btnShowPolarModal'),btnClosePolar=document.getElementById('btnClosePolar');
@@ -7738,7 +9713,7 @@ function switchCloudTab(tabName, optSail = null){
     });
     return;
   }
-  const tabs = ['List', 'Stats', 'Save', 'Config'];
+  const tabs = ['List', 'Stats', 'Lines', 'Save', 'Config'];
   tabs.forEach(t => {
     const btn = document.getElementById('tabCloud' + t);
     const sec = document.getElementById('cloudSection' + t);
@@ -7755,6 +9730,8 @@ function switchCloudTab(tabName, optSail = null){
     populateCloudConfigInputs();
   } else if(tabName === 'stats'){
     renderBigDataStatsView(optSail);
+  } else if(tabName === 'lines'){
+    renderCloudLinesList();
   }
 }
 
@@ -8192,6 +10169,102 @@ async function renderCloudList(){
     `;
     const btnGo = document.getElementById('btnGoToConfig');
     if(btnGo) btnGo.addEventListener('click', () => switchCloudTab('config'));
+  }
+}
+
+
+let homeRecentRacesLoading = false;
+async function loadHomeRecentRaces(){
+  const container = document.getElementById('homeRecentRacesList');
+  if(!container) return;
+  if(homeRecentRacesLoading) return;
+  homeRecentRacesLoading = true;
+
+  container.innerHTML = `
+    <div style="text-align:center;padding:16px 10px;color:var(--dim);font-size:12px;display:flex;align-items:center;justify-content:center;gap:8px">
+      <span style="font-size:15px">⏳</span> Conectando con Turso SQLite...
+    </div>
+  `;
+
+  try {
+    let rows;
+    try {
+      rows = await executeTurso(
+        "SELECT id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, categoria, tipo_manga FROM regatas_club ORDER BY creado_en DESC LIMIT 4;"
+      );
+    } catch(err1) {
+      rows = await executeTurso(
+        "SELECT id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos FROM regatas_club ORDER BY creado_en DESC LIMIT 4;"
+      );
+    }
+
+    if(!rows || !rows.length){
+      container.innerHTML = `
+        <div style="text-align:center;padding:14px 10px;color:var(--dim);font-size:12px;background:var(--sub);border:1px dashed var(--line);border-radius:8px">
+          No hay regatas guardadas todavía en la nube central.<br>
+          <span style="font-size:11px">¡Sube archivos GPX a la derecha y pulsa «Guardar en la nube»!</span>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = rows.map(r => {
+      const cat = r.categoria || 'Grupo A Optimist';
+      let catClass = 'grupo-a';
+      if (/Grupo B|Equipo B/i.test(cat)) catClass = 'grupo-b';
+      else if (/Grupo C|Escuela/i.test(cat)) catClass = 'grupo-c';
+      else if (/Vela ligera|Trofeo|Oficial/i.test(cat)) catClass = 'vela-ligera';
+      else if (/General/i.test(cat)) catClass = 'general';
+
+      const tipo = r.tipo_manga || 'Entrenamiento';
+      let tipoIcon = '🎯';
+      if (/Regata/i.test(tipo)) tipoIcon = '🏁';
+      else if (/Análisis|Analisis/i.test(tipo)) tipoIcon = '📊';
+
+      const vientoTxt = (r.viento_kts != null && r.viento_kts > 0)
+        ? `${r.viento_dir != null ? Math.round(r.viento_dir) + '° · ' : ''}${r.viento_kts} kn` 
+        : (r.viento_dir != null ? `${Math.round(r.viento_dir)}°` : '');
+
+      return `
+        <div class="home-race-card">
+          <div style="min-width:0;flex:1">
+            <div style="font-weight:700;font-size:13px;color:var(--ink);display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+              <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px" title="${esc(r.titulo)}">${esc(r.titulo)}</span>
+              <span class="badge-cat ${catClass}" style="font-size:9.5px;padding:1px 5px">${esc(cat)}</span>
+            </div>
+            <div style="font-size:11px;color:var(--dim);margin-top:2px;display:flex;gap:7px;flex-wrap:wrap;align-items:center">
+              <span>📅 ${esc(r.fecha_regata || '-')}</span>
+              <span style="font-weight:600;color:var(--ink)">⛵ ${r.num_barcos || 0} barcos</span>
+              ${vientoTxt ? `<span>💨 ${esc(vientoTxt)}</span>` : ''}
+              <span style="opacity:0.85">${tipoIcon} ${esc(tipo)}</span>
+            </div>
+          </div>
+          <button class="btn primary btn-load-home-cloud" data-id="${esc(r.id)}" data-title="${esc(r.titulo)}" type="button" style="padding:4px 11px;font-size:11.5px;font-weight:600;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer" title="Cargar y visualizar esta regata en el mapa">
+            📥 Cargar
+          </button>
+        </div>
+      `;
+    }).join('');
+
+    container.querySelectorAll('.btn-load-home-cloud').forEach(btn => {
+      btn.addEventListener('click', () => {
+        loadCloudSession(btn.dataset.id, btn.dataset.title);
+      });
+    });
+  } catch(err) {
+    container.innerHTML = `
+      <div style="padding:12px;color:var(--dim);font-size:11.5px;background:var(--sub);border:1px dashed var(--line);border-radius:8px;text-align:center">
+        No se pudieron precargar las regatas recientes (${esc(err.message)}).<br>
+        <button class="btn" id="btnRetryHomeRecent" type="button" style="margin-top:6px;font-size:11.5px;padding:3px 10px">🔄 Reintentar conexión</button>
+      </div>
+    `;
+    const btnRetry = document.getElementById('btnRetryHomeRecent');
+    if(btnRetry) btnRetry.addEventListener('click', () => {
+      homeRecentRacesLoading = false;
+      loadHomeRecentRaces();
+    });
+  } finally {
+    homeRecentRacesLoading = false;
   }
 }
 
@@ -10256,7 +12329,7 @@ async function submitCloudSave(mode = 'auto'){
       viento_dir: twd,
       viento_kts: windKts,
       num_barcos: D.N,
-      autor,
+      autor: author,
       notas,
       categoria,
       tipo_manga: tipoManga,
@@ -10537,10 +12610,187 @@ if(btnShareCloudRegata){
 const btnCloudOpenBanner = document.getElementById('btnCloudOpenBanner');
 if(btnCloudOpenBanner) btnCloudOpenBanner.addEventListener('click', () => openCloudModal('list'));
 
+const btnHomeOpenCloudModal = document.getElementById('btnHomeOpenCloudModal');
+if(btnHomeOpenCloudModal) btnHomeOpenCloudModal.addEventListener('click', () => openCloudModal('list'));
+
+const btnHomeBigData = document.getElementById('btnHomeBigData');
+if(btnHomeBigData) btnHomeBigData.addEventListener('click', () => openCloudModal('stats'));
+
+const btnRefreshHomeRecent = document.getElementById('btnRefreshHomeRecent');
+if(btnRefreshHomeRecent) btnRefreshHomeRecent.addEventListener('click', () => {
+  homeRecentRacesLoading = false;
+  loadHomeRecentRaces();
+});
+
 const btnCloseCloud = document.getElementById('btnCloseCloud');
 const cloudModal = document.getElementById('cloudModal');
 if(btnCloseCloud && cloudModal) btnCloseCloud.addEventListener('click', () => { cloudModal.hidden = true; });
 if(cloudModal) cloudModal.addEventListener('click', e => { if(e.target === cloudModal) cloudModal.hidden = true; });
+
+
+async function renderCloudLinesList(){
+  const container = document.getElementById('cloudLinesListContainer');
+  if(!container) return;
+  container.innerHTML = '<div style="text-align:center;padding:30px;color:var(--dim)">Cargando líneas de salida desde Turso SQLite...</div>';
+
+  try {
+    const rows = await executeTurso(`
+      SELECT id, fecha, nombre, categoria, comite_lat, comite_lon, comite_prec, pin_lat, pin_lon, pin_prec,
+             viento_dir, longitud_m, sesgo_lado, sesgo_grados, baliza1_lat, baliza1_lon, baliza1_prec, creado_por, creado_en
+      FROM lineas_salida
+      ORDER BY creado_en DESC
+      LIMIT 30;
+    `);
+
+    if(!rows || !rows.length){
+      container.innerHTML = `
+        <div style="text-align:center;padding:40px 10px;background:var(--sub);border:1px dashed var(--line);border-radius:8px">
+          <div style="font-size:28px;margin-bottom:8px">🚩</div>
+          <div style="font-weight:700;color:var(--ink);margin-bottom:4px">No hay líneas de salida guardadas todavía</div>
+          <div style="font-size:12.5px;color:var(--dim);max-width:400px;margin:0 auto 12px auto">
+            Abre la app móvil en tu teléfono, fija el Comité y el Pin con el GPS en el agua y pulsa "Sincronizar con Turso".
+          </div>
+          <a href="gps-salidas/index.html" target="_blank" class="btn primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">
+            📲 Abrir App Móvil de Salidas GPS
+          </a>
+        </div>
+      `;
+      return;
+    }
+
+    let h = '';
+    rows.forEach(r => {
+      const d = r.creado_en ? new Date(r.creado_en).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : (r.fecha || '-');
+      const lenStr = r.longitud_m ? `${Math.round(r.longitud_m)} m (${Math.round(r.longitud_m / 2.3)} barcos)` : 'No calculada';
+      
+      let sesgoBadge = '';
+      if(r.sesgo_lado === 'cuadrada'){
+        sesgoBadge = '<span style="background:rgba(16,185,129,0.15);color:#059669;padding:3px 8px;border-radius:6px;font-size:11.5px;font-weight:700">⚖️ Línea Cuadrada</span>';
+      } else if(r.sesgo_lado === 'pin'){
+        sesgoBadge = `<span style="background:rgba(255,87,34,0.15);color:#d84315;padding:3px 8px;border-radius:6px;font-size:11.5px;font-weight:700">🚩 Pin Favorecido (+${r.sesgo_grados || 0}°)</span>`;
+      } else if(r.sesgo_lado === 'comite'){
+        sesgoBadge = `<span style="background:rgba(33,150,243,0.15);color:#1976d2;padding:3px 8px;border-radius:6px;font-size:11.5px;font-weight:700">⛵ Comité Favorecido (+${Math.abs(r.sesgo_grados || 0)}°)</span>`;
+      }
+
+      h += `
+        <div style="background:var(--sub);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="font-weight:800;font-size:15px;color:var(--ink)">${esc(r.nombre || 'Línea de salida')}</span>
+              <span class="badge-cat general" style="font-size:11px">${esc(r.categoria || 'Optimist')}</span>
+              ${sesgoBadge}
+            </div>
+            <div style="font-size:12px;color:var(--dim);font-family:var(--f-mono)">
+              📅 ${d}
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:8px;font-size:12px;margin:4px 0;background:var(--panel);padding:8px 12px;border-radius:6px;border:1px solid var(--line)">
+            <div><strong>⛵ Barco Comité:</strong> ${r.comite_lat != null ? `${r.comite_lat.toFixed(5)}, ${r.comite_lon.toFixed(5)}` : '-'}</div>
+            <div><strong>🚩 Boya de Pin:</strong> ${r.pin_lat != null ? `${r.pin_lat.toFixed(5)}, ${r.pin_lon.toFixed(5)}` : '-'}</div>
+            <div><strong>📏 Longitud:</strong> ${lenStr}</div>
+            <div><strong>💨 Viento marcado:</strong> ${r.viento_dir != null ? Math.round(r.viento_dir) + '°' : '-'}</div>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px;flex-wrap:wrap;gap:8px">
+            <div style="font-size:11.5px;color:var(--dim)">
+              Por: <strong>${esc(r.creado_por || 'Entrenador')}</strong> ${r.baliza1_lat ? '· Incluye Baliza 1' : ''}
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn primary" data-apply-line="${esc(r.id)}" type="button" style="padding:6px 14px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:6px">
+                📍 Aplicar a la regata actual
+              </button>
+              ${isCoachModeActive() ? `<button class="btn" data-delete-line="${esc(r.id)}" type="button" style="padding:6px 10px;font-size:12px;color:#ef4444" title="Borrar de la base de datos">🗑️</button>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = h;
+
+    // Listeners para aplicar línea
+    container.querySelectorAll('[data-apply-line]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lineId = btn.getAttribute('data-apply-line');
+        const found = rows.find(x => x.id === lineId);
+        if(found) applyMobileStartLine(found);
+      });
+    });
+
+    // Listeners para borrar
+    container.querySelectorAll('[data-delete-line]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const lineId = btn.getAttribute('data-delete-line');
+        if(confirm('¿Seguro que deseas eliminar esta línea de salida de Turso?')){
+          try {
+            await executeTurso('DELETE FROM lineas_salida WHERE id = ?;', [lineId]);
+            showMsg([{ t: 'Línea de salida eliminada de Turso.', cls: 'ok' }]);
+            renderCloudLinesList();
+          } catch(err){
+            alert('Error eliminando: ' + err.message);
+          }
+        }
+      });
+    });
+
+  } catch(err){
+    console.error('Error cargando líneas de Turso:', err);
+    container.innerHTML = `<div style="text-align:center;padding:30px;color:#ef4444">Error conectando con Turso: ${err.message}</div>`;
+  }
+}
+
+function applyMobileStartLine(line){
+  if(!D || !D.origin){
+    alert('Primero debes cargar los archivos GPX o abrir una regata de la nube para poder situar la línea de salida sobre el mapa.');
+    return;
+  }
+
+  if(line.comite_lat == null || line.comite_lon == null || line.pin_lat == null || line.pin_lon == null){
+    alert('Esta línea no tiene coordenadas completas de Comité y Pin.');
+    return;
+  }
+
+  const kx = 111320 * Math.cos(D.origin.lat * D2R);
+  const ky = 110574;
+
+  const rcX = (line.comite_lon - D.origin.lon) * kx;
+  const rcY = (line.comite_lat - D.origin.lat) * ky;
+  const pinX = (line.pin_lon - D.origin.lon) * kx;
+  const pinY = (line.pin_lat - D.origin.lat) * ky;
+
+  const newLine = {
+    pin: { x: pinX, y: pinY, lat: line.pin_lat, lon: line.pin_lon },
+    rc: { x: rcX, y: rcY, lat: line.comite_lat, lon: line.comite_lon }
+  };
+
+  setActiveStartLine(newLine);
+
+  // Si también se marcó Baliza 1
+  if(line.baliza1_lat != null && line.baliza1_lon != null){
+    const b1X = (line.baliza1_lon - D.origin.lon) * kx;
+    const b1Y = (line.baliza1_lat - D.origin.lat) * ky;
+    if(!D.course) D.course = { marks: [], legs: [] };
+    if(!D.course.ioda) D.course.ioda = {};
+    D.course.ioda.b1 = { x: b1X, y: b1Y, lat: line.baliza1_lat, lon: line.baliza1_lon };
+  }
+
+  // Si se registró dirección del viento
+  if(line.viento_dir != null){
+    D.windRef = line.viento_dir;
+  }
+
+  boatKinematicsCache.clear();
+  courseChanged();
+  saveCurrentSession();
+  renderCoursePane();
+  drawMap();
+
+  const modal = document.getElementById('cloudModal');
+  if(modal) modal.hidden = true;
+
+  showMsg([{ t: `✅ ¡Línea de salida "${line.nombre || 'Manga'}" aplicada con éxito desde el móvil! (Comité y Pin situados en GPS real).`, cls: 'ok' }]);
+}
 
 const tabCloudList = document.getElementById('tabCloudList');
 if(tabCloudList) tabCloudList.addEventListener('click', () => { switchCloudTab('list'); renderCloudList(); });
@@ -10553,6 +12803,10 @@ if(tabCloudSave) tabCloudSave.addEventListener('click', () => switchCloudTab('sa
 
 const tabCloudConfig = document.getElementById('tabCloudConfig');
 if(tabCloudConfig) tabCloudConfig.addEventListener('click', () => switchCloudTab('config'));
+const tabCloudLines = document.getElementById('tabCloudLines');
+if(tabCloudLines) tabCloudLines.addEventListener('click', () => switchCloudTab('lines'));
+const btnRefreshCloudLines = document.getElementById('btnRefreshCloudLines');
+if(btnRefreshCloudLines) btnRefreshCloudLines.addEventListener('click', () => renderCloudLinesList());
 
 const btnRefreshCloudList = document.getElementById('btnRefreshCloudList');
 if(btnRefreshCloudList) btnRefreshCloudList.addEventListener('click', renderCloudList);

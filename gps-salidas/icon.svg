@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a2533"/>
+      <stop offset="100%" stop-color="#031118"/>
+    </linearGradient>
+    <linearGradient id="cyanGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#00a8cc"/>
+    </linearGradient>
+    <linearGradient id="orangeGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff9100"/>
+      <stop offset="100%" stop-color="#ff3d00"/>
+    </linearGradient>
+    <linearGradient id="goldGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffea00"/>
+      <stop offset="100%" stop-color="#ff9100"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background rounded squircle -->
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#bg)" stroke="#1a4556" stroke-width="4"/>
+
+  <!-- Compass / GPS Reticle Rings -->
+  <circle cx="256" cy="256" r="170" fill="none" stroke="rgba(0, 240, 255, 0.12)" stroke-width="3" stroke-dasharray="6 8"/>
+  <circle cx="256" cy="256" r="120" fill="none" stroke="rgba(0, 240, 255, 0.2)" stroke-width="2"/>
+  <circle cx="256" cy="256" r="50" fill="none" stroke="rgba(0, 240, 255, 0.35)" stroke-width="2"/>
+
+  <!-- Crosshairs -->
+  <line x1="256" y1="56" x2="256" y2="456" stroke="rgba(0, 240, 255, 0.18)" stroke-width="2" stroke-dasharray="4 6"/>
+  <line x1="56" y1="256" x2="456" y2="256" stroke="rgba(0, 240, 255, 0.18)" stroke-width="2" stroke-dasharray="4 6"/>
+
+  <!-- Starting Line Segment (PIN <-> COMITE) -->
+  <line x1="120" y1="270" x2="392" y2="242" stroke="#00f0ff" stroke-width="7" stroke-dasharray="14 10" filter="url(#glow)"/>
+
+  <!-- Wind Arrow from Top -->
+  <path d="M 256,92 L 256,190 M 244,172 L 256,194 L 268,172" stroke="#00f0ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <text x="256" y="82" fill="#00f0ff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="800" text-anchor="middle" letter-spacing="3">VIENTO</text>
+
+  <!-- PIN END (Boya Naranja / Babor) -->
+  <g transform="translate(120, 270)">
+    <!-- Buoy base / glow -->
+    <circle cx="0" cy="0" r="32" fill="url(#orangeGlow)" filter="url(#glow)"/>
+    <circle cx="0" cy="0" r="26" fill="#ff5722"/>
+    <circle cx="0" cy="0" r="10" fill="#ffffff"/>
+    <!-- Flag / pin mast -->
+    <path d="M 0,-4 L 0,-36 L 22,-22 L 0,-8" fill="#ff9100" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+    <text x="0" y="52" fill="#ffab91" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="800" text-anchor="middle" letter-spacing="1">PIN</text>
+  </g>
+
+  <!-- COMITE END (Barco Comité / Estribor) -->
+  <g transform="translate(392, 242)">
+    <!-- RC base / glow -->
+    <circle cx="0" cy="0" r="32" fill="url(#goldGlow)" filter="url(#glow)"/>
+    <circle cx="0" cy="0" r="26" fill="#1976d2"/>
+    <circle cx="0" cy="0" r="10" fill="#ffffff"/>
+    <!-- RC Flag -->
+    <path d="M 0,-4 L 0,-38 L 24,-24 L 0,-10" fill="#ffd600" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+    <text x="0" y="52" fill="#fff59d" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="800" text-anchor="middle" letter-spacing="1">COMITÉ</text>
+  </g>
+
+  <!-- Center GPS Target Indicator -->
+  <g transform="translate(256, 256)">
+    <circle cx="0" cy="0" r="16" fill="#00f0ff" filter="url(#glow)"/>
+    <circle cx="0" cy="0" r="7" fill="#0a2533"/>
+  </g>
+
+  <!-- Bottom Badge: RCNGC SALIDAS GPS -->
+  <rect x="100" y="410" width="312" height="42" rx="21" fill="rgba(0, 240, 255, 0.12)" stroke="#00f0ff" stroke-width="1.5"/>
+  <text x="256" y="437" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="17" font-weight="800" text-anchor="middle" letter-spacing="3">RCNGC · SALIDAS GPS</text>
+</svg>

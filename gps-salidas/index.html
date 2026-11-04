@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>RCNGC Salidas · GPS Campo de Regatas</title>
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0a2533">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RCNGC Salidas">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="icon" type="image/png" href="icon-192.png">
+
+  <style>
+    :root {
+      --bg: #07161c;
+      --surface: #0e242d;
+      --surface-card: #132e3a;
+      --surface-border: #1d4354;
+      --text: #f0f7f9;
+      --text-dim: #8da4b0;
+      --cyan: #00f0ff;
+      --cyan-glow: rgba(0, 240, 255, 0.25);
+      --rc-blue: #1976d2;
+      --rc-gold: #ffc107;
+      --pin-orange: #ff5722;
+      --pin-orange-glow: rgba(255, 87, 34, 0.25);
+      --green: #00e676;
+      --green-glow: rgba(0, 230, 118, 0.25);
+      --red: #ff3d00;
+      --radius: 14px;
+      --f-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --f-mono: 'SF Mono', Consolas, Monaco, monospace;
+    }
+
+    /* MODO SOL / ALTO CONTRASTE PARA NAVEGAR CON SOL FUERTE */
+    body.sun-mode {
+      --bg: #f4f7f9;
+      --surface: #ffffff;
+      --surface-card: #e5edf2;
+      --surface-border: #c0d3dc;
+      --text: #05141b;
+      --text-dim: #456270;
+      --cyan: #007799;
+      --cyan-glow: rgba(0, 119, 153, 0.2);
+      --rc-blue: #0d47a1;
+      --rc-gold: #ff8f00;
+      --pin-orange: #d84315;
+      --green: #1b5e20;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+    
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--f-sans);
+      font-size: 15px;
+      line-height: 1.4;
+      overflow-x: hidden;
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+
+    .app-container {
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 12px 14px 90px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 4px;
+      border-bottom: 1px solid var(--surface-border);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: #0a2533;
+      border: 1px solid var(--cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .brand-title {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: var(--text);
+    }
+    .brand-sub {
+      font-size: 11px;
+      color: var(--cyan);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-icon {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      color: var(--text);
+      border-radius: 9px;
+      padding: 6px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-icon:active { transform: scale(0.96); }
+
+    /* STATUS CHIPS */
+    .status-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .chip {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #888;
+      box-shadow: 0 0 6px rgba(136,136,136,0.5);
+    }
+    .dot.green { background: var(--green); box-shadow: 0 0 8px var(--green-glow); }
+    .dot.yellow { background: var(--rc-gold); box-shadow: 0 0 8px rgba(255,193,7,0.5); }
+    .dot.red { background: var(--red); box-shadow: 0 0 8px rgba(255,61,0,0.5); }
+    .dot.pulse { animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* CARD GENERAL */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* SESIÓN Y MANGA */
+    .session-card {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface-card) 100%);
+    }
+    .session-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .session-input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--surface-border);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 700;
+      padding: 9px 12px;
+      border-radius: 8px;
+      outline: none;
+    }
+    .session-input:focus { border-color: var(--cyan); }
+    .quick-mangas {
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      padding-top: 2px;
+    }
+    .btn-manga {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      color: var(--text-dim);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-manga.active {
+      background: var(--cyan);
+      color: #031118;
+      border-color: var(--cyan);
+    }
+
+    /* GPS EN VIVO */
+    .gps-card {
+      position: relative;
+      border-color: rgba(0, 240, 255, 0.3);
+    }
+    .gps-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .gps-val-box {
+      background: var(--bg);
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--surface-border);
+    }
+    .gps-lbl {
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+    .gps-num {
+      font-family: var(--f-mono);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* BOTONES GIGANTES DE MARCADO PARA EL AGUA */
+    .big-buttons-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-mark {
+      width: 100%;
+      min-height: 84px;
+      border-radius: var(--radius);
+      border: 2px solid;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 12px 16px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+      transition: all 0.15s ease;
+      text-align: left;
+    }
+    .btn-mark:active {
+      transform: scale(0.98);
+      filter: brightness(1.15);
+    }
+
+    /* BOTON COMITÉ */
+    .btn-mark.comite {
+      background: linear-gradient(135deg, #102d44 0%, #153e5e 100%);
+      border-color: #2196f3;
+      color: #ffffff;
+    }
+    body.sun-mode .btn-mark.comite {
+      background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+      border-color: #0d47a1;
+      color: #fff;
+    }
+    .btn-mark.comite .mark-badge {
+      background: #ffc107;
+      color: #000;
+    }
+
+    /* BOTON PIN */
+    .btn-mark.pin {
+      background: linear-gradient(135deg, #441a10 0%, #632515 100%);
+      border-color: #ff5722;
+      color: #ffffff;
+    }
+    body.sun-mode .btn-mark.pin {
+      background: linear-gradient(135deg, #e64a19 0%, #bf360c 100%);
+      border-color: #bf360c;
+      color: #fff;
+    }
+    .btn-mark.pin .mark-badge {
+      background: #ff5722;
+      color: #fff;
+    }
+
+    /* BOTON BALIZA 1 (BARLOVENTO) */
+    .btn-mark.b1 {
+      min-height: 58px;
+      background: linear-gradient(135deg, #133328 0%, #1c4b3c 100%);
+      border-color: var(--green);
+      color: #ffffff;
+    }
+    body.sun-mode .btn-mark.b1 {
+      background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+      border-color: #1b5e20;
+    }
+
+    .mark-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .mark-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mark-icon {
+      font-size: 26px;
+    }
+    .mark-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+    .mark-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .mark-sub {
+      font-size: 12px;
+      opacity: 0.85;
+      font-weight: 500;
+    }
+    .mark-saved-box {
+      margin-top: 8px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-family: var(--f-mono);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .mark-saved-coords {
+      color: var(--cyan);
+      font-weight: 700;
+    }
+
+    /* VIENTO */
+    .wind-card {
+      background: var(--surface);
+    }
+    .wind-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .wind-steppers {
+      display: flex;
+      gap: 4px;
+    }
+    .btn-step {
+      background: var(--bg);
+      border: 1px solid var(--surface-border);
+      color: var(--text);
+      font-weight: 700;
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-step:active { background: var(--surface-border); }
+    .wind-input-box {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg);
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 6px 10px;
+    }
+    .wind-input {
+      width: 55px;
+      background: transparent;
+      border: none;
+      color: var(--cyan);
+      font-family: var(--f-mono);
+      font-size: 18px;
+      font-weight: 800;
+      text-align: right;
+      outline: none;
+    }
+    .btn-compass {
+      background: linear-gradient(135deg, #1d4354 0%, #295e75 100%);
+      border: 1px solid var(--cyan);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* PANEL TÁCTICO DE SALIDA */
+    .tactics-card {
+      background: linear-gradient(135deg, #09202a 0%, #103240 100%);
+      border: 2px solid var(--cyan);
+      display: none; /* Se muestra al marcar Pin y Comité */
+    }
+    body.sun-mode .tactics-card {
+      background: #eef6f9;
+      border-color: #007799;
+    }
+    .tactics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .tactics-box {
+      background: rgba(0,0,0,0.3);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    body.sun-mode .tactics-box {
+      background: #fff;
+      border-color: #c0d3dc;
+    }
+    .tactics-lbl {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .tactics-val {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      margin-top: 2px;
+    }
+    body.sun-mode .tactics-val { color: #05141b; }
+
+    .bias-banner {
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .bias-banner.pin-fav {
+      background: rgba(255, 87, 34, 0.2);
+      border: 1px solid var(--pin-orange);
+      color: #ffab91;
+    }
+    body.sun-mode .bias-banner.pin-fav {
+      background: #fbe9e7;
+      color: #d84315;
+    }
+    .bias-banner.rc-fav {
+      background: rgba(33, 150, 243, 0.2);
+      border: 1px solid #2196f3;
+      color: #90caf9;
+    }
+    body.sun-mode .bias-banner.rc-fav {
+      background: #e3f2fd;
+      color: #0d47a1;
+    }
+    .bias-banner.square {
+      background: rgba(0, 230, 118, 0.2);
+      border: 1px solid var(--green);
+      color: #b9f6ca;
+    }
+    body.sun-mode .bias-banner.square {
+      background: #e8f5e9;
+      color: #1b5e20;
+    }
+
+    /* MINI CANVAS VISUAL */
+    #lineCanvas {
+      width: 100%;
+      height: 140px;
+      background: rgba(0, 10, 15, 0.5);
+      border-radius: 8px;
+      border: 1px solid rgba(0, 240, 255, 0.2);
+    }
+    body.sun-mode #lineCanvas {
+      background: #dde8ed;
+      border-color: #b0c5cf;
+    }
+
+    /* BOTON DE SINCRONIZACION CON LA NUBE TURSO */
+    .btn-sync-cloud {
+      background: linear-gradient(135deg, #00c853 0%, #009624 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(0, 200, 83, 0.35);
+      transition: transform 0.1s ease;
+    }
+    .btn-sync-cloud:active { transform: scale(0.98); }
+    .btn-sync-cloud:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* TOAST ALERTAS */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #0d272c;
+      color: #fff;
+      border: 1px solid var(--cyan);
+      padding: 12px 20px;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      font-size: 13.5px;
+      font-weight: 600;
+      z-index: 1000;
+      transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      max-width: 90%;
+      text-align: center;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: var(--green); background: #072a18; }
+    .toast.error { border-color: var(--red); background: #380d05; }
+
+    /* MODAL DE AJUSTES */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius);
+      padding: 18px;
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .modal-box h3 { font-size: 16px; font-weight: 800; color: var(--cyan); }
+    .modal-field label { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; }
+    .modal-field input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--surface-border);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-top: 4px;
+      font-family: var(--f-mono);
+      outline: none;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">⛵</div>
+      <div>
+        <div class="brand-title">RCNGC · Salidas GPS</div>
+        <div class="brand-sub">Equipo de Regatas</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon" id="btnSunMode" title="Alternar Modo Sol / Contraste">☀️ Sol</button>
+      <button class="btn-icon" id="btnSettings" title="Ajustes de Conexión Turso">⚙️</button>
+    </div>
+  </header>
+
+  <!-- CHIPS DE ESTADO (GPS + NUBE) -->
+  <div class="status-bar">
+    <div class="chip" id="chipGps">
+      <div class="dot red pulse" id="dotGps"></div>
+      <span id="textGps">Buscando satélites...</span>
+    </div>
+    <div class="chip" id="chipCloud">
+      <div class="dot green" id="dotCloud"></div>
+      <span id="textCloud">Turso Conectado</span>
+    </div>
+  </div>
+
+  <!-- TARJETA DE SESIÓN / MANGA -->
+  <div class="card session-card">
+    <div class="session-row">
+      <input type="text" class="session-input" id="sessionNameInput" value="Manga 1" placeholder="Nombre de la manga o sesión">
+      <select id="categorySelect" style="background:var(--bg);color:var(--text);border:1px solid var(--surface-border);padding:9px 10px;border-radius:8px;font-weight:700;outline:none;">
+        <option value="Optimist">Optimist</option>
+        <option value="ILCA 4">ILCA 4</option>
+        <option value="ILCA 6">ILCA 6</option>
+        <option value="420">420</option>
+        <option value="General">General</option>
+      </select>
+    </div>
+    <div class="quick-mangas">
+      <button class="btn-manga active" data-manga="Manga 1">Manga 1</button>
+      <button class="btn-manga" data-manga="Manga 2">Manga 2</button>
+      <button class="btn-manga" data-manga="Manga 3">Manga 3</button>
+      <button class="btn-manga" data-manga="Manga 4">Manga 4</button>
+      <button class="btn-manga" data-manga="Entreno">Entreno</button>
+    </div>
+  </div>
+
+  <!-- TARJETA GPS EN VIVO (POSICIÓN ACTUAL DE LA LANCHA) -->
+  <div class="card gps-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:12px;font-weight:700;text-transform:uppercase;color:var(--text-dim);letter-spacing:0.5px;">📍 Posición GPS de la Lancha</span>
+      <span id="gpsFixAge" style="font-size:11px;color:var(--text-dim);font-family:var(--f-mono);">Actualizando...</span>
+    </div>
+    <div class="gps-grid">
+      <div class="gps-val-box">
+        <div class="gps-lbl">Latitud</div>
+        <div class="gps-num" id="liveLat">--.------°</div>
+      </div>
+      <div class="gps-val-box">
+        <div class="gps-lbl">Longitud</div>
+        <div class="gps-num" id="liveLon">--.------°</div>
+      </div>
+      <div class="gps-val-box">
+        <div class="gps-lbl">Velocidad (SOG)</div>
+        <div class="gps-num" id="liveSpd">0.0 kn</div>
+      </div>
+      <div class="gps-val-box">
+        <div class="gps-lbl">Precisión GPS</div>
+        <div class="gps-num" id="liveAcc">±-- m</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTONES GIGANTES DE MARCADO EN EL AGUA -->
+  <div class="big-buttons-grid">
+    
+    <!-- BOTÓN COMITÉ -->
+    <button class="btn-mark comite" id="btnMarkComite">
+      <div class="mark-head">
+        <div class="mark-title-row">
+          <span class="mark-icon">⛵</span>
+          <span class="mark-title">MARCAR COMITÉ</span>
+        </div>
+        <span class="mark-badge">Estribor</span>
+      </div>
+      <div class="mark-sub">Pulsa cuando estés junto al Barco Comité</div>
+      <div class="mark-saved-box" id="boxSavedComite" style="display:none;">
+        <span>Fijado: <strong class="mark-saved-coords" id="coordsComite">--</strong></span>
+        <span id="timeComite" style="color:var(--text-dim);">--:--</span>
+      </div>
+    </button>
+
+    <!-- BOTÓN PIN -->
+    <button class="btn-mark pin" id="btnMarkPin">
+      <div class="mark-head">
+        <div class="mark-title-row">
+          <span class="mark-icon">🚩</span>
+          <span class="mark-title">MARCAR PIN</span>
+        </div>
+        <span class="mark-badge">Babor</span>
+      </div>
+      <div class="mark-sub">Pulsa cuando estés junto a la boya de salida</div>
+      <div class="mark-saved-box" id="boxSavedPin" style="display:none;">
+        <span>Fijado: <strong class="mark-saved-coords" id="coordsPin">--</strong></span>
+        <span id="timePin" style="color:var(--text-dim);">--:--</span>
+      </div>
+    </button>
+
+    <!-- BOTÓN BALIZA 1 (OPCIONAL) -->
+    <button class="btn-mark b1" id="btnMarkB1">
+      <div class="mark-head">
+        <div class="mark-title-row">
+          <span class="mark-icon">📍</span>
+          <span class="mark-title" style="font-size:16px;">MARCAR BALIZA 1 (Barlovento)</span>
+        </div>
+        <span class="mark-badge" style="background:var(--green);color:#031118;">Opcional</span>
+      </div>
+      <div class="mark-sub">Si fondeas o subes a barlovento</div>
+      <div class="mark-saved-box" id="boxSavedB1" style="display:none;">
+        <span>Fijado: <strong class="mark-saved-coords" id="coordsB1">--</strong></span>
+        <span id="timeB1" style="color:var(--text-dim);">--:--</span>
+      </div>
+    </button>
+
+  </div>
+
+  <!-- DIRECCIÓN DEL VIENTO -->
+  <div class="card wind-card">
+    <div class="wind-row">
+      <div>
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;color:var(--text-dim);">💨 Dirección del Viento</div>
+        <div style="font-size:11.5px;color:var(--text-dim);">¿De dónde sopla en grados?</div>
+      </div>
+      <div class="wind-row" style="gap:6px;">
+        <div class="wind-steppers">
+          <button class="btn-step" id="btnWindSub10">−10°</button>
+          <button class="btn-step" id="btnWindSub5">−5°</button>
+        </div>
+        <div class="wind-input-box">
+          <input type="number" class="wind-input" id="windInput" value="45" min="0" max="360" step="5">
+          <span style="font-weight:800;color:var(--cyan);">°</span>
+        </div>
+        <div class="wind-steppers">
+          <button class="btn-step" id="btnWindAdd5">+5°</button>
+          <button class="btn-step" id="btnWindAdd10">+10°</button>
+        </div>
+      </div>
+    </div>
+    <button class="btn-compass" id="btnCompassWind">
+      <span>🧭</span> Apuntar Móvil de Cara al Viento (Brújula)
+    </button>
+  </div>
+
+  <!-- PANEL TÁCTICO DE SALIDA (AUTO-CALCULADO AL INSTANTE) -->
+  <div class="card tactics-card" id="tacticsCard">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:12px;font-weight:800;text-transform:uppercase;color:var(--cyan);letter-spacing:0.5px;">📐 Análisis de la Línea de Salida</span>
+      <span style="font-size:11px;color:var(--text-dim);font-weight:700;">Calculado en vivo</span>
+    </div>
+
+    <!-- BANNER DE FAVORECIDO (SESGO) -->
+    <div class="bias-banner" id="biasBanner">
+      <span id="biasIcon" style="font-size:22px;">⚖️</span>
+      <div style="flex:1;">
+        <div id="biasTitle" style="font-size:15px;font-weight:800;">Línea Cuadrada</div>
+        <div id="biasSub" style="font-size:11.5px;font-weight:600;opacity:0.9;">Sin ventaja para ningún extremo</div>
+      </div>
+    </div>
+
+    <div class="tactics-grid">
+      <div class="tactics-box">
+        <div class="tactics-lbl">Longitud de Línea</div>
+        <div class="tactics-val" id="lineLengthVal">-- m</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:2px;" id="lineEslorasVal">~-- barcos</div>
+      </div>
+      <div class="tactics-box">
+        <div class="tactics-lbl">Eje de la Línea</div>
+        <div class="tactics-val" id="lineBearingVal">---°</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">Comité ↔ Pin</div>
+      </div>
+    </div>
+
+    <!-- MINI CANVAS VISUAL DE SALIDA -->
+    <canvas id="lineCanvas" width="400" height="140"></canvas>
+  </div>
+
+  <!-- BOTÓN DE SINCRONIZACIÓN CON TURSO -->
+  <button class="btn-sync-cloud" id="btnSyncCloud">
+    <span>☁️</span>
+    <span id="btnSyncText">SINCRONIZAR CON LA NUBE TURSO</span>
+  </button>
+
+  <div style="text-align:center;font-size:11.5px;color:var(--text-dim);line-height:1.5;">
+    Al sincronizar, las marcas GPS quedan disponibles al instante en el programa de tracking del club.
+  </div>
+
+</div>
+
+<!-- TOAST NOTIFICACIÓN -->
+<div class="toast" id="toastMsg">Mensaje informativo</div>
+
+<!-- MODAL DE AJUSTES TURSO -->
+<div class="modal-backdrop" id="settingsModal">
+  <div class="modal-box">
+    <h3>⚙️ Conexión con Turso (SQLite)</h3>
+    <div class="modal-field">
+      <label>URL Base de Datos Turso</label>
+      <input type="text" id="cfgTursoUrl">
+    </div>
+    <div class="modal-field">
+      <label>Token de Acceso</label>
+      <input type="password" id="cfgTursoToken">
+    </div>
+    <div class="modal-field">
+      <label>PIN de Entrenador</label>
+      <input type="password" id="cfgCoachPin">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-icon" id="btnCancelSettings">Cancelar</button>
+      <button class="btn-icon" id="btnSaveSettings" style="background:var(--cyan);color:#031118;font-weight:800;">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// CONFIGURACIÓN CENTRAL TURSO RCNGC
+const TURSO_CONFIG = {
+  defaultUrl: 'https://rcngc-regatas-eltibugc.aws-eu-west-1.turso.io/v2/pipeline',
+  defaultToken: 'eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3OTMxMDg2MzgsImlkIjoiMDFhMTdkOTctMDQwMS03ZWNiLThjNDEtYmQ3MzBiNDcwZjRjIiwia2lkIjoibUphRWtuYjA4OHN0bkhUSWJXVXc3aGdETGYyd18yQTBqYnFCaC1CMjdZWSIsInJpZCI6ImIxOTdlY2ZmLWE3MjctNDNiYi04NGU5LWY4MDNhNGJlYzg3NSJ9.cuknxZQCGhNDMW6kbXFMqoDB4NzWrgPUHwpozdey0FmoxyP13naoLyjJ9ez5PAZgJ8Kodos695lU6qAZXlEACg',
+  defaultPin: 'RCNGC2026'
+};
+
+// ESTADO DE LA APP
+const state = {
+  curLat: null,
+  curLon: null,
+  curAcc: null,
+  curSpd: null,
+  curHdg: null,
+  lastFixTime: null,
+  
+  comite: null,
+  pin: null,
+  b1: null,
+  windDir: 45,
+  
+  sessionName: 'Manga 1',
+  category: 'Optimist',
+  
+  isSunMode: false,
+  offlineQueue: []
+};
+
+// CONSTANTES MATEMÁTICAS
+const D2R = Math.PI / 180;
+const R2D = 180 / Math.PI;
+
+// SONIDO O VIBRACIÓN HÁPTICA PARA EL AGUA
+function hapticFeedback(type = 'success') {
+  if (navigator.vibrate) {
+    if (type === 'success') navigator.vibrate([40, 30, 40]);
+    else if (type === 'warn') navigator.vibrate([100]);
+    else navigator.vibrate([80, 50, 80]);
+  }
+}
+
+// TOAST
+function showToast(msg, type = 'info', duration = 3000) {
+  const t = document.getElementById('toastMsg');
+  t.textContent = msg;
+  t.className = `toast show ${type}`;
+  setTimeout(() => { t.className = 'toast'; }, duration);
+}
+
+// INICIALIZACIÓN DE SERVICE WORKER PARA FUNCIONAR SIN COBERTURA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => {
+      console.warn('Service Worker no registrado:', err);
+    });
+  });
+}
+
+// INICIAR SEGUIMIENTO GPS DE ALTA PRECISIÓN
+function initGPS() {
+  const dotGps = document.getElementById('dotGps');
+  const textGps = document.getElementById('textGps');
+
+  if (!navigator.geolocation) {
+    textGps.textContent = 'GPS no soportado';
+    dotGps.className = 'dot red';
+    return;
+  }
+
+  const options = {
+    enableHighAccuracy: true,
+    timeout: 10000,
+    maximumAge: 0
+  };
+
+  navigator.geolocation.watchPosition(
+    (pos) => {
+      const c = pos.coords;
+      state.curLat = c.latitude;
+      state.curLon = c.longitude;
+      state.curAcc = c.accuracy;
+      state.curSpd = c.speed != null ? (c.speed * 1.94384) : 0; // m/s a nudos
+      state.curHdg = c.heading;
+      state.lastFixTime = Date.now();
+
+      // UI Actualización en vivo
+      document.getElementById('liveLat').textContent = c.latitude.toFixed(6) + '°';
+      document.getElementById('liveLon').textContent = c.longitude.toFixed(6) + '°';
+      document.getElementById('liveSpd').textContent = state.curSpd.toFixed(1) + ' kn';
+      document.getElementById('liveAcc').textContent = '±' + c.accuracy.toFixed(1) + ' m';
+      document.getElementById('gpsFixAge').textContent = 'Hace 0s';
+
+      if (c.accuracy <= 4) {
+        dotGps.className = 'dot green';
+        textGps.textContent = `GPS ±${c.accuracy.toFixed(1)}m (Excelente)`;
+      } else if (c.accuracy <= 10) {
+        dotGps.className = 'dot yellow';
+        textGps.textContent = `GPS ±${c.accuracy.toFixed(1)}m (Aceptable)`;
+      } else {
+        dotGps.className = 'dot red';
+        textGps.textContent = `GPS ±${c.accuracy.toFixed(1)}m (Poco preciso)`;
+      }
+    },
+    (err) => {
+      console.warn('Error GPS:', err);
+      dotGps.className = 'dot red pulse';
+      textGps.textContent = 'Sin señal GPS: ' + (err.message || 'Error');
+    },
+    options
+  );
+
+  // Contador de antigüedad de señal
+  setInterval(() => {
+    if (state.lastFixTime) {
+      const s = Math.floor((Date.now() - state.lastFixTime) / 1000);
+      document.getElementById('gpsFixAge').textContent = `Hace ${s}s`;
+    }
+  }, 1000);
+}
+
+// FORMATO DE COORDENADAS
+function formatCoord(lat, lon) {
+  if (lat == null || lon == null) return '--';
+  return `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+}
+
+function formatTime(isoStr) {
+  if (!isoStr) return '--:--';
+  const d = new Date(isoStr);
+  return d.toTimeString().slice(0, 8);
+}
+
+// MARCADO DE COMITÉ
+document.getElementById('btnMarkComite').addEventListener('click', () => {
+  if (state.curLat == null || state.curLon == null) {
+    showToast('Esperando señal GPS válida para marcar el Comité', 'warn');
+    hapticFeedback('warn');
+    return;
+  }
+
+  state.comite = {
+    lat: state.curLat,
+    lon: state.curLon,
+    acc: state.curAcc,
+    time: new Date().toISOString()
+  };
+
+  hapticFeedback('success');
+  updateMarksUI();
+  calculateTactics();
+  saveLocalState();
+  showToast(`✅ Barco Comité fijado (±${state.comite.acc.toFixed(1)}m)`, 'success');
+});
+
+// MARCADO DE PIN
+document.getElementById('btnMarkPin').addEventListener('click', () => {
+  if (state.curLat == null || state.curLon == null) {
+    showToast('Esperando señal GPS válida para marcar el Pin', 'warn');
+    hapticFeedback('warn');
+    return;
+  }
+
+  state.pin = {
+    lat: state.curLat,
+    lon: state.curLon,
+    acc: state.curAcc,
+    time: new Date().toISOString()
+  };
+
+  hapticFeedback('success');
+  updateMarksUI();
+  calculateTactics();
+  saveLocalState();
+  showToast(`✅ Boya de Pin fijada (±${state.pin.acc.toFixed(1)}m)`, 'success');
+});
+
+// MARCADO DE BALIZA 1 (OPCIONAL)
+document.getElementById('btnMarkB1').addEventListener('click', () => {
+  if (state.curLat == null || state.curLon == null) {
+    showToast('Esperando señal GPS válida', 'warn');
+    hapticFeedback('warn');
+    return;
+  }
+
+  state.b1 = {
+    lat: state.curLat,
+    lon: state.curLon,
+    acc: state.curAcc,
+    time: new Date().toISOString()
+  };
+
+  hapticFeedback('success');
+  updateMarksUI();
+  saveLocalState();
+  showToast(`✅ Baliza 1 Barlovento fijada (±${state.b1.acc.toFixed(1)}m)`, 'success');
+});
+
+// ACTUALIZAR PANTALLA DE MARCAS FIJADAS
+function updateMarksUI() {
+  const boxComite = document.getElementById('boxSavedComite');
+  const boxPin = document.getElementById('boxSavedPin');
+  const boxB1 = document.getElementById('boxSavedB1');
+
+  if (state.comite) {
+    boxComite.style.display = 'flex';
+    document.getElementById('coordsComite').textContent = `${formatCoord(state.comite.lat, state.comite.lon)} (±${(state.comite.acc||0).toFixed(1)}m)`;
+    document.getElementById('timeComite').textContent = formatTime(state.comite.time);
+  } else {
+    boxComite.style.display = 'none';
+  }
+
+  if (state.pin) {
+    boxPin.style.display = 'flex';
+    document.getElementById('coordsPin').textContent = `${formatCoord(state.pin.lat, state.pin.lon)} (±${(state.pin.acc||0).toFixed(1)}m)`;
+    document.getElementById('timePin').textContent = formatTime(state.pin.time);
+  } else {
+    boxPin.style.display = 'none';
+  }
+
+  if (state.b1) {
+    boxB1.style.display = 'flex';
+    document.getElementById('coordsB1').textContent = `${formatCoord(state.b1.lat, state.b1.lon)} (±${(state.b1.acc||0).toFixed(1)}m)`;
+    document.getElementById('timeB1').textContent = formatTime(state.b1.time);
+  } else {
+    boxB1.style.display = 'none';
+  }
+}
+
+// CÁLCULOS TÁCTICOS DE LA LÍNEA
+function calculateTactics() {
+  const tacticsCard = document.getElementById('tacticsCard');
+  if (!state.comite || !state.pin) {
+    tacticsCard.style.display = 'none';
+    return;
+  }
+
+  tacticsCard.style.display = 'flex';
+
+  const midLat = (state.comite.lat + state.pin.lat) / 2;
+  const kx = 111320 * Math.cos(midLat * D2R);
+  const ky = 110574;
+
+  // Vector de Pin hacia Comité
+  const dx = (state.comite.lon - state.pin.lon) * kx;
+  const dy = (state.comite.lat - state.pin.lat) * ky;
+  const lenM = Math.hypot(dx, dy);
+
+  // Rumbo de Pin a Comité
+  const brgPinToRc = ((Math.atan2(dx, dy) * R2D) + 360) % 360;
+  const brgRcToPin = (brgPinToRc + 180) % 360;
+
+  // Longitud y Esloras de Optimist (eslora media ~2.3m)
+  const esloras = Math.round(lenM / 2.3);
+  document.getElementById('lineLengthVal').textContent = `${Math.round(lenM)} m`;
+  document.getElementById('lineEslorasVal').textContent = `~${esloras} barcos Optimist`;
+  document.getElementById('lineBearingVal').textContent = `${Math.round(brgPinToRc).toString().padStart(3,'0')}° ↔ ${Math.round(brgRcToPin).toString().padStart(3,'0')}°`;
+
+  // ANÁLISIS DE SESGO / FAVORECIDO RESPECTO AL VIENTO
+  const twd = ((state.windDir % 360) + 360) % 360;
+  // Ángulo de la línea perpendicular al viento (desde Pin hacia Comité)
+  const squarePinToRc = (twd + 90) % 360;
+  
+  let diff = (brgPinToRc - squarePinToRc + 540) % 360 - 180;
+  // diff > 0 -> Pin está más a barlovento (Pin favorecido)
+  // diff < 0 -> Comité está más a barlovento (Comité favorecido)
+
+  const banner = document.getElementById('biasBanner');
+  const icon = document.getElementById('biasIcon');
+  const title = document.getElementById('biasTitle');
+  const sub = document.getElementById('biasSub');
+
+  const advM = Math.abs(lenM * Math.sin(diff * D2R)).toFixed(1);
+
+  if (Math.abs(diff) <= 1.5) {
+    banner.className = 'bias-banner square';
+    icon.textContent = '⚖️';
+    title.textContent = 'LÍNEA CUADRADA AL VIENTO (±1°)';
+    sub.textContent = 'Ambos extremos están a la misma distancia de barlovento.';
+  } else if (diff > 0) {
+    banner.className = 'bias-banner pin-fav';
+    icon.textContent = '🚩';
+    title.textContent = `PIN FAVORECIDO (+${diff.toFixed(1)}°)`;
+    sub.textContent = `Ventaja en la boya: ~${advM} m ganados a barlovento hacia babor.`;
+  } else {
+    banner.className = 'bias-banner rc-fav';
+    icon.textContent = '⛵';
+    title.textContent = `COMITÉ FAVORECIDO (+${Math.abs(diff).toFixed(1)}°)`;
+    sub.textContent = `Ventaja en el barco comité: ~${advM} m ganados a barlovento hacia estribor.`;
+  }
+
+  // DIBUJAR EN EL CANVAS MINIATURA
+  drawMiniTacticsCanvas(dx, dy, lenM, twd, brgPinToRc);
+}
+
+// DIBUJO DEL ESQUEMA TÁCTICO EN CANVAS
+function drawMiniTacticsCanvas(dx, dy, lenM, twd, brgPinToRc) {
+  const canvas = document.getElementById('lineCanvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Orientar el dibujo de modo que el VIENTO venga siempre desde arriba (0° en pantalla)
+  const windRad = twd * D2R;
+  // Transformar la línea para centrarla en el canvas con viento vertical descendente
+  const cx = w / 2;
+  const cy = h / 2 + 10;
+  const scale = Math.min(180 / Math.max(20, lenM), 1.2);
+
+  // Ángulo de la línea relativo al viento
+  const relAngle = (brgPinToRc - twd) * D2R;
+  const halfDist = (lenM / 2) * scale;
+
+  const pinX = cx - Math.sin(relAngle) * halfDist;
+  const pinY = cy + Math.cos(relAngle) * halfDist;
+  const rcX = cx + Math.sin(relAngle) * halfDist;
+  const rcY = cy - Math.cos(relAngle) * halfDist;
+
+  // Flecha del Viento (arriba en el centro)
+  ctx.strokeStyle = state.isSunMode ? '#007799' : '#00f0ff';
+  ctx.fillStyle = state.isSunMode ? '#007799' : '#00f0ff';
+  ctx.lineWidth = 3;
+
+  ctx.beginPath();
+  ctx.moveTo(cx, 12);
+  ctx.lineTo(cx, 40);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(cx - 7, 30);
+  ctx.lineTo(cx, 42);
+  ctx.lineTo(cx + 7, 30);
+  ctx.stroke();
+
+  ctx.font = 'bold 11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(`VIENTO ${Math.round(twd)}°`, cx, 55);
+
+  // Línea cuadrada de referencia (horizontal punteada)
+  ctx.strokeStyle = state.isSunMode ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.18)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(cx - halfDist - 25, cy);
+  ctx.lineTo(cx + halfDist + 25, cy);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // LÍNEA DE SALIDA REAL
+  ctx.strokeStyle = state.isSunMode ? '#0288d1' : '#00f0ff';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(pinX, pinY);
+  ctx.lineTo(rcX, rcY);
+  ctx.stroke();
+
+  // MARCA PIN (BOYA)
+  ctx.fillStyle = '#ff5722';
+  ctx.beginPath();
+  ctx.arc(pinX, pinY, 9, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.fillStyle = state.isSunMode ? '#d84315' : '#ffab91';
+  ctx.font = 'bold 11px sans-serif';
+  ctx.fillText('PIN', pinX, pinY + 20);
+
+  // MARCA COMITÉ (BARCO)
+  ctx.fillStyle = '#1976d2';
+  ctx.beginPath();
+  ctx.arc(rcX, rcY, 9, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#ffc107';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  ctx.fillStyle = state.isSunMode ? '#0d47a1' : '#fff59d';
+  ctx.fillText('COMITÉ', rcX, rcY + 20);
+}
+
+// CONTROL DE VIENTO
+const windInput = document.getElementById('windInput');
+windInput.addEventListener('change', () => {
+  let val = parseInt(windInput.value, 10);
+  if (isNaN(val)) val = 0;
+  state.windDir = ((val % 360) + 360) % 360;
+  windInput.value = state.windDir;
+  calculateTactics();
+  saveLocalState();
+});
+
+document.getElementById('btnWindSub10').addEventListener('click', () => adjustWind(-10));
+document.getElementById('btnWindSub5').addEventListener('click', () => adjustWind(-5));
+document.getElementById('btnWindAdd5').addEventListener('click', () => adjustWind(5));
+document.getElementById('btnWindAdd10').addEventListener('click', () => adjustWind(10));
+
+function adjustWind(delta) {
+  let val = ((state.windDir + delta) % 360 + 360) % 360;
+  state.windDir = val;
+  windInput.value = val;
+  calculateTactics();
+  saveLocalState();
+}
+
+// BRÚJULA PARA APUNTAR AL VIENTO
+document.getElementById('btnCompassWind').addEventListener('click', async () => {
+  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+    try {
+      const perm = await DeviceOrientationEvent.requestPermission();
+      if (perm !== 'granted') {
+        showToast('Permiso de brújula denegado', 'warn');
+        return;
+      }
+    } catch (e) {
+      console.warn('Error al solicitar permiso de brújula:', e);
+    }
+  }
+
+  showToast('Apuntando... mantén el móvil encarado al viento', 'info', 2500);
+
+  function handleOrientation(e) {
+    let heading = null;
+    if (e.webkitCompassHeading != null) {
+      heading = e.webkitCompassHeading;
+    } else if (e.alpha != null) {
+      heading = (360 - e.alpha) % 360;
+    }
+
+    if (heading != null) {
+      const wVal = Math.round(heading);
+      state.windDir = wVal;
+      windInput.value = wVal;
+      calculateTactics();
+      saveLocalState();
+      window.removeEventListener('deviceorientation', handleOrientation);
+      showToast(`🧭 Viento fijado por brújula en ${wVal}°`, 'success');
+      hapticFeedback('success');
+    }
+  }
+
+  window.addEventListener('deviceorientation', handleOrientation);
+  setTimeout(() => {
+    window.removeEventListener('deviceorientation', handleOrientation);
+  }, 4000);
+});
+
+// SELECTOR DE MANGAS RÁPIDAS
+document.querySelectorAll('.btn-manga').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    document.querySelectorAll('.btn-manga').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const manga = btn.dataset.manga;
+    document.getElementById('sessionNameInput').value = manga;
+    state.sessionName = manga;
+    saveLocalState();
+  });
+});
+
+document.getElementById('sessionNameInput').addEventListener('input', (e) => {
+  state.sessionName = e.target.value;
+  saveLocalState();
+});
+
+document.getElementById('categorySelect').addEventListener('change', (e) => {
+  state.category = e.target.value;
+  saveLocalState();
+});
+
+// MODO SOL (ALTO CONTRASTE)
+document.getElementById('btnSunMode').addEventListener('click', () => {
+  state.isSunMode = !state.isSunMode;
+  document.body.classList.toggle('sun-mode', state.isSunMode);
+  document.getElementById('btnSunMode').textContent = state.isSunMode ? '🌙 Noche' : '☀️ Sol';
+  saveLocalState();
+  calculateTactics();
+});
+
+// PERSISTENCIA LOCAL
+function saveLocalState() {
+  const data = {
+    comite: state.comite,
+    pin: state.pin,
+    b1: state.b1,
+    windDir: state.windDir,
+    sessionName: state.sessionName,
+    category: state.category,
+    isSunMode: state.isSunMode
+  };
+  localStorage.setItem('rcngc_salidas_state', JSON.stringify(data));
+}
+
+function loadLocalState() {
+  try {
+    const raw = localStorage.getItem('rcngc_salidas_state');
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (data.comite) state.comite = data.comite;
+      if (data.pin) state.pin = data.pin;
+      if (data.b1) state.b1 = data.b1;
+      if (data.windDir != null) {
+        state.windDir = data.windDir;
+        windInput.value = data.windDir;
+      }
+      if (data.sessionName) {
+        state.sessionName = data.sessionName;
+        document.getElementById('sessionNameInput').value = data.sessionName;
+      }
+      if (data.category) {
+        state.category = data.category;
+        document.getElementById('categorySelect').value = data.category;
+      }
+      if (data.isSunMode) {
+        state.isSunMode = true;
+        document.body.classList.add('sun-mode');
+        document.getElementById('btnSunMode').textContent = '🌙 Noche';
+      }
+      updateMarksUI();
+      calculateTactics();
+    }
+  } catch (e) {
+    console.warn('Error cargando estado previo:', e);
+  }
+}
+
+// COMUNICACIÓN CON TURSO PIPELINE
+function getTursoEndpoint() {
+  let u = localStorage.getItem('rcngc_turso_url') || TURSO_CONFIG.defaultUrl;
+  if (!u.endsWith('/v2/pipeline')) u = u.replace(/\/+$/, '') + '/v2/pipeline';
+  return u;
+}
+
+function getTursoToken() {
+  return (localStorage.getItem('rcngc_turso_token') || TURSO_CONFIG.defaultToken).trim();
+}
+
+function toTursoArg(val) {
+  if (val === null || val === undefined) return { type: 'null' };
+  if (typeof val === 'number') {
+    if (Number.isInteger(val)) return { type: 'integer', value: String(val) };
+    return { type: 'float', value: val };
+  }
+  if (typeof val === 'boolean') return { type: 'integer', value: val ? '1' : '0' };
+  return { type: 'text', value: String(val) };
+}
+
+async function executeTurso(sql, args = []) {
+  const endpoint = getTursoEndpoint();
+  const token = getTursoToken();
+  const body = {
+    requests: [
+      {
+        type: 'execute',
+        stmt: {
+          sql: sql,
+          args: args.map(toTursoArg)
+        }
+      },
+      { type: 'close' }
+    ]
+  };
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    throw new Error(`Error HTTP ${res.status}: ${await res.text()}`);
+  }
+  const data = await res.json();
+  const first = data.results && data.results[0];
+  if (first && first.type === 'error') {
+    throw new Error(first.error && first.error.message || 'Error en Turso');
+  }
+  return first;
+}
+
+// SINCRONIZAR CON LA NUBE TURSO
+const btnSync = document.getElementById('btnSyncCloud');
+const btnSyncText = document.getElementById('btnSyncText');
+
+btnSync.addEventListener('click', async () => {
+  if (!state.comite && !state.pin) {
+    showToast('Marca al menos el Comité o el Pin antes de subir a la nube', 'warn');
+    hapticFeedback('warn');
+    return;
+  }
+
+  btnSync.disabled = true;
+  btnSyncText.textContent = 'Subiendo a Turso...';
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const nowIso = new Date().toISOString();
+  const sName = (state.sessionName || 'Manga 1').trim();
+  const regId = `linea_${todayStr}_${Date.now()}`;
+
+  // Métricas calculadas
+  let lenM = null;
+  let sesgoLado = 'neutral';
+  let sesgoGrados = 0;
+
+  if (state.comite && state.pin) {
+    const midLat = (state.comite.lat + state.pin.lat) / 2;
+    const kx = 111320 * Math.cos(midLat * D2R);
+    const ky = 110574;
+    const dx = (state.comite.lon - state.pin.lon) * kx;
+    const dy = (state.comite.lat - state.pin.lat) * ky;
+    lenM = Math.hypot(dx, dy);
+
+    const brgPinToRc = ((Math.atan2(dx, dy) * R2D) + 360) % 360;
+    const twd = ((state.windDir % 360) + 360) % 360;
+    const squarePinToRc = (twd + 90) % 360;
+    const diff = (brgPinToRc - squarePinToRc + 540) % 360 - 180;
+    sesgoGrados = parseFloat(diff.toFixed(1));
+    if (Math.abs(diff) <= 1.5) sesgoLado = 'cuadrada';
+    else if (diff > 0) sesgoLado = 'pin';
+    else sesgoLado = 'comite';
+  }
+
+  const sql = `
+    INSERT INTO lineas_salida (
+      id, fecha, nombre, categoria,
+      comite_lat, comite_lon, comite_prec,
+      pin_lat, pin_lon, pin_prec,
+      viento_dir, longitud_m, sesgo_lado, sesgo_grados,
+      baliza1_lat, baliza1_lon, baliza1_prec,
+      creado_por, creado_en, actualizado_en
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+  `;
+
+  const args = [
+    regId,
+    todayStr,
+    sName,
+    state.category || 'Optimist',
+    state.comite ? state.comite.lat : null,
+    state.comite ? state.comite.lon : null,
+    state.comite ? state.comite.acc : null,
+    state.pin ? state.pin.lat : null,
+    state.pin ? state.pin.lon : null,
+    state.pin ? state.pin.acc : null,
+    state.windDir,
+    lenM,
+    sesgoLado,
+    sesgoGrados,
+    state.b1 ? state.b1.lat : null,
+    state.b1 ? state.b1.lon : null,
+    state.b1 ? state.b1.acc : null,
+    'Entrenador RCNGC PWA'
+  ];
+
+  try {
+    await executeTurso(sql, args);
+    hapticFeedback('success');
+    showToast(`☁️ ¡Línea de ${sName} guardada en Turso! Ya está lista en el tracking del club.`, 'success', 4000);
+    document.getElementById('dotCloud').className = 'dot green';
+    document.getElementById('textCloud').textContent = 'Turso Sincronizado';
+  } catch (err) {
+    console.error('Error sincronizando con Turso:', err);
+    // Guardar en cola offline
+    state.offlineQueue.push({ sql, args, time: Date.now() });
+    localStorage.setItem('rcngc_offline_queue', JSON.stringify(state.offlineQueue));
+    hapticFeedback('warn');
+    showToast('⚠️ Sin conexión. Guardada en el móvil. Se subirá al recuperar cobertura.', 'warn', 4500);
+    document.getElementById('dotCloud').className = 'dot yellow';
+    document.getElementById('textCloud').textContent = 'Guardado en Móvil';
+  } finally {
+    btnSync.disabled = false;
+    btnSyncText.textContent = 'SINCRONIZAR CON LA NUBE TURSO';
+  }
+});
+
+// RE-INTENTO DE COLA OFFLINE AL RECUPERAR CONEXIÓN
+window.addEventListener('online', async () => {
+  document.getElementById('dotCloud').className = 'dot green';
+  document.getElementById('textCloud').textContent = 'Conexión Restablecida';
+  try {
+    const rawQ = localStorage.getItem('rcngc_offline_queue');
+    if (rawQ) {
+      const q = JSON.parse(rawQ);
+      while (q.length > 0) {
+        const item = q.shift();
+        await executeTurso(item.sql, item.args);
+      }
+      localStorage.removeItem('rcngc_offline_queue');
+      showToast('☁️ Líneas pendientes sincronizadas con Turso.', 'success');
+    }
+  } catch (e) {
+    console.warn('Reintento offline fallido:', e);
+  }
+});
+
+// MODAL DE AJUSTES
+const modal = document.getElementById('settingsModal');
+document.getElementById('btnSettings').addEventListener('click', () => {
+  document.getElementById('cfgTursoUrl').value = localStorage.getItem('rcngc_turso_url') || TURSO_CONFIG.defaultUrl;
+  document.getElementById('cfgTursoToken').value = localStorage.getItem('rcngc_turso_token') || TURSO_CONFIG.defaultToken;
+  document.getElementById('cfgCoachPin').value = localStorage.getItem('rcngc_coach_pin') || TURSO_CONFIG.defaultPin;
+  modal.classList.add('open');
+});
+
+document.getElementById('btnCancelSettings').addEventListener('click', () => modal.classList.remove('open'));
+
+document.getElementById('btnSaveSettings').addEventListener('click', () => {
+  const u = document.getElementById('cfgTursoUrl').value.trim();
+  const t = document.getElementById('cfgTursoToken').value.trim();
+  const p = document.getElementById('cfgCoachPin').value.trim();
+  if (u) localStorage.setItem('rcngc_turso_url', u);
+  if (t) localStorage.setItem('rcngc_turso_token', t);
+  if (p) localStorage.setItem('rcngc_coach_pin', p);
+  modal.classList.remove('open');
+  showToast('Ajustes guardados correctamente', 'success');
+});
+
+// INICIAR
+window.addEventListener('DOMContentLoaded', () => {
+  loadLocalState();
+  initGPS();
+});
+</script>
+
+</body>
+</html>
