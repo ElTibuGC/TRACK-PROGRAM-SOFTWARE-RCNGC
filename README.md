@@ -146,6 +146,8 @@ Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan
   * **Pastilla de usuario en cabecera**: Eliminada la imagen circular de perfil (base64) del botón `#btnTopCoachAuth`, reemplazándola por el emoji `👤` con centrado y tipografía proporcionada.
   * **Ficha del Entrenador en Modal**: En `#modalCoachProfile`, la imagen estática ha sido sustituida por el avatar con emoji `👤`, manteniendo el nombre del usuario autenticado, su flota y sus credenciales de club.
   * **Limpieza de código**: Eliminada la constante de imagen pesada `DEFAULT_COACH_AVATAR`, reduciendo el peso de la página y mejorando la consistencia visual.
+* **Navegación Unificada en la Misma Pestaña (Analizador de Entrenamientos)**:
+  * Eliminado el atributo `target="_blank"` del acceso directo «🏋️ Analizador Entrenamientos» en la pantalla principal y en la apertura de entrenamientos desde Big Data (`window.location.href`). Ahora la transición entre el Visor de Regatas y el Analizador de Entrenamientos se realiza fluidamente en la **misma pestaña**, conservando la sesión y permitiendo volver con un solo clic («⛵ Visor de Regatas»).
 * **Verificación Automatizada E2E con Microsoft Edge CDP**:
   * Suite de 6 pruebas automatizadas ejecutadas directamente en el navegador validando rechazos con PIN cruzado, login exitoso con credenciales legítimas, menús desplegables y avatares.
 
@@ -298,7 +300,12 @@ Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan
 ### [v1.6.0] - App Móvil PWA para Entrenadores: Marcado GPS de Comité y Pin en el Agua y Sincronización en la Nube con Turso
 * **Aplicación Móvil Web PWA para Entrenadores (`gps-salidas/`)**:
   * **Diseñada para el Agua y la Neumática**: Interfaz táctil adaptada para uso en lancha de apoyo con salpicaduras, viento y sol brillante. Incluye botones de marcado gigantes, feedback háptico (vibración en el teléfono) y conmutador de **«Modo Sol (Alto Contraste)»** para máxima legibilidad bajo luz diurna intensa.
-  * **Botón de Reset Rápido («🔄 Reset»)**: Permite reiniciar los datos de Comité, Pin y Baliza 1 con una confirmación de seguridad para empezar una nueva salida limpia sin recargar la página.
+  * **Memoria Persistente a Prueba de F5 y Cierre de App**:
+    * Guarda en tiempo real cada marca y ajuste en la memoria privada del dispositivo (`localStorage`), con salvaguarda automática en segundo plano (`beforeunload` y `visibilitychange`).
+    * Al pulsar F5, recargar o cerrar la app y volver a abrirla, se restauran inmediatamente la posición exacta del Comité, Pin, Baliza 1, la prueba activa (`R1`, `R2`...), el viento (grados y nudos) y los cálculos tácticos de línea.
+  * **Botón para Vaciar Datos sin Guardar («🗑️ Vaciar datos»)**:
+    * Presente tanto en la cabecera superior como en una barra de acción directa bajo las balizas.
+    * Con una confirmación de seguridad, permite limpiar por completo todas las marcas y cálculos de la prueba actual para comenzar de cero sin necesidad de enviar nada a la nube.
   * **Botón de Eliminación para Baliza 1 («✕ Eliminar»)**: En el recuadro de Baliza 1 se incorpora un botón específico para cancelar la baliza 1 de forma aislada, evitando confusiones o pulsaciones accidentales sin afectar a las marcas de Pin o Comité.
   * **Nomenclatura Oficial de Regatas (R1, R2, R3...)**: Sustituido el término «Manga» por la denominación náutica estándar internacional (`R1`, `R2`, `R3`, `R4`, `R5`, `R6` y `Entreno`) con botones táctiles de 1 toque.
   * **Terminología Náutica (Compás)**: Sustituida la palabra «brújula» por **«compás»** (apuntar móvil de cara al viento mediante compás magnético interno).

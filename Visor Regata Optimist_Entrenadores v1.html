@@ -2024,7 +2024,7 @@ body.map-fullscreen-active {
           </button>
 
           <!-- 2. Analizador de Entrenamientos -->
-          <a href="analizador-entrenamientos/index.html" target="_blank" class="home-tool-card tool-analizador" title="Abrir Analizador de Entrenamientos, Polares VPP y debriefing de maniobras">
+          <a href="analizador-entrenamientos/index.html" class="home-tool-card tool-analizador" title="Abrir Analizador de Entrenamientos, Polares VPP y debriefing de maniobras">
             <div class="tool-card-icon" style="background:rgba(0,240,255,0.12);color:#00f0ff">🏋️</div>
             <strong class="tool-card-title">Analizador Entrenamientos</strong>
             <span class="tool-card-desc">Polares VPP & VMG</span>
@@ -13700,7 +13700,7 @@ async function renderBigDataStatsView(chosenSailOrCode){
   container.querySelectorAll('.btn-bigdata-load').forEach(btn => {
     btn.addEventListener('click', () => {
       if(btn.dataset.type === 'entrenamiento'){
-        window.open('analizador-entrenamientos/index.html?id=' + encodeURIComponent(btn.dataset.id), '_blank');
+        window.location.href = 'analizador-entrenamientos/index.html?id=' + encodeURIComponent(btn.dataset.id);
       } else {
         loadCloudSession(btn.dataset.id, btn.dataset.title);
       }
