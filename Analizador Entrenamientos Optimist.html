@@ -1527,6 +1527,88 @@
     .coach-notes-input { width: 100%; border: 1px solid var(--line, #21353a); border-radius: 6px; background: var(--panel, #101c1f); color: var(--ink, #e2edeb); font-family: inherit; font-size: 12.5px; padding: 8px 10px; resize: vertical; box-sizing: border-box; }
     .coach-notes-input:focus { border-color: var(--accent, #ff7a2e); outline: none; }
 
+  
+    /* Herramientas tácticas, cuadrícula de viento y mensajes de colocación */
+    .map.placing { cursor: crosshair !important; }
+    .map.placing #cv { cursor: crosshair !important; }
+    .map.eraser { cursor: pointer !important; }
+    .map.eraser #cv { cursor: pointer !important; }
+
+
+    .btn-tac-tool {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      border-radius: 6px;
+      height: 28px;
+      padding: 0 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .btn-tac-tool:hover {
+      background: var(--sub);
+      border-color: var(--muted);
+    }
+    .btn-tac-tool.is-active, .btn-tac-tool[aria-pressed="true"] {
+      background: var(--sel);
+      color: #0b1320;
+      border-color: var(--sel);
+      font-weight: 700;
+    }
+    .btn-tac-eraser.is-active, .btn-tac-eraser[aria-pressed="true"] {
+      background: #fee2e2 !important;
+      color: #b91c1c !important;
+      border-color: #f87171 !important;
+      font-weight: 700;
+    }
+
+    .placing-msg {
+      position: absolute;
+      left: 50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      background: var(--panel);
+      color: var(--ink);
+      padding: 6px 14px 6px 18px;
+      border-radius: 24px;
+      font-size: 12.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+      border: 1.5px solid var(--line);
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 90;
+    }
+    .placing-msg[hidden] {
+      display: none !important;
+    }
+    .placing-msg .cancel-btn {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #f87171;
+      border-radius: 14px;
+      padding: 3px 9px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.15s;
+    }
+    .placing-msg .cancel-btn:hover {
+      background: #fecaca;
+      color: #991b1b;
+    }
+
   </style>
 </head>
 <body>
@@ -1717,6 +1799,10 @@
   <!-- VISTA 1: TRACK & REPRODUCCIÓN -->
   <section class="map" id="map" aria-label="Mapa del entrenamiento">
     <canvas id="cv"></canvas>
+    <div class="placing-msg" id="placingMsg" hidden>
+      <span id="placingMsgText">Toca el mapa para colocar el elemento</span>
+      <button class="cancel-btn" id="btnCancelPlacing" type="button" title="Cancelar o pulsar tecla Escape">✕ Cancelar (Esc)</button>
+    </div>
     <div class="tools">
       <button class="tool" id="zin" aria-label="Acercar">+</button>
       <button class="tool" id="zout" aria-label="Alejar">-</button>
@@ -1737,6 +1823,7 @@
           <button role="tab" id="tab-rank" class="board-tab-btn" aria-selected="true" title="Clasificación y selección de barcos">Clasificación</button>
           <button role="tab" id="tab-polars" class="board-tab-btn" aria-selected="false" title="Polares de la flota en vivo vs VPP Optimist">Polares</button>
           <button role="tab" id="tab-wind" class="board-tab-btn" aria-selected="false" title="Ajuste de dirección e intensidad de viento">Viento</button>
+          <button role="tab" id="tab-tactics" class="board-tab-btn" aria-selected="false" title="Pizarra táctica: líneas, flechas, zonas y barcos">Táctica</button>
         </div>
         <div style="font-size:11px;color:var(--muted);font-weight:600" id="multiBoatCountBadge">
           Gráfica: <strong style="color:var(--sel)" id="lblSelectedCount">1</strong> / 5
@@ -1822,6 +1909,9 @@
           <div style="font-size:11px;color:var(--muted);margin-top:6px">Viento arriba orienta el campo con barlovento arriba y sotavento abajo (teclas W / N).</div>
         </div>
       </div>
+
+      <!-- PANE 4: PIZARRA TÁCTICA -->
+      <div class="pane" id="pane-tactics" role="tabpanel" style="display:none;padding:12px 14px;height:calc(100% - 38px);overflow-y:auto;flex-direction:column;gap:12px"></div>
     </div>
 
     <!-- TARJETA DEL BARCO Y GRÁFICA MULTI-BARCO -->
@@ -2496,7 +2586,7 @@
 
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:var(--sub);border-bottom:1px solid var(--line);flex-wrap:wrap;gap:10px">
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-cloud-tab" id="tabCloudList" type="button" aria-pressed="true">📚 Regatas guardadas</button>
+        <button class="btn btn-cloud-tab" id="tabCloudList" type="button" aria-pressed="true">🏋️‍♂️ Entrenamientos guardados</button>
         <button class="btn btn-cloud-tab" id="tabCloudStats" type="button" aria-pressed="false">📊 Histórico y Big Data</button>
         <button class="btn btn-cloud-tab" id="tabCloudLines" type="button" aria-pressed="false">📡 Salidas GPS Móvil</button>
         <button class="btn btn-cloud-tab" id="tabCloudSave" type="button" aria-pressed="false">💾 Guardar sesión actual</button>
@@ -2529,11 +2619,8 @@
           <div style="display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap">
             <div style="display:flex;align-items:center;gap:6px">
               <label for="cloudTypeFilterSelect" style="font-weight:700;color:var(--dim)">Sesión:</label>
-              <select id="cloudTypeFilterSelect" style="padding:4px 8px;font-size:12px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)">
-                <option value="all">Todas las sesiones</option>
-                <option value="Entrenamiento">🎯 Entrenamiento</option>
-                <option value="Regata">🏁 Regata</option>
-                <option value="Análisis de otras regatas">📊 Análisis de otras regatas</option>
+              <select id="cloudTypeFilterSelect" style="padding:4px 8px;font-size:12px;border-radius:6px;border:1px solid var(--line);background:var(--sub);color:var(--ink);cursor:not-allowed" disabled>
+                <option value="Entrenamiento" selected>🎯 Solo Entrenamientos</option>
               </select>
             </div>
             <div style="display:flex;align-items:center;gap:6px">
@@ -2649,11 +2736,10 @@
             </div>
             <div>
               <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Tipo de Sesión</label>
-              <select id="cloudSaveType" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
-                <option value="Entrenamiento">Entrenamiento</option>
-                <option value="Regata">Regata</option>
-                <option value="Análisis de otras regatas">Análisis de otras regatas</option>
+              <select id="cloudSaveType" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--sub);color:var(--ink);font-size:13px;cursor:not-allowed" disabled>
+                <option value="Entrenamiento" selected>🏋️‍♂️ Entrenamiento</option>
               </select>
+              <div style="font-size:11px;color:var(--dim);margin-top:3px">🔒 En el Analizador de Entrenamientos solo se suben sesiones como Entrenamiento.</div>
             </div>
           </div>
 
@@ -2805,11 +2891,10 @@
         </div>
         <div>
           <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px">Tipo de Sesión</label>
-          <select id="cloudEditType" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
-            <option value="Entrenamiento">Entrenamiento</option>
-            <option value="Regata">Regata</option>
-            <option value="Análisis de otras regatas">Análisis de otras regatas</option>
+          <select id="cloudEditType" style="width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--sub);color:var(--ink);font-size:13px;cursor:not-allowed" disabled>
+            <option value="Entrenamiento" selected>🏋️‍♂️ Entrenamiento</option>
           </select>
+          <div style="font-size:11px;color:var(--dim);margin-top:3px">🔒 Solo sesiones de tipo Entrenamiento.</div>
         </div>
       </div>
 
@@ -3478,8 +3563,30 @@ const OPTIMIST_POLAR_DATA = {
   let selectedBoatIndices = new Set([0]);
   let activeBoatIdx = 0;
   let currentCloudId = null;
+  let currentCloudRegata = null;
   let isAuthorizedCoach = false;
   let lastLoadedBoats = null;
+  let lastLoad = null;
+
+  function ensureLastLoad(){
+    if(!lastLoad || !lastLoad.all || !Object.keys(lastLoad.all).length){
+      if(lastLoadedBoats && lastLoadedBoats.length){
+        const all = {};
+        const used = [];
+        lastLoadedBoats.forEach((b, idx) => {
+          const key = b.fileName || b.sail || b.name || ('Barco_' + (idx + 1));
+          all[key] = (b.points || []).map(p => ({
+            t: p.time != null ? p.time : (p.t != null ? p.t : 0),
+            lat: p.lat,
+            lon: p.lon
+          }));
+          used.push(key);
+        });
+        lastLoad = { all, used, warn: [], skipped: [] };
+      }
+    }
+    return lastLoad;
+  }
   let clubUsersCache = null;
   let pendingAuthCallback = null;
   let schemaEnsured = false;
@@ -3552,7 +3659,18 @@ const OPTIMIST_POLAR_DATA = {
       trailColorMode: trailColorMode || 'pointOfSail',
       currentPlaybackSec: currentPlaybackSec || 0,
       currentCloudId: currentCloudId || null,
+      currentCloudRegata: currentCloudRegata || null,
       customSails,
+      tactics: {
+        buoys: (tactics && tactics.buoys) || [],
+        targetBuoyId: (tactics && tactics.targetBuoyId) || null,
+        lines: (tactics && tactics.lines) || [],
+        arrows: (tactics && tactics.arrows) || [],
+        boats: (tactics && tactics.boats) || [],
+        manualZones: (tactics && tactics.manualZones) || [],
+        laylines: !!(tactics && tactics.laylines),
+        threeLengths: !!(tactics && tactics.threeLengths)
+      },
       savedAt: Date.now()
     };
     saveTrainingSessionToDB(data);
@@ -3697,6 +3815,92 @@ const OPTIMIST_POLAR_DATA = {
     });
   }
 
+  function updateCloudHeaderButtons(){
+    const btnShare = document.getElementById('btnShareCloudRegata');
+    const btnQuickSave = document.getElementById('btnQuickSaveCloud');
+    const hasCloud = !!(currentCloudRegata && currentCloudRegata.id);
+    const hasActiveSession = Boolean(D && D.N > 0);
+    if(btnShare) btnShare.style.display = hasCloud ? 'inline-flex' : 'none';
+    if(btnQuickSave){
+      btnQuickSave.style.display = hasActiveSession ? 'inline-flex' : 'none';
+      if(hasCloud){
+        btnQuickSave.textContent = '💾 Guardar cambios';
+        btnQuickSave.title = 'Guardar cambios en «' + (currentCloudRegata.titulo || 'sesión') + '» (Turso SQLite)';
+      } else {
+        btnQuickSave.textContent = '☁️ Guardar en la Nube';
+        btnQuickSave.title = 'Guardar esta sesión en la nube de Turso SQLite';
+      }
+    }
+  }
+
+  function getCloudShareUrl(id){
+    const url = new URL(window.location.href);
+    url.searchParams.set('id', id);
+    url.searchParams.set('regata', id);
+    return url.toString();
+  }
+
+  function copyTextToClipboard(text, onSuccess, onFail){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
+        fallbackCopyText(text, onSuccess, onFail);
+      });
+    } else {
+      fallbackCopyText(text, onSuccess, onFail);
+    }
+  }
+
+  function fallbackCopyText(text, onSuccess, onFail){
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      if(ok) { if(onSuccess) onSuccess(); }
+      else { if(onFail) onFail(); }
+    } catch(e) {
+      if(onFail) onFail(e);
+    }
+  }
+
+  function generateSailorCode(name){
+    if(!name) return 'REG-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    const clean = name.trim().toUpperCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^A-Z0-9]/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+    return 'REG-' + (clean || Math.random().toString(36).substr(2, 6).toUpperCase());
+  }
+
+  async function compressSessionJson(text){
+    if(typeof CompressionStream === 'function'){
+      try {
+        const blob = new Blob([text]);
+        const stream = blob.stream().pipeThrough(new CompressionStream('gzip'));
+        const buf = await new Response(stream).arrayBuffer();
+        const bytes = new Uint8Array(buf);
+        let binary = '';
+        const chunk = 8192;
+        for(let i = 0; i < bytes.length; i += chunk){
+          binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+        }
+        const gz = 'gz:' + btoa(binary);
+        if(gz.length < text.length) return gz;
+        return text;
+      } catch(err) {
+        console.warn('Error comprimiendo sesión con GZIP, guardando texto plano:', err);
+        return text;
+      }
+    }
+    return text;
+  }
+
   async function decompressSessionJson(raw){
     if(!raw) return null;
     if(typeof raw !== 'string') return raw;
@@ -3726,6 +3930,18 @@ const OPTIMIST_POLAR_DATA = {
   }
 
   let homeRecentRacesLoading = false;
+  
+  function getVisorUrl(id){
+    const inSubdir = window.location.pathname.includes('/analizador-entrenamientos/') || window.location.pathname.includes('\\analizador-entrenamientos\\');
+    const base = inSubdir ? '../index.html' : 'index.html';
+    return id ? (base + '?id=' + encodeURIComponent(id)) : base;
+  }
+  function getTrainingUrl(id){
+    const inSubdir = window.location.pathname.includes('/analizador-entrenamientos/') || window.location.pathname.includes('\\analizador-entrenamientos\\');
+    const base = inSubdir ? 'index.html' : 'analizador-entrenamientos/index.html';
+    return id ? (base + '?id=' + encodeURIComponent(id)) : base;
+  }
+
   async function loadHomeRecentRaces(){
     const container = document.getElementById('homeRecentRacesList');
     if(!container) return;
@@ -3742,7 +3958,7 @@ const OPTIMIST_POLAR_DATA = {
       let rows;
       try {
         rows = await executeTurso(
-          "SELECT id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, categoria, tipo_manga FROM regatas_club ORDER BY creado_en DESC LIMIT 4;"
+          "SELECT id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, categoria, tipo_manga FROM regatas_club WHERE LOWER(tipo_manga) = 'entrenamiento' ORDER BY creado_en DESC LIMIT 4;"
         );
       } catch(err1) {
         rows = await executeTurso(
@@ -3750,11 +3966,12 @@ const OPTIMIST_POLAR_DATA = {
         );
       }
 
+      rows = (rows || []).filter(r => (r.tipo_manga || '').toLowerCase() === 'entrenamiento');
       if(!rows || !rows.length){
         container.innerHTML = `
           <div style="text-align:center;padding:14px 10px;color:var(--dim);font-size:12px;background:var(--sub);border:1px dashed var(--line);border-radius:8px">
-            No hay sesiones guardadas todavía en la nube central.<br>
-            <span style="font-size:11px">¡Sube archivos GPX a la derecha y pulsa "Guardar cambios"!</span>
+            No hay entrenamientos guardados todavía en la nube central.<br>
+            <span style="font-size:11px">¡Sube archivos GPX a la derecha y pulsa "Guardar sesión actual"!</span>
           </div>
         `;
         homeRecentRacesLoading = false;
@@ -3847,6 +4064,23 @@ const OPTIMIST_POLAR_DATA = {
       }
       const row = rows[0];
       const realTitle = row.titulo || titulo || 'Entrenamiento';
+
+      // Validación estricta: las regatas no se abren en el software de entrenamientos
+      const rawType = (row.tipo_manga || '').trim().toLowerCase();
+      if(rawType && rawType !== 'entrenamiento'){
+        if(container) container.innerHTML = prevHtml;
+        const wantsRedirect = confirm(
+          "⚠️ SESIÓN CLASIFICADA COMO " + (row.tipo_manga || 'REGATA').toUpperCase() + "\n\n" +
+          "La sesión «" + realTitle + "» está guardada como " + (row.tipo_manga || 'Regata Oficial') + ".\n\n" +
+          "Por organización del club, las regatas oficiales y análisis de regatas solo se pueden abrir en el Visor de Regatas.\n\n" +
+          "¿Deseas abrir ahora esta regata en el Visor de Regatas?"
+        );
+        if(wantsRedirect){
+          window.location.href = getVisorUrl(id);
+        }
+        return;
+      }
+
       const raw = row.datos_sesion_json;
       const saved = await decompressSessionJson(raw);
 
@@ -3902,13 +4136,41 @@ const OPTIMIST_POLAR_DATA = {
 
       lastLoadedBoats = parsedBoats;
       currentCloudId = id;
+      currentCloudRegata = {
+        id: row.id,
+        titulo: realTitle,
+        fecha_regata: row.fecha_regata,
+        viento_dir: row.viento_dir != null ? parseFloat(row.viento_dir) : 110,
+        viento_kts: row.viento_kts != null ? parseFloat(row.viento_kts) : 7.5,
+        num_barcos: row.num_barcos || parsedBoats.length,
+        autor: row.autor || 'Entrenador RCNGC',
+        notas: row.notas || '',
+        categoria: row.categoria || 'Grupo A Optimist',
+        tipo_manga: row.tipo_manga || 'Entrenamiento',
+        barcos_lista: row.barcos_lista || parsedBoats.map(b => b.sail).join(', ')
+      };
+      lastLoad = { all: saved.all, used: saved.used || Object.keys(saved.all), warn: [], skipped: [] };
       buildTrainingSessionData(parsedBoats);
+      updateCloudHeaderButtons();
       D.title = realTitle;
       if (row.viento_dir != null && !isNaN(parseFloat(row.viento_dir))) {
         setWindDirection(parseFloat(row.viento_dir));
       }
       if (row.viento_kts != null && !isNaN(parseFloat(row.viento_kts))) {
         setWindKnots(parseFloat(row.viento_kts));
+      }
+      if(saved.tactics){
+        tactics = {
+          buoys: Array.isArray(saved.tactics.buoys) ? saved.tactics.buoys : [],
+          targetBuoyId: saved.tactics.targetBuoyId || (Array.isArray(saved.tactics.buoys) && saved.tactics.buoys[0]?.id) || null,
+          lines: Array.isArray(saved.tactics.lines) ? saved.tactics.lines : [],
+          arrows: Array.isArray(saved.tactics.arrows) ? saved.tactics.arrows : [],
+          boats: Array.isArray(saved.tactics.boats) ? saved.tactics.boats : [],
+          manualZones: Array.isArray(saved.tactics.manualZones) ? saved.tactics.manualZones : [],
+          laylines: !!saved.tactics.laylines,
+          threeLengths: !!saved.tactics.threeLengths
+        };
+        renderTacticsPane();
       }
       saveCurrentTrainingSession();
 
@@ -4078,11 +4340,13 @@ const OPTIMIST_POLAR_DATA = {
     const tabRank = document.getElementById('tab-rank');
     const tabPolars = document.getElementById('tab-polars');
     const tabWind = document.getElementById('tab-wind');
+    const tabTactics = document.getElementById('tab-tactics');
     const paneRank = document.getElementById('pane-rank');
     const panePolars = document.getElementById('pane-polars');
     const paneWind = document.getElementById('pane-wind');
+    const paneTactics = document.getElementById('pane-tactics');
 
-    [tabRank, tabPolars, tabWind].forEach(b => {
+    [tabRank, tabPolars, tabWind, tabTactics].forEach(b => {
       if(b) { b.classList.remove('is-active'); b.setAttribute('aria-selected', 'false'); }
     });
 
@@ -4091,24 +4355,40 @@ const OPTIMIST_POLAR_DATA = {
       if(paneRank) paneRank.style.display = 'flex';
       if(panePolars) panePolars.style.display = 'none';
       if(paneWind) paneWind.style.display = 'none';
+      if(paneTactics) paneTactics.style.display = 'none';
     } else if(tabId === 'polars'){
       if(tabPolars) tabPolars.setAttribute('aria-selected', 'true');
       if(paneRank) paneRank.style.display = 'none';
       if(panePolars) panePolars.style.display = 'flex';
       if(paneWind) paneWind.style.display = 'none';
+      if(paneTactics) paneTactics.style.display = 'none';
       renderSidePolarsTable();
     } else if(tabId === 'wind'){
       if(tabWind) tabWind.setAttribute('aria-selected', 'true');
       if(paneRank) paneRank.style.display = 'none';
       if(panePolars) panePolars.style.display = 'none';
       if(paneWind) paneWind.style.display = 'flex';
+      if(paneTactics) paneTactics.style.display = 'none';
       syncWindPaneUI();
+    } else if(tabId === 'tactics'){
+      if(tabTactics) tabTactics.setAttribute('aria-selected', 'true');
+      if(paneRank) paneRank.style.display = 'none';
+      if(panePolars) panePolars.style.display = 'none';
+      if(paneWind) paneWind.style.display = 'none';
+      if(paneTactics) paneTactics.style.display = 'flex';
+      renderTacticsPane();
     }
   }
 
   document.getElementById('tab-rank').addEventListener('click', () => switchSideTab('rank'));
   document.getElementById('tab-polars').addEventListener('click', () => switchSideTab('polars'));
   document.getElementById('tab-wind').addEventListener('click', () => switchSideTab('wind'));
+  const tabTacBtn = document.getElementById('tab-tactics');
+  if(tabTacBtn) tabTacBtn.addEventListener('click', () => switchSideTab('tactics'));
+
+  // Botón cancelar colocación en mensaje flotante
+  const btnCancelPlacing = document.getElementById('btnCancelPlacing');
+  if(btnCancelPlacing) btnCancelPlacing.addEventListener('click', cancelAllPlacing);
 
   const btnGoToFullPolars = document.getElementById('btnGoToFullPolars');
   if(btnGoToFullPolars){
@@ -4324,7 +4604,9 @@ const OPTIMIST_POLAR_DATA = {
     }
     return {
       x: cam.x + dx / cam.scale,
-      y: cam.y - dy / cam.scale
+      y: cam.y - dy / cam.scale,
+      unrotPx: mapCanvas.width / 2 + dx,
+      unrotPy: mapCanvas.height / 2 + dy
     };
   }
 
@@ -4357,6 +4639,14 @@ const OPTIMIST_POLAR_DATA = {
   });
 
   mapCanvas.addEventListener('pointermove', (e) => {
+    if(activeTool && toolDraft){
+      const rect = mapCanvas.getBoundingClientRect();
+      const px = e.clientX - rect.left, py = e.clientY - rect.top;
+      const pt = screenToWorldCoords(px, py);
+      toolDraft.curX = pt.x;
+      toolDraft.curY = pt.y;
+      drawMap();
+    }
     if(!drag) return;
     const dx = e.clientX - drag.x;
     const dy = e.clientY - drag.y;
@@ -4385,7 +4675,7 @@ const OPTIMIST_POLAR_DATA = {
 
   mapCanvas.addEventListener('pointerup', (e) => {
     mapCanvas.classList.remove('dragging');
-    if(D && drag && !drag.moved){
+    if(drag && !drag.moved){
       const rect = mapCanvas.getBoundingClientRect();
       const px = e.clientX - rect.left, py = e.clientY - rect.top;
       if(Math.hypot(px - 50, py - 50) <= 28){
@@ -4394,6 +4684,31 @@ const OPTIMIST_POLAR_DATA = {
         return;
       }
       const pt = screenToWorldCoords(px, py);
+      if(activeTool){
+        handleTacticsClick(pt.x, pt.y, pt.unrotPx, pt.unrotPy);
+        drag = null;
+        return;
+      }
+      // Si se hace clic sobre una boya en modo normal, seleccionarla como objetivo VMC
+      if(tactics && tactics.buoys && tactics.buoys.length){
+        let clickedBuoy = null;
+        for(const b of tactics.buoys){
+          if(Math.hypot(sx(b.x) - pt.unrotPx, sy(b.y) - pt.unrotPy) < 22){
+            clickedBuoy = b;
+            break;
+          }
+        }
+        if(clickedBuoy){
+          tactics.targetBuoyId = clickedBuoy.id;
+          showPlacingMsg(`🎯 Baliza objetivo VMC: ${clickedBuoy.name} · Calculando VMC en directo`);
+          setTimeout(hidePlacingMsg, 2400);
+          renderTacticsPane();
+          drawMap();
+          drag = null;
+          return;
+        }
+      }
+      if(!D){ drag = null; return; }
       const curS = Math.floor(currentPlaybackSec);
       let best = -1, bestDist = 24;
       for(let b = 0; b < D.N; b++){
@@ -4470,10 +4785,22 @@ const OPTIMIST_POLAR_DATA = {
   // Teclas rápidas
   window.addEventListener('keydown', (e) => {
     if(e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+    if(e.key === 'Escape' || e.key === 'Esc' || e.keyCode === 27){
+      if(activeTool){
+        e.preventDefault();
+        cancelAllPlacing();
+        return;
+      }
+    }
     if(e.key === 'w' || e.key === 'W') toggleOrientation('wind');
     else if(e.key === 'n' || e.key === 'N') toggleOrientation('north');
     else if(e.key === 'f' || e.key === 'F') toggleMapFullscreen();
     else if(e.key === ' ') { e.preventDefault(); togglePlay(); }
+    else if(e.key === 'l' || e.key === 'L') { setTacticsTool(activeTool === 'line' ? null : 'line'); }
+    else if(e.key === 'a' || e.key === 'A') { setTacticsTool(activeTool === 'arrow' ? null : 'arrow'); }
+    else if(e.key === 'z' || e.key === 'Z') { setTacticsTool(activeTool === 'zone' ? null : 'zone'); }
+    else if(e.key === 'b' || e.key === 'B') { setTacticsTool(activeTool === 'boat' ? null : 'boat'); }
+    else if(e.key === 'e' || e.key === 'E') { setTacticsTool(activeTool === 'eraser' ? null : 'eraser'); }
   });
 
   function fitFleet(){
@@ -4485,7 +4812,9 @@ const OPTIMIST_POLAR_DATA = {
     const c = Math.abs(Math.cos(rot)), s = Math.abs(Math.sin(rot));
     const spanX = wSpan * c + hSpan * s;
     const spanY = wSpan * s + hSpan * c;
-    cam.scale = Math.min((w - 70) / spanX, (h - 70) / spanY) * 0.92;
+    const availW = Math.max(50, w - 70);
+    const availH = Math.max(50, h - 70);
+    cam.scale = Math.max(0.01, Math.min(availW / spanX, availH / spanY) * 0.92);
     cam.x = (D.minX + D.maxX) / 2;
     cam.y = (D.minY + D.maxY) / 2;
     drawMap();
@@ -4514,6 +4843,1015 @@ const OPTIMIST_POLAR_DATA = {
     }
   }
 
+  // =========================================================================
+  // PIZARRA TÁCTICA: HERRAMIENTAS, ELEMENTOS Y CUADRÍCULA 45°
+  // =========================================================================
+  let activeTool = null;
+  let toolDraft = null;
+  let tactics = {
+    lines: [],
+    arrows: [],
+    boats: [],
+    manualZones: [],
+    buoys: [],
+    targetBuoyId: null,
+    laylines: false,
+    threeLengths: false
+  };
+
+  const tacBuoyConfig = { name: 'B1', color: '#ea580c' };
+  const tacBoatConfig = { sail: '1', color: '#ef4444', tack: 'stbd_up', hdg: 45 };
+  const tacLineConfig = { color: '#0284c7' };
+  const tacArrowConfig = { color: '#10b981' };
+  const windStreaks = Array.from({ length: 45 }, () => ({
+    u: Math.random(),
+    v: Math.random(),
+    l: 0.6 + Math.random() * 0.8
+  }));
+
+  function niceStep(scale){
+    const target = 30 / scale;
+    const p = Math.pow(10, Math.floor(Math.log10(target)));
+    for(const m of [1, 2, 5, 10]){
+      if(m * p >= target) return m * p;
+    }
+    return 10 * p;
+  }
+
+  function deg3(deg){
+    const d = Math.round(((deg % 360) + 360) % 360);
+    return String(d).padStart(3, '0') + '°';
+  }
+
+  function norm(deg){
+    return ((deg + 180) % 360 + 360) % 360 - 180;
+  }
+
+  function clamp(v, a, b){
+    return Math.max(a, Math.min(b, v));
+  }
+
+  function drawTextLabel(txt, px, py, opts = {}){
+    const camRot = getCamRot();
+    ctxMap.save();
+    ctxMap.translate(px, py);
+    if(camRot !== 0) ctxMap.rotate(-camRot);
+    if(opts.alpha != null) ctxMap.globalAlpha = opts.alpha;
+    if(opts.font) ctxMap.font = opts.font;
+    if(opts.align) ctxMap.textAlign = opts.align;
+    if(opts.baseline) ctxMap.textBaseline = opts.baseline;
+    if(opts.stroke !== false){
+      ctxMap.lineWidth = opts.lineWidth || 2.5;
+      ctxMap.strokeStyle = opts.strokeStyle || '#0b1320';
+      ctxMap.strokeText(txt, 0, 0);
+    }
+    ctxMap.fillStyle = opts.fillStyle || '#f1f5f9';
+    ctxMap.fillText(txt, 0, 0);
+    ctxMap.restore();
+  }
+
+  function showPlacingMsg(text){
+    const pm = document.getElementById('placingMsg');
+    const txt = document.getElementById('placingMsgText');
+    if(!pm) return;
+    if(txt) txt.textContent = text;
+    else pm.textContent = text;
+    pm.hidden = false;
+  }
+
+  function hidePlacingMsg(){
+    const pm = document.getElementById('placingMsg');
+    if(pm) pm.hidden = true;
+  }
+
+  function syncTacticsButtonsState(){
+    const btnLine = document.getElementById('btnTacLine');
+    const btnArrow = document.getElementById('btnTacArrow');
+    const btnZone = document.getElementById('btnTacZone');
+    const btnBoat = document.getElementById('btnTacBoat');
+    const btnEraser = document.getElementById('btnTacEraser');
+
+    const tools = [
+      { el: btnLine, tool: 'line' },
+      { el: btnArrow, tool: 'arrow' },
+      { el: btnZone, tool: 'zone' },
+      { el: btnBoat, tool: 'boat' },
+      { el: btnEraser, tool: 'eraser' }
+    ];
+    tools.forEach(({ el, tool }) => {
+      if(!el) return;
+      const isActive = (activeTool === tool);
+      el.classList.toggle('is-active', isActive);
+      el.setAttribute('aria-pressed', String(isActive));
+    });
+  }
+
+  function setTacticsTool(tool){
+    const mapEl = document.getElementById('map');
+    if(activeTool === tool){
+      cancelAllPlacing();
+    } else {
+      activeTool = tool;
+      toolDraft = null;
+      if(mapEl){
+        mapEl.classList.add('placing');
+        mapEl.classList.toggle('eraser', tool === 'eraser');
+      }
+      let msg = 'Haz clic en el mapa';
+      if(tool === 'buoy') msg = 'Haz clic en el mapa donde quieras colocar la boya orientativa (Esc para salir)';
+      else if(tool === 'line') msg = 'Haz clic en el inicio de la línea y luego en el final (Esc para salir)';
+      else if(tool === 'arrow') msg = 'Haz clic en el origen de la flecha y luego donde apunta (Esc para salir)';
+      else if(tool === 'boat') msg = 'Haz clic en el mapa donde quieras colocar el barco (Esc para salir)';
+      else if(tool === 'zone') msg = 'Haz clic en el centro del círculo y luego fija el radio (Esc para salir)';
+      else if(tool === 'eraser') msg = 'Haz clic sobre cualquier elemento para borrarlo (boya, barco, línea, flecha o círculo) · Esc para terminar';
+      showPlacingMsg(msg);
+    }
+    syncTacticsButtonsState();
+    renderTacticsPane();
+    drawMap();
+  }
+
+  function cancelAllPlacing(){
+    activeTool = null;
+    toolDraft = null;
+    const mapEl = document.getElementById('map');
+    if(mapEl){
+      mapEl.classList.remove('placing');
+      mapEl.classList.remove('eraser');
+    }
+    hidePlacingMsg();
+    syncTacticsButtonsState();
+    renderTacticsPane();
+    drawMap();
+  }
+
+  function handleTacticsClick(x, y, px, py){
+    if(!activeTool) return;
+
+    // Borrador selectivo de elementos tácticos
+    if(activeTool === 'eraser'){
+      function dSeg(px, py, x1, y1, x2, y2){
+        const dx = x2 - x1, dy = y2 - y1, l2 = dx * dx + dy * dy;
+        if(l2 === 0) return Math.hypot(px - x1, py - y1);
+        let t = ((px - x1) * dx + (py - y1) * dy) / l2;
+        t = Math.max(0, Math.min(1, t));
+        return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+      }
+
+      let bestHit = null, minDist = 26;
+
+      if(tactics.buoys){
+        tactics.buoys.forEach((b, i) => {
+          const d = Math.hypot(sx(b.x) - px, sy(b.y) - py);
+          if(d < minDist){ minDist = d; bestHit = { type: 'buoy', index: i, desc: `Boya ${b.name}` }; }
+        });
+      }
+      if(tactics.boats){
+        tactics.boats.forEach((b, i) => {
+          const d = Math.hypot(sx(b.x) - px, sy(b.y) - py);
+          if(d < minDist){ minDist = d; bestHit = { type: 'boat', index: i, desc: `Barco ${b.sail}` }; }
+        });
+      }
+      if(tactics.lines){
+        tactics.lines.forEach((l, i) => {
+          const d = dSeg(px, py, sx(l.x1), sy(l.y1), sx(l.x2), sy(l.y2));
+          if(d < minDist){ minDist = d; bestHit = { type: 'line', index: i, desc: 'Línea' }; }
+        });
+      }
+      if(tactics.arrows){
+        tactics.arrows.forEach((a, i) => {
+          const d = dSeg(px, py, sx(a.x1), sy(a.y1), sx(a.x2), sy(a.y2));
+          if(d < minDist){ minDist = d; bestHit = { type: 'arrow', index: i, desc: 'Flecha' }; }
+        });
+      }
+      if(tactics.manualZones){
+        tactics.manualZones.forEach((z, i) => {
+          const zx = sx(z.x), zy = sy(z.y), r = z.radius * cam.scale;
+          const dC = Math.hypot(zx - px, zy - py);
+          const dEdge = Math.abs(dC - r);
+          const dTxt = Math.hypot(zx - px, (zy + r + 12) - py);
+          const dEff = Math.min(dEdge, dC < 22 ? dC : Infinity, dTxt);
+          if(dEff < minDist){ minDist = dEff; bestHit = { type: 'zone', index: i, desc: 'Zona / Círculo' }; }
+        });
+      }
+
+      if(bestHit){
+        if(bestHit.type === 'buoy'){
+          const removed = tactics.buoys.splice(bestHit.index, 1)[0];
+          if(tactics.targetBuoyId === removed?.id){
+            tactics.targetBuoyId = tactics.buoys[0]?.id || null;
+          }
+        }
+        else if(bestHit.type === 'boat') tactics.boats.splice(bestHit.index, 1);
+        else if(bestHit.type === 'line') tactics.lines.splice(bestHit.index, 1);
+        else if(bestHit.type === 'arrow') tactics.arrows.splice(bestHit.index, 1);
+        else if(bestHit.type === 'zone') tactics.manualZones.splice(bestHit.index, 1);
+
+        showPlacingMsg(`${bestHit.desc} borrado · Haz clic en otro elemento o pulsa Esc`);
+        renderTacticsPane();
+        saveCurrentTrainingSession();
+        drawMap();
+      } else {
+        showPlacingMsg('No se tocó ningún elemento táctico · Haz clic sobre un barco, línea, flecha o círculo');
+      }
+      return;
+    }
+
+    // Colocar boya orientativa
+    if(activeTool === 'buoy'){
+      const name = (tacBuoyConfig.name || ('B' + (tactics.buoys.length + 1))).trim();
+      const newBuoy = {
+        id: 'buoy_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+        x,
+        y,
+        name,
+        color: tacBuoyConfig.color || '#ea580c'
+      };
+      tactics.buoys.push(newBuoy);
+      if(!tactics.targetBuoyId){
+        tactics.targetBuoyId = newBuoy.id;
+      }
+      const numMatch = name.match(/^(.*?)(\d+)$/);
+      if(numMatch){
+        tacBuoyConfig.name = numMatch[1] + (parseInt(numMatch[2], 10) + 1);
+      } else {
+        tacBuoyConfig.name = 'B' + (tactics.buoys.length + 1);
+      }
+      showPlacingMsg(`Boya ${name} colocada · Clic para añadir otra o Esc para salir`);
+      renderTacticsPane();
+      saveCurrentTrainingSession();
+      drawMap();
+      return;
+    }
+
+    // Colocar barco táctico
+    if(activeTool === 'boat'){
+      const w = (D && D.windRef != null) ? D.windRef : 110;
+      let hdg = tacBoatConfig.hdg || 45, tack = 'stbd';
+      if(tacBoatConfig.tack === 'stbd_up'){ hdg = ((w - 45) % 360 + 360) % 360; tack = 'stbd'; }
+      else if(tacBoatConfig.tack === 'port_up'){ hdg = (w + 45) % 360; tack = 'port'; }
+      else if(tacBoatConfig.tack === 'stbd_down'){ hdg = (w + 140) % 360; tack = 'stbd'; }
+      else if(tacBoatConfig.tack === 'port_down'){ hdg = ((w - 140) % 360 + 360) % 360; tack = 'port'; }
+      else { tack = norm(hdg - w) > 0 ? 'stbd' : 'port'; }
+
+      const placedSail = tacBoatConfig.sail || '1';
+      tactics.boats.push({
+        x, y,
+        heading: hdg,
+        tack,
+        sail: placedSail,
+        color: tacBoatConfig.color || '#ef4444',
+        id: Date.now()
+      });
+      const num = parseInt(placedSail, 10);
+      if(!isNaN(num)) tacBoatConfig.sail = String(num + 1);
+
+      showPlacingMsg(`Barco ${placedSail} colocado · Clic para añadir otro o Esc para salir`);
+      renderTacticsPane();
+      saveCurrentTrainingSession();
+      drawMap();
+      return;
+    }
+
+    // Dibujar línea recta
+    if(activeTool === 'line'){
+      if(!toolDraft){
+        toolDraft = { x1: x, y1: y, curX: x, curY: y };
+        showPlacingMsg('Haz clic en el punto final de la línea');
+      } else {
+        tactics.lines.push({
+          x1: toolDraft.x1,
+          y1: toolDraft.y1,
+          x2: x,
+          y2: y,
+          color: tacLineConfig.color || '#0284c7'
+        });
+        toolDraft = null;
+        showPlacingMsg('Línea añadida · Clic para otra línea o Esc para terminar');
+        renderTacticsPane();
+        saveCurrentTrainingSession();
+        drawMap();
+      }
+      return;
+    }
+
+    // Dibujar flecha táctica
+    if(activeTool === 'arrow'){
+      if(!toolDraft){
+        toolDraft = { x1: x, y1: y, curX: x, curY: y };
+        showPlacingMsg('Haz clic donde debe apuntar la flecha');
+      } else {
+        tactics.arrows.push({
+          x1: toolDraft.x1,
+          y1: toolDraft.y1,
+          x2: x,
+          y2: y,
+          color: tacArrowConfig.color || '#10b981'
+        });
+        toolDraft = null;
+        showPlacingMsg('Flecha añadida · Clic para otra flecha o Esc para terminar');
+        renderTacticsPane();
+        saveCurrentTrainingSession();
+        drawMap();
+      }
+      return;
+    }
+
+    // Dibujar círculo / zona manual
+    if(activeTool === 'zone'){
+      if(!toolDraft){
+        toolDraft = { cx: x, cy: y, curX: x, curY: y };
+        showPlacingMsg('Haz clic para fijar el radio del círculo');
+      } else {
+        const r = Math.hypot(x - toolDraft.cx, y - toolDraft.cy);
+        tactics.manualZones.push({
+          x: toolDraft.cx,
+          y: toolDraft.cy,
+          radius: Math.max(3, r)
+        });
+        toolDraft = null;
+        showPlacingMsg('Círculo añadido · Clic para otro círculo o Esc para terminar');
+        renderTacticsPane();
+        saveCurrentTrainingSession();
+        drawMap();
+      }
+      return;
+    }
+  }
+
+  function undoTactics(){
+    if(tactics.buoys && tactics.buoys.length){
+      const removed = tactics.buoys.pop();
+      if(tactics.targetBuoyId === removed?.id){
+        tactics.targetBuoyId = tactics.buoys[0]?.id || null;
+      }
+    }
+    else if(tactics.boats.length) tactics.boats.pop();
+    else if(tactics.lines.length) tactics.lines.pop();
+    else if(tactics.arrows.length) tactics.arrows.pop();
+    else if(tactics.manualZones.length) tactics.manualZones.pop();
+    else if(tactics.laylines) tactics.laylines = false;
+    else if(tactics.threeLengths) tactics.threeLengths = false;
+    renderTacticsPane();
+    saveCurrentTrainingSession();
+    drawMap();
+  }
+
+  function clearAllTactics(){
+    tactics.buoys = [];
+    tactics.targetBuoyId = null;
+    tactics.lines = [];
+    tactics.arrows = [];
+    tactics.boats = [];
+    tactics.manualZones = [];
+    tactics.laylines = false;
+    tactics.threeLengths = false;
+    cancelAllPlacing();
+    renderTacticsPane();
+    saveCurrentTrainingSession();
+    drawMap();
+  }
+
+  // Laylines barlovento a 45°: SE APLICAN EXCLUSIVAMENTE A LAS BOYAS COLOCADAS
+  function drawTacticalLaylines(w, sc){
+    if(!tactics || !tactics.laylines || !tactics.buoys || !tactics.buoys.length) return;
+    const layLen = 900;
+    const D2R = Math.PI / 180;
+    const stbdHdg = (w + 225) * D2R, portHdg = (w + 135) * D2R;
+
+    ctxMap.save();
+    ctxMap.setLineDash([6, 5]);
+    ctxMap.lineWidth = 1.3;
+    ctxMap.strokeStyle = 'rgba(148, 163, 184, 0.85)';
+    tactics.buoys.forEach(m => {
+      const mx = sx(m.x), my = sy(m.y);
+      const stbdX = m.x + Math.sin(stbdHdg) * layLen, stbdY = m.y + Math.cos(stbdHdg) * layLen;
+      const portX = m.x + Math.sin(portHdg) * layLen, portY = m.y + Math.cos(portHdg) * layLen;
+      ctxMap.beginPath(); ctxMap.moveTo(mx, my); ctxMap.lineTo(sx(stbdX), sy(stbdY)); ctxMap.stroke();
+      ctxMap.beginPath(); ctxMap.moveTo(mx, my); ctxMap.lineTo(sx(portX), sy(portY)); ctxMap.stroke();
+    });
+    ctxMap.setLineDash([]);
+    ctxMap.restore();
+  }
+
+  // Zona de 3 esloras (7,08 m): SE APLICA EXCLUSIVAMENTE A LAS BOYAS COLOCADAS
+  function drawThreeLengths(sc){
+    if(!tactics || !tactics.threeLengths || !tactics.buoys || !tactics.buoys.length) return;
+    const rPx = Math.max(1, Math.abs(7.08 * sc));
+    ctxMap.save();
+    ctxMap.setLineDash([4, 3]);
+    ctxMap.strokeStyle = '#f59e0b';
+    ctxMap.lineWidth = 1.3;
+    tactics.buoys.forEach(p => {
+      const px = sx(p.x), py = sy(p.y);
+      ctxMap.beginPath();
+      ctxMap.arc(px, py, rPx, 0, Math.PI * 2);
+      ctxMap.stroke();
+      drawTextLabel('3 esloras', px, py + rPx + 10, {
+        font: '600 9.5px monospace',
+        fillStyle: '#f59e0b',
+        stroke: false,
+        align: 'center'
+      });
+    });
+    ctxMap.setLineDash([]);
+    ctxMap.restore();
+  }
+
+  function drawManualZones(sc){
+    if(!tactics || !tactics.manualZones || !tactics.manualZones.length) return;
+    ctxMap.save();
+    tactics.manualZones.forEach(z => {
+      const px = sx(z.x), py = sy(z.y), r = Math.max(1, Math.abs(z.radius * sc));
+      ctxMap.beginPath();
+      ctxMap.arc(px, py, r, 0, Math.PI * 2);
+      ctxMap.fillStyle = 'rgba(59, 130, 246, 0.12)';
+      ctxMap.fill();
+      ctxMap.setLineDash([4, 3]);
+      ctxMap.strokeStyle = 'rgba(59, 130, 246, 0.85)';
+      ctxMap.lineWidth = 1.5;
+      ctxMap.stroke();
+      ctxMap.setLineDash([]);
+      drawTextLabel('Zona · ' + Math.round(z.radius) + ' m', px, py + r + 12, {
+        font: '600 10.5px monospace',
+        fillStyle: '#38bdf8',
+        stroke: false,
+        align: 'center'
+      });
+    });
+    ctxMap.restore();
+  }
+
+  function drawTacticalLines(){
+    if(!tactics || !tactics.lines || !tactics.lines.length) return;
+    const D2R = Math.PI / 180;
+    ctxMap.save();
+    tactics.lines.forEach(l => {
+      const x1 = sx(l.x1), y1 = sy(l.y1), x2 = sx(l.x2), y2 = sy(l.y2);
+      ctxMap.strokeStyle = l.color || '#0284c7';
+      ctxMap.lineWidth = 2.2;
+      ctxMap.beginPath();
+      ctxMap.moveTo(x1, y1);
+      ctxMap.lineTo(x2, y2);
+      ctxMap.stroke();
+
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      const dist = Math.hypot(l.x2 - l.x1, l.y2 - l.y1);
+      const hdg = ((Math.atan2(l.x2 - l.x1, l.y2 - l.y1) / D2R) % 360 + 360) % 360;
+      const txt = `${Math.round(dist)} m · ${deg3(hdg)}`;
+      drawTextLabel(txt, mx, my - 6, {
+        font: '600 11px monospace',
+        fillStyle: l.color || '#0284c7',
+        lineWidth: 3,
+        strokeStyle: '#0b1320',
+        align: 'center'
+      });
+    });
+    ctxMap.restore();
+  }
+
+  function drawTacticalArrows(){
+    if(!tactics || !tactics.arrows || !tactics.arrows.length) return;
+    ctxMap.save();
+    tactics.arrows.forEach(a => {
+      const x1 = sx(a.x1), y1 = sy(a.y1), x2 = sx(a.x2), y2 = sy(a.y2);
+      const dx = x2 - x1, dy = y2 - y1;
+      const ang = Math.atan2(dy, dx);
+      ctxMap.strokeStyle = a.color || '#10b981';
+      ctxMap.lineWidth = 2.5;
+      ctxMap.beginPath();
+      ctxMap.moveTo(x1, y1);
+      ctxMap.lineTo(x2, y2);
+      ctxMap.stroke();
+
+      const headLen = 12;
+      ctxMap.fillStyle = a.color || '#10b981';
+      ctxMap.beginPath();
+      ctxMap.moveTo(x2, y2);
+      ctxMap.lineTo(x2 - headLen * Math.cos(ang - 0.45), y2 - headLen * Math.sin(ang - 0.45));
+      ctxMap.lineTo(x2 - headLen * Math.cos(ang + 0.45), y2 - headLen * Math.sin(ang + 0.45));
+      ctxMap.closePath();
+      ctxMap.fill();
+    });
+    ctxMap.restore();
+  }
+
+  function drawTacticalBoats(w, sc){
+    if(!tactics || !tactics.boats || !tactics.boats.length) return;
+    const D2R = Math.PI / 180;
+    const L = Math.max(12, 2.3 * sc), Bw = L * 0.55;
+    tactics.boats.forEach(b => {
+      const px = sx(b.x), py = sy(b.y);
+      const twa = norm(b.heading - w);
+      ctxMap.save();
+      ctxMap.translate(px, py);
+      ctxMap.rotate(b.heading * D2R);
+
+      // Casco Optimist
+      ctxMap.beginPath();
+      ctxMap.moveTo(-0.3 * Bw, -L / 2);
+      ctxMap.lineTo(0.3 * Bw, -L / 2);
+      ctxMap.lineTo(0.5 * Bw, -0.08 * L);
+      ctxMap.lineTo(0.44 * Bw, L / 2);
+      ctxMap.lineTo(-0.44 * Bw, L / 2);
+      ctxMap.lineTo(-0.5 * Bw, -0.08 * L);
+      ctxMap.closePath();
+      ctxMap.fillStyle = b.color || '#ef4444';
+      ctxMap.fill();
+      ctxMap.strokeStyle = '#ffffff';
+      ctxMap.lineWidth = 1;
+      ctxMap.stroke();
+
+      // Botavara según viento y amura
+      const boom = clamp(Math.abs(twa) / 2, 8, 85) * D2R * (twa > 0 ? 1 : -1);
+      ctxMap.beginPath();
+      ctxMap.moveTo(0, -0.22 * L);
+      ctxMap.lineTo(Math.sin(boom) * L * 0.85, -0.22 * L + Math.cos(boom) * L * 0.85);
+      ctxMap.strokeStyle = '#ffffff';
+      ctxMap.lineWidth = 1.8;
+      ctxMap.stroke();
+      ctxMap.restore();
+
+      const tx = px + L * 0.8, ty = py - L * 0.6;
+      const lab = `${b.sail} (${b.tack === 'stbd' ? 'Est' : 'Bab'})`;
+      drawTextLabel(lab, tx, ty, {
+        font: '600 11px monospace',
+        fillStyle: b.color || '#ef4444',
+        strokeStyle: '#0b1320',
+        lineWidth: 3,
+        align: 'left'
+      });
+    });
+  }
+
+
+  // Dibujar boyas / balizas orientativas
+  function drawTacticalBuoys(sc){
+    if(!tactics || !tactics.buoys || !tactics.buoys.length) return;
+    const targetId = tactics.targetBuoyId || tactics.buoys[0]?.id;
+    ctxMap.save();
+    tactics.buoys.forEach(b => {
+      const bx = sx(b.x), by = sy(b.y);
+      const isTarget = (b.id === targetId);
+      const r = Math.max(6, Math.min(13, 0.75 * sc));
+
+      // Si es la baliza objetivo VMC, resalte con aro de selección y pulso
+      if(isTarget){
+        ctxMap.beginPath();
+        ctxMap.arc(bx, by, r + 4.5, 0, Math.PI * 2);
+        ctxMap.strokeStyle = '#38bdf8';
+        ctxMap.lineWidth = 2.2;
+        ctxMap.stroke();
+        ctxMap.beginPath();
+        ctxMap.arc(bx, by, r + 8, 0, Math.PI * 2);
+        ctxMap.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+        ctxMap.lineWidth = 1.2;
+        ctxMap.stroke();
+      }
+
+      // Cuerpo de la boya
+      ctxMap.beginPath();
+      ctxMap.arc(bx, by, r, 0, Math.PI * 2);
+      ctxMap.fillStyle = b.color || '#ea580c';
+      ctxMap.fill();
+      ctxMap.strokeStyle = '#7c2d12';
+      ctxMap.lineWidth = 1.2;
+      ctxMap.stroke();
+
+      // Reflejo interior
+      if(r >= 5){
+        ctxMap.beginPath();
+        ctxMap.arc(bx, by, r * 0.35, 0, Math.PI * 2);
+        ctxMap.fillStyle = '#ffedd5';
+        ctxMap.fill();
+      }
+
+      // Nombre de la boya y distintivo si es objetivo VMC
+      const labTxt = isTarget ? `🎯 ${b.name}` : b.name;
+      drawTextLabel(labTxt, bx + r + 4, by + 4, {
+        font: 'bold 11px monospace',
+        fillStyle: isTarget ? '#38bdf8' : (b.color || '#ea580c'),
+        strokeStyle: '#071318',
+        lineWidth: 3,
+        align: 'left'
+      });
+    });
+    ctxMap.restore();
+  }
+
+  // Cálculo y visualización en directo de VMC hacia la baliza seleccionada
+  function drawTacticalVMC(sc){
+    if(!tactics || !tactics.buoys || !tactics.buoys.length || !D || !D.OK) return;
+    const targetBuoy = tactics.buoys.find(b => b.id === tactics.targetBuoyId) || tactics.buoys[0];
+    if(!targetBuoy) return;
+
+    const curS = Math.floor(currentPlaybackSec);
+    const D2R = Math.PI / 180;
+    const boatsToEval = new Set([activeBoatIdx, ...(selectedBoatIndices || [])]);
+
+    ctxMap.save();
+    boatsToEval.forEach(b => {
+      const base = b * D.T;
+      if(!D.OK[base + curS]) return;
+
+      const bx = D.X[base + curS];
+      const by = D.Y[base + curS];
+      const dx = targetBuoy.x - bx;
+      const dy = targetBuoy.y - by;
+      const dist = Math.hypot(dx, dy);
+      if(dist < 0.5) return;
+
+      const bearingToBuoy = ((Math.atan2(dx, dy) / D2R) % 360 + 360) % 360;
+      const kine = D.kine && D.kine[b];
+      const cog = (kine && kine.cogEma && kine.cogEma[curS] != null) ? kine.cogEma[curS] : D.H[base + curS];
+      const sog = (kine && kine.sogEma && kine.sogEma[curS] != null) ? kine.sogEma[curS] : 0;
+      const diffDeg = ((cog - bearingToBuoy + 180) % 360 + 360) % 360 - 180;
+      const vmc = sog * Math.cos(diffDeg * D2R);
+
+      const pBoat = { x: sx(bx), y: sy(by) };
+      const pBuoy = { x: sx(targetBuoy.x), y: sy(targetBuoy.y) };
+
+      // Línea conectora discontinua barco -> baliza
+      ctxMap.setLineDash([4, 4]);
+      ctxMap.strokeStyle = D.boats[b].color || '#38bdf8';
+      ctxMap.lineWidth = (b === activeBoatIdx) ? 2.0 : 1.2;
+      ctxMap.beginPath();
+      ctxMap.moveTo(pBoat.x, pBoat.y);
+      ctxMap.lineTo(pBuoy.x, pBuoy.y);
+      ctxMap.stroke();
+      ctxMap.setLineDash([]);
+
+      // Etiqueta flotante de VMC en directo a 35% de la línea
+      const mx = pBoat.x + (pBuoy.x - pBoat.x) * 0.38;
+      const my = pBoat.y + (pBuoy.y - pBoat.y) * 0.38;
+      const vmcSign = vmc >= 0 ? '+' : '';
+      const vmcTxt = `🎯 ${D.boats[b].sail}: VMC ${vmcSign}${vmc.toFixed(1)} kn · ${Math.round(dist)} m`;
+
+      drawTextLabel(vmcTxt, mx, my - 6, {
+        font: 'bold 11px monospace',
+        fillStyle: vmc >= 0 ? '#38bdf8' : '#f87171',
+        strokeStyle: '#071318',
+        lineWidth: 3.2,
+        align: 'center'
+      });
+    });
+    ctxMap.restore();
+  }
+
+  function drawTacticalDraft(w, sc){
+    if(!activeTool || !toolDraft) return;
+    ctxMap.save();
+    if(activeTool === 'line'){
+      ctxMap.strokeStyle = tacLineConfig.color || '#0284c7';
+      ctxMap.lineWidth = 1.8;
+      ctxMap.setLineDash([4, 4]);
+      ctxMap.beginPath();
+      ctxMap.moveTo(sx(toolDraft.x1), sy(toolDraft.y1));
+      ctxMap.lineTo(sx(toolDraft.curX), sy(toolDraft.curY));
+      ctxMap.stroke();
+    } else if(activeTool === 'arrow'){
+      ctxMap.strokeStyle = tacArrowConfig.color || '#10b981';
+      ctxMap.lineWidth = 2.2;
+      ctxMap.setLineDash([4, 4]);
+      ctxMap.beginPath();
+      ctxMap.moveTo(sx(toolDraft.x1), sy(toolDraft.y1));
+      ctxMap.lineTo(sx(toolDraft.curX), sy(toolDraft.curY));
+      ctxMap.stroke();
+    } else if(activeTool === 'zone'){
+      const r = Math.max(1, Math.abs(Math.hypot(toolDraft.curX - toolDraft.cx, toolDraft.curY - toolDraft.cy) * sc));
+      ctxMap.beginPath();
+      ctxMap.arc(sx(toolDraft.cx), sy(toolDraft.cy), r, 0, Math.PI * 2);
+      ctxMap.fillStyle = 'rgba(59, 130, 246, 0.12)';
+      ctxMap.fill();
+      ctxMap.strokeStyle = '#2563eb';
+      ctxMap.lineWidth = 1.5;
+      ctxMap.setLineDash([3, 3]);
+      ctxMap.stroke();
+    }
+    ctxMap.restore();
+  }
+
+  function renderTacticsPane(){
+    const tacticsEl = document.getElementById('pane-tactics');
+    if(!tacticsEl) return;
+    const isWind = mapOrientation === 'wind';
+    const numBuoys = (tactics.buoys && tactics.buoys.length) || 0;
+    const targetBuoy = (tactics.buoys && tactics.buoys.find(b => b.id === tactics.targetBuoyId)) || (tactics.buoys && tactics.buoys[0]);
+
+    // Calcular VMC actual de barcos seleccionados si hay datos
+    let vmcRowsHtml = '';
+    if(targetBuoy && D && D.OK){
+      const curS = Math.floor(currentPlaybackSec);
+      const D2R = Math.PI / 180;
+      const boatsToEval = new Set([activeBoatIdx, ...(selectedBoatIndices || [])]);
+      const rows = [];
+      boatsToEval.forEach(b => {
+        const base = b * D.T;
+        if(!D.OK[base + curS]) return;
+        const dx = targetBuoy.x - D.X[base + curS];
+        const dy = targetBuoy.y - D.Y[base + curS];
+        const dist = Math.hypot(dx, dy);
+        const bearing = ((Math.atan2(dx, dy) / D2R) % 360 + 360) % 360;
+      const kine = D.kine && D.kine[b];
+      const cog = (kine && kine.cogEma && kine.cogEma[curS] != null) ? kine.cogEma[curS] : D.H[base + curS];
+      const sog = (kine && kine.sogEma && kine.sogEma[curS] != null) ? kine.sogEma[curS] : 0;
+        const diffDeg = ((cog - bearing + 180) % 360 + 360) % 360 - 180;
+        const vmc = sog * Math.cos(diffDeg * D2R);
+        rows.push({
+          sail: D.boats[b].sail,
+          color: D.boats[b].color,
+          dist: Math.round(dist),
+          vmc: vmc.toFixed(1),
+          vmcVal: vmc,
+          isActive: (b === activeBoatIdx)
+        });
+      });
+      if(rows.length){
+        vmcRowsHtml = `
+          <div style="background:var(--sub);border:1px solid var(--line);border-radius:6px;padding:6px 8px;display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:10.5px;color:var(--muted);display:flex;justify-content:space-between">
+              <span>Barco</span>
+              <span>Distancia · VMC a ${esc(targetBuoy.name)}</span>
+            </div>
+            ${rows.map(r => `
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-family:monospace">
+                <span style="display:flex;align-items:center;gap:5px;font-weight:${r.isActive?'700':'500'}">
+                  <span style="width:8px;height:8px;border-radius:50%;background:${r.color}"></span>
+                  ${esc(r.sail)}
+                </span>
+                <span style="font-weight:700;color:${r.vmcVal >= 0 ? '#38bdf8' : '#f87171'}">
+                  ${r.dist} m · ${r.vmcVal >= 0 ? '+' : ''}${r.vmc} kn
+                </span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+    }
+
+    tacticsEl.innerHTML = `
+      <div>
+        <div style="font-weight:700;font-size:13px;color:var(--ink);margin-bottom:2px">Pizarra Táctica de Entrenamiento</div>
+        <div style="font-size:11px;color:var(--muted)">Coloca boyas orientativas con cálculo de VMC en directo, líneas, flechas, zonas y barcos.</div>
+      </div>
+
+      <!-- SECCIÓN 1: BOYAS ORIENTATIVAS Y VMC EN DIRECTO -->
+      <div style="display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <label style="font-size:12px;font-weight:700;color:var(--ink)">📍 Boyas / Balizas Orientativas</label>
+          <span style="font-size:11px;color:var(--muted)">${numBuoys} colocadas</span>
+        </div>
+        <div style="font-size:10.5px;color:var(--muted)">Balizas orientativas en el mapa para calcular en directo el VMC de los barcos seleccionados.</div>
+
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <label style="font-size:11px;display:flex;align-items:center;gap:4px">Nombre:
+            <input class="num" id="tacBuoyName" value="${esc(tacBuoyConfig.name)}" style="width:55px;padding:4px 6px;text-align:center;border:1px solid var(--line);border-radius:4px;background:var(--sub);color:var(--ink)">
+          </label>
+          <label style="font-size:11px;display:flex;align-items:center;gap:4px" title="Color de la baliza">Color:
+            <input type="color" id="tacBuoyColor" value="${tacBuoyConfig.color||'#ea580c'}" style="width:28px;height:28px;padding:1px;border:1px solid var(--line);border-radius:4px;cursor:pointer;background:none">
+          </label>
+          <button type="button" class="btn" id="btnPlaceBuoy" style="flex:1;min-width:140px;padding:6px 10px;font-weight:700;font-size:11.5px;${activeTool==='buoy'?'background:var(--sel);color:#0b1320;font-weight:700':''}" aria-pressed="${activeTool==='buoy'}">
+            ${activeTool==='buoy'?'🟠 Clic en mapa para situar boya...':'🟠 Colocar Boya en Mapa'}
+          </button>
+        </div>
+
+        ${numBuoys > 0 ? `
+          <div style="margin-top:4px;display:flex;flex-direction:column;gap:5px">
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:11.5px">
+              <label style="font-weight:600;color:var(--ink)">🎯 Baliza objetivo VMC:</label>
+              <select id="tacSelectTargetBuoy" style="padding:3px 6px;border:1px solid var(--line);border-radius:4px;background:var(--sub);color:var(--ink);font-size:11px;font-weight:700">
+                ${tactics.buoys.map(b => `<option value="${b.id}" ${(b.id === (tactics.targetBuoyId || tactics.buoys[0].id))?'selected':''}>${esc(b.name)}</option>`).join('')}
+              </select>
+            </div>
+            ${vmcRowsHtml}
+            <div style="display:flex;flex-direction:column;gap:3px;max-height:90px;overflow-y:auto;border:1px solid var(--line);border-radius:5px;padding:3px">
+              ${tactics.buoys.map((b, i) => `
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:3px 6px;background:var(--panel);border-radius:3px;font-size:11px">
+                  <span style="display:flex;align-items:center;gap:6px">
+                    <input type="color" class="tac-buoy-col-edit" data-buoyidx="${i}" value="${b.color||'#ea580c'}" style="width:18px;height:18px;padding:0;border:none;cursor:pointer;background:none">
+                    <strong>${esc(b.name)}</strong>
+                    ${b.id === targetBuoy?.id ? '<span style="color:#38bdf8;font-weight:700">(Objetivo VMC)</span>' : ''}
+                  </span>
+                  <button type="button" class="btn" data-deltacbuoy="${i}" style="padding:1px 5px;font-size:10.5px;color:#ef4444" title="Eliminar boya">✕</button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : '<div style="font-size:10.5px;color:var(--dim);font-style:italic">Añade una boya para ver el VMC de los barcos hacia ella en tiempo real.</div>'}
+      </div>
+
+      <!-- SECCIÓN 2: HERRAMIENTAS AUTOMÁTICAS (SÓLO PARA BOYAS) -->
+      <div style="display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:10px">
+        <label style="font-size:11.5px;font-weight:600;color:var(--muted)">Herramientas Automáticas (en Boyas)</label>
+        <div style="display:flex;gap:6px">
+          <button type="button" class="btn" id="btnLaylines" style="flex:1;padding:6px 8px;font-size:11.5px" aria-pressed="${tactics.laylines}">📐 Laylines 45°</button>
+          <button type="button" class="btn" id="btnThreeLengths" style="flex:1;padding:6px 8px;font-size:11.5px" aria-pressed="${tactics.threeLengths}">⭕ 3 esloras (7,08 m)</button>
+        </div>
+        <div style="font-size:10.5px;color:var(--muted)">Las laylines y el círculo de 3 esloras se proyectan exclusivamente sobre las boyas colocadas en el mapa.</div>
+      </div>
+
+      <!-- SECCIÓN 3: DIBUJO TÁCTICO Y BORRADOR -->
+      <div style="display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:10px">
+        <label style="font-size:11.5px;font-weight:600;color:var(--muted)">Líneas, Flechas y Zonas</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:4px">
+            <button type="button" class="btn" id="btnDrawLine" style="padding:6px 10px;font-size:11.5px" aria-pressed="${activeTool==='line'}">📏 ${activeTool==='line'?'Terminar regla':'Línea (dist/rumbo)'}</button>
+            <input type="color" id="tacLineColor" value="${tacLineConfig.color||'#0284c7'}" title="Color de la línea" style="width:28px;height:28px;padding:1px;border:1px solid var(--line);border-radius:4px;cursor:pointer;background:none">
+          </div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <button type="button" class="btn" id="btnDrawArrow" style="padding:6px 10px;font-size:11.5px" aria-pressed="${activeTool==='arrow'}">➔ ${activeTool==='arrow'?'Terminar flecha':'Flecha'}</button>
+            <input type="color" id="tacArrowColor" value="${tacArrowConfig.color||'#10b981'}" title="Color de la flecha" style="width:28px;height:28px;padding:1px;border:1px solid var(--line);border-radius:4px;cursor:pointer;background:none">
+          </div>
+          <button type="button" class="btn" id="btnDrawZone" style="padding:6px 10px;font-size:11.5px" aria-pressed="${activeTool==='zone'}">⭕ ${activeTool==='zone'?'Terminar círculo':'Círculo / Zona'}</button>
+          <button type="button" class="btn" id="btnEraser" style="padding:6px 10px;font-size:11.5px;${activeTool==='eraser'?'background:#fee2e2;border-color:#f87171;color:#b91c1c;font-weight:700':''}" aria-pressed="${activeTool==='eraser'}" title="Haz clic en cualquier elemento táctico o boya para borrarlo">🧽 Borrador</button>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 4: BARCOS DE APOYO TÁCTICO -->
+      <div style="display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:10px">
+        <label style="font-size:11.5px;font-weight:600;color:var(--muted)">Barcos de Apoyo Táctico</label>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <label style="font-size:11px;display:flex;align-items:center;gap:4px">Vela:
+            <input class="num" id="tacSail" value="${esc(tacBoatConfig.sail)}" style="width:50px;padding:4px 6px;text-align:center;border:1px solid var(--line);border-radius:4px;background:var(--sub);color:var(--ink)">
+          </label>
+          <label style="font-size:11px;display:flex;align-items:center;gap:4px" title="Color del barco">Color:
+            <input type="color" id="tacBoatColor" value="${tacBoatConfig.color||'#ef4444'}" style="width:28px;height:28px;padding:1px;border:1px solid var(--line);border-radius:4px;cursor:pointer;background:none">
+          </label>
+          <label style="font-size:11px;display:flex;align-items:center;gap:4px">Amuras:
+            <select class="num" id="tacTack" style="padding:4px 6px;border:1px solid var(--line);border-radius:4px;background:var(--sub);color:var(--ink);font-size:11px">
+              <option value="stbd_up" ${tacBoatConfig.tack==='stbd_up'?'selected':''}>Estribor (ceñida)</option>
+              <option value="port_up" ${tacBoatConfig.tack==='port_up'?'selected':''}>Babor (ceñida)</option>
+              <option value="stbd_down" ${tacBoatConfig.tack==='stbd_down'?'selected':''}>Estribor (popa)</option>
+              <option value="port_down" ${tacBoatConfig.tack==='port_down'?'selected':''}>Babor (popa)</option>
+              <option value="custom" ${tacBoatConfig.tack==='custom'?'selected':''}>Rumbo libre (°)</option>
+            </select>
+          </label>
+          ${tacBoatConfig.tack==='custom'?`<input class="num" id="tacHdg" type="number" min="0" max="359" value="${tacBoatConfig.hdg}" style="width:55px;padding:4px;text-align:center;border:1px solid var(--line);border-radius:4px;background:var(--sub);color:var(--ink)" title="Rumbo en grados">`:''}
+        </div>
+        <div style="margin-top:4px">
+          <button type="button" class="btn" id="btnPlaceBoat" style="width:100%;padding:7px 10px;font-weight:700;font-size:12px;background:var(--sub);border:1px solid var(--line);color:var(--ink)" aria-pressed="${activeTool==='boat'}">
+            ⛵ ${activeTool==='boat'?'Colocando barco (clic en mapa)...':'Colocar barco táctico en mapa'}
+          </button>
+        </div>
+      </div>
+
+      ${(tactics.boats && tactics.boats.length > 0) ? `
+        <div style="border-top:1px solid var(--line);padding-top:10px">
+          <label style="font-size:11.5px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px">Barcos tácticos colocados (${tactics.boats.length})</label>
+          <div style="display:flex;flex-direction:column;gap:4px;max-height:100px;overflow-y:auto">
+            ${tactics.boats.map((b, i) => `
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px;background:var(--sub);border:1px solid var(--line);border-radius:4px;font-size:11.5px">
+                <div style="display:flex;align-items:center;gap:6px">
+                  <input type="color" class="tac-boat-color-edit" data-boatidx="${i}" value="${b.color||'#ef4444'}" style="width:20px;height:20px;padding:0;border:none;cursor:pointer;background:none">
+                  <strong>Vela ${esc(b.sail)}</strong>
+                  <span style="color:var(--muted)">(${b.tack==='stbd'?'Estribor':'Babor'}) · ${Math.round(b.heading)}°</span>
+                </div>
+                <button type="button" class="btn" data-deltacboat="${i}" style="padding:2px 6px;font-size:11px;color:#ef4444;border-color:rgba(239,68,68,0.3)" title="Eliminar barco">✕</button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- SECCIÓN 5: ORIENTACIÓN Y ACCIONES -->
+      <div style="display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:10px">
+        <label style="font-size:11.5px;font-weight:600;color:var(--muted)">Orientación del Campo</label>
+        <div style="display:flex;gap:6px">
+          <button type="button" class="btn" id="btnTacNorthUp" style="flex:1;padding:6px 6px;font-size:11.5px" aria-pressed="${!isWind}">Norte arriba</button>
+          <button type="button" class="btn" id="btnTacWindUp" style="flex:1;padding:6px 6px;font-size:11.5px" aria-pressed="${isWind}">Viento arriba</button>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:6px;border-top:1px solid var(--line);padding-top:10px;margin-top:auto">
+        <button type="button" class="btn" id="btnUndoTac" style="flex:1;padding:6px;font-size:11.5px" title="Deshacer el último elemento táctico dibujado">↩ Deshacer</button>
+        <button type="button" class="btn" id="btnClearAllTac" style="flex:1;padding:6px;font-size:11.5px;color:#ef4444" title="Borrar todos los dibujos tácticos y boyas de la pizarra">🗑️ Limpiar todo</button>
+      </div>
+    `;
+
+    // Event listeners del panel táctico
+    const btnN = tacticsEl.querySelector('#btnTacNorthUp');
+    const btnW = tacticsEl.querySelector('#btnTacWindUp');
+    if(btnN) btnN.addEventListener('click', () => { toggleOrientation('north'); renderTacticsPane(); });
+    if(btnW) btnW.addEventListener('click', () => { toggleOrientation('wind'); renderTacticsPane(); });
+
+    // Botón colocar boya
+    const btnBuoy = tacticsEl.querySelector('#btnPlaceBuoy');
+    if(btnBuoy) btnBuoy.addEventListener('click', () => setTacticsTool(activeTool === 'buoy' ? null : 'buoy'));
+
+    const buoyNameIn = tacticsEl.querySelector('#tacBuoyName');
+    if(buoyNameIn) buoyNameIn.addEventListener('input', e => { tacBuoyConfig.name = e.target.value; });
+
+    const buoyCol = tacticsEl.querySelector('#tacBuoyColor');
+    if(buoyCol) buoyCol.addEventListener('input', e => { tacBuoyConfig.color = e.target.value; });
+
+    const selTargetBuoy = tacticsEl.querySelector('#tacSelectTargetBuoy');
+    if(selTargetBuoy) selTargetBuoy.addEventListener('change', e => {
+      tactics.targetBuoyId = e.target.value;
+      renderTacticsPane();
+      drawMap();
+    });
+
+    tacticsEl.querySelectorAll('.tac-buoy-col-edit').forEach(inp => {
+      inp.addEventListener('input', e => {
+        const idx = +inp.dataset.buoyidx;
+        if(tactics.buoys && tactics.buoys[idx]){
+          tactics.buoys[idx].color = e.target.value;
+          drawMap();
+          saveCurrentTrainingSession();
+        }
+      });
+    });
+
+    tacticsEl.querySelectorAll('[data-deltacbuoy]').forEach(b => {
+      b.addEventListener('click', () => {
+        const idx = +b.dataset.deltacbuoy;
+        const removed = tactics.buoys.splice(idx, 1)[0];
+        if(tactics.targetBuoyId === removed?.id){
+          tactics.targetBuoyId = tactics.buoys[0]?.id || null;
+        }
+        renderTacticsPane();
+        saveCurrentTrainingSession();
+        drawMap();
+      });
+    });
+
+    const btnLay = tacticsEl.querySelector('#btnLaylines');
+    if(btnLay) btnLay.addEventListener('click', () => {
+      tactics.laylines = !tactics.laylines;
+      renderTacticsPane();
+      saveCurrentTrainingSession();
+      drawMap();
+    });
+
+    const btn3L = tacticsEl.querySelector('#btnThreeLengths');
+    if(btn3L) btn3L.addEventListener('click', () => {
+      tactics.threeLengths = !tactics.threeLengths;
+      renderTacticsPane();
+      saveCurrentTrainingSession();
+      drawMap();
+    });
+
+    const btnLine = tacticsEl.querySelector('#btnDrawLine');
+    if(btnLine) btnLine.addEventListener('click', () => setTacticsTool(activeTool === 'line' ? null : 'line'));
+
+    const lineCol = tacticsEl.querySelector('#tacLineColor');
+    if(lineCol) lineCol.addEventListener('input', e => { tacLineConfig.color = e.target.value; });
+
+    const btnArrow = tacticsEl.querySelector('#btnDrawArrow');
+    if(btnArrow) btnArrow.addEventListener('click', () => setTacticsTool(activeTool === 'arrow' ? null : 'arrow'));
+
+    const arrCol = tacticsEl.querySelector('#tacArrowColor');
+    if(arrCol) arrCol.addEventListener('input', e => { tacArrowConfig.color = e.target.value; });
+
+    const btnZone = tacticsEl.querySelector('#btnDrawZone');
+    if(btnZone) btnZone.addEventListener('click', () => setTacticsTool(activeTool === 'zone' ? null : 'zone'));
+
+    const btnEraser = tacticsEl.querySelector('#btnEraser');
+    if(btnEraser) btnEraser.addEventListener('click', () => setTacticsTool(activeTool === 'eraser' ? null : 'eraser'));
+
+    const btnBoat = tacticsEl.querySelector('#btnPlaceBoat');
+    if(btnBoat) btnBoat.addEventListener('click', () => setTacticsTool(activeTool === 'boat' ? null : 'boat'));
+
+    const boatCol = tacticsEl.querySelector('#tacBoatColor');
+    if(boatCol) boatCol.addEventListener('input', e => { tacBoatConfig.color = e.target.value; });
+
+    const sailIn = tacticsEl.querySelector('#tacSail');
+    if(sailIn) sailIn.addEventListener('input', e => { tacBoatConfig.sail = e.target.value; });
+
+    const tackSel = tacticsEl.querySelector('#tacTack');
+    if(tackSel) tackSel.addEventListener('change', e => { tacBoatConfig.tack = e.target.value; renderTacticsPane(); });
+
+    const hdgIn = tacticsEl.querySelector('#tacHdg');
+    if(hdgIn) hdgIn.addEventListener('input', e => { tacBoatConfig.hdg = +e.target.value || 0; });
+
+    tacticsEl.querySelectorAll('.tac-boat-color-edit').forEach(inp => {
+      inp.addEventListener('input', e => {
+        const idx = +inp.dataset.boatidx;
+        if(tactics.boats[idx]){
+          tactics.boats[idx].color = e.target.value;
+          drawMap();
+          saveCurrentTrainingSession();
+        }
+      });
+    });
+
+    tacticsEl.querySelectorAll('[data-deltacboat]').forEach(b => {
+      b.addEventListener('click', () => {
+        tactics.boats.splice(+b.dataset.deltacboat, 1);
+        renderTacticsPane();
+        saveCurrentTrainingSession();
+        drawMap();
+      });
+    });
+
+    const btnUndo = tacticsEl.querySelector('#btnUndoTac');
+    if(btnUndo) btnUndo.addEventListener('click', undoTactics);
+
+    const btnClear = tacticsEl.querySelector('#btnClearAllTac');
+    if(btnClear) btnClear.addEventListener('click', clearAllTactics);
+  }
+
+
   function drawMap(){
     if(!ctxMap || !D) return;
     const w = mapCanvas.width, h = mapCanvas.height;
@@ -4538,36 +5876,62 @@ const OPTIMIST_POLAR_DATA = {
     ctxMap.rotate(camRot);
     ctxMap.translate(-w / 2, -h / 2);
 
-    // Cuadrícula marina mundo
+    // Cuadrícula táctica mundo orientada a 45° del viento (se reduce dinámicamente con zoom como en visor de regatas)
     const sc = cam.scale;
-    let gridStep = 50;
-    if(sc < 0.2) gridStep = 500;
-    else if(sc < 0.6) gridStep = 200;
-    else if(sc < 1.5) gridStep = 100;
-    else if(sc < 4.0) gridStep = 50;
-    else gridStep = 20;
+    const wDir = (D && D.windRef != null) ? D.windRef : 110;
+    const step = niceStep(sc);
+    const pxStep = step * sc;
+    const tacticalHdg = (wDir + 45) * D2R;
+    const sinA = Math.sin(tacticalHdg), cosA = Math.cos(tacticalHdg);
+    const u1 = cam.x * sinA + cam.y * cosA;
+    const u2 = cam.x * cosA - cam.y * sinA;
+    const offX = ((u1 * sc) % pxStep + pxStep) % pxStep;
+    const offY = ((u2 * sc) % pxStep + pxStep) % pxStep;
+    const diag = Math.hypot(w, h) * 1.5;
 
-    const leftX = cam.x - (w / sc) * 0.75;
-    const rightX = cam.x + (w / sc) * 0.75;
-    const bottomY = cam.y - (h / sc) * 0.75;
-    const topY = cam.y + (h / sc) * 0.75;
-    const startGridX = Math.floor(leftX / gridStep) * gridStep;
-    const startGridY = Math.floor(bottomY / gridStep) * gridStep;
-
+    // Rachas sutiles de viento
+    const wr = (wDir + 180) * D2R, vx = Math.sin(wr), vy = -Math.cos(wr);
+    const drift = (Date.now() / 1000) * 28;
     ctxMap.strokeStyle = 'rgba(160, 220, 220, 0.07)';
+    ctxMap.lineWidth = 1.2;
+    ctxMap.beginPath();
+    windStreaks.forEach(p => {
+      let px = ((p.u * diag + vx * drift) % diag + diag) % diag - diag / 2 + w / 2;
+      let py = ((p.v * diag + vy * drift) % diag + diag) % diag - diag / 2 + h / 2;
+      const L = 16 * p.l;
+      ctxMap.moveTo(px, py);
+      ctxMap.lineTo(px + vx * L, py + vy * L);
+    });
+    ctxMap.stroke();
+
+    // Cuadrícula táctica a 45° del viento
+    ctxMap.save();
+    ctxMap.translate(w / 2, h / 2);
+    ctxMap.rotate(tacticalHdg - Math.PI / 2);
+    ctxMap.strokeStyle = 'rgba(160, 220, 220, 0.08)';
     ctxMap.lineWidth = 1;
     ctxMap.beginPath();
-    for(let gx = startGridX; gx <= rightX; gx += gridStep){
-      const spx = sx(gx);
-      ctxMap.moveTo(spx, sy(bottomY));
-      ctxMap.lineTo(spx, sy(topY));
+    for(let x = -diag - offX; x <= diag; x += pxStep){
+      ctxMap.moveTo(x, -diag);
+      ctxMap.lineTo(x, diag);
     }
-    for(let gy = startGridY; gy <= topY; gy += gridStep){
-      const spy = sy(gy);
-      ctxMap.moveTo(sx(leftX), spy);
-      ctxMap.lineTo(sx(rightX), spy);
+    for(let y = -diag - offY; y <= diag; y += pxStep){
+      ctxMap.moveTo(-diag, y);
+      ctxMap.lineTo(diag, y);
     }
     ctxMap.stroke();
+    ctxMap.restore();
+
+    // Elementos tácticos de la pizarra
+    drawTacticalLaylines(wDir, sc);
+    drawThreeLengths(sc);
+    drawManualZones(sc);
+    drawTacticalLines();
+    drawTacticalArrows();
+    drawTacticalBuoys(sc);
+    drawTacticalVMC(sc);
+    drawTacticalBoats(wDir, sc);
+    drawTacticalDraft(wDir, sc);
 
     const sStartTrail = (trailLengthSec === Infinity) ? 0 : Math.max(0, curS - trailLengthSec);
 
@@ -5793,8 +7157,28 @@ const OPTIMIST_POLAR_DATA = {
         throw new Error('No se pudieron extraer puntos de navegación válidos de los archivos.');
       }
 
-      lastLoadedBoats = parsedBoats;
-      buildTrainingSessionData(parsedBoats);
+      if(lastLoadedBoats && lastLoadedBoats.length && D && D.N > 0){
+        const shouldAppend = confirm(`¿Deseas añadir estos ${parsedBoats.length} barcos a la sesión actual «${D.title}»?\n\n• Aceptar: Añadir a la sesión actual (permitiendo sobrescribir en la nube con los nuevos tracks).\n• Cancelar: Empezar una nueva sesión independiente.`);
+        if(shouldAppend){
+          parsedBoats.forEach(newB => {
+            const exists = lastLoadedBoats.find(b => (b.sail && b.sail === newB.sail) || (b.fileName && b.fileName === newB.fileName));
+            if(exists){
+              exists.points = newB.points;
+            } else {
+              lastLoadedBoats.push(newB);
+            }
+          });
+          buildTrainingSessionData(lastLoadedBoats);
+        } else {
+          currentCloudRegata = null;
+          currentCloudId = null;
+          lastLoadedBoats = parsedBoats;
+          buildTrainingSessionData(parsedBoats);
+        }
+      } else {
+        lastLoadedBoats = parsedBoats;
+        buildTrainingSessionData(parsedBoats);
+      }
 
       // Cloud meta override
       if(cloudMeta && cloudMeta.title){
@@ -5889,6 +7273,18 @@ const OPTIMIST_POLAR_DATA = {
 
   function buildTrainingSessionData(boatsList){
     lastLoadedBoats = boatsList;
+    const allTracks = {};
+    const usedTracks = [];
+    boatsList.forEach((b, idx) => {
+      const k = b.fileName || b.sail || b.name || ('Barco_' + (idx + 1));
+      allTracks[k] = (b.points || []).map(p => ({
+        t: p.time != null ? p.time : (p.t != null ? p.t : 0),
+        lat: p.lat,
+        lon: p.lon
+      }));
+      usedTracks.push(k);
+    });
+    lastLoad = { all: allTracks, used: usedTracks, warn: [], skipped: [] };
     const hues = [174, 28, 48, 205, 275, 335, 142, 190, 85, 24];
     let minT = Infinity, maxT = -Infinity;
 
@@ -6080,6 +7476,7 @@ const OPTIMIST_POLAR_DATA = {
     scrubEl.max = T - 1;
     scrubEl.value = 0;
     currentPlaybackSec = 0;
+    updateCloudHeaderButtons();
   }
 
   // =========================================================================
@@ -7315,27 +8712,6 @@ const OPTIMIST_POLAR_DATA = {
   // =========================================================================
   // AUTENTICACIÓN, USUARIOS CLUB Y ROLES (ENTRENADOR / ADMIN)
   // =========================================================================
-  async function ensureTursoSchema(){
-    if(schemaEnsured) return;
-    schemaEnsured = true;
-    try {
-      await executeTurso(`
-        CREATE TABLE IF NOT EXISTS usuarios_club (
-          id TEXT PRIMARY KEY,
-          usuario TEXT UNIQUE NOT NULL,
-          nombre TEXT NOT NULL,
-          pin TEXT NOT NULL,
-          rol TEXT NOT NULL DEFAULT 'entrenador',
-          email TEXT,
-          categoria TEXT DEFAULT 'Grupo A Optimist',
-          activo INTEGER DEFAULT 1,
-          creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          ultimo_login TIMESTAMP
-        );
-      `);
-      await executeTurso("CREATE INDEX IF NOT EXISTS idx_usuarios_club_usuario ON usuarios_club(usuario);");
-    } catch(_) {}
-  }
 
   function getCurrentUser(){
     try {
@@ -8188,7 +9564,7 @@ const OPTIMIST_POLAR_DATA = {
     listEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--dim)">Cargando entrenamientos y calendario...</div>';
     try {
       const rows = await executeTurso(
-        "SELECT id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, categoria FROM regatas_club ORDER BY creado_en DESC LIMIT 20;"
+        "SELECT id, titulo, fecha_regata, viento_dir, viento_kts, num_barcos, autor, categoria, tipo_manga FROM regatas_club WHERE LOWER(tipo_manga) = 'entrenamiento' ORDER BY creado_en DESC LIMIT 20;"
       );
       if(!rows || !rows.length){
         listEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--dim)">No hay entrenamientos guardados en el calendario.</div>';
@@ -8293,6 +9669,7 @@ function switchCloudTab(tabName, optSail = null){
 }
 
 function updateCloudSaveForm(){
+  ensureLastLoad();
   const warning = document.getElementById('cloudSaveWarningNoData');
   const form = document.getElementById('cloudSaveForm');
   const summary = document.getElementById('cloudSaveSummaryInfo');
@@ -8319,12 +9696,12 @@ function updateCloudSaveForm(){
   if(warning) warning.hidden = true;
   if(form && isCoachModeActive()) form.style.display = 'block';
 
-  const isEditingExisting = !!(currentCloudRegata && currentCloudRegata.id);
+  const isEditingExisting = !!(currentCloudRegata && currentCloudRegata.id) || !!currentCloudId;
 
   if(banner){
     banner.style.display = isEditingExisting ? 'block' : 'none';
-    if(editTitleEl) editTitleEl.textContent = isEditingExisting ? currentCloudRegata.titulo : '';
-    if(editIdEl) editIdEl.textContent = isEditingExisting ? currentCloudRegata.id : '';
+    if(editTitleEl) editTitleEl.textContent = isEditingExisting ? (currentCloudRegata?.titulo || D.title) : '';
+    if(editIdEl) editIdEl.textContent = isEditingExisting ? (currentCloudRegata?.id || currentCloudId) : '';
   }
 
   if(btnSave){
@@ -8344,50 +9721,47 @@ function updateCloudSaveForm(){
   const now = new Date();
   const dateStr = now.toISOString().slice(0, 10);
   if(dateIn){
-    dateIn.value = (isEditingExisting && currentCloudRegata.fecha_regata) ? currentCloudRegata.fecha_regata : (dateIn.value || dateStr);
+    dateIn.value = (isEditingExisting && currentCloudRegata?.fecha_regata) ? currentCloudRegata.fecha_regata : (D.date || dateStr);
   }
   if(titleIn){
-    titleIn.value = (isEditingExisting && currentCloudRegata.titulo) ? currentCloudRegata.titulo : (D.title || `Entrenamiento Optimist · ${dateStr}`);
+    titleIn.value = (isEditingExisting && currentCloudRegata?.titulo) ? currentCloudRegata.titulo : (D.title || ('Entrenamiento Optimist · ' + dateStr));
   }
-  if(catIn && isEditingExisting && currentCloudRegata.categoria){
-    catIn.value = currentCloudRegata.categoria;
+  if(catIn){
+    catIn.value = (isEditingExisting && currentCloudRegata?.categoria) ? currentCloudRegata.categoria : (catIn.value || 'Grupo A Optimist');
   }
-  if(typeIn && isEditingExisting && (currentCloudRegata.tipo_manga || currentCloudRegata.tipoManga)){
-    typeIn.value = currentCloudRegata.tipo_manga || currentCloudRegata.tipoManga;
+  if(typeIn){
+    typeIn.value = (isEditingExisting && (currentCloudRegata?.tipo_manga || currentCloudRegata?.tipoManga)) ? (currentCloudRegata.tipo_manga || currentCloudRegata.tipoManga) : (typeIn.value || 'Entrenamiento');
   }
   const currUser = getCurrentUser();
   if(authorIn){
     if(currUser && currUser.nombre){
       authorIn.value = currUser.nombre;
-    } else if(isEditingExisting && currentCloudRegata.autor){
+    } else if(isEditingExisting && currentCloudRegata?.autor){
       authorIn.value = currentCloudRegata.autor;
     } else {
       authorIn.value = 'Entrenador RCNGC';
     }
   }
-  if(notesIn && isEditingExisting && currentCloudRegata.notas){
+  if(notesIn && isEditingExisting && currentCloudRegata?.notas){
     notesIn.value = currentCloudRegata.notas;
   }
   if(windDirIn){
     windDirIn.value = Math.round(D.windRef || 0);
   }
   if(windKnIn){
-    const spd = (typeof getWindSpeedKnots === 'function') ? getWindSpeedKnots(D.startT || 0) : 10;
-    windKnIn.value = spd.toFixed(1);
+    windKnIn.value = (D.windKts || 7.5).toFixed(1);
   }
   if(pinIn){
-    // Nunca auto-rellenar PIN: cada entrenador debe poner su clave personal
-    pinIn.value = '';
+    pinIn.value = (currUser && currUser.pin) ? currUser.pin : '';
   }
 
   if(summary){
     const sailsList = D.boats.map(b => b.sail).filter(Boolean).join(', ');
-    const spd = (typeof getWindSpeedKnots === 'function') ? getWindSpeedKnots(D.startT || 0) : 10;
     summary.innerHTML = `
       <div><strong>⛵ Barcos (${D.N}):</strong> <span style="color:var(--ink)">${esc(sailsList)}</span></div>
-      <div><strong>💨 Viento:</strong> ${Math.round(D.windRef || 0)}° · ${spd.toFixed(1)} kn</div>
-      <div><strong>📍 Recorrido:</strong> ${D.course && D.course.type === 'ioda' ? 'Trapecio IODA' : 'Libre'}</div>
-      <div><strong>⏱️ Duración:</strong> ${D.T ? mmss(D.T) : '-'}</div>
+      <div><strong>💨 Viento:</strong> ${Math.round(D.windRef || 0)}° · ${(D.windKts || 7.5).toFixed(1)} kn</div>
+      <div><strong>🎯 Modo:</strong> Sesión de Entrenamiento Optimist</div>
+      <div><strong>⏱️ Duración Activa:</strong> ${D.T ? mmss(D.T) : '-'}</div>
     `;
   }
 }
@@ -8735,7 +10109,8 @@ async function renderCloudList(){
         );
       }
     }
-    cloudRacesCache = rows || [];
+    // Solo entrenamientos en el Analizador de Entrenamientos
+    cloudRacesCache = (rows || []).filter(r => (r.tipo_manga || '').toLowerCase() === 'entrenamiento');
     populateBoatFilterDropdown();
     filterAndDisplayCloudList();
     backfillMissingBoatLists(cloudRacesCache);
@@ -9306,6 +10681,16 @@ async function renderBigDataStatsView(chosenSailOrCode){
         break;
       }
     }
+    const cleanDigits = selKey.replace(/[^0-9]/g, '');
+    if(!foundSailor && cleanDigits.length >= 2){
+      for(const c in clubSailors){
+        const match = Array.from(clubSailors[c].sails || []).some(s => s.replace(/[^0-9]/g, '') === cleanDigits);
+        if(match){
+          foundSailor = clubSailors[c];
+          break;
+        }
+      }
+    }
     if(foundSailor){
       targetCode = foundSailor.code;
       targetName = foundSailor.name;
@@ -9323,6 +10708,16 @@ async function renderBigDataStatsView(chosenSailOrCode){
       targetUpdated = clubSailorUpdated[selKey] || '';
     }
   }
+
+  // Expandir variantes con/sin prefijo ESP para asegurar que coincida con todas las regatas y entrenamientos
+  Array.from(targetSails).forEach(s => {
+    const d = s.replace(/[^0-9]/g, '');
+    if(d.length >= 2){
+      targetSails.add(d);
+      targetSails.add('ESP ' + d);
+      targetSails.add('ESP' + d);
+    }
+  });
 
   activeSailorCode = targetCode;
   activePrimarySail = targetSails.size ? Array.from(targetSails)[0] : selKey;
@@ -10162,9 +11557,15 @@ async function renderBigDataStatsView(chosenSailOrCode){
                   <td style="padding:8px 10px;font-weight:700;color:#7c3aed">${!isNaN(vmgUpVal) ? vmgUpVal.toFixed(2) + ' kn' : '-'}</td>
                   <td style="padding:8px 10px;color:#ea580c;font-weight:600">${!isNaN(tackLossVal) ? '-' + tackLossVal.toFixed(1) + ' kn' : '-'}</td>
                   <td style="padding:8px 10px;white-space:nowrap">
-                    <button class="btn primary btn-bigdata-load" data-id="${r.regata_id}" data-title="${esc(r.regata_titulo)}" data-type="${(r.tipo_sesion === 'Entrenamiento' || (r.regata_titulo||'').toLowerCase().includes('entren')) ? 'entrenamiento' : 'regata'}" type="button" style="padding:4px 9px;font-size:11px">
-                      📥 Cargar
-                    </button>
+                    ${(r.tipo_sesion === 'Entrenamiento' || (r.tipo_manga === 'Entrenamiento') || (r.regata_titulo||'').toLowerCase().includes('entren')) ? `
+                      <button class="btn primary btn-bigdata-load" data-id="${r.regata_id}" data-title="${esc(r.regata_titulo)}" data-type="entrenamiento" type="button" style="padding:4px 9px;font-size:11px" title="Abrir en Analizador de Entrenamientos">
+                        🏋️‍♂️ Abrir Sesión
+                      </button>
+                    ` : `
+                      <button class="btn btn-bigdata-load" data-id="${r.regata_id}" data-title="${esc(r.regata_titulo)}" data-type="regata" type="button" style="padding:4px 9px;font-size:11px;border-color:var(--accent);color:var(--accent);background:rgba(2,132,199,0.06)" title="Abrir en Visor de Regatas">
+                        ⛵ Abrir en Visor
+                      </button>
+                    `}
                     ${isCoach && r.id ? `
                       <button class="btn danger btn-bigdata-del-stat" data-stat-id="${esc(r.id)}" data-sail="${esc(r.vela)}" data-title="${esc(r.regata_titulo)}" data-date="${esc(r.fecha)}" type="button" style="padding:4px 8px;font-size:11px;margin-left:4px" title="Quitar este resultado del histórico">
                         🗑️ Quitar
@@ -10482,8 +11883,8 @@ async function renderBigDataStatsView(chosenSailOrCode){
 
   container.querySelectorAll('.btn-bigdata-load').forEach(btn => {
     btn.addEventListener('click', () => {
-      if(btn.dataset.type === 'entrenamiento'){
-        window.location.href = 'analizador-entrenamientos/index.html?id=' + encodeURIComponent(btn.dataset.id);
+      if(btn.dataset.type === 'regata'){
+        window.location.href = getVisorUrl(btn.dataset.id);
       } else {
         loadCloudSession(btn.dataset.id, btn.dataset.title);
       }
@@ -10497,18 +11898,19 @@ async function loadCloudSession(id, titulo){
 }
 
 async function submitCloudSave(mode = 'auto'){
+  ensureLastLoad();
   if(!D || !lastLoad || !lastLoad.all || !D.N){
-    alert('No hay ninguna sesión activa para guardar.');
+    alert('No hay ninguna sesión activa de entrenamiento para guardar.');
     return;
   }
   if(!isCoachModeActive()){
-    alert('Debes iniciar sesión con tu cuenta de entrenador o administrador para publicar o modificar regatas en la nube.');
+    alert('Debes iniciar sesión con tu cuenta de entrenador o administrador para publicar o modificar entrenamientos en la nube.');
     openLoginModal();
     return;
   }
   const title = (document.getElementById('cloudSaveTitle')?.value || '').trim();
   if(!title){
-    alert('Por favor, indica un título para la regata.');
+    alert('Por favor, indica un título para el entrenamiento.');
     document.getElementById('cloudSaveTitle')?.focus();
     return;
   }
@@ -10523,7 +11925,7 @@ async function submitCloudSave(mode = 'auto'){
 
   const curr = getCurrentUser();
   if(!curr){
-    alert('Debes iniciar sesión con tu cuenta de entrenador o administrador para guardar regatas en la nube.');
+    alert('Debes iniciar sesión con tu cuenta de entrenador o administrador para guardar entrenamientos en la nube.');
     return;
   }
   let isPinValid = false;
@@ -10550,21 +11952,18 @@ async function submitCloudSave(mode = 'auto'){
   const authorInpVal = (document.getElementById('cloudSaveAuthor')?.value || '').trim();
   const author = authorInpVal || (curr && curr.nombre) || 'Entrenador RCNGC';
   const notes = (document.getElementById('cloudSaveNotes')?.value || '').trim();
-  const notas = notes;
   const categoria = (document.getElementById('cloudSaveCategory')?.value || 'Grupo A Optimist').trim();
-  const tipoManga = (document.getElementById('cloudSaveType')?.value || 'Entrenamiento').trim();
+  // En el software de entrenamientos siempre se guarda como 'Entrenamiento'
+  const tipoManga = 'Entrenamiento';
 
   // Actualizar viento si se modificó en el formulario
   const windDirVal = document.getElementById('cloudSaveWindDir')?.value;
   if(windDirVal !== '' && !isNaN(parseFloat(windDirVal))){
-    D.windRef = ((parseFloat(windDirVal) % 360) + 360) % 360;
+    setWindDirection(parseFloat(windDirVal));
   }
   const windKnVal = document.getElementById('cloudSaveWindKnots')?.value;
   if(windKnVal !== '' && !isNaN(parseFloat(windKnVal))){
-    const knVal = Math.max(0, parseFloat(windKnVal));
-    D.customWindKnots = knVal;
-    const wIn = document.getElementById('windKnIn');
-    if(wIn) wIn.value = knVal.toFixed(1);
+    setWindKnots(parseFloat(windKnVal));
   }
 
   const isOverwrite = mode === 'overwrite' || (mode === 'auto' && !!(currentCloudRegata && currentCloudRegata.id));
@@ -10577,7 +11976,7 @@ async function submitCloudSave(mode = 'auto'){
   if(btnAsNew) btnAsNew.disabled = true;
   if(status) { 
     status.style.color = 'var(--ink)'; 
-    status.textContent = isOverwrite ? '⏳ Actualizando regata en Turso SQLite...' : '⏳ Comprimiendo y subiendo regata a Turso SQLite...'; 
+    status.textContent = isOverwrite ? '⏳ Actualizando entrenamiento en Turso SQLite...' : '⏳ Comprimiendo y subiendo entrenamiento a Turso SQLite...'; 
   }
 
   try {
@@ -10587,29 +11986,31 @@ async function submitCloudSave(mode = 'auto'){
       customSails[b.name] = b.sail;
       const s = (b.sail || b.name || '').trim();
       if(s){
-        const k = `coach_notes_${(D.title||'regata').replace(/\s+/g,'_')}_${s}`;
+        const k = 'coach_notes_' + (D.title || 'entrenamiento').replace(/\s+/g, '_') + '_' + s;
         const val = localStorage.getItem(k);
         if(val) sailorNotes[s] = val;
       }
     });
+
     const sessionPayload = {
       all: lastLoad.all,
       used: lastLoad.used,
-      align: D.align,
-      orientation: state.orientation,
-      course: {
-        type: D.course.type || 'free',
-        marks: D.course.marks,
-        ioda: D.course.ioda,
-        startT: D.startT,
-        windRef: D.windRef,
-        radius: D.radius
-      },
-      tactics: state.tactics,
+      windRef: D.windRef,
+      windKts: D.windKts,
       customSails,
       sailorNotes,
       categoria,
-      tipoManga
+      tipoManga,
+      tactics: {
+        buoys: (tactics && tactics.buoys) || [],
+        targetBuoyId: (tactics && tactics.targetBuoyId) || null,
+        lines: (tactics && tactics.lines) || [],
+        arrows: (tactics && tactics.arrows) || [],
+        boats: (tactics && tactics.boats) || [],
+        manualZones: (tactics && tactics.manualZones) || [],
+        laylines: !!(tactics && tactics.laylines),
+        threeLengths: !!(tactics && tactics.threeLengths)
+      }
     };
 
     const sessionJson = JSON.stringify(sessionPayload);
@@ -10620,7 +12021,7 @@ async function submitCloudSave(mode = 'auto'){
 
     await ensureTursoSchema();
     const twd = Math.round(((D.windRef % 360) + 360) % 360);
-    const windKts = Number(getWindSpeedKnots(D.startT || 0).toFixed(1));
+    const windKts = Number((D.windKts || 7.5).toFixed(1));
 
     if(isOverwrite){
       await executeTurso(
@@ -10668,127 +12069,42 @@ async function submitCloudSave(mode = 'auto'){
       );
     }
 
+    // Calcular estadísticas individuales de cada barco para regatas_barcos_stats
     try {
-      // Pre-calcular llegadas a Baliza 1 y tiempo de llegada del ganador de la flota
-      const b1ArrivalTimes = [];
-      let winnerFinishTime = Infinity;
-      for(let i = 0; i < D.N; i++){
-        const rI = (typeof getBoatRaceInterval === 'function') ? getBoatRaceInterval(i) : { sStart: 0, sEnd: D.T-1, finished: false };
-        if(rI && rI.finished && rI.sEnd != null && rI.sEnd < winnerFinishTime){
-          winnerFinishTime = rI.sEnd;
-        }
-        const bBase = i * D.stride;
-        let b1Sec = null;
-        if(D.LG){
-          const s0 = rI ? (rI.sStart || 0) : 0;
-          const s1 = rI ? (rI.sEnd || (D.T-1)) : (D.T-1);
-          for(let s = s0; s <= s1; s++){
-            if(D.LG[bBase + s] >= 1){
-              b1Sec = s;
-              break;
-            }
-          }
-        }
-        b1ArrivalTimes.push({ boatIdx: i, b1Sec });
-      }
-      const reachedB1 = b1ArrivalTimes.filter(item => item.b1Sec !== null).sort((a,b) => a.b1Sec - b.b1Sec);
-      const b1RankMap = {};
-      reachedB1.forEach((item, rk) => { b1RankMap[item.boatIdx] = rk + 1; });
-
-      const twd = Math.round(((D.windRef % 360) + 360) % 360);
-      const windKts = Number(getWindSpeedKnots(D.startT || 0).toFixed(1));
-      const stLine = (typeof getActiveStartLine === 'function') ? getActiveStartLine() : null;
-
+      await fetchClubSailorNames();
       for(let bIdx = 0; bIdx < D.N; bIdx++){
         const b = D.boats[bIdx];
-        const sail = (b.sail || b.name || `Barco ${bIdx+1}`).trim();
-        const rInt = (typeof getBoatRaceInterval === 'function') ? getBoatRaceInterval(bIdx) : { sStart: 0, sEnd: D.T-1 };
-        const sStart = rInt.sStart || 0;
-        const sEnd = rInt.sEnd || (D.T-1);
-        const base = bIdx * D.stride;
-        let sum = 0, n = 0, maxv = 0;
-        const win = []; let ws = 0;
-        for(let s = sStart; s <= sEnd; s++){
-          if(!ok(bIdx, s)) { win.length = 0; ws = 0; continue; }
-          const v = D.S[base + s];
-          if(v > 0.4){ sum += v; n++; }
-          win.push(v); ws += v;
-          if(win.length > 5) ws -= win.shift();
-          if(win.length === 5) maxv = Math.max(maxv, ws / 5);
-        }
-        const dist = Math.max(0, D.CD[base + sEnd] - D.CD[base + sStart]);
-        const avg = n ? (sum / n * KN) : 0;
-        const max = maxv * KN;
-        const tacks = (typeof countTacks === 'function') ? countTacks(bIdx, sStart, sEnd) : 0;
-        const dur = Math.max(0, sEnd - sStart);
-        const statId = `stat_${id}_${bIdx}_${Date.now()}`;
+        const sail = (b.sail || b.name || ('Barco ' + (bIdx + 1))).trim();
+        const rInt = getBoatTrainingInterval(bIdx);
+        const sStart = rInt ? (rInt.sStart || 0) : 0;
+        const sEnd = rInt ? (rInt.sEnd || (D.T - 1)) : (D.T - 1);
+        const base = bIdx * D.T;
+        const kine = (D.kine && D.kine[bIdx]) ? D.kine[bIdx] : null;
 
-        let boatPos = null;
-        try {
-          if(typeof ranking === 'function'){
-            const finalRanking = ranking(D.T - 1);
-            if(finalRanking && Array.isArray(finalRanking)){
-              const pIdx = finalRanking.findIndex(rk => rk.id === bIdx);
-              if(pIdx >= 0) boatPos = pIdx + 1;
-            }
-          }
-        } catch(errRank) {
-          console.warn('Error calculating ranking:', errRank);
-        }
-        const delayS = (rInt && rInt.crossedStart && rInt.startDelaySec != null) ? parseFloat(rInt.startDelaySec.toFixed(1)) : null;
-        const sailorName = clubSailorNames[sail] || '';
-        const sailorCode = (clubSailors[sail] && clubSailors[sail].code) || clubSailorCodes[sail] || (sailorName ? generateSailorCode(sailorName) : null);
-
-        // Cinemática avanzada y maniobras
-        const kine = (typeof getBoatKinematics === 'function') ? getBoatKinematics(bIdx) : null;
-        const maneuvers = (typeof detectManeuvers === 'function') ? (detectManeuvers(bIdx, twd) || []) : [];
-        const tacksList = maneuvers.filter(m => m.type === 'TACK');
-
-        // 1. Salidas: Velocidad en bocinazo y lado de la línea
-        let velSalidaKn = 0;
-        if(kine && kine.sogEma && kine.sogEma[sStart] != null){
-          velSalidaKn = kine.sogEma[sStart];
-        } else if(D.S && D.S[base + sStart] != null){
-          velSalidaKn = D.S[base + sStart] * KN;
-        }
-        velSalidaKn = parseFloat(velSalidaKn.toFixed(2));
-
-        let ladoSalida = 'Centro';
-        if(stLine && stLine.pin && stLine.rc){
-          const dx = stLine.rc.x - stLine.pin.x;
-          const dy = stLine.rc.y - stLine.pin.y;
-          const len = Math.hypot(dx, dy);
-          if(len > 1){
-            const cx = (stLine.pin.x + stLine.rc.x) / 2;
-            const cy = (stLine.pin.y + stLine.rc.y) / 2;
-            const ux = dx / len, uy = dy / len;
-            const curX = D.X[base + sStart], curY = D.Y[base + sStart];
-            const u = (curX - cx) * ux + (curY - cy) * uy;
-            const ratio = (u + len / 2) / len;
-            if(ratio <= 0.38) ladoSalida = 'Pin';
-            else if(ratio >= 0.62) ladoSalida = 'Comité';
-            else ladoSalida = 'Centro';
-          }
-        }
-
-        // 3. Calidad de Maniobras (viradas)
-        let perdidaViradaKn = 1.6;
-        let tRecuperacionS = 3.5;
-        if(tacksList.length > 0){
-          const sumLoss = tacksList.reduce((acc, m) => acc + Math.max(0, (m.vTargetPre || 0) - (m.vMin || 0)), 0);
-          perdidaViradaKn = parseFloat((sumLoss / tacksList.length).toFixed(2));
-          const sumDur = tacksList.reduce((acc, m) => acc + (m.durationSec || 0), 0);
-          tRecuperacionS = parseFloat((sumDur / tacksList.length).toFixed(1));
-        }
-
-        // 4. Tramos Ceñida vs Popa y VMG
+        let sumSog = 0, nSog = 0, maxSog = 0, totalDist = 0;
+        let prevX = null, prevY = null;
         let upwindVmgSum = 0, upwindVmgN = 0, downwindVmgSum = 0, downwindVmgN = 0;
         let upwindSogSum = 0;
-        if(kine){
-          for(let s = sStart; s <= sEnd; s++){
-            if(!ok(bIdx, s)) continue;
+
+        for(let s = sStart; s <= sEnd; s++){
+          if(!ok(bIdx, s)) continue;
+          const curX = D.X[base + s];
+          const curY = D.Y[base + s];
+          if(prevX !== null && prevY !== null){
+            const d = Math.hypot(curX - prevX, curY - prevY);
+            totalDist += d;
+          }
+          prevX = curX; prevY = curY;
+
+          const sKn = (kine && kine.sogEma) ? kine.sogEma[s] : 0;
+          if(sKn > 0.4){
+            sumSog += sKn;
+            nSog++;
+            if(sKn > maxSog) maxSog = sKn;
+          }
+
+          if(kine && kine.twa){
             const twaAbs = Math.abs(kine.twa[s]);
-            const sKn = kine.sogEma[s];
             if(twaAbs >= 30 && twaAbs <= 65){
               upwindVmgSum += kine.vmg[s];
               upwindSogSum += sKn;
@@ -10799,8 +12115,26 @@ async function submitCloudSave(mode = 'auto'){
             }
           }
         }
-        const vmgUpwind = upwindVmgN ? parseFloat((upwindVmgSum / upwindVmgN).toFixed(2)) : parseFloat((avg * 0.72).toFixed(2));
-        const vmgDownwind = downwindVmgN ? parseFloat((downwindVmgSum / downwindVmgN).toFixed(2)) : parseFloat((avg * 0.88).toFixed(2));
+
+        const avgSog = nSog ? (sumSog / nSog) : 0;
+        const activeDuration = rInt ? (rInt.activeSec || (sEnd - sStart)) : (sEnd - sStart);
+
+        // Maniobras de entrenamiento
+        const maneuvers = (typeof detectTrainingManeuvers === 'function') ? (detectTrainingManeuvers(bIdx, twd) || []) : [];
+        const tacksList = maneuvers.filter(m => m.type === 'TACK');
+        const tacksCount = maneuvers.length;
+
+        let perdidaViradaKn = 1.6;
+        let tRecuperacionS = 3.5;
+        if(tacksList.length > 0){
+          const sumLoss = tacksList.reduce((acc, m) => acc + Math.max(0, (m.vTargetPre || 0) - (m.vMin || 0)), 0);
+          perdidaViradaKn = parseFloat((sumLoss / tacksList.length).toFixed(2));
+          const sumDur = tacksList.reduce((acc, m) => acc + (m.durationSec || 0), 0);
+          tRecuperacionS = parseFloat((sumDur / tacksList.length).toFixed(1));
+        }
+
+        const vmgUpwind = upwindVmgN ? parseFloat((upwindVmgSum / upwindVmgN).toFixed(2)) : parseFloat((avgSog * 0.72).toFixed(2));
+        const vmgDownwind = downwindVmgN ? parseFloat((downwindVmgSum / downwindVmgN).toFixed(2)) : parseFloat((avgSog * 0.88).toFixed(2));
 
         let eficienciaDerrota = 92.0;
         if(upwindSogSum > 0 && upwindVmgSum > 0){
@@ -10808,16 +12142,9 @@ async function submitCloudSave(mode = 'auto'){
           eficienciaDerrota = parseFloat(Math.min(99.5, Math.max(70.0, rawRatio)).toFixed(1));
         }
 
-        // 5. Estrategia y Remontadas
-        const posB1 = b1RankMap[bIdx] || boatPos || null;
-        let gapLiderS = null;
-        if(winnerFinishTime !== Infinity && rInt.sEnd != null){
-          gapLiderS = Math.max(0, parseFloat((rInt.sEnd - winnerFinishTime).toFixed(1)));
-        } else if(boatPos && boatPos > 1){
-          gapLiderS = parseFloat(((boatPos - 1) * 12.5).toFixed(1));
-        } else if(boatPos === 1){
-          gapLiderS = 0.0;
-        }
+        const sailorName = clubSailorNames[sail] || '';
+        const sailorCode = (clubSailors[sail] && clubSailors[sail].code) || clubSailorCodes[sail] || (sailorName ? generateSailorCode(sailorName) : null);
+        const statId = 'stat_' + id + '_' + bIdx + '_' + Date.now();
 
         await executeTurso(
           `INSERT OR REPLACE INTO regatas_barcos_stats (
@@ -10837,22 +12164,22 @@ async function submitCloudSave(mode = 'auto'){
             b.name || '',
             sailorName,
             sailorCode,
-            dur,
-            dist,
-            parseFloat(avg.toFixed(2)),
-            parseFloat(max.toFixed(2)),
-            tacks,
+            activeDuration,
+            Math.round(totalDist),
+            parseFloat(avgSog.toFixed(2)),
+            parseFloat(maxSog.toFixed(2)),
+            tacksCount,
             vmgUpwind,
             vmgDownwind,
-            boatPos,
-            delayS,
-            delayS != null ? parseFloat((delayS * 2.2).toFixed(1)) : null,
-            D.windRef || 0,
+            null,
+            null,
+            null,
+            twd,
             windKts,
-            velSalidaKn,
-            ladoSalida,
-            posB1,
-            gapLiderS,
+            null,
+            null,
+            null,
+            null,
             perdidaViradaKn,
             tRecuperacionS,
             eficienciaDerrota
@@ -10863,6 +12190,7 @@ async function submitCloudSave(mode = 'auto'){
       console.warn('Advertencia guardando estadísticas individuales:', errStats);
     }
 
+    currentCloudId = id;
     currentCloudRegata = {
       id,
       titulo: title,
@@ -10876,37 +12204,39 @@ async function submitCloudSave(mode = 'auto'){
       tipo_manga: tipoManga,
       barcos_lista: barcosLista
     };
+
     if(D){
       D.title = title;
       const titleEl = document.getElementById('title');
       if(titleEl) titleEl.textContent = title;
     }
-    updateCloudHeaderButtons();
-    saveCurrentSession();
-    history.replaceState(null, '', getCloudShareUrl(id));
 
+    updateCloudHeaderButtons();
+    saveCurrentTrainingSession();
     const shareUrl = getCloudShareUrl(id);
+    history.replaceState(null, '', shareUrl);
     copyTextToClipboard(shareUrl, () => {}, () => {});
 
     if(status) {
       status.style.color = '#16a34a';
       status.textContent = isOverwrite 
-        ? '✓ Regata actualizada con éxito en la nube de Turso' 
-        : '✓ Guardada y comprimida con éxito · ¡Enlace copiado al portapapeles!';
+        ? '✓ Entrenamiento actualizado con éxito en la nube de Turso' 
+        : '✓ Guardado y comprimido con éxito · ¡Enlace copiado al portapapeles!';
     }
     showMsg([
-      { t: isOverwrite ? `Regata «${title}» actualizada con éxito en la nube de Turso (${D.N} barcos).` : `Nueva regata «${title}» guardada con éxito en la nube (${D.N} barcos).`, cls: 'ok' },
-      { t: `Enlace directo activo: ${shareUrl}`, cls: 'ok' }
+      { t: isOverwrite ? ('Entrenamiento «' + title + '» actualizado con éxito en la nube (' + D.N + ' barcos).') : ('Nuevo entrenamiento «' + title + '» guardado con éxito en la nube (' + D.N + ' barcos).'), cls: 'ok' },
+      { t: 'Enlace directo activo: ' + shareUrl, cls: 'ok' }
     ]);
     if(pinInp) pinInp.value = '';
     setTimeout(() => {
       if(status) status.textContent = '';
       switchCloudTab('list');
       renderCloudList();
+      loadHomeRecentRaces();
     }, 1200);
   } catch(err) {
     if(status) { status.style.color = '#ef4444'; status.textContent = 'Error: ' + err.message; }
-    alert('Error al guardar la regata en Turso: ' + err.message);
+    alert('Error al guardar el entrenamiento en Turso: ' + err.message);
   } finally {
     if(btn) btn.disabled = false;
     if(btnAsNew) btnAsNew.disabled = false;
@@ -10968,7 +12298,8 @@ async function submitCloudEditModal(){
   const date = (document.getElementById('cloudEditDate')?.value || '').trim();
   const author = (document.getElementById('cloudEditAuthor')?.value || '').trim() || 'Entrenador RCNGC';
   const categoria = document.getElementById('cloudEditCategory')?.value || 'Grupo A Optimist';
-  const tipoManga = document.getElementById('cloudEditType')?.value || 'Entrenamiento';
+  // En el software de entrenamientos siempre se guarda como 'Entrenamiento'
+  const tipoManga = 'Entrenamiento';
   const windDirRaw = document.getElementById('cloudEditWindDir')?.value;
   const windDir = (windDirRaw !== '' && !isNaN(parseFloat(windDirRaw))) ? Math.round(((parseFloat(windDirRaw) % 360) + 360) % 360) : 0;
   const windKtsRaw = document.getElementById('cloudEditWindKnots')?.value;
@@ -11449,7 +12780,12 @@ if(btnSubmitCloudSaveAsNew) {
 const btnQuickSaveCloud = document.getElementById('btnQuickSaveCloud');
 if(btnQuickSaveCloud){
   btnQuickSaveCloud.addEventListener('click', () => {
-    if(!currentCloudRegata || !currentCloudRegata.id) return;
+    if(!isCoachModeActive()){
+      requireCoachAuthForUpload(() => {
+        openCloudModal('save');
+      });
+      return;
+    }
     openCloudModal('save');
   });
 }
@@ -11879,7 +13215,22 @@ if(modalCalendar){
           selectedBoatIndices = new Set(saved.selectedBoatIndices.filter(i => i < D.boats.length));
           if(!selectedBoatIndices.size) selectedBoatIndices = new Set([0]);
         }
+        if(saved.tactics){
+          tactics = {
+            buoys: Array.isArray(saved.tactics.buoys) ? saved.tactics.buoys : [],
+            targetBuoyId: saved.tactics.targetBuoyId || (Array.isArray(saved.tactics.buoys) && saved.tactics.buoys[0]?.id) || null,
+            lines: Array.isArray(saved.tactics.lines) ? saved.tactics.lines : [],
+            arrows: Array.isArray(saved.tactics.arrows) ? saved.tactics.arrows : [],
+            boats: Array.isArray(saved.tactics.boats) ? saved.tactics.boats : [],
+            manualZones: Array.isArray(saved.tactics.manualZones) ? saved.tactics.manualZones : [],
+            laylines: !!saved.tactics.laylines,
+            threeLengths: !!saved.tactics.threeLengths
+          };
+          renderTacticsPane();
+        }
         if(saved.currentCloudId) currentCloudId = saved.currentCloudId;
+        if(saved.currentCloudRegata) currentCloudRegata = saved.currentCloudRegata;
+        updateCloudHeaderButtons();
         if(saved.customSails){
           D.boats.forEach(b => {
             if(saved.customSails[b.name]) b.sail = saved.customSails[b.name];
@@ -11930,6 +13281,24 @@ if(modalCalendar){
 
   // Exponer a window para testing
   window.__TRAINING_ANALYZER_TEST__ = {
+    switchMainView,
+    switchSideTab,
+    resizeCanvas,
+    fitFleet,
+    getTactics: () => tactics,
+    getActiveTool: () => activeTool,
+    setTacticsTool,
+    cancelAllPlacing,
+    handleTacticsClick,
+    undoTactics,
+    clearAllTactics,
+    drawMap,
+    niceStep,
+    getCam: () => cam,
+    sx,
+    sy,
+    screenToWorldCoords,
+    renderTacticsPane,
     handleFiles,
     showHomeView,
     loadHomeRecentRaces,
@@ -11977,6 +13346,16 @@ if(modalCalendar){
     saveAdminUserForm
   };
 
+  window.saveCurrentSession = saveCurrentTrainingSession;
+  window.submitCloudSave = submitCloudSave;
+  window.updateCloudSaveForm = updateCloudSaveForm;
+  window.loadCloudTrainingSession = loadCloudTrainingSession;
+  window.executeTurso = executeTurso;
+  window.getVisorUrl = getVisorUrl;
+  window.getTrainingUrl = getTrainingUrl;
+  window.getCloudShareUrl = getCloudShareUrl;
+  window.compressSessionJson = compressSessionJson;
+  window.decompressSessionJson = decompressSessionJson;
   window.openCloudModal = openCloudModal;
   window.closeCloudModal = closeCloudModal;
   window.renderCloudModalList = renderCloudModalList;
