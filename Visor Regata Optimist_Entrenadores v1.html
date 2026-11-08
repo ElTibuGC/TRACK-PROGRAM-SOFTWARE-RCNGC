@@ -12602,6 +12602,12 @@ function updateCoachModeUI(skipStats = false){
   }
 
   updateSailorNotesInputsLockState();
+  if(typeof populateAiDebriefingControls === 'function'){
+    populateAiDebriefingControls();
+  }
+  if(typeof updateAiApiKeyBadge === 'function'){
+    updateAiApiKeyBadge();
+  }
 }
 
 function switchCloudTab(tabName, optSail = null){
@@ -16395,6 +16401,7 @@ window.filterAndDisplayCloudList = filterAndDisplayCloudList;
 window.updateSailorNotesInputsLockState = updateSailorNotesInputsLockState;
 
   // =========================================================================
+    // =========================================================================
   // MÓDULO DE DEBRIEFING AUTÓNOMO CON INTELIGENCIA ARTIFICIAL (GOOGLE GEMINI)
   // =========================================================================
 
@@ -16402,8 +16409,99 @@ window.updateSailorNotesInputsLockState = updateSailorNotesInputsLockState;
   let activeAiSailorReportMarkdown = '';
   let activeAiFleetReportMarkdown = '';
 
-    var clubConfigCache = (typeof window !== "undefined" && window.clubConfigCache) ? window.clubConfigCache : {};
+  var clubConfigCache = (typeof window !== "undefined" && window.clubConfigCache) ? window.clubConfigCache : {};
   if(typeof window !== "undefined") window.clubConfigCache = clubConfigCache;
+
+  const DEFAULT_AI_PROMPT_SAILOR = 
+`Eres el Director Técnico y Entrenador de Élite de la clase Optimist del Real Club Náutico de Gran Canaria (RCNGC), un centro de alto rendimiento náutico internacional con múltiples títulos mundiales y europeos.
+
+Realiza un DEBRIEFING TÉCNICO AUTÓNOMO, personalizado, riguroso y constructivo para el regatista {nombre} (Vela {vela}), basado en la siguiente telemetría GPS real y calibración VPP por peso:
+
+DATOS DEL REGATISTA Y CONDICIONES:
+- Regatista: {nombre}
+- Número de vela: {vela}
+- Peso del regatista: {peso} kg (Crítico: el peso determina la polar óptima, momento adrizante y reglaje en Optimist)
+- Intensidad de viento (TWS): {tws} nudos ({regimen})
+- Dirección de viento (TWD): {twd}º
+- Cumplimiento de polar teórica VPP para su peso: {polar_pct}%
+- Velocidad media real (SOG): {sog_med} kn (Pico máximo: {sog_max} kn)
+- VMG medio en ceñida: {vmg_med} kn
+- Total de viradas computadas: {viradas}
+- Pérdida media por virada: -{perdida_virada} metros
+- Total barcos en la sesión: {total_barcos}
+{datos_sensores_imu}
+{enfoque_sesion}
+
+INSTRUCCIONES DE ANÁLISIS TÉCNICO:
+1. Aplica principios de física de la navegación y arquitectura naval del Optimist (fondo plano, proa lanzada / pram, percha, gratil, caída del mástil, orza y escora).
+2. Ten muy en cuenta el peso de {peso} kg respecto al viento de {tws} nudos:
+   - Regatistas ligeros (<38 kg): Ventaja en aceleración y popas con poco viento; con viento fresco sufren para mantener el barco plano y necesitan amollar percha, aplanar gratil y máxima técnica de colgado.
+   - Regatistas medios (38-44 kg): Rango de peso óptimo; equilibrio entre velocidad y VMG.
+   - Regatistas pesados (>45 kg): Máximo momento adrizante y velocidad en ceñida con ola/viento fresco; con poco viento deben cuidar la superficie mojada (sentarse más a proa) y llevar vela más embolsada.
+3. Si hay datos de sensores IMU:
+   - Escora (Heel): Fondo plano requiere 0º-3º. Más de 4º-5º clava el pantoque y frena el avance.
+   - Trimado longitudinal (Pitch/Asiento): Evitar arrastrar el espejo a popa (pitch < -16º) o clavar proa (> -10º).
+   - Deriva lateral (Leeway): Evaluar sustentación de la orza (ideal 3º-4.5º).
+
+ESTRUCTURA OBLIGATORIA DEL INFORME (Markdown en Español de España):
+# Debriefing Técnico Individual – {nombre} ({vela})
+## 1. Resumen Ejecutivo de la Sesión
+## 2. Rendimiento de Velocidad vs Polares VPP por Peso
+## 3. Dinámica de Navegación: Escora, Trimado Longitudinal y Deriva Hidrodinámica
+## 4. Calidad de Maniobras y Transiciones (Viradas y Pérdida de Metros)
+## 5. Táctica, Salidas y Gestión del Campo
+## 6. Puesta a Punto del Material y Pautas de Trimado
+## 7. Plan de Acción: 3 Objetivos Prioritarios para la Próxima Sesión
+
+REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con estructura Markdown profesional completa, sin incluir notas internas, borradores en inglés ni preguntas preliminares.`;
+
+  const DEFAULT_AI_PROMPT_FLEET = 
+`Eres el Entrenador Jefe de la flota Optimist del Real Club Náutico de Gran Canaria (RCNGC).
+
+Genera el INFORME COMPLETO DE DEBRIEFING COLECTIVO DE FLOTA para proyectar y debatir en la pizarra de la sala de reuniones tras la sesión:
+
+DATOS COLECTIVOS DE LA SESIÓN:
+- Total barcos participantes: {total_barcos}
+- Viento medio en el campo: {tws} kn ({regimen}) desde {twd}º
+- Velocidad media de la flota: {vel_media_flota} kn (Pico máximo flota: {vel_max_flota} kn)
+- Total de viradas colectivas: {viradas_totales}
+- Rendimiento medio de polar de la flota: {polar_media_flota}%
+- Barco con mayor eficiencia de polar: {top_barco}
+- Resumen de barcos destacados: {resumen_barcos}
+{datos_sensores_flota}
+{enfoque_sesion}
+
+ESTRUCTURA DEL INFORME (Markdown en Español de España):
+# 🏆 Debriefing Colectivo de Flota – RCNGC Optimist
+## 1. Balance General y Ritmo de la Flota
+## 2. Análisis del Campo de Regatas, Viento y Roles
+## 3. Comparativa de Velocidades por Tramo y Eficiencia de Flota
+## 4. Dinámica Colectiva y Sensores IMU (Escora, Trimado y Deriva)
+## 5. Rendimiento en Maniobras Colectivas (Viradas y Pérdidas)
+## 6. Conclusiones y 3 Puntos Clave para la Pizarra del Club
+
+REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con tono didáctico enfocado al crecimiento en equipo, sin incluir notas preliminares en inglés.`;
+
+  function getCustomPromptSailor(){
+    return (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_ai_prompt_sailor')) || 
+           (clubConfigCache && clubConfigCache.ai_prompt_sailor) || 
+           (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_cloud_prompt_sailor')) || 
+           DEFAULT_AI_PROMPT_SAILOR;
+  }
+
+  function getCustomPromptFleet(){
+    return (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_ai_prompt_fleet')) || 
+           (clubConfigCache && clubConfigCache.ai_prompt_fleet) || 
+           (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_cloud_prompt_fleet')) || 
+           DEFAULT_AI_PROMPT_FLEET;
+  }
+
+  function getAiSessionFocus(){
+    return (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_ai_session_focus')) || 
+           (clubConfigCache && clubConfigCache.ai_session_focus) || 
+           (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_cloud_session_focus')) || 
+           '';
+  }
 
   async function fetchClubConfig(forceRefresh = false){
     if(Object.keys(clubConfigCache).length > 0 && !forceRefresh) return clubConfigCache;
@@ -16420,6 +16518,15 @@ window.updateSailorNotesInputsLockState = updateSailorNotesInputsLockState;
           }
           if(clubConfigCache.gemini_model && typeof localStorage !== 'undefined'){
             localStorage.setItem('rcngc_cloud_gemini_model', clubConfigCache.gemini_model);
+          }
+          if(clubConfigCache.ai_prompt_sailor && typeof localStorage !== 'undefined'){
+            localStorage.setItem('rcngc_cloud_prompt_sailor', clubConfigCache.ai_prompt_sailor);
+          }
+          if(clubConfigCache.ai_prompt_fleet && typeof localStorage !== 'undefined'){
+            localStorage.setItem('rcngc_cloud_prompt_fleet', clubConfigCache.ai_prompt_fleet);
+          }
+          if(clubConfigCache.ai_session_focus && typeof localStorage !== 'undefined'){
+            localStorage.setItem('rcngc_cloud_session_focus', clubConfigCache.ai_session_focus);
           }
         }
       }
@@ -16438,7 +16545,7 @@ window.updateSailorNotesInputsLockState = updateSailorNotesInputsLockState;
     return clubConfigCache;
   }
 
-function getGeminiApiKey(){
+  function getGeminiApiKey(){
     const personal = (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_gemini_api_key')) || '';
     if(personal && personal.trim()) return personal.trim();
     if(clubConfigCache && clubConfigCache.gemini_api_key && clubConfigCache.gemini_api_key.trim()) return clubConfigCache.gemini_api_key.trim();
@@ -16448,25 +16555,84 @@ function getGeminiApiKey(){
   }
 
   function getGeminiModel(){
-    return (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_gemini_model')) || 'gemini-2.0-flash';
+    let m = (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_gemini_model')) || 
+            (clubConfigCache && clubConfigCache.gemini_model) || 
+            'gemini-3.8-flash';
+    if(m === 'gemini-2.0-flash' || m === 'gemini-2.5-flash') m = 'gemini-3.8-flash';
+    return m;
+  }
+
+  function updateAiAdminButtonsState(){
+    const isAdmin = (typeof isAdminUser === 'function') && isAdminUser();
+    const btnPrompt = document.getElementById('btnOpenAiPromptModal');
+    const btnApiKey = document.getElementById('btnOpenAiApiKeyModal');
+
+    if(btnPrompt){
+      if(isAdmin){
+        btnPrompt.innerHTML = '🎯 Personalizar Prompt / Directrices <span style="font-size:10px;background:rgba(16,185,129,0.25);padding:1px 6px;border-radius:4px;margin-left:4px;font-weight:700">👑 Admin</span>';
+        btnPrompt.title = 'Personalizar las instrucciones, objetivos y formato del informe para la IA (Acceso Administrador)';
+        btnPrompt.style.borderColor = 'rgba(16,185,129,0.5)';
+        btnPrompt.style.color = '#10b981';
+        btnPrompt.style.background = 'rgba(16,185,129,0.08)';
+        btnPrompt.style.opacity = '1';
+        btnPrompt.style.cursor = 'pointer';
+      } else {
+        btnPrompt.innerHTML = '🔒 Personalizar Prompt (Solo Admin)';
+        btnPrompt.title = 'Acceso restringido: Solo el Administrador puede personalizar el prompt de la IA';
+        btnPrompt.style.borderColor = 'rgba(148,163,184,0.3)';
+        btnPrompt.style.color = 'var(--dim)';
+        btnPrompt.style.background = 'rgba(148,163,184,0.06)';
+        btnPrompt.style.opacity = '0.85';
+        btnPrompt.style.cursor = 'pointer';
+      }
+    }
+
+    if(btnApiKey){
+      if(isAdmin){
+        btnApiKey.innerHTML = '🔑 Configurar Clave API Gemini <span style="font-size:10px;background:rgba(14,165,233,0.25);padding:1px 6px;border-radius:4px;margin-left:4px;font-weight:700">👑 Admin</span>';
+        btnApiKey.title = 'Configurar la Clave API de Google Gemini para el club (Acceso Administrador)';
+        btnApiKey.style.borderColor = 'rgba(14,165,233,0.5)';
+        btnApiKey.style.color = 'var(--accent)';
+        btnApiKey.style.background = 'rgba(14,165,233,0.08)';
+        btnApiKey.style.opacity = '1';
+        btnApiKey.style.cursor = 'pointer';
+      } else {
+        btnApiKey.innerHTML = '🔒 Clave API Gemini (Solo Admin)';
+        btnApiKey.title = 'Acceso restringido: Solo el Administrador del club puede configurar o consultar la clave API';
+        btnApiKey.style.borderColor = 'rgba(148,163,184,0.3)';
+        btnApiKey.style.color = 'var(--dim)';
+        btnApiKey.style.background = 'rgba(148,163,184,0.06)';
+        btnApiKey.style.opacity = '0.85';
+        btnApiKey.style.cursor = 'pointer';
+      }
+    }
   }
 
   function updateAiApiKeyBadge(){
     const badge = document.getElementById('aiApiKeyStatusBadge');
-    if(!badge) return;
     const key = getGeminiApiKey();
     const model = getGeminiModel();
-    if(key && key.trim()){
-      const shortModel = model.replace('gemini-', '');
-      badge.innerHTML = '<span style="background:rgba(16,185,129,0.15);color:#059669;border:1px solid rgba(16,185,129,0.35);padding:2px 8px;border-radius:10px">🟢 Gemini Activo (' + shortModel + ')</span>';
-      badge.title = 'Clave API de Gemini configurada. Los debriefings se generan en tiempo real con IA de Google.';
-    } else {
-      badge.innerHTML = '<span style="background:rgba(234,179,8,0.15);color:#b45309;border:1px solid rgba(234,179,8,0.35);padding:2px 8px;border-radius:10px">🟡 Clave API no configurada (usa motor experto local)</span>';
-      badge.title = 'Haz clic en «Configurar Clave API Gemini» para introducir tu API key de Google AI Studio.';
+    if(badge){
+      if(key && key.trim()){
+        const shortModel = model.replace('gemini-', '');
+        badge.innerHTML = '<span style="background:rgba(16,185,129,0.15);color:#059669;border:1px solid rgba(16,185,129,0.35);padding:2px 8px;border-radius:10px">🟢 Gemini Activo (' + shortModel + ')</span>';
+        badge.title = 'Clave API de Gemini configurada. Los debriefings se generan en tiempo real con IA de Google.';
+      } else {
+        badge.innerHTML = '<span style="background:rgba(234,179,8,0.15);color:#b45309;border:1px solid rgba(234,179,8,0.35);padding:2px 8px;border-radius:10px">🟡 Clave API no configurada (usa motor experto local)</span>';
+        badge.title = 'Haz clic en «Configurar Clave API Gemini» para introducir la API key de Google AI Studio.';
+      }
     }
+    updateAiAdminButtonsState();
   }
 
   function openAiApiKeyModal(){
+    const isAdmin = (typeof isAdminUser === 'function') && isAdminUser();
+    if(!isAdmin){
+      alert('🔒 Acceso Restringido: Solo el usuario Administrador del club puede configurar o consultar la Clave API de Google Gemini.\n\nPor favor, inicia sesión con la cuenta de Administrador.');
+      if(typeof openLoginModal === 'function') openLoginModal();
+      return;
+    }
+
     const modal = document.getElementById('aiApiKeyModal');
     if(!modal) return;
     const inpKey = document.getElementById('inpGeminiApiKey');
@@ -16474,7 +16640,6 @@ function getGeminiApiKey(){
     const statusDiv = document.getElementById('aiApiKeyTestStatus');
     const banner = document.getElementById('aiCloudKeyInfoBanner');
     const btnCloud = document.getElementById('btnSaveGeminiApiKeyCloud');
-    const isAdmin = (typeof isAdminUser === 'function') && isAdminUser();
 
     const personalKey = (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_gemini_api_key')) || '';
     const cloudKey = (clubConfigCache && clubConfigCache.gemini_api_key) || (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_cloud_gemini_key')) || '';
@@ -16482,7 +16647,7 @@ function getGeminiApiKey(){
     if(inpKey){
       if(personalKey){
         inpKey.value = personalKey;
-      } else if(isAdmin && cloudKey){
+      } else if(cloudKey){
         inpKey.value = cloudKey;
       } else {
         inpKey.value = '';
@@ -16494,41 +16659,43 @@ function getGeminiApiKey(){
     if(statusDiv){ statusDiv.style.display = 'none'; statusDiv.innerHTML = ''; }
 
     if(btnCloud){
-      btnCloud.style.display = isAdmin ? 'inline-flex' : 'none';
+      btnCloud.style.display = 'inline-flex';
     }
 
     if(banner){
-      if(isAdmin){
-        banner.style.display = 'block';
-        banner.style.background = 'rgba(2,132,199,0.12)';
-        banner.style.border = '1px solid rgba(2,132,199,0.35)';
-        banner.style.color = '#0284c7';
-        banner.innerHTML = '👑 <strong>Modo Administrador</strong>: Puedes configurar o actualizar la <strong>Clave Central de Google Gemini</strong> que utilizarán todos los regatistas y entrenadores en GitHub Pages sin necesidad de que ellos introduzcan nada.';
-      } else if(cloudKey){
-        banner.style.display = 'block';
-        banner.style.background = 'rgba(16,185,129,0.12)';
-        banner.style.border = '1px solid rgba(16,185,129,0.35)';
-        banner.style.color = '#059669';
-        banner.innerHTML = '✅ <strong>Clave Oficial del Club RCNGC Activa</strong>: Configurada en la nube por el Administrador. Ya puedes generar debriefings automáticamente en la web.<br><span style="font-size:11px;color:var(--dim)">(Opcional: puedes introducir tu propia clave personal abajo si deseas utilizar tu cuota individual).</span>';
-      } else {
-        banner.style.display = 'none';
-      }
+      banner.style.display = 'block';
+      banner.style.background = 'rgba(2,132,199,0.12)';
+      banner.style.border = '1px solid rgba(2,132,199,0.35)';
+      banner.style.color = '#0284c7';
+      banner.innerHTML = '👑 <strong>Modo Administrador</strong>: Puedes configurar o actualizar la <strong>Clave Central de Google Gemini</strong> que utilizarán todos los regatistas y entrenadores en GitHub Pages sin necesidad de que ellos introduzcan nada.';
     }
 
     modal.hidden = false;
+    modal.style.display = 'flex';
   }
 
   function closeAiApiKeyModal(){
     const modal = document.getElementById('aiApiKeyModal');
-    if(modal) modal.hidden = true;
+    if(modal){
+      modal.hidden = true;
+      modal.style.display = 'none';
+    }
+    const inpKey = document.getElementById('inpGeminiApiKey');
+    if(inpKey) inpKey.value = '';
   }
 
   function saveGeminiApiKey(){
+    const isAdmin = (typeof isAdminUser === 'function') && isAdminUser();
+    if(!isAdmin){
+      alert('🔒 Acceso Restringido: Solo el Administrador del club puede modificar la configuración de Gemini.');
+      return;
+    }
     const inpKey = document.getElementById('inpGeminiApiKey');
     const selModel = document.getElementById('selGeminiModel');
     let key = (inpKey ? inpKey.value : '').trim();
     if(!key) key = getGeminiApiKey();
-    const model = (selModel ? selModel.value : '') || 'gemini-2.0-flash';
+    let model = (selModel ? selModel.value : '') || 'gemini-3.8-flash';
+    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.8-flash';
     
     if(typeof localStorage !== 'undefined'){
       if(key){
@@ -16543,8 +16710,9 @@ function getGeminiApiKey(){
   }
 
   async function saveGeminiApiKeyToCloud(){
-    if(typeof isAdminUser === 'function' && !isAdminUser()){
-      alert('Acceso restringido: Solo el Administrador del club puede modificar la clave central en la nube.');
+    const isAdmin = (typeof isAdminUser === 'function') && isAdminUser();
+    if(!isAdmin){
+      alert('🔒 Acceso Restringido: Solo el Administrador del club puede modificar la clave central en la nube.');
       return;
     }
     const inpKey = document.getElementById('inpGeminiApiKey');
@@ -16595,10 +16763,10 @@ function getGeminiApiKey(){
         alert('¡Clave Central del Club guardada en la nube con éxito! Activa para toda la flota en GitHub Pages.');
       }
     } catch(err){
-      console.error('Error al guardar clave en Turso:', err);
-      alert('Error al guardar en la nube de Turso: ' + err.message);
+      console.error('Error al guardar clave de Gemini en Turso:', err);
+      alert('Error al guardar en la nube: ' + err.message);
     } finally {
-      if(btnCloud) { btnCloud.disabled = false; btnCloud.textContent = '☁️ Guardar como Clave Central del Club'; }
+      if(btnCloud) { btnCloud.disabled = false; btnCloud.textContent = '☁️ Guardar en Nube (Club)'; }
     }
   }
 
@@ -16606,8 +16774,10 @@ function getGeminiApiKey(){
     const inpKey = document.getElementById('inpGeminiApiKey');
     const selModel = document.getElementById('selGeminiModel');
     const statusDiv = document.getElementById('aiApiKeyTestStatus');
-    const key = (inpKey ? inpKey.value : '').trim();
-    const model = (selModel ? selModel.value : '') || 'gemini-2.0-flash';
+    let key = (inpKey ? inpKey.value : '').trim();
+    if(!key) key = getGeminiApiKey();
+    let model = (selModel ? selModel.value : '') || 'gemini-3.8-flash';
+    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.8-flash';
 
     if(!key){
       if(statusDiv){
@@ -16624,116 +16794,224 @@ function getGeminiApiKey(){
       statusDiv.style.display = 'block';
       statusDiv.style.background = 'rgba(14,165,233,0.12)';
       statusDiv.style.border = '1px solid rgba(14,165,233,0.3)';
-      statusDiv.style.color = '#0284c7';
+      statusDiv.style.color = 'var(--accent)';
       statusDiv.innerHTML = '⏳ Conectando con Google Gemini API (' + model + ')...';
     }
 
     try {
-      const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(key);
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{ text: 'Responde exclusivamente con la palabra OK si esta conexión es exitosa.' }]
-          }]
-        })
-      });
-
-      if(!res.ok){
-        const errData = await res.json().catch(() => ({}));
-        const msg = (errData.error && errData.error.message) || ('HTTP ' + res.status + ' ' + res.statusText);
-        throw new Error(msg);
-      }
-
-      const data = await res.json();
-      const candidate = data.candidates && data.candidates[0];
-      const txt = candidate && candidate.content && candidate.content.parts && candidate.content.parts[0] && candidate.content.parts[0].text;
-
+      await callGeminiApi('Responde únicamente con la palabra: CONEXION_OK', model, key);
       if(statusDiv){
         statusDiv.style.background = 'rgba(16,185,129,0.12)';
         statusDiv.style.border = '1px solid rgba(16,185,129,0.3)';
-        statusDiv.style.color = '#059669';
-        statusDiv.innerHTML = '✅ <strong>¡Conexión verificada con éxito!</strong> El modelo ' + model + ' ha respondido correctamente a la prueba.';
+        statusDiv.style.color = '#10b981';
+        statusDiv.innerHTML = '✅ ¡Conexión con Google Gemini exitosa! Modelo: <strong>' + model + '</strong>. La clave y el modelo son plenamente operativos.';
       }
     } catch(err){
       if(statusDiv){
         statusDiv.style.background = 'rgba(239,68,68,0.12)';
         statusDiv.style.border = '1px solid rgba(239,68,68,0.3)';
         statusDiv.style.color = '#ef4444';
-        statusDiv.innerHTML = '❌ <strong>Error al conectar con Gemini:</strong> ' + err.message;
+        statusDiv.innerHTML = '❌ Error al conectar con Gemini: ' + err.message + '<br><span style="font-size:11px;color:var(--dim)">Revisa que la clave sea válida y que el modelo esté disponible.</span>';
       }
+    }
+  }
+
+  // --- MODAL PERSONALIZADOR DE PROMPT Y DIRECTRICES (ADMIN) ---
+  function openAiPromptModal(){
+    const isAdmin = (typeof isAdminUser === 'function') && isAdminUser();
+    if(!isAdmin){
+      alert('🔒 Acceso Restringido: Solo el usuario Administrador del club tiene permisos para personalizar las directrices técnicas y el prompt de la Inteligencia Artificial.\n\nPor favor, inicia sesión con la cuenta de Administrador.');
+      if(typeof openLoginModal === 'function') openLoginModal();
+      return;
+    }
+    const modal = document.getElementById('aiPromptModal');
+    if(!modal) return;
+    const txtSailor = document.getElementById('txtAiPromptSailor');
+    const txtFleet = document.getElementById('txtAiPromptFleet');
+    const inpFocus = document.getElementById('inpAiSessionFocus');
+    if(txtSailor) txtSailor.value = getCustomPromptSailor();
+    if(txtFleet) txtFleet.value = getCustomPromptFleet();
+    if(inpFocus) inpFocus.value = getAiSessionFocus();
+    const status = document.getElementById('aiPromptSaveStatus');
+    if(status) status.style.display = 'none';
+    modal.hidden = false;
+    modal.style.display = 'flex';
+  }
+
+  function closeAiPromptModal(){
+    const modal = document.getElementById('aiPromptModal');
+    if(modal){
+      modal.hidden = true;
+      modal.style.display = 'none';
+    }
+  }
+
+  async function saveAiPromptSettings(){
+    const isAdmin = (typeof isAdminUser === 'function') && isAdminUser();
+    if(!isAdmin){
+      alert('🔒 Acceso Restringido: Solo el Administrador del club puede guardar directrices de IA.');
+      return;
+    }
+    const txtSailor = document.getElementById('txtAiPromptSailor');
+    const txtFleet = document.getElementById('txtAiPromptFleet');
+    const inpFocus = document.getElementById('inpAiSessionFocus');
+    
+    const sPrompt = txtSailor ? txtSailor.value.trim() : '';
+    const fPrompt = txtFleet ? txtFleet.value.trim() : '';
+    const focus = inpFocus ? inpFocus.value.trim() : '';
+
+    if(typeof localStorage !== 'undefined'){
+      if(sPrompt) localStorage.setItem('rcngc_ai_prompt_sailor', sPrompt);
+      else localStorage.removeItem('rcngc_ai_prompt_sailor');
+
+      if(fPrompt) localStorage.setItem('rcngc_ai_prompt_fleet', fPrompt);
+      else localStorage.removeItem('rcngc_ai_prompt_fleet');
+
+      if(focus) localStorage.setItem('rcngc_ai_session_focus', focus);
+      else localStorage.removeItem('rcngc_ai_session_focus');
+    }
+
+    clubConfigCache.ai_prompt_sailor = sPrompt;
+    clubConfigCache.ai_prompt_fleet = fPrompt;
+    clubConfigCache.ai_session_focus = focus;
+
+    if(typeof executeTurso === 'function'){
+      try {
+        const u = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
+        const adminName = (u && (u.nombre || u.usuario)) || 'admin';
+        await executeTurso(
+          "INSERT OR REPLACE INTO configuracion_club (clave, valor, actualizado_por) VALUES ('ai_prompt_sailor', ?, ?);",
+          [sPrompt, adminName]
+        );
+        await executeTurso(
+          "INSERT OR REPLACE INTO configuracion_club (clave, valor, actualizado_por) VALUES ('ai_prompt_fleet', ?, ?);",
+          [fPrompt, adminName]
+        );
+        await executeTurso(
+          "INSERT OR REPLACE INTO configuracion_club (clave, valor, actualizado_por) VALUES ('ai_session_focus', ?, ?);",
+          [focus, adminName]
+        );
+      } catch(e) {
+        console.warn('No se pudo guardar la configuración de prompts en Turso:', e);
+      }
+    }
+
+    const status = document.getElementById('aiPromptSaveStatus');
+    if(status){
+      status.style.display = 'block';
+      status.innerHTML = '✓ Directrices guardadas y sincronizadas correctamente para todo el club.';
+      setTimeout(() => { closeAiPromptModal(); }, 600);
+    } else {
+      closeAiPromptModal();
+    }
+  }
+
+  function resetAiPromptToDefault(type){
+    if(type === 'sailor'){
+      const txt = document.getElementById('txtAiPromptSailor');
+      if(txt) txt.value = DEFAULT_AI_PROMPT_SAILOR;
+      if(typeof localStorage !== 'undefined') localStorage.removeItem('rcngc_ai_prompt_sailor');
+    } else if(type === 'fleet'){
+      const txt = document.getElementById('txtAiPromptFleet');
+      if(txt) txt.value = DEFAULT_AI_PROMPT_FLEET;
+      if(typeof localStorage !== 'undefined') localStorage.removeItem('rcngc_ai_prompt_fleet');
+    }
+  }
+
+  function switchPromptModalTab(tab){
+    const btnInd = document.getElementById('tabPromptModalIndividual');
+    const btnFlt = document.getElementById('tabPromptModalFleet');
+    const viewInd = document.getElementById('aiPromptViewIndividual');
+    const viewFlt = document.getElementById('aiPromptViewFleet');
+    if(!btnInd || !btnFlt || !viewInd || !viewFlt) return;
+    if(tab === 'individual'){
+      btnInd.style.borderBottom = '2.5px solid var(--accent)';
+      btnInd.style.color = 'var(--accent)';
+      btnFlt.style.borderBottom = 'none';
+      btnFlt.style.color = 'var(--dim)';
+      viewInd.style.display = 'block';
+      viewFlt.style.display = 'none';
+    } else {
+      btnFlt.style.borderBottom = '2.5px solid var(--accent)';
+      btnFlt.style.color = 'var(--accent)';
+      btnInd.style.borderBottom = 'none';
+      btnInd.style.color = 'var(--dim)';
+      viewFlt.style.display = 'block';
+      viewInd.style.display = 'none';
     }
   }
 
   function switchAiDebriefTab(tabName){
     currentAiDebriefTab = tabName;
-    const btnInd = document.getElementById('tabAiIndividual');
-    const btnFleet = document.getElementById('tabAiFleet');
+    const tabInd = document.getElementById('tabAiIndividual');
+    const tabFleet = document.getElementById('tabAiFleet');
     const secInd = document.getElementById('aiSectionIndividual');
     const secFleet = document.getElementById('aiSectionFleet');
 
     if(tabName === 'individual'){
-      if(btnInd){
-        btnInd.style.borderBottom = '2.5px solid var(--accent)';
-        btnInd.style.color = 'var(--accent)';
-        btnInd.style.fontWeight = '800';
+      if(tabInd){
+        tabInd.style.borderBottom = '2px solid var(--accent)';
+        tabInd.style.color = 'var(--ink)';
       }
-      if(btnFleet){
-        btnFleet.style.borderBottom = '2.5px solid transparent';
-        btnFleet.style.color = 'var(--muted)';
-        btnFleet.style.fontWeight = '600';
+      if(tabFleet){
+        tabFleet.style.borderBottom = 'none';
+        tabFleet.style.color = 'var(--dim)';
       }
       if(secInd) secInd.style.display = 'block';
       if(secFleet) secFleet.style.display = 'none';
     } else {
-      if(btnFleet){
-        btnFleet.style.borderBottom = '2.5px solid var(--accent)';
-        btnFleet.style.color = 'var(--accent)';
-        btnFleet.style.fontWeight = '800';
+      if(tabFleet){
+        tabFleet.style.borderBottom = '2px solid var(--accent)';
+        tabFleet.style.color = 'var(--ink)';
       }
-      if(btnInd){
-        btnInd.style.borderBottom = '2.5px solid transparent';
-        btnInd.style.color = 'var(--muted)';
-        btnInd.style.fontWeight = '600';
+      if(tabInd){
+        tabInd.style.borderBottom = 'none';
+        tabInd.style.color = 'var(--dim)';
       }
-      if(secInd) secInd.style.display = 'none';
       if(secFleet) secFleet.style.display = 'block';
+      if(secInd) secInd.style.display = 'none';
+      updateFleetQuickSummary();
     }
   }
 
   function simpleMarkdownToHtml(md){
     if(!md) return '';
-    let text = md.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    let text = md;
 
-    // Fenced code blocks (```...```)
-    text = text.replace(/\x60{3}(?:[a-zA-Z0-9_\-]+)?\r?\n([\s\S]*?)\x60{3}/g, function(match, codeContent){
-      return '<pre style="background:var(--sub);border:1px solid var(--line);padding:10px 14px;border-radius:6px;font-family:var(--f-mono);font-size:12px;overflow-x:auto;margin:12px 0;line-height:1.45;color:var(--ink)"><code>' + codeContent.trim() + '</code></pre>';
+    // Preservar bloques de código
+    const codeBlocks = [];
+    text = text.replace(/\`\`\`([\s\S]*?)\`\`\`/g, function(match, code){
+      codeBlocks.push(code.trim());
+      return '___CODE_BLOCK_' + (codeBlocks.length - 1) + '___';
     });
 
-    // Inline code (`...`)
-    text = text.replace(/\x60([^\x60\r\n]+)\x60/g, '<code style="background:var(--sub);border:1px solid var(--line);padding:1px 5px;border-radius:4px;font-family:var(--f-mono);font-size:12px;color:var(--accent)">$1</code>');
+    // Código en línea
+    text = text.replace(/\`([^\`]+)\`/g, '<code style="background:var(--sub);border:1px solid var(--line);padding:2px 5px;border-radius:4px;font-family:var(--f-mono);font-size:11.5px;color:var(--accent)">$1</code>');
 
-    // Horizontal rules (--- or ***)
-    text = text.replace(/^\s*(?:[\*\-_]\s*){3,}$/gm, '<hr style="border:none;border-top:1px solid var(--line);margin:16px 0">');
+    // Restaurar bloques de código
+    text = text.replace(/___CODE_BLOCK_(\d+)___/g, function(match, idx){
+      return '<pre style="background:var(--sub);border:1px solid var(--line);border-radius:6px;padding:12px;overflow-x:auto;font-family:var(--f-mono);font-size:12px;line-height:1.45;color:var(--ink)"><code>' + 
+        codeBlocks[idx].replace(/</g, '&lt;').replace(/>/g, '&gt;') + 
+        '</code></pre>';
+    });
 
-    // Markdown tables
-    text = text.replace(/((?:\|[^\r\n]+\|[\r\n]+)+)/g, function(match){
-      const lines = match.trim().split(/[\r\n]+/).filter(Boolean);
+    // Tablas Markdown
+    text = text.replace(/((?:^|\n)\|.*\|(?:\r?\n\|.*\|)+)/g, function(match){
+      const lines = match.trim().split('\n').map(l => l.trim()).filter(Boolean);
       if(lines.length < 2) return match;
-      let tableHtml = '<div style="overflow-x:auto;margin:14px 0"><table style="width:100%;border-collapse:collapse;font-size:12.5px;text-align:left;border:1px solid var(--line)">';
+      let tableHtml = '<div style="overflow-x:auto;margin:14px 0"><table style="width:100%;border-collapse:collapse;font-size:12px;text-align:left;border:1px solid var(--line)">';
       let isHeader = true;
-      lines.forEach(function(line, idx){
+      lines.forEach((line, idx) => {
         if(line.includes('---')) return;
-        const cells = line.split('|').slice(1, -1).map(function(c){ return c.trim(); });
+        const cells = line.split('|').slice(1, -1).map(c => c.trim());
         if(isHeader && idx === 0){
           tableHtml += '<tr style="background:var(--sub);border-bottom:2px solid var(--line)">' + 
-            cells.map(function(c){ return '<th style="padding:8px 12px;font-weight:700;color:var(--ink)">' + c + '</th>'; }).join('') + 
+            cells.map(c => '<th style="padding:8px 12px;font-weight:700;color:var(--ink)">' + c + '</th>').join('') + 
             '</tr>';
           isHeader = false;
         } else {
           tableHtml += '<tr style="border-bottom:1px solid var(--line)">' + 
-            cells.map(function(c){ return '<td style="padding:7px 12px;color:var(--ink)">' + c + '</td>'; }).join('') + 
+            cells.map(c => '<td style="padding:7px 12px;color:var(--ink)">' + c + '</td>').join('') + 
             '</tr>';
         }
       });
@@ -16769,7 +17047,7 @@ function getGeminiApiKey(){
 
     // Paragraphs
     const paragraphs = text.split(/[\r\n]{2,}/);
-    text = paragraphs.map(function(p){
+    text = paragraphs.map(p => {
       p = p.trim();
       if(!p) return '';
       if(p.startsWith('<h') || p.startsWith('<ul') || p.startsWith('<blockquote') || p.startsWith('<div') || p.startsWith('<table')){
@@ -16926,20 +17204,37 @@ function getGeminiApiKey(){
   }
 
   async function callGeminiApi(prompt, model, apiKey){
-    const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(model) + ':generateContent?key=' + encodeURIComponent(apiKey);
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text: prompt }]
-        }],
-        generationConfig: {
-          temperature: 0.3,
-          maxOutputTokens: 2048
-        }
-      })
-    });
+    let cleanModel = model || 'gemini-3.8-flash';
+    if(cleanModel === 'gemini-2.0-flash' || cleanModel === 'gemini-2.5-flash') cleanModel = 'gemini-3.8-flash';
+    const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(cleanModel) + ':generateContent?key=' + encodeURIComponent(apiKey);
+    
+    const controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    const timeoutId = controller ? setTimeout(() => controller.abort(), 45000) : null;
+
+    let res;
+    try {
+      res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller ? controller.signal : undefined,
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: prompt }]
+          }],
+          generationConfig: {
+            temperature: 0.3,
+            maxOutputTokens: 8192
+          }
+        })
+      });
+    } catch(fetchErr){
+      if(timeoutId) clearTimeout(timeoutId);
+      if(fetchErr.name === 'AbortError'){
+        throw new Error('La consulta a Google Gemini superó el tiempo límite de espera (45s). Por favor reintenta.');
+      }
+      throw fetchErr;
+    }
+    if(timeoutId) clearTimeout(timeoutId);
 
     if(!res.ok){
       const errData = await res.json().catch(() => ({}));
@@ -17125,28 +17420,27 @@ function getGeminiApiKey(){
 
     if(prevVal && D.boats[parseInt(prevVal, 10)]){
       sel.value = prevVal;
-    } else if(D.boats.length > 0){
-      sel.value = '0';
+    } else {
+      sel.selectedIndex = 1;
     }
 
     updateSelectedSailorQuickMetrics();
-    updateFleetQuickSummary();
   }
 
   function updateSelectedSailorQuickMetrics(){
-    const metricsEl = document.getElementById('aiSailorQuickMetrics');
     const sel = document.getElementById('aiSailorSelect');
-    if(!metricsEl || !sel) return;
+    const container = document.getElementById('aiSailorQuickMetrics');
+    if(!sel || !container) return;
 
-    const val = sel.value;
-    if(val === '' || isNaN(parseInt(val, 10))){
-      metricsEl.innerHTML = '<span style="color:var(--muted)">Selecciona un regatista para visualizar sus métricas instantáneas.</span>';
+    if(sel.value === ''){
+      container.style.display = 'none';
       return;
     }
 
-    const data = getSessionTelemetryForBoat(parseInt(val, 10));
+    const boatIdx = parseInt(sel.value, 10);
+    const data = getSessionTelemetryForBoat(boatIdx);
     if(!data){
-      metricsEl.innerHTML = '';
+      container.style.display = 'none';
       return;
     }
 
@@ -17155,22 +17449,22 @@ function getGeminiApiKey(){
       ? ('<span style="background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:6px" title="Peso del patrón (visible solo en modo entrenador/admin)">⚖️ <strong>' + data.weight + ' kg</strong></span> ')
       : '';
 
-    metricsEl.innerHTML = 
+    container.innerHTML = 
       weightBadge +
-      '<span style="background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:6px">🎯 Polar: <strong>' + data.polarPct.toFixed(1) + '%</strong></span> ' +
-      '<span style="background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:6px">⚡ Vmed: <strong>' + data.sogAvg.toFixed(2) + ' kn</strong></span> ' +
-      '<span style="background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:6px">💨 VMG: <strong>' + data.upwindVmg.toFixed(2) + ' kn</strong></span> ' +
-      '<span style="background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:6px">🔄 Viradas: <strong>' + data.tacksCount + '</strong> (-' + data.avgLoss + 'm)</span>' +
-      ((data.sensors && data.sensors.hasSensors) ? (
-        ' <span style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.3);padding:3px 8px;border-radius:6px;color:#a78bfa">📐 Escora: <strong>' + data.sensors.avgHeelUpwind.toFixed(1) + '°</strong></span>' +
-        ' <span style="background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.3);padding:3px 8px;border-radius:6px;color:#34d399">⚖️ Trim: <strong>' + data.sensors.avgTrimUpwind.toFixed(1) + '°</strong></span>' +
-        ' <span style="background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.3);padding:3px 8px;border-radius:6px;color:#f43f5e">🧭 Deriva: <strong>' + data.sensors.avgLeewayUpwind.toFixed(1) + '°</strong></span>'
-      ) : '');
+      '<span style="background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:6px" title="Cumplimiento medio de polar VPP teórica por peso">🎯 Polar: <strong>' + data.polarPct.toFixed(1) + '%</strong></span> ' +
+      '<span style="background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:6px" title="Velocidad media sostenida (SOG)">⚡ Vmed: <strong>' + data.sogAvg.toFixed(2) + ' kn</strong></span> ' +
+      '<span style="background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:6px" title="Velocidad efectiva hacia barlovento">🔮 VMG: <strong>' + data.upwindVmg.toFixed(2) + ' kn</strong></span> ' +
+      '<span style="background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:6px" title="Total viradas y pérdida media estimada de metros">🔄 Viradas: <strong>' + data.tacksCount + '</strong> (-' + data.avgLoss + 'm)</span>';
+    container.style.display = 'inline-flex';
   }
 
   function updateFleetQuickSummary(){
     const summaryEl = document.getElementById('aiFleetQuickSummary');
-    if(!summaryEl || typeof D === 'undefined' || !D || !D.boats) return;
+    if(!summaryEl) return;
+    if(typeof D === 'undefined' || !D || !D.boats || !D.boats.length){
+      summaryEl.textContent = 'No hay datos de flota cargados en la sesión.';
+      return;
+    }
 
     let tws = 10.0;
     if(D.windKts != null && isFinite(D.windKts) && D.windKts > 0){
@@ -17181,6 +17475,61 @@ function getGeminiApiKey(){
     const twd = (D.windRef != null && isFinite(D.windRef)) ? Math.round(((D.windRef % 360) + 360) % 360) : 110;
 
     summaryEl.innerHTML = 'Flota activa: <strong>' + D.boats.length + ' barcos</strong> · Viento medio: <strong>' + tws.toFixed(1) + ' kn (' + twd + '°)</strong>. Haz clic para generar las conclusiones estratégicas y tácticas para la reunión.';
+  }
+
+  function buildSailorAiDebriefPrompt(data, env){
+    let template = getCustomPromptSailor();
+    const focus = getAiSessionFocus();
+    const focusBlock = focus ? ('\nENFOQUE TÉCNICO ESPECIAL DE LA SESIÓN (DIRECTRIZ DEL ENTRENADOR):\n' + focus + '\n') : '';
+
+    let sensorsBlock = '';
+    if(data.sensors && data.sensors.hasSensors){
+      sensorsBlock = '\nDATOS DE DINÁMICA DE NAVEGACIÓN Y SENSORES IMU (ALTA RESOLUCIÓN):\n' +
+        '- Escora media en ceñida: ' + data.sensors.avgHeelUpwind.toFixed(1) + '° (Máxima registrada: ' + data.sensors.maxHeel.toFixed(1) + '°)\n' +
+        '- Trimado longitudinal medio en ceñida (Pitch/Asiento): ' + data.sensors.avgTrimUpwind.toFixed(1) + '°\n' +
+        '- Deriva lateral media en ceñida (Leeway / diferencia Rumbo COG vs Proa HDG): ' + data.sensors.avgLeewayUpwind.toFixed(1) + '°\n\n' +
+        'ANÁLISIS OBLIGATORIO DE VARIABLES IMU:\n' +
+        'a) Escora (Heel): En Optimist el fondo plano requiere navegar a 0°-3° de escora. Más de 4°-5° de escora clava el pantoque, frena el avance y disminuye el área efectiva de la orza aumentando el abatimiento.\n' +
+        'b) Trimado longitudinal (Pitch/Asiento): Evalúa la posición del cuerpo respecto a la bancada central. Evitar arrastrar el espejo a popa (pitch <-16°) o clavar la proa / roda en las olas (> -10°).\n' +
+        'c) Heading vs COG (Deriva / Leeway): Diferencia entre la orientación de crujía (HDG) y el avance real (COG). Evalúa si la orza genera sustentación laminar adherida (3°-4.5°) o si el barco desliza de costado (>6°).\n';
+    }
+
+    return template
+      .replace(/{nombre}/g, data.name)
+      .replace(/{vela}/g, data.sail)
+      .replace(/{peso}/g, data.weight)
+      .replace(/{tws}/g, env.tws.toFixed(1))
+      .replace(/{twd}/g, String(Math.round(env.twd)))
+      .replace(/{regimen}/g, env.windRegime)
+      .replace(/{polar_pct}/g, data.polarPct.toFixed(1))
+      .replace(/{sog_med}/g, data.sogAvg.toFixed(2))
+      .replace(/{sog_max}/g, data.sogMax.toFixed(2))
+      .replace(/{vmg_med}/g, data.upwindVmg.toFixed(2))
+      .replace(/{viradas}/g, String(data.tacksCount))
+      .replace(/{perdida_virada}/g, String(data.avgLoss))
+      .replace(/{total_barcos}/g, String(env.totalBoats))
+      .replace(/{datos_sensores_imu}/g, sensorsBlock)
+      .replace(/{enfoque_sesion}/g, focusBlock);
+  }
+
+  function buildFleetAiDebriefPrompt(fleetStats, env, fleetSensorsPromptBlock, boatsBrief, topBoat, fleetAvgSpd, fleetMaxSpd, fleetTotalTacks, fleetAvgPolar){
+    let template = getCustomPromptFleet();
+    const focus = getAiSessionFocus();
+    const focusBlock = focus ? ('\nENFOQUE TÉCNICO ESPECIAL DE LA SESIÓN (DIRECTRIZ DEL ENTRENADOR):\n' + focus + '\n') : '';
+
+    return template
+      .replace(/{total_barcos}/g, String(fleetStats.length))
+      .replace(/{tws}/g, env.tws.toFixed(1))
+      .replace(/{regimen}/g, env.windRegime)
+      .replace(/{twd}/g, String(Math.round(env.twd)))
+      .replace(/{vel_media_flota}/g, fleetAvgSpd.toFixed(2))
+      .replace(/{vel_max_flota}/g, fleetMaxSpd.toFixed(2))
+      .replace(/{viradas_totales}/g, String(fleetTotalTacks))
+      .replace(/{polar_media_flota}/g, fleetAvgPolar.toFixed(1))
+      .replace(/{top_barco}/g, topBoat.sail + ' (' + topBoat.name + ') con ' + topBoat.polarPct.toFixed(1) + '%')
+      .replace(/{resumen_barcos}/g, boatsBrief)
+      .replace(/{datos_sensores_flota}/g, fleetSensorsPromptBlock)
+      .replace(/{enfoque_sesion}/g, focusBlock);
   }
 
   async function generateSailorAiDebrief(){
@@ -17224,51 +17573,7 @@ function getGeminiApiKey(){
 
       if(apiKey && apiKey.trim()){
         if(titleEl) titleEl.textContent = 'Debriefing Autónomo: ' + data.name + ' (' + data.sail + ')';
-        
-        let sensorsBlockPrompt = '';
-        if(data.sensors && data.sensors.hasSensors){
-          sensorsBlockPrompt = '\nDATOS DE DINÁMICA DE NAVEGACIÓN Y SENSORES IMU (ALTA RESOLUCIÓN):\n' +
-            '- Escora media en ceñida: ' + data.sensors.avgHeelUpwind.toFixed(1) + '° (Máxima registrada: ' + data.sensors.maxHeel.toFixed(1) + '°)\n' +
-            '- Trimado longitudinal medio en ceñida (Pitch/Asiento): ' + data.sensors.avgTrimUpwind.toFixed(1) + '°\n' +
-            '- Deriva lateral media en ceñida (Leeway / diferencia Rumbo COG vs Proa HDG): ' + data.sensors.avgLeewayUpwind.toFixed(1) + '°\n\n' +
-            'ANÁLISIS OBLIGATORIO DE VARIABLES IMU:\n' +
-            'a) Escora (Heel): En Optimist el fondo plano requiere navegar a 0°-3° de escora. Más de 4°-5° de escora clava el pantoque, frena el avance y disminuye el área efectiva de la orza aumentando el abatimiento.\n' +
-            'b) Trimado longitudinal (Pitch/Asiento): Evalúa la posición del cuerpo respecto a la bancada central. Evitar arrastrar el espejo a popa (pitch <-16°) o clavar la proa / roda en las olas (> -10°).\n' +
-            'c) Heading vs COG (Deriva / Leeway): Diferencia entre la orientación de crujía (HDG) y el avance real (COG). Evalúa si la orza genera sustentación laminar adherida (3°-4.5°) o si el barco desliza de costado (>6°).\n';
-        }
-
-        const prompt = 'Eres el Director Técnico y Entrenador de Élite de la clase Optimist del Real Club Náutico de Gran Canaria (RCNGC), un centro de alto rendimiento náutico internacional con múltiples títulos mundiales y europeos.\n\n' +
-          'Realiza un DEBRIEFING TÉCNICO AUTÓNOMO, personalizado, riguroso y constructivo para el regatista ' + data.name + ' (Vela ' + data.sail + '), basado en la siguiente telemetría GPS real y calibración VPP por peso:\n\n' +
-          'DATOS DEL REGATISTA Y CONDICIONES:\n' +
-          '- Regatista: ' + data.name + '\n' +
-          '- Número de vela: ' + data.sail + '\n' +
-          '- Peso del regatista: ' + data.weight + ' kg (Crítico: el peso determina la polar óptima, momento adrizante y reglaje en Optimist)\n' +
-          '- Intensidad de viento (TWS): ' + env.tws.toFixed(1) + ' nudos (' + env.windRegime + ')\n' +
-          '- Dirección de viento (TWD): ' + Math.round(env.twd) + '°\n' +
-          '- Cumplimiento de polar teórica VPP para su peso: ' + data.polarPct.toFixed(1) + '%\n' +
-          '- Velocidad media real (SOG): ' + data.sogAvg.toFixed(2) + ' kn (Pico máximo: ' + data.sogMax.toFixed(2) + ' kn)\n' +
-          '- VMG medio en ceñida: ' + data.upwindVmg.toFixed(2) + ' kn\n' +
-          '- Total de viradas computadas: ' + data.tacksCount + '\n' +
-          '- Pérdida media por virada: -' + data.avgLoss + ' metros\n' +
-          '- Total barcos en la sesión: ' + env.totalBoats + '\n' +
-          sensorsBlockPrompt + '\n' +
-          'INSTRUCCIONES DE ANÁLISIS:\n' +
-          '1. Aplica principios de física de la navegación y arquitectura naval del Optimist (fondo plano, proa lanzada / pram, percha, gratil, caída del mástil, orza y escora).\n' +
-          '2. Ten muy en cuenta el peso de ' + data.weight + ' kg respecto al viento de ' + env.tws.toFixed(1) + ' nudos:\n' +
-          '   - Regatistas ligeros (<38 kg): Ventaja en aceleración y popas con poco viento; con viento fresco sufren para mantener el barco plano y necesitan amollar percha, aplanar gratil y máxima técnica de colgado.\n' +
-          '   - Regatistas medios (38-44 kg): Rango de peso óptimo; equilibrio entre velocidad y VMG.\n' +
-          '   - Regatistas pesados (>45 kg): Máximo momento adrizante y velocidad en ceñida con ola/viento fresco; con poco viento deben cuidar la superficie mojada (sentarse más a proa) y llevar vela más embolsada.\n' +
-          '3. Estructura el informe en Markdown con las siguientes secciones claras y encabezados:\n' +
-          '   # Debriefing Técnico Individual · ' + data.name + ' (' + data.sail + ')\n' +
-          '   ## 1. Resumen Ejecutivo de la Sesión\n' +
-          '   ## 2. Rendimiento de Velocidad vs Polares VPP por Peso\n' +
-          (data.sensors && data.sensors.hasSensors ? '   ## 3. Dinámica de Navegación: Escora, Trimado Longitudinal y Deriva Hidrodinámica (Sensores IMU)\n' : '') +
-          '   ## ' + (data.sensors && data.sensors.hasSensors ? '4' : '3') + '. Calidad de Maniobras y Transiciones (Viradas y Pérdida de Metros)\n' +
-          '   ## ' + (data.sensors && data.sensors.hasSensors ? '5' : '4') + '. Táctica, Salidas y Gestión del Campo\n' +
-          '   ## ' + (data.sensors && data.sensors.hasSensors ? '6' : '5') + '. Puesta a Punto del Material y Pautas de Trimado\n' +
-          '   ## ' + (data.sensors && data.sensors.hasSensors ? '7' : '6') + '. Plan de Acción: 3 Objetivos Prioritarios para la Próxima Sesión\n' +
-          '4. Tono: Profesional, motivador y sumamente técnico.';
-
+        const prompt = buildSailorAiDebriefPrompt(data, env);
         md = await callGeminiApi(prompt, model, apiKey);
         usedModelBadge = 'Google Gemini (' + model.replace('gemini-', '') + ')';
       } else {
@@ -17369,29 +17674,8 @@ function getGeminiApiKey(){
             'Añade un análisis de estabilidad colectiva, control de escora en rachas y sustentación de orzas.\n';
         }
 
-        const fleetPrompt = 'Eres el Entrenador Jefe de la flota Optimist del Real Club Náutico de Gran Canaria (RCNGC).\n\n' +
-          'Genera el INFORME COMPLETO DE DEBRIEFING COLECTIVO DE FLOTA para proyectar y debatir en la pizarra de la sala de reuniones tras la sesión:\n\n' +
-          'DATOS COLECTIVOS DE LA SESIÓN:\n' +
-          '- Total barcos participantes: ' + fleetStats.length + '\n' +
-          '- Viento medio en el campo: ' + env.tws.toFixed(1) + ' kn (' + env.windRegime + ') desde ' + Math.round(env.twd) + '°\n' +
-          '- Velocidad media de la flota: ' + fleetAvgSpd.toFixed(2) + ' kn (Pico máximo flota: ' + fleetMaxSpd.toFixed(2) + ' kn)\n' +
-          '- Total de viradas colectivas: ' + fleetTotalTacks + '\n' +
-          '- Rendimiento medio de polar de la flota: ' + fleetAvgPolar.toFixed(1) + '%\n' +
-          '- Barco con mayor eficiencia de polar: ' + topBoat.sail + ' (' + topBoat.name + ') con ' + topBoat.polarPct.toFixed(1) + '%\n' +
-          '- Resumen de barcos destacados y tiempos: ' + boatsBrief + '\n' +
-          fleetSensorsPromptBlock + '\n' +
-          'INSTRUCCIONES:\n' +
-          'Estructura el informe en Markdown con las siguientes secciones:\n' +
-          '# 🏆 Debriefing Colectivo de Flota · RCNGC Optimist\n' +
-          '## 1. Balance General y Ritmo de la Flota\n' +
-          '## 2. Análisis del Campo de Regatas, Viento y Roles\n' +
-          '## 3. Comparativa de Velocidades por Tramo y Eficiencia de Flota\n' +
-          (boatsWithSensors.length > 0 ? '## 4. Dinámica Colectiva y Sensores IMU (Escora, Trimado y Deriva)\n' : '') +
-          '## ' + (boatsWithSensors.length > 0 ? '5' : '4') + '. Rendimiento en Maniobras Colectivas (Viradas y Pérdidas)\n' +
-          '## ' + (boatsWithSensors.length > 0 ? '6' : '5') + '. Conclusiones y 3 Puntos Clave para la Pizarra del Club\n' +
-          'Tono: Didáctico, enfocado al crecimiento en equipo y superación técnica.';
-
-        md = await callGeminiApi(fleetPrompt, model, apiKey);
+        const prompt = buildFleetAiDebriefPrompt(fleetStats, env, fleetSensorsPromptBlock, boatsBrief, topBoat, fleetAvgSpd, fleetMaxSpd, fleetTotalTacks, fleetAvgPolar);
+        md = await callGeminiApi(prompt, model, apiKey);
         usedModelBadge = 'Google Gemini (' + model.replace('gemini-', '') + ')';
       } else {
         md = generateLocalFleetDebrief(fleetStats, env);
@@ -17480,7 +17764,7 @@ function getGeminiApiKey(){
       tabFleet.addEventListener('click', () => switchAiDebriefTab('fleet'));
     }
 
-    // Selector de barco
+    // Selector de regatista
     const sel = document.getElementById('aiSailorSelect');
     if(sel && !sel.dataset.bound){
       sel.dataset.bound = 'true';
@@ -17499,7 +17783,7 @@ function getGeminiApiKey(){
       btnGenFleet.addEventListener('click', () => generateFleetAiDebrief());
     }
 
-    // Modal API Key
+    // Modal API Key (Solo Administrador)
     const btnOpenModal = document.getElementById('btnOpenAiApiKeyModal');
     if(btnOpenModal && !btnOpenModal.dataset.bound){
       btnOpenModal.dataset.bound = 'true';
@@ -17541,6 +17825,48 @@ function getGeminiApiKey(){
       });
     }
 
+    // Modal Prompt / Directrices (Solo Administrador)
+    const btnOpenPrompt = document.getElementById('btnOpenAiPromptModal');
+    if(btnOpenPrompt && !btnOpenPrompt.dataset.bound){
+      btnOpenPrompt.dataset.bound = 'true';
+      btnOpenPrompt.addEventListener('click', () => openAiPromptModal());
+    }
+    const btnClosePrompt = document.getElementById('btnCloseAiPromptModal');
+    if(btnClosePrompt && !btnClosePrompt.dataset.bound){
+      btnClosePrompt.dataset.bound = 'true';
+      btnClosePrompt.addEventListener('click', () => closeAiPromptModal());
+    }
+    const btnCancelPrompt = document.getElementById('btnCancelAiPromptModal');
+    if(btnCancelPrompt && !btnCancelPrompt.dataset.bound){
+      btnCancelPrompt.dataset.bound = 'true';
+      btnCancelPrompt.addEventListener('click', () => closeAiPromptModal());
+    }
+    const btnSavePrompt = document.getElementById('btnSaveAiPrompt');
+    if(btnSavePrompt && !btnSavePrompt.dataset.bound){
+      btnSavePrompt.dataset.bound = 'true';
+      btnSavePrompt.addEventListener('click', () => saveAiPromptSettings());
+    }
+    const btnResetSailor = document.getElementById('btnResetAiPromptSailor');
+    if(btnResetSailor && !btnResetSailor.dataset.bound){
+      btnResetSailor.dataset.bound = 'true';
+      btnResetSailor.addEventListener('click', () => resetAiPromptToDefault('sailor'));
+    }
+    const btnResetFleet = document.getElementById('btnResetAiPromptFleet');
+    if(btnResetFleet && !btnResetFleet.dataset.bound){
+      btnResetFleet.dataset.bound = 'true';
+      btnResetFleet.addEventListener('click', () => resetAiPromptToDefault('fleet'));
+    }
+    const tabPromptInd = document.getElementById('tabPromptModalIndividual');
+    if(tabPromptInd && !tabPromptInd.dataset.bound){
+      tabPromptInd.dataset.bound = 'true';
+      tabPromptInd.addEventListener('click', () => switchPromptModalTab('individual'));
+    }
+    const tabPromptFleet = document.getElementById('tabPromptModalFleet');
+    if(tabPromptFleet && !tabPromptFleet.dataset.bound){
+      tabPromptFleet.dataset.bound = 'true';
+      tabPromptFleet.addEventListener('click', () => switchPromptModalTab('fleet'));
+    }
+
     // Acciones de informes (Copiar, Imprimir, Regenerar)
     const btnCopySailor = document.getElementById('btnCopySailorAiReport');
     if(btnCopySailor && !btnCopySailor.dataset.bound){
@@ -17575,6 +17901,7 @@ function getGeminiApiKey(){
     }
 
     updateAiApiKeyBadge();
+    updateAiAdminButtonsState();
   }
 
   // Exponer funciones globales en window
@@ -17587,16 +17914,25 @@ function getGeminiApiKey(){
     window.openAiApiKeyModal = openAiApiKeyModal;
     window.closeAiApiKeyModal = closeAiApiKeyModal;
     window.saveGeminiApiKey = saveGeminiApiKey;
+    window.saveGeminiApiKeyToCloud = saveGeminiApiKeyToCloud;
     window.testGeminiApiKey = testGeminiApiKey;
+    window.openAiPromptModal = openAiPromptModal;
+    window.closeAiPromptModal = closeAiPromptModal;
+    window.saveAiPromptSettings = saveAiPromptSettings;
+    window.resetAiPromptToDefault = resetAiPromptToDefault;
+    window.switchPromptModalTab = switchPromptModalTab;
+    window.getCustomPromptSailor = getCustomPromptSailor;
+    window.getCustomPromptFleet = getCustomPromptFleet;
+    window.getAiSessionFocus = getAiSessionFocus;
     window.switchAiDebriefTab = switchAiDebriefTab;
     window.copyAiReport = copyAiReport;
     window.printAiReport = printAiReport;
     window.initAiDebriefingEventListeners = initAiDebriefingEventListeners;
     window.updateAiApiKeyBadge = updateAiApiKeyBadge;
+    window.updateAiAdminButtonsState = updateAiAdminButtonsState;
     window.getGeminiApiKey = getGeminiApiKey;
     window.getGeminiModel = getGeminiModel;
     window.fetchClubConfig = fetchClubConfig;
-    window.saveGeminiApiKeyToCloud = saveGeminiApiKeyToCloud;
     window.clubConfigCache = clubConfigCache;
     window.simpleMarkdownToHtml = simpleMarkdownToHtml;
   }
