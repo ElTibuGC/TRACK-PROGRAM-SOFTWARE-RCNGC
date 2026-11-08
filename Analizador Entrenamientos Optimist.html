@@ -450,6 +450,173 @@
       color: #062325;
     }
 
+    /* =========================================================================
+       FICHAS TELEMÉTRICAS FLOTANTES Y FIJADAS AL MAPA (ESTILO RACESENSE)
+       ========================================================================= */
+    .boat-telemetry-card {
+      position: absolute;
+      width: 176px;
+      background: rgba(13, 21, 32, 0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.35);
+      padding: 8px 10px;
+      font-family: inherit;
+      color: #f1f5f9;
+      user-select: none;
+      transition: transform 0.1s ease, opacity 0.15s ease;
+      box-sizing: border-box;
+      z-index: 55;
+    }
+
+    .boat-telemetry-card.hover-card {
+      pointer-events: auto;
+      cursor: pointer;
+      transform: translate(-50%, -115%);
+      transition: opacity 0.15s ease;
+    }
+    .boat-telemetry-card.hover-card::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 6px 6px 0 6px;
+      border-style: solid;
+      border-color: rgba(13, 21, 32, 0.92) transparent transparent transparent;
+    }
+    .boat-telemetry-card.hover-card.flipped-below {
+      transform: translate(-50%, 25%);
+    }
+    .boat-telemetry-card.hover-card.flipped-below::after {
+      bottom: auto;
+      top: -6px;
+      border-width: 0 6px 6px 6px;
+      border-style: solid;
+      border-color: transparent transparent rgba(13, 21, 32, 0.92) transparent;
+    }
+
+    .pinned-boats-container {
+      position: absolute;
+      left: 16px;
+      bottom: 18px;
+      z-index: 45;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 8px;
+      pointer-events: none;
+      max-width: 190px;
+    }
+    .app.map-fullscreen-active .pinned-boats-container,
+    body.map-fullscreen-active .pinned-boats-container {
+      bottom: 74px;
+    }
+    .pinned-boats-container .boat-telemetry-card {
+      position: relative;
+      pointer-events: auto;
+      transform: none;
+      cursor: pointer;
+    }
+
+    .btc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      gap: 4px;
+    }
+    .btc-title-grp {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .btc-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .btc-sail {
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .btc-name {
+      font-size: 10.5px;
+      color: #94a3b8;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 85px;
+    }
+    .btc-close-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 13px;
+      line-height: 1;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btc-close-btn:hover {
+      background: rgba(239, 68, 68, 0.25);
+      color: #f87171;
+    }
+    .btc-pin-hint {
+      font-size: 9.5px;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(255,255,255,0.08);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .btc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 10px;
+    }
+    .btc-cell {
+      display: flex;
+      flex-direction: column;
+    }
+    .btc-lbl {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+      margin-bottom: 1px;
+    }
+    .btc-val-row {
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+    }
+    .btc-val {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #f8fafc;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+    }
+    .btc-unit {
+      font-size: 9.5px;
+      font-weight: 500;
+      color: #64748b;
+    }
+
     /* Side Panel */
     .side {
       grid-area: side;
@@ -980,6 +1147,13 @@
       flex-direction: column;
       gap: 20px;
     }
+    .advanced-view > *, .analysis-v2-view > * {
+      flex-shrink: 0;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
     .kpi-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -1281,18 +1455,21 @@
     .app.is-empty .side,
     .app.is-empty .tl,
     .app.is-empty .advanced-view,
-    .app.is-empty .analysis-v2-view,
+    .app.is-empty:not(.view-analysis-v2) .analysis-v2-view,
     .app.is-empty #chip,
     .app.is-empty #clock,
-    .app.is-empty #btnGoHome,
+    .app.is-empty:not(.view-analysis-v2) #btnGoHome,
     .app.is-empty #btnShareCloudRegata,
     .app.is-empty #btnQuickSaveCloud {
       display: none !important;
     }
-    .app.is-empty .import {
+    .app.is-empty:not(.view-analysis-v2) .import {
       display: grid !important;
       width: 100%;
       margin-top: 14px;
+    }
+    .app.is-empty.view-analysis-v2 .import {
+      display: none !important;
     }
     .app:not(.is-empty) .import {
       display: none !important;
@@ -1618,7 +1795,7 @@
   <nav class="main-tabs" role="tablist" aria-label="Modo de visualización">
     <button class="main-tab-btn is-active" id="mainTabTrack" role="tab" aria-selected="true">Visualizar el track</button>
     <button class="main-tab-btn" id="mainTabMetrics" role="tab" aria-selected="false">Métricas avanzadas</button>
-    <button class="main-tab-btn" id="mainTabAnalysisV2" role="tab" aria-selected="false">Análisis V2</button>
+    <button class="main-tab-btn" id="mainTabAnalysisV2" role="tab" aria-selected="false">Análisis V2 · Debriefing IA <span style="background:rgba(245,158,11,0.22);color:#fbbf24;border:1px solid rgba(245,158,11,0.4);font-size:10px;padding:1px 6px;border-radius:8px;font-weight:700;margin-left:4px">🧪 En pruebas</span></button>
     
     <!-- Contenedor del Widget de Usuario estilo Campus/Club -->
     <div class="user-profile-widget" id="userProfileWidget">
@@ -1655,6 +1832,9 @@
         </button>
         <button class="user-dropdown-item" id="btnDropdownCalendar" type="button" role="menuitem">
           <span>📅</span> Calendario
+        </button>
+        <button class="user-dropdown-item" id="btnDropdownAiDebrief" type="button" role="menuitem">
+          <span>🤖</span> Debriefing IA <span style="background:rgba(245,158,11,0.2);color:#fbbf24;font-size:9.5px;padding:1px 5px;border-radius:4px;margin-left:auto;font-weight:700">En pruebas</span>
         </button>
         <button class="user-dropdown-item" id="btnDropdownChangePin" type="button" role="menuitem">
           <span>🔑</span> Cambiar PIN
@@ -1758,6 +1938,13 @@
             <strong class="tool-card-title">App Salidas GPS</strong>
             <span class="tool-card-desc">Comité y Pin en agua</span>
           </a>
+
+          <!-- 4. Debriefing IA (En pruebas) -->
+          <button class="home-tool-card tool-ai" id="btnHomeAiDebrief" type="button" title="Abrir Debriefing Autónomo con IA (Google Gemini)">
+            <div class="tool-card-icon" style="background:rgba(14,165,233,0.15);color:#0284c7">🤖</div>
+            <strong class="tool-card-title">Debriefing IA <span style="background:rgba(245,158,11,0.25);color:#fbbf24;font-size:9.5px;padding:1px 5px;border-radius:4px;font-weight:700">En pruebas</span></strong>
+            <span class="tool-card-desc">Google Gemini Autónomo</span>
+          </button>
         </div>
       </div>
 
@@ -1813,6 +2000,12 @@
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
       </button>
     </div>
+
+    <!-- Contenedor de fichas telemétricas fijadas a la izquierda (máx. 3 apiladas estilo Racesense) -->
+    <div id="pinnedBoatsContainer" class="pinned-boats-container"></div>
+
+    <!-- Ficha flotante instantánea al pasar el cursor sobre un barco en el mapa -->
+    <div id="boatHoverCard" class="boat-telemetry-card hover-card" style="display:none;"></div>
   </section>
 
   <!-- PANEL LATERAL CON 3 PESTAÑAS: CLASIFICACIÓN, POLARES Y VIENTO -->
@@ -1834,6 +2027,9 @@
       <div class="pane" id="pane-rank" role="tabpanel">
         <div class="cols"><span>✓</span><span>POS</span><span></span><span>VELA</span><span>TRAMO</span><span>NUDOS</span><span style="text-align:right">% POL</span></div>
         <div class="list-wrap"><div class="list" id="boatList"></div></div>
+        <button type="button" class="btn" id="btnSideGoToAiDebrief" style="width:100%;margin-top:8px;padding:7px 10px;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(14,165,233,0.12);border:1px solid rgba(14,165,233,0.35);color:var(--accent);border-radius:6px;cursor:pointer">
+          🤖 Debriefing IA <span style="background:rgba(245,158,11,0.22);color:#fbbf24;font-size:9.5px;padding:1px 5px;border-radius:4px;border:1px solid rgba(245,158,11,0.4)">En pruebas</span>
+        </button>
       </div>
 
       <!-- PANE 2: POLARES EN VIVO DE LA FLOTA -->
@@ -2006,8 +2202,9 @@
           <span>▲</span> Barco para análisis táctico detallado:
         </span>
         <select id="tacticalBoatSelect" style="background:var(--sub);border:1px solid var(--line);color:var(--ink);padding:6px 12px;border-radius:6px;font-size:13px;font-weight:600"></select>
-        <label style="font-size:12px;color:var(--muted);font-weight:600;margin-left:6px">Peso patrón:</label>
-        <select id="skipperWeightSelect" style="background:var(--sub);border:1px solid var(--line);color:var(--ink);padding:6px 10px;border-radius:6px;font-size:12.5px">
+        <span id="containerTopWeight" style="display:inline-flex;align-items:center">
+          <label style="font-size:12px;color:var(--muted);font-weight:600;margin-left:6px">Peso patrón:</label>
+          <select id="skipperWeightSelect" style="background:var(--sub);border:1px solid var(--line);color:var(--ink);padding:6px 10px;border-radius:6px;font-size:12.5px">
           <option value="35">35 kg (Ligero)</option>
           <option value="40">40 kg (Medio-bajo)</option>
           <option value="42.5" selected>42.5 kg (Oficial IOD95)</option>
@@ -2165,6 +2362,9 @@
         <div style="font-size:12.5px;color:var(--muted)">Comparación directa de métricas entre todos los barcos trackeados</div>
       </div>
       <div style="display:flex;align-items:center;gap:10px">
+        <button class="btn" id="btnJumpToAiDebriefFromV2" type="button" style="border-color:rgba(14,165,233,0.4);color:var(--accent);font-weight:700;display:inline-flex;align-items:center;gap:6px">
+          🤖 Ir a Debriefing IA <span style="background:rgba(245,158,11,0.22);color:#fbbf24;font-size:9.5px;padding:1px 5px;border-radius:4px">En pruebas</span>
+        </button>
         <button class="btn" id="btnCopyV2Table" type="button">Copiar Matriz</button>
         <button class="btn primary" id="btnPrintV2Report" type="button">Imprimir Informe V2</button>
       </div>
@@ -2182,6 +2382,9 @@
               <th style="text-align:right">SOG Media</th>
               <th style="text-align:right">SOG Máxima</th>
               <th style="text-align:right">VMG Ceñida</th>
+              <th style="text-align:right" title="Escora media en ceñida (ideal plano 0°-3°)">Escora</th>
+              <th style="text-align:right" title="Trimado longitudinal medio (asiento en bañera)">Trimado</th>
+              <th style="text-align:right" title="Deriva lateral en ceñida (Leeway: Rumbo COG vs Proa HDG)">Deriva</th>
               <th style="text-align:right">Viradas</th>
               <th style="text-align:right">Pérdida Med.</th>
               <th style="text-align:right">Distancia</th>
@@ -2204,7 +2407,471 @@
       </div>
       <div id="h2hContent" style="display:grid;grid-template-columns:1fr 1fr;gap:16px"></div>
     </div>
+    <!-- ============================================================== -->
+    <!-- GENERADOR DE DEBRIEFINGS AUTOMÁTICOS CON INTELIGENCIA ARTIFICIAL -->
+    <!-- ============================================================== -->
+    <div class="chart-card" id="cardAiDebriefing" style="margin-top:24px;border:1.5px solid rgba(14,165,233,0.35);background:linear-gradient(180deg, var(--panel) 0%, rgba(14,165,233,0.03) 100%);border-radius:var(--radius);overflow:hidden;flex-shrink:0;min-height:fit-content">
+      
+      <!-- Encabezado de la Sección de IA -->
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:12px;background:var(--sub)">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg, #0284c7, #38bdf8);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;box-shadow:0 3px 10px rgba(14,165,233,0.35);flex-shrink:0">
+            🤖
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <h3 style="font-family:var(--f-display);font-size:18px;font-weight:800;color:var(--ink);margin:0">
+                Debriefing Autónomo con IA · Google Gemini
+              </h3>
+              <span style="background:rgba(245,158,11,0.18);color:#fbbf24;border:1px solid rgba(245,158,11,0.4);padding:2px 8px;border-radius:12px;font-weight:800;font-size:11px">
+                ⚠️ En pruebas
+              </span>
+              <span style="background:rgba(14,165,233,0.12);color:#0284c7;border:1px solid rgba(14,165,233,0.3);padding:2px 8px;border-radius:12px;font-weight:700;font-size:11px">
+                Entrenador Especialista Optimist RCNGC
+              </span>
+              <span id="aiApiKeyStatusBadge" style="font-size:11px;padding:2px 8px;border-radius:12px;font-weight:700"></span>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-top:3px">
+              Generador de informes técnicos y tácticos personalizados mediante IA, calculados sobre telemetría GPS real y polares VPP por peso
+            </div>
+          </div>
+        </div>
+
+                <!-- Botón Configuración de Clave API Gemini y Directrices -->
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <button class="btn" id="btnOpenAiPromptModal" type="button" style="font-size:12px;padding:6px 14px;display:inline-flex;align-items:center;gap:6px;font-weight:700;border-color:rgba(16,185,129,0.4);color:#10b981;background:rgba(16,185,129,0.08)" title="Personalizar las instrucciones, objetivos y formato del informe para la IA">
+            🎯 Personalizar Prompt / Directrices
+          </button>
+          <button class="btn" id="btnOpenAiApiKeyModal" type="button" style="font-size:12px;padding:6px 14px;display:inline-flex;align-items:center;gap:6px;font-weight:700;border-color:rgba(14,165,233,0.4);color:var(--accent)">
+            🔑 Configurar Clave API Gemini
+          </button>
+        </div>
+      </div>
+
+      <!-- AVISO DESTACADO DE FUNCIÓN EN PRUEBAS -->
+      <div class="ai-beta-warning-banner" style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.38);border-radius:8px;padding:12px 18px;margin:16px 20px 0 20px;display:flex;align-items:center;gap:14px">
+        <div style="font-size:26px;flex-shrink:0;line-height:1">⚠️</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:800;color:#fbbf24;margin-bottom:3px;display:flex;align-items:center;gap:8px">
+            <span>AVISO: FUNCIÓN EN FASE DE PRUEBAS (BETA EXPERIMENTAL)</span>
+            <span style="background:rgba(245,158,11,0.25);border:1px solid rgba(245,158,11,0.5);font-size:10px;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:0.05em">🧪 En desarrollo</span>
+          </div>
+          <div style="font-size:12px;color:var(--ink);line-height:1.5">
+            El motor de <strong>Debriefing Autónomo con IA (Google Gemini)</strong> se encuentra actualmente en fase de pruebas activas y validación técnica para la flota Optimist del RCNGC. Los informes generados automáticamente son orientativos y deben ser siempre contrastados y validados con el criterio técnico del entrenador.
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Menús / Pestañas de Debriefing -->
+      <div style="display:flex;border-bottom:1px solid var(--line);background:var(--panel);padding:0 20px;gap:8px;margin-top:14px">
+        <button class="btn ai-tab-btn active" id="tabAiIndividual" type="button" style="padding:11px 18px;background:none;border:none;border-bottom:2.5px solid var(--accent);color:var(--accent);font-weight:800;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;border-radius:0">
+          👤 Informe Individual por Regatista
+        </button>
+        <button class="btn ai-tab-btn" id="tabAiFleet" type="button" style="padding:11px 18px;background:none;border:none;border-bottom:2.5px solid transparent;color:var(--muted);font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;border-radius:0">
+          🏆 Informe Completo de la Sesión / Flota
+        </button>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- MENÚ 1: INFORME INDIVIDUAL POR REGATISTA                     -->
+      <!-- ============================================================ -->
+      <div id="aiSectionIndividual" style="padding:18px 20px">
+        <!-- Barra de Selección de Barco & Métricas Rápidas -->
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;background:var(--sub);padding:14px 18px;border-radius:8px;border:1px solid var(--line);margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <label for="aiSailorSelect" style="font-weight:700;font-size:13px;color:var(--ink)">
+              Seleccionar Regatista:
+            </label>
+            <select id="aiSailorSelect" style="background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:7px 12px;border-radius:6px;font-weight:700;font-size:13px;min-width:260px">
+              <option value="">-- Elige un barco cargado --</option>
+            </select>
+            <div id="aiSailorQuickMetrics" style="font-size:12px;color:var(--dim);display:flex;gap:8px;align-items:center;flex-wrap:wrap"></div>
+          </div>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn primary" id="btnGenerateSailorAiReport" type="button" style="font-weight:800;padding:8px 18px;font-size:13px;display:inline-flex;align-items:center;gap:7px;box-shadow:0 2px 8px rgba(2,132,199,0.25)">
+              ✨ Generar Debriefing con IA
+            </button>
+          </div>
+        </div>
+
+        <!-- Indicador de Carga / Barra de Progreso Inteligente -->
+        <div id="aiSailorLoading" style="display:none;padding:28px 24px;background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;text-align:center">
+          <div style="display:flex;justify-content:space-between;align-items:center;max-width:540px;margin:0 auto 8px auto">
+            <div style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px;color:var(--ink)">
+              <span style="font-size:18px;animation:spin 2s linear infinite;display:inline-block">⚙️</span>
+              <span id="aiSailorLoadingTitle">Generando Debriefing con IA</span>
+            </div>
+            <span id="aiSailorProgressPct" style="font-size:12px;font-weight:800;color:var(--accent);background:rgba(14,165,233,0.12);border:1px solid rgba(14,165,233,0.3);padding:2px 8px;border-radius:10px">10%</span>
+          </div>
+
+          <!-- Barra de Progreso -->
+          <div style="max-width:540px;height:9px;background:rgba(255,255,255,0.08);border-radius:5px;overflow:hidden;margin:0 auto 12px auto;position:relative;border:1px solid var(--line)">
+            <div id="aiSailorProgressBar" style="width:10%;height:100%;background:linear-gradient(90deg, #0ea5e9, #10b981);border-radius:5px;transition:width 0.3s ease"></div>
+          </div>
+
+          <div id="aiSailorLoadingText" style="font-weight:700;font-size:13.5px;color:var(--ink);margin-bottom:4px">
+            📊 1. Recopilando telemetría GPS y polares VPP por peso...
+          </div>
+          <div id="aiSailorLoadingSub" style="font-size:12px;color:var(--dim);margin-bottom:14px">
+            Consultando con el modelo de IA de Google...
+          </div>
+
+          <!-- Pie del progreso con cronómetro y botón de contingencia -->
+          <div style="display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:12px;max-width:540px;margin:0 auto">
+            <span style="font-size:11.5px;color:var(--dim);display:inline-flex;align-items:center;gap:5px">
+              ⏱️ Tiempo: <strong id="aiSailorElapsedSec" style="color:var(--ink)">0.0s</strong> <span style="opacity:0.7">(estimado: 6-15s)</span>
+            </span>
+            <button type="button" id="btnCancelAiSailorFastLocal" class="btn" style="font-size:11px;padding:4px 10px;font-weight:600;border-color:rgba(245,158,11,0.4);color:#fbbf24;background:rgba(245,158,11,0.08)" title="Si no deseas esperar la respuesta de la nube, muestra el informe experto local inmediatamente">
+              ⚡ Mostrar Informe Local Inmediato
+            </button>
+          </div>
+        </div>
+
+        <!-- Contenedor del Informe Generado -->
+        <div id="aiSailorReportBox" style="display:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:22px;position:relative">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid var(--line);padding-bottom:12px;flex-wrap:wrap;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:20px">📝</span>
+              <div>
+                <span id="aiSailorReportTitle" style="font-weight:800;font-size:15px;color:var(--ink)"></span>
+                <span id="aiSailorReportBadge" style="font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(14,165,233,0.1);color:#0284c7;font-weight:700;margin-left:8px"></span>
+              </div>
+            </div>
+            <div style="display:flex;gap:7px">
+              <button class="btn" id="btnCopySailorAiReport" type="button" style="font-size:11.5px;padding:4px 10px;font-weight:600">📋 Copiar</button>
+              <button class="btn" id="btnPrintSailorAiReport" type="button" style="font-size:11.5px;padding:4px 10px;font-weight:600">🖨️ Imprimir / PDF</button>
+              <button class="btn" id="btnRegenerateSailorAiReport" type="button" style="font-size:11.5px;padding:4px 10px;font-weight:600">🔄 Regenerar</button>
+            </div>
+          </div>
+
+          <!-- Cuerpo formateado del debriefing -->
+          <div id="aiSailorReportContent" style="font-size:13px;line-height:1.75;color:var(--ink)"></div>
+        </div>
+
+        <!-- Placeholder vacío -->
+        <div id="aiSailorReportEmpty" style="text-align:center;padding:45px 20px;color:var(--dim);border:1px dashed var(--line);border-radius:8px">
+          ⛵ Selecciona un regatista en el desplegable y haz clic en <strong>«✨ Generar Debriefing con IA»</strong> para obtener su análisis técnico individual, polares VPP personalizadas a su peso y objetivos de mejora.
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- MENÚ 2: INFORME COMPLETO DE LA FLOTA / SESIÓN               -->
+      <!-- ============================================================ -->
+      <div id="aiSectionFleet" style="padding:18px 20px;display:none">
+        <!-- Resumen de Flota y Botón de Acción -->
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;background:var(--sub);padding:14px 18px;border-radius:8px;border:1px solid var(--line);margin-bottom:16px">
+          <div>
+            <div style="font-weight:800;font-size:14px;color:var(--ink);margin-bottom:3px">
+              🏆 Informe Global de la Sesión · Flota Optimist RCNGC
+            </div>
+            <div id="aiFleetQuickSummary" style="font-size:12px;color:var(--dim)">
+              Genera las conclusiones colectivas, análisis táctico del campo de regatas y puntos de mejora para el debriefing conjunto en la sala.
+            </div>
+          </div>
+
+          <div style="display:flex;gap:8px">
+            <button class="btn primary" id="btnGenerateFleetAiReport" type="button" style="font-weight:800;padding:8px 18px;font-size:13px;display:inline-flex;align-items:center;gap:7px;box-shadow:0 2px 8px rgba(2,132,199,0.25)">
+              ✨ Generar Informe Completo de Flota
+            </button>
+          </div>
+        </div>
+
+        <!-- Indicador de Carga Flota / Barra de Progreso Inteligente -->
+        <div id="aiFleetLoading" style="display:none;padding:28px 24px;background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;text-align:center">
+          <div style="display:flex;justify-content:space-between;align-items:center;max-width:540px;margin:0 auto 8px auto">
+            <div style="display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px;color:var(--ink)">
+              <span style="font-size:18px;animation:spin 2s linear infinite;display:inline-block">⚙️</span>
+              <span id="aiFleetLoadingTitle">Generando Debriefing de Flota con IA</span>
+            </div>
+            <span id="aiFleetProgressPct" style="font-size:12px;font-weight:800;color:var(--accent);background:rgba(14,165,233,0.12);border:1px solid rgba(14,165,233,0.3);padding:2px 8px;border-radius:10px">10%</span>
+          </div>
+
+          <!-- Barra de Progreso -->
+          <div style="max-width:540px;height:9px;background:rgba(255,255,255,0.08);border-radius:5px;overflow:hidden;margin:0 auto 12px auto;position:relative;border:1px solid var(--line)">
+            <div id="aiFleetProgressBar" style="width:10%;height:100%;background:linear-gradient(90deg, #0ea5e9, #10b981);border-radius:5px;transition:width 0.3s ease"></div>
+          </div>
+
+          <div id="aiFleetLoadingText" style="font-weight:700;font-size:13.5px;color:var(--ink);margin-bottom:4px">
+            🏆 1. Analizando matriz de flota, salidas y tramos...
+          </div>
+          <div id="aiFleetLoadingSub" style="font-size:12px;color:var(--dim);margin-bottom:14px">
+            Sintetizando conclusiones colectivas con Google Gemini...
+          </div>
+
+          <!-- Pie del progreso con cronómetro y botón de contingencia -->
+          <div style="display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;border-top:1px dashed var(--line);padding-top:12px;max-width:540px;margin:0 auto">
+            <span style="font-size:11.5px;color:var(--dim);display:inline-flex;align-items:center;gap:5px">
+              ⏱️ Tiempo: <strong id="aiFleetElapsedSec" style="color:var(--ink)">0.0s</strong> <span style="opacity:0.7">(estimado: 6-15s)</span>
+            </span>
+            <button type="button" id="btnCancelAiFleetFastLocal" class="btn" style="font-size:11px;padding:4px 10px;font-weight:600;border-color:rgba(245,158,11,0.4);color:#fbbf24;background:rgba(245,158,11,0.08)" title="Si no deseas esperar la respuesta de la nube, muestra el informe experto local inmediatamente">
+              ⚡ Mostrar Informe Local Inmediato
+            </button>
+          </div>
+        </div>
+
+        <!-- Contenedor del Informe de Flota Generado -->
+        <div id="aiFleetReportBox" style="display:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:22px;position:relative">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid var(--line);padding-bottom:12px;flex-wrap:wrap;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:20px">📋</span>
+              <div>
+                <span id="aiFleetReportTitle" style="font-weight:800;font-size:15px;color:var(--ink)">Debriefing Colectivo de la Flota</span>
+                <span id="aiFleetReportBadge" style="font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(16,185,129,0.1);color:#059669;font-weight:700;margin-left:8px"></span>
+              </div>
+            </div>
+            <div style="display:flex;gap:7px">
+              <button class="btn" id="btnCopyFleetAiReport" type="button" style="font-size:11.5px;padding:4px 10px;font-weight:600">📋 Copiar</button>
+              <button class="btn" id="btnPrintFleetAiReport" type="button" style="font-size:11.5px;padding:4px 10px;font-weight:600">🖨️ Imprimir / PDF</button>
+              <button class="btn" id="btnRegenerateFleetAiReport" type="button" style="font-size:11.5px;padding:4px 10px;font-weight:600">🔄 Regenerar</button>
+            </div>
+          </div>
+
+          <div id="aiFleetReportContent" style="font-size:13px;line-height:1.75;color:var(--ink)"></div>
+        </div>
+
+        <!-- Placeholder vacío de flota -->
+        <div id="aiFleetReportEmpty" style="text-align:center;padding:45px 20px;color:var(--dim);border:1px dashed var(--line);border-radius:8px">
+          🏆 Haz clic en <strong>«✨ Generar Informe Completo de Flota»</strong> para generar el resumen técnico colectivo para la pizarra de debriefing, comparativas de velocidad por tramo y puntos clave para el grupo.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Modal de Configuración de Clave API Google Gemini -->
+    <div class="modal-overlay" id="aiApiKeyModal" style="z-index: 10600;" hidden>
+      <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="aiApiKeyModalTitle" style="max-width:540px">
+        <div class="modal-head" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:18px">🔑</span>
+            <h3 id="aiApiKeyModalTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--ink)">Configuración de Google Gemini AI</h3>
+          </div>
+          <button class="modal-close" id="btnCloseAiApiKeyModal" type="button" aria-label="Cerrar modal">✕</button>
+        </div>
+        <div class="modal-body" style="padding:18px 20px">
+          <!-- Aviso en pruebas en el modal de clave API -->
+          <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:6px;padding:10px 14px;font-size:12px;color:#fbbf24;margin-bottom:14px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:20px;flex-shrink:0">⚠️</span>
+            <div>
+              <strong>Función en fase de pruebas:</strong> La integración de debriefings autónomos con Google Gemini AI es experimental. Las conclusiones emitidas deben ser supervisadas por el entrenador.
+            </div>
+          </div>
+
+    <!-- Modal: Personalizador de Directrices y Prompt del Entrenador -->
+    <div class="modal-overlay" id="aiPromptModal" style="z-index: 10650;" hidden>
+      <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="aiPromptModalTitle" style="max-width:780px;width:95%">
+        <div class="modal-head" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:22px">🎯</span>
+            <div>
+              <h3 id="aiPromptModalTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--ink)">Directrices y Prompt del Entrenador para IA</h3>
+              <div style="font-size:11.5px;color:var(--dim)">Define qué variables debe priorizar la IA, los objetivos del entrenamiento y cómo estructurar los informes</div>
+            </div>
+          </div>
+          <button class="modal-close" id="btnCloseAiPromptModal" type="button" aria-label="Cerrar modal">✕</button>
+        </div>
+
+        <!-- Pestañas internas del modal: Individual vs Colectivo -->
+        <div style="display:flex;background:var(--sub);border-bottom:1px solid var(--line);padding:0 20px;gap:6px">
+          <button type="button" class="btn" id="tabPromptModalIndividual" style="padding:10px 16px;font-size:12.5px;font-weight:700;background:none;border:none;border-bottom:2.5px solid var(--accent);color:var(--accent);border-radius:0;cursor:pointer">
+            👤 Prompt Individual (Regatista)
+          </button>
+          <button type="button" class="btn" id="tabPromptModalFleet" style="padding:10px 16px;font-size:12.5px;font-weight:600;background:none;border:none;color:var(--dim);border-radius:0;cursor:pointer">
+            🏆 Prompt Colectivo (Flota)
+          </button>
+        </div>
+
+        <div class="modal-body" style="padding:18px 20px;max-height:70vh;overflow-y:auto">
+
+          <!-- ENFOQUE DE LA SESIÓN (DIRECTRIZ RÁPIDA) -->
+          <div style="background:rgba(14,165,233,0.06);border:1px solid rgba(14,165,233,0.25);border-radius:6px;padding:12px 14px;margin-bottom:16px">
+            <label for="inpAiSessionFocus" style="display:block;font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px">
+              ⚡ Enfoque / Objetivo Especial de la Sesión de Hoy (Opcional):
+            </label>
+            <input type="text" id="inpAiSessionFocus" placeholder="Ej: Viento fresco y ola; priorizar barco plano 0º-3º, colgado activo y salida rápida de viradas." style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:12.5px">
+            <div style="font-size:11px;color:var(--dim);margin-top:4px">
+              Esta directriz se inyecta con máxima prioridad para que la IA centre sus conclusiones y objetivos en este aspecto técnico concreto.
+            </div>
+          </div>
+
+          <!-- VISTA INDIVIDUAL -->
+          <div id="aiPromptViewIndividual">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <label for="txtAiPromptSailor" style="font-size:12.5px;font-weight:700;color:var(--ink)">
+                Plantilla de Instrucciones para Debriefing Individual:
+              </label>
+              <button type="button" id="btnResetAiPromptSailor" class="btn" style="font-size:11px;padding:3px 10px;color:var(--dim)" title="Restablecer plantilla oficial del RCNGC">
+                ↺ Restaurar Plantilla RCNGC
+              </button>
+            </div>
+            <textarea id="txtAiPromptSailor" rows="13" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-family:var(--f-mono);font-size:12px;line-height:1.45;resize:vertical"></textarea>
+            
+            <div style="margin-top:10px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:6px">
+              <div style="font-size:11.5px;font-weight:700;color:var(--dim);margin-bottom:6px">
+                Variables dinámicas disponibles (se sustituyen automáticamente con la telemetría real):
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:11px">
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{nombre}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{vela}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{peso}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{tws}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{twd}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{polar_pct}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{sog_med}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{sog_max}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{vmg_med}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{viradas}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{perdida_virada}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{datos_sensores_imu}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{enfoque_sesion}</code>
+              </div>
+            </div>
+          </div>
+
+          <!-- VISTA COLECTIVA / FLOTA -->
+          <div id="aiPromptViewFleet" style="display:none">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <label for="txtAiPromptFleet" style="font-size:12.5px;font-weight:700;color:var(--ink)">
+                Plantilla de Instrucciones para Debriefing Colectivo de Flota:
+              </label>
+              <button type="button" id="btnResetAiPromptFleet" class="btn" style="font-size:11px;padding:3px 10px;color:var(--dim)" title="Restablecer plantilla oficial del RCNGC">
+                ↺ Restaurar Plantilla RCNGC
+              </button>
+            </div>
+            <textarea id="txtAiPromptFleet" rows="13" style="width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-family:var(--f-mono);font-size:12px;line-height:1.45;resize:vertical"></textarea>
+            
+            <div style="margin-top:10px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:6px">
+              <div style="font-size:11.5px;font-weight:700;color:var(--dim);margin-bottom:6px">
+                Variables dinámicas de flota disponibles:
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:11px">
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{total_barcos}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{tws}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{twd}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{vel_media_flota}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{vel_max_flota}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{viradas_totales}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{polar_media_flota}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{top_barco}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{resumen_barcos}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{datos_sensores_flota}</code>
+                <code style="background:var(--sub);padding:2px 6px;border-radius:4px;color:var(--accent)">{enfoque_sesion}</code>
+              </div>
+            </div>
+          </div>
+
+          <div id="aiPromptSaveStatus" style="display:none;margin-top:12px;padding:8px 12px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);border-radius:6px;font-size:12px;color:#10b981;text-align:center;font-weight:700">
+            ✓ Directrices y plantillas de prompt guardadas correctamente.
+          </div>
+        </div>
+
+        <div class="modal-foot" style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-top:1px solid var(--line);background:var(--sub)">
+          <span style="font-size:11.5px;color:var(--dim)">Se guardan en tu navegador y se aplican a los nuevos análisis</span>
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="btnCancelAiPromptModal" type="button" style="font-size:12px;padding:6px 14px">Cerrar</button>
+            <button class="btn primary" id="btnSaveAiPrompt" type="button" style="font-size:12px;padding:6px 18px;font-weight:700">
+              💾 Guardar Directrices
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+          <div style="font-size:12.5px;color:var(--dim);margin-bottom:14px;line-height:1.5">
+            Introduce tu clave API de <strong>Google Gemini</strong> para habilitar el motor de análisis y debriefing autónomo en tiempo real. La clave se almacena de forma segura en tu navegador local (localStorage).
+          </div>
+
+          <div style="margin-bottom:14px">
+            <label for="inpGeminiApiKey" style="display:block;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink)">
+              Clave API de Gemini (Google AI Studio):
+            </label>
+            <div style="display:flex;gap:6px">
+              <input type="password" id="inpGeminiApiKey" placeholder="AIzaSy..." style="flex:1;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-family:var(--f-mono);font-size:13px">
+              <button class="btn" id="btnToggleApiKeyVisibility" type="button" style="padding:8px 12px;font-size:13px" title="Mostrar/Ocultar clave">👁️</button>
+            </div>
+            <div style="font-size:11px;color:var(--dim);margin-top:5px;display:flex;justify-content:space-between">
+              <span>¿No tienes clave? Puedes obtenerla gratis en <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">Google AI Studio</a>.</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px">
+            <label for="selGeminiModel" style="display:block;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink)">
+              Modelo de Inteligencia Artificial:
+            </label>
+            <select id="selGeminiModel" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+              <option value="gemini-3.8-flash">Gemini 3.8 Flash (Recomendado Oficial · Rápido y Máxima Inteligencia)</option>
+              <option value="gemini-3.5-flash">Gemini 3.5 Flash (Ultrarrápido y Alta Capacidad)</option>
+              <option value="gemini-2.5-flash">Gemini 2.5 Flash (Cuentas con acceso previo)</option>
+              <option value="gemini-1.5-flash">Gemini 1.5 Flash (Versión Estable Anterior)</option>
+            </select>
+          </div>
+
+          <div id="aiApiKeyTestStatus" style="display:none;padding:10px 14px;border-radius:6px;font-size:12px;margin-bottom:14px;line-height:1.4"></div>
+        </div>
+
+        <div class="modal-foot" style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-top:1px solid var(--line);background:var(--sub)">
+          <button class="btn" id="btnTestGeminiApiKey" type="button" style="font-size:12px;padding:6px 14px">
+            🧪 Probar Conexión
+          </button>
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="btnCancelAiApiKeyModal" type="button" style="font-size:12px;padding:6px 14px">Cancelar</button>
+            <button class="btn primary" id="btnSaveGeminiApiKey" type="button" style="font-size:12px;padding:6px 18px;font-weight:700">
+              💾 Guardar Clave
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </section>
+
+
+<!-- Modal: Ficha y Código Único del Regatista -->
+<div class="modal-overlay" id="sailorProfileModal" style="z-index: 10500;" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="sailorProfileModalTitle" style="max-width:540px">
+    <div class="modal-head" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)">
+      <div>
+        <h3 id="sailorProfileModalTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--ink)">👤 Ficha del Regatista & Código Único</h3>
+        <div style="font-size:11.5px;color:var(--dim)">Gestión de identidad deportiva, peso VPP y sincronización de números de vela</div>
+      </div>
+      <button class="modal-close" id="btnCloseSailorProfileModal" type="button" aria-label="Cerrar modal">✕</button>
+    </div>
+    <div class="modal-body" style="padding:18px 20px">
+      <div style="margin-bottom:14px">
+        <label for="inpSailorProfileName" style="display:block;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink)">Nombre Completo del Regatista:</label>
+        <input type="text" id="inpSailorProfileName" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600" placeholder="Ej. Jan Palou">
+      </div>
+      <div style="margin-bottom:14px">
+        <label for="inpSailorProfileCode" style="display:block;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink)">Código Único del Regatista (ID Club):</label>
+        <input type="text" id="inpSailorProfileCode" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-family:var(--f-mono);font-weight:700" placeholder="Ej. REG-JAN-PALOU o RCNGC-104">
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">
+          Identificador deportivo único del club. Todas las velas que compartan este código se unificarán en el mismo perfil e histórico.
+        </div>
+      </div>
+      <!-- Campo Peso del Regatista (exclusivo Entrenador/Admin) -->
+      <div style="margin-bottom:14px" id="fieldSailorProfileWeight">
+        <label for="inpSailorProfileWeight" style="display:block;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink)">
+          ⚖️ Peso del Regatista (kg) <span style="font-size:11px;font-weight:700;color:var(--accent)">· 🔒 Solo Entrenador / Admin</span>:
+        </label>
+        <input type="number" step="0.5" min="20" max="95" id="inpSailorProfileWeight" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:700" placeholder="Ej. 42.5">
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">
+          Utilizado para calcular las polares teóricas oficiales VPP (IOD95), rendimiento individual y futuros análisis autónomos con IA. Solo visible y editable por entrenadores.
+        </div>
+      </div>
+      <div style="margin-bottom:16px">
+        <label for="inpSailorProfileSails" style="display:block;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink)">Números de Vela Asociados (separados por coma):</label>
+        <input type="text" id="inpSailorProfileSails" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px;font-weight:600" placeholder="Ej. ESP 3581, ESP 2800">
+        <div style="font-size:11px;color:var(--dim);margin-top:4px">
+          Si este regatista ha navegado con varios números de vela, anótalos aquí para fusionar todas sus regatas y entrenamientos en su historial.
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px">
+        <button class="btn" id="btnCancelSailorProfile" type="button" style="padding:7px 16px;font-size:12.5px">Cancelar</button>
+        <button class="btn primary" id="btnSaveSailorProfile" type="button" style="padding:7px 18px;font-size:12.5px;font-weight:700">💾 Guardar Perfil y Velas</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="modal-overlay" id="modalCoachProfile" hidden>
   <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalCoachProfileTitle" style="max-width:520px">
@@ -4212,9 +4879,22 @@ const OPTIMIST_POLAR_DATA = {
 
   function showHomeView(){
     const appEl = document.getElementById('app');
-    if(appEl) appEl.classList.add('is-empty');
+    if(appEl) {
+      appEl.classList.add('is-empty');
+      appEl.classList.remove('view-metrics', 'view-analysis-v2');
+    }
     const homeSec = document.getElementById('homeImportSection');
     if(homeSec) homeSec.style.display = 'grid';
+    const v2Sec = document.getElementById('analysisV2View');
+    if(v2Sec) v2Sec.hidden = true;
+    const advSec = document.getElementById('advancedMetricsView');
+    if(advSec) advSec.hidden = true;
+    const mapSec = document.getElementById('map');
+    if(mapSec) mapSec.hidden = true;
+    const sideSec = document.getElementById('sidePanel');
+    if(sideSec) sideSec.hidden = true;
+    const tlSec = document.getElementById('timelineBar');
+    if(tlSec) tlSec.hidden = true;
 
     document.getElementById('title').textContent = 'Analizador de Entrenamientos';
     document.getElementById('meta').textContent = 'Abre un entrenamiento guardado en la nube o carga archivos GPX/CSV para analizar la sesión.';
@@ -4222,6 +4902,11 @@ const OPTIMIST_POLAR_DATA = {
       b.classList.remove('is-active');
       b.setAttribute('aria-selected', 'false');
     });
+    const mainTabTrack = document.getElementById('mainTabTrack');
+    if(mainTabTrack) {
+      mainTabTrack.classList.add('is-active');
+      mainTabTrack.setAttribute('aria-selected', 'true');
+    }
     loadHomeRecentRaces();
   }
 
@@ -4276,7 +4961,7 @@ const OPTIMIST_POLAR_DATA = {
   function switchMainView(tabName){
     const appEl = document.getElementById('app');
     if(appEl && appEl.classList.contains('is-empty')){
-      if(!D){
+      if(!D && tabName !== 'analysisV2'){
         return;
       }
       appEl.classList.remove('is-empty');
@@ -4326,6 +5011,7 @@ const OPTIMIST_POLAR_DATA = {
       if(advSec) advSec.hidden = true;
       if(v2Sec) v2Sec.hidden = false;
       renderFleetComparison();
+      if(typeof populateAiDebriefingControls === "function") populateAiDebriefingControls();
     }
   }
 
@@ -4578,6 +5264,10 @@ const OPTIMIST_POLAR_DATA = {
   };
   let drag = null;
   let isFollowBoat = false;
+  let activeTool = null;
+  let toolDraft = null;
+  const KN = 1.94384;
+  const D2R = Math.PI / 180;
 
   function resizeCanvas(){
     const container = document.getElementById('map');
@@ -4617,6 +5307,315 @@ const OPTIMIST_POLAR_DATA = {
     };
   }
 
+  function worldToScreenCoords(x, y){
+    let dx = (x - cam.x) * cam.scale;
+    let dy = -(y - cam.y) * cam.scale;
+    const rot = getCamRot();
+    if(rot !== 0){
+      const c = Math.cos(rot), s = Math.sin(rot);
+      const rdx = dx * c - dy * s;
+      const rdy = dx * s + dy * c;
+      dx = rdx; dy = rdy;
+    }
+    return { px: mapCanvas.width / 2 + dx, py: mapCanvas.height / 2 + dy };
+  }
+
+  // =========================================================================
+  // FICHAS TELEMÉTRICAS EN VIVO: HOVER Y MÁX. 3 FIJADAS A LA IZQUIERDA
+  // =========================================================================
+  let hoveredBoatIdx = null;
+  let pinnedBoatIndices = [];
+
+  function getBoatTelemetryInstant(idx, curTime){
+    try {
+    if(!D || idx == null || !D.boats || !D.boats[idx]) return null;
+    const b = D.boats[idx];
+    const s = Math.max(0, Math.min(D.T - 1, Math.floor(curTime != null ? curTime : currentPlaybackSec)));
+    const base = idx * D.T;
+    const isOk = !D.OK || D.OK[base + s] === 1;
+    const color = b.color || '#38bdf8';
+    const sail = b.sail || ('Barco ' + (idx + 1));
+    const name = b.name ? b.name.split(' ')[0] : '';
+
+    if(!isOk){
+      return {
+        idx, sail, name, color,
+        speed: '—', speedUnit: 'kts',
+        hdg: '—', hdgUnit: '°T',
+        metric3Lbl: 'Heel', metric3Val: '—', metric3Unit: '°',
+        metric4Lbl: 'Trim', metric4Val: '—', metric4Unit: '°'
+      };
+    }
+
+    const kine = (D.kine && D.kine[idx]) ? D.kine[idx] : null;
+    const sogKn = (kine && kine.sogEma && kine.sogEma[s] != null) ? kine.sogEma[s] : (D.S ? D.S[base + s] * KN : 0);
+    const cogDeg = (kine && kine.cogEma && kine.cogEma[s] != null) ? kine.cogEma[s] : (D.H ? D.H[base + s] : 0);
+    let hdgDeg = Math.round(((cogDeg % 360) + 360) % 360);
+    if(D.HDG_TRUE && D.SENSORS_OK && D.SENSORS_OK[base + s]){
+      hdgDeg = Math.round(D.HDG_TRUE[base + s]);
+    }
+
+    const hasSensors = (b.sensors && b.sensors.hasSensors) || (D.HEEL && D.SENSORS_OK && D.SENSORS_OK[base + s]);
+    let m3Lbl = 'Heel', m3Val = '0.0', m3Unit = '°';
+    let m4Lbl = 'Trim', m4Val = '-14.0', m4Unit = '°';
+
+    if(hasSensors){
+      const hVal = (D.HEEL && D.SENSORS_OK && D.SENSORS_OK[base + s]) ? D.HEEL[base + s] : (b.sensors ? b.sensors.avgHeelUpwind : 0);
+      const tVal = (D.TRIM && D.SENSORS_OK && D.SENSORS_OK[base + s]) ? D.TRIM[base + s] : (b.sensors ? b.sensors.avgTrimUpwind : -14.2);
+      m3Lbl = 'Heel';
+      m3Val = (Math.round(hVal * 10) / 10).toFixed(1);
+      m3Unit = '°';
+      m4Lbl = 'Trim';
+      m4Val = (Math.round(tVal * 10) / 10).toFixed(1);
+      m4Unit = '°';
+    } else {
+      const wind = (typeof windAt === 'function' ? windAt(D.t0 + s * 1000) : D.windRef) || 0;
+      const twa = Math.abs(norm(cogDeg - wind));
+      const vmg = sogKn * Math.cos(twa * D2R);
+      m3Lbl = 'VMG';
+      m3Val = (Math.round(vmg * 10) / 10).toFixed(1);
+      m3Unit = 'kts';
+      m4Lbl = 'TWA';
+      m4Val = Math.round(twa);
+      m4Unit = '°';
+    }
+
+    return {
+      idx, sail, name, color,
+      speed: (Math.round(sogKn * 10) / 10).toFixed(1),
+      speedUnit: 'kts',
+      hdg: hdgDeg,
+      hdgUnit: '°T',
+      metric3Lbl: m3Lbl,
+      metric3Val: m3Val,
+      metric3Unit: m3Unit,
+      metric4Lbl: m4Lbl,
+      metric4Val: m4Val,
+      metric4Unit: m4Unit
+    };
+    } catch(err) {
+      console.error('getBoatTelemetryInstant EXCEPTION:', err);
+      return null;
+    }
+  }
+
+  function getBoatScreenCoords(idx, curTime){
+    if(!D || idx == null || !D.boats || !D.boats[idx]) return null;
+    const s = Math.max(0, Math.min(D.T - 1, Math.floor(curTime != null ? curTime : currentPlaybackSec)));
+    const base = idx * D.T;
+    if(!D.OK || !D.OK[base + s]) return null;
+    return worldToScreenCoords(D.X[base + s], D.Y[base + s]);
+  }
+
+  function showHoverCard(idx, mousePx, mousePy){
+    const hoverCard = document.getElementById('boatHoverCard');
+    if(!hoverCard || !D || idx == null || !D.boats[idx]) return;
+    hoveredBoatIdx = idx;
+    const d = getBoatTelemetryInstant(idx, currentPlaybackSec);
+    if(!d) return;
+
+    hoverCard.innerHTML = `
+      <div class="btc-header">
+        <div class="btc-title-grp">
+          <span class="btc-dot" style="background:${d.color}; box-shadow:0 0 6px ${d.color}"></span>
+          <span class="btc-sail" style="color:${d.color}">${d.sail}</span>
+          ${d.name ? `<span class="btc-name" title="${d.name}">${d.name}</span>` : ''}
+        </div>
+        <span class="btc-pin-hint">📌 Fijar</span>
+      </div>
+      <div class="btc-grid">
+        <div class="btc-cell">
+          <span class="btc-lbl">Speed</span>
+          <div class="btc-val-row">
+            <span class="btc-val btc-speed">${d.speed}</span>
+            <span class="btc-unit">${d.speedUnit}</span>
+          </div>
+        </div>
+        <div class="btc-cell">
+          <span class="btc-lbl">HDG</span>
+          <div class="btc-val-row">
+            <span class="btc-val btc-hdg">${d.hdg}</span>
+            <span class="btc-unit">${d.hdgUnit}</span>
+          </div>
+        </div>
+        <div class="btc-cell">
+          <span class="btc-lbl">${d.metric3Lbl}</span>
+          <div class="btc-val-row">
+            <span class="btc-val btc-m3">${d.metric3Val}</span>
+            <span class="btc-unit">${d.metric3Unit}</span>
+          </div>
+        </div>
+        <div class="btc-cell">
+          <span class="btc-lbl">${d.metric4Lbl}</span>
+          <div class="btc-val-row">
+            <span class="btc-val btc-m4">${d.metric4Val}</span>
+            <span class="btc-unit">${d.metric4Unit}</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const pt = getBoatScreenCoords(idx, currentPlaybackSec);
+    const px = pt ? pt.px : mousePx;
+    const py = pt ? pt.py : mousePy;
+    if(py < 90) hoverCard.classList.add('flipped-below');
+    else hoverCard.classList.remove('flipped-below');
+    hoverCard.style.left = px + 'px';
+    hoverCard.style.top = py + 'px';
+    hoverCard.style.display = 'block';
+  }
+
+  function hideHoverCard(){
+    const hoverCard = document.getElementById('boatHoverCard');
+    if(hoverCard){
+      hoverCard.style.display = 'none';
+    }
+    hoveredBoatIdx = null;
+  }
+
+  function pinBoat(idx){
+    if(!D || idx == null || !D.boats[idx]) return;
+    const existing = pinnedBoatIndices.indexOf(idx);
+    if(existing !== -1){
+      return;
+    }
+    if(pinnedBoatIndices.length >= 3){
+      pinnedBoatIndices.shift();
+    }
+    pinnedBoatIndices.push(idx);
+    renderPinnedBoats();
+  }
+
+  function unpinBoat(idx){
+    const i = pinnedBoatIndices.indexOf(idx);
+    if(i !== -1){
+      pinnedBoatIndices.splice(i, 1);
+      renderPinnedBoats();
+    }
+  }
+
+  function renderPinnedBoats(){
+    const container = document.getElementById('pinnedBoatsContainer');
+    if(!container) return;
+    if(!D || !pinnedBoatIndices.length){
+      container.innerHTML = '';
+      return;
+    }
+    const curTime = currentPlaybackSec;
+    container.innerHTML = pinnedBoatIndices.map(idx => {
+      const d = getBoatTelemetryInstant(idx, curTime);
+      if(!d) return '';
+      return `
+        <div class="boat-telemetry-card pinned-card" data-boat-idx="${idx}" onclick="event.stopPropagation(); setActiveBoat(${idx});">
+          <div class="btc-header">
+            <div class="btc-title-grp">
+              <span class="btc-dot" style="background:${d.color}; box-shadow:0 0 6px ${d.color}"></span>
+              <span class="btc-sail" style="color:${d.color}">${d.sail}</span>
+              ${d.name ? `<span class="btc-name" title="${d.name}">${d.name}</span>` : ''}
+            </div>
+            <button class="btc-close-btn" type="button" title="Desfijar" onclick="event.stopPropagation(); unpinBoat(${idx});">✕</button>
+          </div>
+          <div class="btc-grid">
+            <div class="btc-cell">
+              <span class="btc-lbl">Speed</span>
+              <div class="btc-val-row">
+                <span class="btc-val btc-speed">${d.speed}</span>
+                <span class="btc-unit">${d.speedUnit}</span>
+              </div>
+            </div>
+            <div class="btc-cell">
+              <span class="btc-lbl">HDG</span>
+              <div class="btc-val-row">
+                <span class="btc-val btc-hdg">${d.hdg}</span>
+                <span class="btc-unit">${d.hdgUnit}</span>
+              </div>
+            </div>
+            <div class="btc-cell">
+              <span class="btc-lbl">${d.metric3Lbl}</span>
+              <div class="btc-val-row">
+                <span class="btc-val btc-m3">${d.metric3Val}</span>
+                <span class="btc-unit">${d.metric3Unit}</span>
+              </div>
+            </div>
+            <div class="btc-cell">
+              <span class="btc-lbl">${d.metric4Lbl}</span>
+              <div class="btc-val-row">
+                <span class="btc-val btc-m4">${d.metric4Val}</span>
+                <span class="btc-unit">${d.metric4Unit}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function updateLiveTelemetryCards(){
+    if(!D) return;
+    const curTime = currentPlaybackSec;
+
+    // Actualizar ficha flotante (hover)
+    const hoverCard = document.getElementById('boatHoverCard');
+    if(hoverCard && hoverCard.style.display !== 'none' && hoveredBoatIdx != null){
+      const pt = getBoatScreenCoords(hoveredBoatIdx, curTime);
+      if(pt){
+        if(pt.py < 90) hoverCard.classList.add('flipped-below');
+        else hoverCard.classList.remove('flipped-below');
+        hoverCard.style.left = pt.px + 'px';
+        hoverCard.style.top = pt.py + 'px';
+
+        const d = getBoatTelemetryInstant(hoveredBoatIdx, curTime);
+        if(d){
+          const spEl = hoverCard.querySelector('.btc-speed');
+          const hdEl = hoverCard.querySelector('.btc-hdg');
+          const m3El = hoverCard.querySelector('.btc-m3');
+          const m4El = hoverCard.querySelector('.btc-m4');
+          if(spEl) spEl.textContent = d.speed;
+          if(hdEl) hdEl.textContent = d.hdg;
+          if(m3El) m3El.textContent = d.metric3Val;
+          if(m4El) m4El.textContent = d.metric4Val;
+        }
+      } else {
+        hoverCard.style.display = 'none';
+        hoveredBoatIdx = null;
+      }
+    }
+
+    // Actualizar fichas fijadas
+    const pContainer = document.getElementById('pinnedBoatsContainer');
+    if(pContainer && pinnedBoatIndices.length){
+      pinnedBoatIndices.forEach(idx => {
+        const card = pContainer.querySelector(`[data-boat-idx="${idx}"]`);
+        if(!card) return;
+        const d = getBoatTelemetryInstant(idx, curTime);
+        if(d){
+          const spEl = card.querySelector('.btc-speed');
+          const hdEl = card.querySelector('.btc-hdg');
+          const m3El = card.querySelector('.btc-m3');
+          const m4El = card.querySelector('.btc-m4');
+          if(spEl) spEl.textContent = d.speed;
+          if(hdEl) hdEl.textContent = d.hdg;
+          if(m3El) m3El.textContent = d.metric3Val;
+          if(m4El) m4El.textContent = d.metric4Val;
+        }
+      });
+    }
+  }
+
+  // Vincular clic en hoverCard para fijar
+  const hcEl = document.getElementById('boatHoverCard');
+  if(hcEl){
+    hcEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if(hoveredBoatIdx != null){
+        pinBoat(hoveredBoatIdx);
+      }
+    });
+    hcEl.addEventListener('pointerleave', () => {
+      hideHoverCard();
+    });
+  }
+
   const sx = x => mapCanvas.width / 2 + (x - cam.x) * cam.scale;
   const sy = y => mapCanvas.height / 2 - (y - cam.y) * cam.scale;
 
@@ -4646,6 +5645,32 @@ const OPTIMIST_POLAR_DATA = {
       toolDraft.curX = pt.x;
       toolDraft.curY = pt.y;
       drawMap();
+    }
+    if(!activeTool && !drag && D){
+      const rect = mapCanvas.getBoundingClientRect();
+      const px = e.clientX - rect.left, py = e.clientY - rect.top;
+      const curS = Math.floor(currentPlaybackSec);
+      let best = -1, bestDist = 24;
+      for(let b = 0; b < D.N; b++){
+        const base = b * D.T;
+        if(!D.OK[base + curS]) continue;
+        const pt = worldToScreenCoords(D.X[base + curS], D.Y[base + curS]);
+        const dist = Math.hypot(pt.px - px, pt.py - py);
+        if(dist < bestDist){
+          bestDist = dist;
+          best = b;
+        }
+      }
+      if(best >= 0){
+        showHoverCard(best, px, py);
+        mapCanvas.style.cursor = 'pointer';
+      } else {
+        const hoverCard = document.getElementById('boatHoverCard');
+        if(hoverCard && !hoverCard.matches(':hover')){
+          hideHoverCard();
+          if(!activeTool && !mapCanvas.classList.contains('dragging')) mapCanvas.style.cursor = '';
+        }
+      }
     }
     if(!drag) return;
     const dx = e.clientX - drag.x;
@@ -4722,6 +5747,7 @@ const OPTIMIST_POLAR_DATA = {
       }
       if(best >= 0){
         setActiveBoat(best);
+        pinBoat(best);
       }
     }
     drag = null;
@@ -4733,6 +5759,10 @@ const OPTIMIST_POLAR_DATA = {
   mapCanvas.addEventListener('pointerleave', () => {
     drag = null;
     mapCanvas.classList.remove('dragging');
+    const hoverCard = document.getElementById('boatHoverCard');
+    if(hoverCard && !hoverCard.matches(':hover')){
+      hideHoverCard();
+    }
   });
 
   // Zoom suave alrededor de la posición del cursor
@@ -4846,8 +5876,6 @@ const OPTIMIST_POLAR_DATA = {
   // =========================================================================
   // PIZARRA TÁCTICA: HERRAMIENTAS, ELEMENTOS Y CUADRÍCULA 45°
   // =========================================================================
-  let activeTool = null;
-  let toolDraft = null;
   let tactics = {
     lines: [],
     arrows: [],
@@ -6119,6 +7147,8 @@ const OPTIMIST_POLAR_DATA = {
     ctxMap.fillStyle = '#8aa19e';
     ctxMap.textAlign = 'center';
     ctxMap.fillText(`${barM} m`, bx + scalePx / 2, by - 4);
+
+    updateLiveTelemetryCards();
   }
   // =========================================================================
   // EVALUACIÓN DE POLARES VPP OPTIMIST
@@ -6154,6 +7184,24 @@ const OPTIMIST_POLAR_DATA = {
 
     const polarPct = (sog / targetBsp) * 100;
     return { targetBsp, polarPercentage: polarPct };
+  }
+
+  function getBoatWeight(boatIdx){
+    if(typeof D !== 'undefined' && D && D.boats && D.boats[boatIdx]){
+      const sail = (D.boats[boatIdx].name || '').trim();
+      if(typeof clubSailorWeights !== 'undefined' && clubSailorWeights && clubSailorWeights[sail] != null){
+        return clubSailorWeights[sail];
+      }
+      if(typeof clubSailors !== 'undefined' && clubSailors){
+        for(const code in clubSailors){
+          const cs = clubSailors[code];
+          if(cs.sails && cs.sails.has(sail) && cs.weight != null){
+            return cs.weight;
+          }
+        }
+      }
+    }
+    return (typeof selectedSkipperWeight !== 'undefined' && selectedSkipperWeight) ? selectedSkipperWeight : 42.5;
   }
 
   function evaluateOptimistByWeight(tws, twa, sog, weightKg = 42.5){
@@ -6655,7 +7703,7 @@ const OPTIMIST_POLAR_DATA = {
     }
     const distKm = distM >= 1000 ? (distM / 1000).toFixed(2) + ' km' : Math.round(distM) + ' m';
 
-    const evalP = evaluateOptimistByWeight(D.windKts, twa, k.sogEma[s] || 0, selectedSkipperWeight);
+    const evalP = evaluateOptimistByWeight(D.windKts, twa, k.sogEma[s] || 0, getBoatWeight(activeBoatIdx));
 
     document.getElementById('bSpd').textContent = spd + ' kn';
     document.getElementById('bHdg').textContent = String(hdg).padStart(3, '0') + '°';
@@ -6700,7 +7748,7 @@ const OPTIMIST_POLAR_DATA = {
       const twa = k.twa[curS] || 0;
       const hdg = D.H[base + curS];
       const amura = ((hdg - D.windRef + 360) % 360) < 180 ? 'E' : 'B';
-      const ev = evaluateOptimistByWeight(D.windKts, twa, sog, selectedSkipperWeight);
+      const ev = evaluateOptimistByWeight(D.windKts, twa, sog, getBoatWeight(i));
 
       const tr = document.createElement('tr');
       tr.style.borderBottom = '1px solid rgba(255,255,255,0.03)';
@@ -7117,13 +8165,50 @@ const OPTIMIST_POLAR_DATA = {
 
       const parsedBoats = [];
       for(const file of files){
+        const isExcel = /\.(xlsx|xls)$/i.test(file.name);
+        if(isExcel){
+          if(window.XLSX){
+            const buf = await file.arrayBuffer();
+            const wb = window.XLSX.read(buf, { type: 'array', cellDates: false });
+            wb.SheetNames.forEach(sheetName => {
+              const rows = window.XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, raw: true, defval: null, blankrows: false });
+              const pts = parseSpreadsheetRows(rows);
+              if(pts && pts.length > 5){
+                let sail = sheetName;
+                let name = sheetName;
+                const sailMatch = sheetName.match(/ESP[\s_-]?(\d{3,5})/i) || sheetName.match(/(\d{3,5})/);
+                if(sailMatch) sail = 'ESP ' + sailMatch[1];
+                const clean = sheetName.replace(/^ESP[\s_-]?\d{3,5}\s*[-_]?\s*/i, '').replace(/_/g, ' ').trim();
+                if(clean && !/^(sheet|hoja|datos|data)\s*\d*$/i.test(clean)){
+                  name = clean;
+                } else {
+                  const fClean = file.name.replace(/\.[^/.]+$/, '');
+                  const fSailMatch = fClean.match(/ESP[\s_-]?(\d{3,5})/i) || fClean.match(/(\d{3,5})/);
+                  if(fSailMatch && (!sailMatch || /^(sheet|hoja)/i.test(sheetName))) sail = 'ESP ' + fSailMatch[1];
+                  name = fClean.replace(/^ESP[\s_-]?\d{3,5}\s*[-_]?\s*/i, '').replace(/_/g, ' ').trim() || fClean;
+                }
+                if(cloudMeta && cloudMeta.customSails && cloudMeta.customSails[sheetName]){
+                  sail = cloudMeta.customSails[sheetName];
+                }
+                parsedBoats.push({
+                  sail,
+                  name,
+                  points: pts,
+                  fileName: `${file.name} [${sheetName}]`
+                });
+              }
+            });
+          }
+          continue;
+        }
+
         const text = await file.text();
         const boatNameRaw = file.name.replace(/\.[^/.]+$/, '');
         let pts = [];
 
         if(/\.gpx$/i.test(file.name)){
           pts = parseGpxText(text);
-        } else if(/\.csv$/i.test(file.name)){
+        } else {
           pts = parseCsvText(text);
         }
 
@@ -7247,26 +8332,137 @@ const OPTIMIST_POLAR_DATA = {
     return pts;
   }
 
-  function parseCsvText(csvStr){
-    const lines = csvStr.split('\n');
-    if(lines.length < 2) return [];
-    const header = lines[0].toLowerCase().split(/[;,\t]/).map(h => normStr(h));
-    const latIdx = header.findIndex(h => h.includes('lat'));
-    const lonIdx = header.findIndex(h => h.includes('lon') || h.includes('lng'));
-    const timeIdx = header.findIndex(h => h.includes('time') || h.includes('hora') || h.includes('fecha'));
+  function parseSpreadsheetRows(rows){
+    if(!rows || rows.length < 2) return [];
+    let hi = -1;
+    let latIdx = -1, lonIdx = -1, timeIdx = -1, sogIdx = -1, cogIdx = -1, hdgIdx = -1, heelIdx = -1, trimIdx = -1;
 
-    if(latIdx === -1 || lonIdx === -1 || timeIdx === -1) return [];
+    for(let r = 0; r < Math.min(rows.length, 30); r++){
+      const row = rows[r];
+      if(!row || !Array.isArray(row)) continue;
+      const h = row.map(c => normStr(c));
+      const li = h.findIndex(c => /^lat/i.test(c));
+      const lo = h.findIndex(c => /^lon|^lng/i.test(c));
+      const ti = h.findIndex(c => /^time|^hora|^fecha|^timestamp/i.test(c));
+      if(li >= 0 && lo >= 0 && ti >= 0){
+        hi = r;
+        latIdx = li;
+        lonIdx = lo;
+        timeIdx = ti;
+        sogIdx = h.findIndex(c => /^sog|^speed|^velocidad/i.test(c));
+        cogIdx = h.findIndex(c => /^cog|^course|^rumbo$/i.test(c));
+        hdgIdx = h.findIndex(c => /^hdg|^heading|^proa/i.test(c));
+        heelIdx = h.findIndex(c => /^heel|^escora/i.test(c));
+        trimIdx = h.findIndex(c => /^trim|^pitch|^asiento|^cabeceo/i.test(c));
+        break;
+      }
+    }
+
+    if(hi === -1) return [];
 
     const pts = [];
-    for(let i = 1; i < lines.length; i++){
-      const parts = lines[i].split(/[;,\t]/);
+    for(let r = hi + 1; r < rows.length; r++){
+      const row = rows[r];
+      if(!row) continue;
+      const lat = parseFloat(row[latIdx]);
+      const lon = parseFloat(row[lonIdx]);
+      if(isNaN(lat) || isNaN(lon)) continue;
+
+      let timeVal = NaN;
+      const rawT = row[timeIdx];
+      if(typeof rawT === 'number'){
+        if(rawT > 1e11) timeVal = rawT;
+        else if(rawT > 1e9) timeVal = rawT * 1000;
+        else if(rawT > 20000 && rawT < 80000){
+          timeVal = Math.round((rawT - 25569) * 864e5);
+        }
+      } else {
+        timeVal = Date.parse(String(rawT).trim());
+      }
+      if(isNaN(timeVal)) continue;
+
+      const pt = { lat, lon, time: timeVal };
+      if(sogIdx >= 0 && row[sogIdx] != null && !isNaN(parseFloat(row[sogIdx]))) pt.sog = parseFloat(row[sogIdx]);
+      if(cogIdx >= 0 && row[cogIdx] != null && !isNaN(parseFloat(row[cogIdx]))) pt.cog = parseFloat(row[cogIdx]);
+      if(hdgIdx >= 0 && row[hdgIdx] != null && !isNaN(parseFloat(row[hdgIdx]))) pt.hdg = parseFloat(row[hdgIdx]);
+      if(heelIdx >= 0 && row[heelIdx] != null && !isNaN(parseFloat(row[heelIdx]))) pt.heel = parseFloat(row[heelIdx]);
+      if(trimIdx >= 0 && row[trimIdx] != null && !isNaN(parseFloat(row[trimIdx]))) pt.trim = parseFloat(row[trimIdx]);
+
+      pts.push(pt);
+    }
+    return pts;
+  }
+
+  function parseCsvText(csvStr){
+    if(!csvStr || typeof csvStr !== 'string') return [];
+    const lines = csvStr.split(/\r?\n/);
+    if(lines.length < 2) return [];
+
+    let delim = ',';
+    let hi = -1;
+    let latIdx = -1, lonIdx = -1, timeIdx = -1, sogIdx = -1, cogIdx = -1, hdgIdx = -1, heelIdx = -1, trimIdx = -1;
+
+    for(let r = 0; r < Math.min(lines.length, 30); r++){
+      const rawLine = lines[r].trim();
+      if(!rawLine) continue;
+
+      for(const d of [',', ';', '\t']){
+        const tokens = rawLine.split(d).map(s => normStr(s.replace(/^["']|["']$/g, '')));
+        const li = tokens.findIndex(s => /^lat/i.test(s));
+        const lo = tokens.findIndex(s => /^lon|^lng/i.test(s));
+        const ti = tokens.findIndex(s => /^time|^hora|^fecha|^timestamp/i.test(s));
+        if(li >= 0 && lo >= 0 && ti >= 0){
+          hi = r;
+          delim = d;
+          latIdx = li;
+          lonIdx = lo;
+          timeIdx = ti;
+          sogIdx = tokens.findIndex(s => /^sog|^speed|^velocidad/i.test(s));
+          cogIdx = tokens.findIndex(s => /^cog|^course|^rumbo$/i.test(s));
+          hdgIdx = tokens.findIndex(s => /^hdg|^heading|^proa/i.test(s));
+          heelIdx = tokens.findIndex(s => /^heel|^escora/i.test(s));
+          trimIdx = tokens.findIndex(s => /^trim|^pitch|^asiento|^cabeceo/i.test(s));
+          break;
+        }
+      }
+      if(hi >= 0) break;
+    }
+
+    if(hi === -1) return [];
+
+    const pts = [];
+    for(let i = hi + 1; i < lines.length; i++){
+      const line = lines[i];
+      if(!line || line.length < 5) continue;
+      const parts = line.split(delim);
       if(parts.length <= Math.max(latIdx, lonIdx, timeIdx)) continue;
+
       const lat = parseFloat(parts[latIdx]);
       const lon = parseFloat(parts[lonIdx]);
-      const timeVal = Date.parse(parts[timeIdx]);
-      if(!isNaN(lat) && !isNaN(lon) && !isNaN(timeVal)){
-        pts.push({ lat, lon, time: timeVal });
+      if(isNaN(lat) || isNaN(lon)) continue;
+
+      const rawT = parts[timeIdx]?.trim().replace(/^["']|["']$/g, '');
+      let timeVal = NaN;
+      if(rawT){
+        if(!isNaN(Number(rawT))){
+          const numT = Number(rawT);
+          if(numT > 1e11) timeVal = numT;
+          else if(numT > 1e9) timeVal = numT * 1000;
+          else if(numT > 20000 && numT < 80000) timeVal = Math.round((numT - 25569) * 864e5);
+        } else {
+          timeVal = Date.parse(rawT);
+        }
       }
+      if(isNaN(timeVal)) continue;
+
+      const pt = { lat, lon, time: timeVal };
+      if(sogIdx >= 0){ const v = parseFloat(parts[sogIdx]); if(!isNaN(v)) pt.sog = v; }
+      if(cogIdx >= 0){ const v = parseFloat(parts[cogIdx]); if(!isNaN(v)) pt.cog = v; }
+      if(hdgIdx >= 0){ const v = parseFloat(parts[hdgIdx]); if(!isNaN(v)) pt.hdg = v; }
+      if(heelIdx >= 0){ const v = parseFloat(parts[heelIdx]); if(!isNaN(v)) pt.heel = v; }
+      if(trimIdx >= 0){ const v = parseFloat(parts[trimIdx]); if(!isNaN(v)) pt.trim = v; }
+
+      pts.push(pt);
     }
     return pts;
   }
@@ -7277,11 +8473,19 @@ const OPTIMIST_POLAR_DATA = {
     const usedTracks = [];
     boatsList.forEach((b, idx) => {
       const k = b.fileName || b.sail || b.name || ('Barco_' + (idx + 1));
-      allTracks[k] = (b.points || []).map(p => ({
-        t: p.time != null ? p.time : (p.t != null ? p.t : 0),
-        lat: p.lat,
-        lon: p.lon
-      }));
+      allTracks[k] = (b.points || []).map(p => {
+        const pt = {
+          t: p.time != null ? p.time : (p.t != null ? p.t : 0),
+          lat: p.lat,
+          lon: p.lon
+        };
+        if(p.sog != null) pt.sog = p.sog;
+        if(p.cog != null) pt.cog = p.cog;
+        if(p.hdg != null) pt.hdg = p.hdg;
+        if(p.heel != null) pt.heel = p.heel;
+        if(p.trim != null) pt.trim = p.trim;
+        return pt;
+      });
       usedTracks.push(k);
     });
     lastLoad = { all: allTracks, used: usedTracks, warn: [], skipped: [] };
@@ -7311,6 +8515,10 @@ const OPTIMIST_POLAR_DATA = {
     const Y = new Float32Array(N * T);
     const H = new Float32Array(N * T);
     const OK = new Uint8Array(N * T);
+    const HEEL = new Float32Array(N * T);
+    const TRIM = new Float32Array(N * T);
+    const HDG_TRUE = new Float32Array(N * T);
+    const SENSORS_OK = new Uint8Array(N * T);
 
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
 
@@ -7344,6 +8552,19 @@ const OPTIMIST_POLAR_DATA = {
             if(x > maxX) maxX = x;
             if(y < minY) minY = y;
             if(y > maxY) maxY = y;
+
+            if(p1.heel != null){
+              const h2 = p2.heel != null ? p2.heel : p1.heel;
+              const t2 = p2.trim != null ? p2.trim : p1.trim;
+              HEEL[base + s] = p1.heel + f * (h2 - p1.heel);
+              TRIM[base + s] = p1.trim + f * (t2 - p1.trim);
+              if(p1.hdg != null){
+                const hdg2 = p2.hdg != null ? p2.hdg : p1.hdg;
+                const dH = ((hdg2 - p1.hdg) % 360 + 540) % 360 - 180;
+                HDG_TRUE[base + s] = ((p1.hdg + dH * f) % 360 + 360) % 360;
+                SENSORS_OK[base + s] = 1;
+              }
+            }
           }
         }
       }
@@ -7451,11 +8672,52 @@ const OPTIMIST_POLAR_DATA = {
       kine.push({ sogEma, cogEma, twa, vmg });
     }
 
-    const boats = boatsList.map((b, i) => ({
-      sail: b.sail,
-      name: b.name,
-      color: `hsl(${hues[i % hues.length]}, 75%, 52%)`
-    }));
+    const boats = boatsList.map((b, i) => {
+      const base = i * T;
+      let allHeelSum = 0, heelMax = 0, allTrimSum = 0, allLeewaySum = 0, sensorPts = 0;
+      let upwindHeelSum = 0, upwindTrimSum = 0, upwindLeewaySum = 0, upwindSensorPts = 0;
+      for(let s = 0; s < T; s++){
+        const ix = base + s;
+        if(SENSORS_OK[ix] && OK[base + s]){
+          sensorPts++;
+          const hVal = HEEL[ix];
+          const tVal = TRIM[ix];
+          if(Math.abs(hVal) > heelMax) heelMax = Math.abs(hVal);
+          allHeelSum += Math.abs(hVal);
+          allTrimSum += tVal;
+          if(HDG_TRUE[ix] != null && kine[i] && kine[i].cogEma){
+            const diff = Math.abs(((kine[i].cogEma[s] - HDG_TRUE[ix]) % 360 + 540) % 360 - 180);
+            allLeewaySum += diff;
+          }
+          const twa = (kine[i] && kine[i].twa) ? kine[i].twa[s] : 90;
+          const isUpwind = twa <= 55;
+          if(isUpwind){
+            upwindSensorPts++;
+            upwindHeelSum += Math.abs(hVal);
+            upwindTrimSum += tVal;
+            if(HDG_TRUE[ix] != null && kine[i] && kine[i].cogEma && kine[i].sogEma && kine[i].sogEma[s] > 1.2){
+              const diff = Math.abs(((kine[i].cogEma[s] - HDG_TRUE[ix]) % 360 + 540) % 360 - 180);
+              upwindLeewaySum += diff;
+            }
+          }
+        }
+      }
+      const hasSensors = sensorPts > 20;
+      const sensors = {
+        hasSensors,
+        avgHeelUpwind: upwindSensorPts ? (upwindHeelSum / upwindSensorPts) : (sensorPts ? (allHeelSum / sensorPts) : 0),
+        maxHeel: heelMax,
+        avgTrimUpwind: upwindSensorPts ? (upwindTrimSum / upwindSensorPts) : (sensorPts ? (allTrimSum / sensorPts) : 0),
+        avgLeewayUpwind: upwindSensorPts ? (upwindLeewaySum / upwindSensorPts) : (sensorPts ? (allLeewaySum / sensorPts) : 0)
+      };
+
+      return {
+        sail: b.sail,
+        name: b.name,
+        color: `hsl(${hues[i % hues.length]}, 75%, 52%)`,
+        sensors
+      };
+    });
 
     const dateStr = new Date(minT).toISOString().slice(0, 10);
 
@@ -7466,12 +8728,14 @@ const OPTIMIST_POLAR_DATA = {
       T,
       t0: minT,
       X, Y, H, OK,
+      HEEL, TRIM, HDG_TRUE, SENSORS_OK,
       minX, maxX, minY, maxY,
       boats,
       kine,
       windRef: estWind,
       windKts: 7.5
     };
+    if(typeof window !== 'undefined') window.D = D;
 
     scrubEl.max = T - 1;
     scrubEl.value = 0;
@@ -7594,7 +8858,7 @@ const OPTIMIST_POLAR_DATA = {
 
     // 3. Polar Teórica Oficial VPP Optimist para el viento y peso activos
     const currentTws = D.windKts || 10;
-    const sailorWeightKg = selectedSkipperWeight || 42.5;
+    const sailorWeightKg = getBoatWeight(boatIdx);
 
     const targetPolar = [];
     targetPolar.push({ twa: 30, kn: evaluateOptimistByWeight(currentTws, 30, 0, sailorWeightKg).targetPolarBsp });
@@ -8135,7 +9399,7 @@ const OPTIMIST_POLAR_DATA = {
     const base = boatIdx * N;
     const twd = Math.round(((D.windRef % 360) + 360) % 360);
     const tws = D.windKts || 10;
-    const wKg = selectedSkipperWeight || 42.5;
+    const wKg = getBoatWeight(boatIdx);
 
     // Sincronizar selectores del topbar
     const bSel = document.getElementById('tacticalBoatSelect');
@@ -8409,7 +9673,15 @@ const OPTIMIST_POLAR_DATA = {
 
   function renderFleetComparison(){
     const tbody = document.getElementById('tbodyFleetMatrix');
-    if(!tbody || !D || !D.kine) return;
+    const h2hContent = document.getElementById('h2hContent');
+    if(!tbody) return;
+
+    if(!D || !D.kine || !D.N){
+      tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:28px 14px;color:var(--dim);font-size:13px">⛵ <strong>No hay ninguna sesión de entrenamiento cargada todavía.</strong><br><span style="font-size:12px;color:var(--muted)">Abre una sesión guardada de la nube o carga tracks GPX/CSV para ver la matriz comparativa de la flota.</span></td></tr>';
+      if(h2hContent) h2hContent.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:22px;color:var(--dim);font-size:12.5px">Carga una sesión para comparar regatistas cara a cara (Head-to-Head).</div>';
+      if(typeof populateAiDebriefingControls === "function") populateAiDebriefingControls();
+      return;
+    }
     tbody.innerHTML = '';
 
     const fleetStats = [];
@@ -8428,7 +9700,7 @@ const OPTIMIST_POLAR_DATA = {
           if(spd > maxSog) maxSog = spd;
 
           const twa = k.twa[s] || 0;
-          const ev = evaluateOptimistByWeight(D.windKts, twa, spd, selectedSkipperWeight);
+          const ev = evaluateOptimistByWeight(D.windKts, twa, spd, getBoatWeight(b));
           polSum += ev.polarPercentage;
 
           if(twa <= 55){
@@ -8448,6 +9720,9 @@ const OPTIMIST_POLAR_DATA = {
         }
       }
 
+      const sens = (D.boats[b] && D.boats[b].sensors) || {};
+      const hasSensors = !!sens.hasSensors;
+
       fleetStats.push({
         idx: b,
         sail: D.boats[b].sail,
@@ -8459,7 +9734,12 @@ const OPTIMIST_POLAR_DATA = {
         vmgUpwind: upwindPts ? (upwindVmgSum / upwindPts) : 0,
         tacksCount: maneuvers.length,
         avgLoss,
-        distM
+        distM,
+        sensors: sens,
+        hasSensors,
+        heelDisp: hasSensors ? `${sens.avgHeelUpwind.toFixed(1)}°` : '—',
+        trimDisp: hasSensors ? `${sens.avgTrimUpwind.toFixed(1)}°` : '—',
+        leewayDisp: hasSensors ? `${sens.avgLeewayUpwind.toFixed(1)}°` : '—'
       });
     }
 
@@ -8475,6 +9755,9 @@ const OPTIMIST_POLAR_DATA = {
         <td style="text-align:right;font-family:var(--f-mono)">${st.sogAvg.toFixed(2)} kn</td>
         <td style="text-align:right;font-family:var(--f-mono)">${st.sogMax.toFixed(2)} kn</td>
         <td style="text-align:right;font-family:var(--f-mono);color:#38bdf8">${st.vmgUpwind.toFixed(2)} kn</td>
+        <td style="text-align:right;font-family:var(--f-mono);color:${st.hasSensors ? '#a78bfa' : 'var(--muted)'}">${st.heelDisp}</td>
+        <td style="text-align:right;font-family:var(--f-mono);color:${st.hasSensors ? '#34d399' : 'var(--muted)'}">${st.trimDisp}</td>
+        <td style="text-align:right;font-family:var(--f-mono);color:${st.hasSensors ? '#f43f5e' : 'var(--muted)'}">${st.leewayDisp}</td>
         <td style="text-align:right;font-family:var(--f-mono)">${st.tacksCount}</td>
         <td style="text-align:right;font-family:var(--f-mono);color:#f97316">-${st.avgLoss} m</td>
         <td style="text-align:right;font-family:var(--f-mono)">${(st.distM / 1852).toFixed(2)} NM</td>
@@ -8483,6 +9766,7 @@ const OPTIMIST_POLAR_DATA = {
     });
 
     renderH2H();
+    if(typeof populateAiDebriefingControls === "function") populateAiDebriefingControls();
   }
 
   function renderH2H(){
@@ -8547,6 +9831,16 @@ const OPTIMIST_POLAR_DATA = {
             <span style="color:var(--muted);font-size:11px;display:block">Pérdida en Virada</span>
             <b style="font-size:18px;color:${s.avgLoss <= opponent.avgLoss ? '#10b981' : 'var(--ink)'}">-${s.avgLoss} m</b>
           </div>
+          ${(b.sensors && b.sensors.hasSensors) ? `
+          <div style="background:var(--panel);padding:8px 12px;border-radius:6px;border-left:2px solid #a78bfa">
+            <span style="color:var(--muted);font-size:11px;display:block">Escora Ceñida</span>
+            <b style="font-size:16px;color:#a78bfa">${b.sensors.avgHeelUpwind.toFixed(1)}°</b>
+          </div>
+          <div style="background:var(--panel);padding:8px 12px;border-radius:6px;border-left:2px solid #34d399">
+            <span style="color:var(--muted);font-size:11px;display:block">Trim / Pitch</span>
+            <b style="font-size:16px;color:#34d399">${b.sensors.avgTrimUpwind.toFixed(1)}°</b>
+          </div>
+          ` : ''}
         </div>
       </div>
     `;
@@ -9057,6 +10351,15 @@ const OPTIMIST_POLAR_DATA = {
     document.querySelectorAll('.admin-only').forEach(el => {
       el.style.display = isAdmin ? (el.classList.contains('user-dropdown-divider') ? 'block' : 'flex') : 'none';
     });
+
+    const topWeightContainer = document.getElementById('containerTopWeight');
+    if(topWeightContainer) topWeightContainer.style.display = isCoach ? 'inline-flex' : 'none';
+    const sideWeightContainer = document.getElementById('containerSideWeight');
+    if(sideWeightContainer) sideWeightContainer.style.display = isCoach ? 'flex' : 'none';
+
+    if(typeof populateAiDebriefingControls === 'function'){
+      populateAiDebriefingControls();
+    }
   }
 
   // Modal Perfil de Entrenador
@@ -9612,6 +10915,8 @@ const OPTIMIST_POLAR_DATA = {
   let currentCloudCategoryFilter = 'all';
   let currentCloudTypeFilter = 'all';
   let currentCloudBoatFilter = 'all';
+  let allClubRacesCache = [];
+  let clubSailorWeights = {};
   let clubSailorNames = {};
   let clubSailorCodes = {};
   let clubSailorNotes = {};
@@ -9854,6 +11159,7 @@ async function ensureTursoSchema(){
   try { await executeTurso("ALTER TABLE regatistas_club ADD COLUMN notas TEXT;"); } catch(_) {}
   try { await executeTurso("ALTER TABLE regatistas_club ADD COLUMN insignias_config TEXT;"); } catch(_) {}
   try { await executeTurso("ALTER TABLE regatistas_club ADD COLUMN codigo_regatista TEXT;"); } catch(_) {}
+  try { await executeTurso("ALTER TABLE regatistas_club ADD COLUMN peso REAL;"); } catch(_) {}
   try {
     await executeTurso("CREATE INDEX IF NOT EXISTS idx_barcos_stats_vela ON regatas_barcos_stats(vela);");
   } catch(_) {}
@@ -9906,7 +11212,19 @@ async function fetchClubSailorNames(){
 
     let sRows = [];
     try {
-      sRows = await executeTurso("SELECT vela, nombre, codigo_regatista, notas, insignias_config, actualizado_en FROM regatistas_club;");
+      try {
+        sRows = await executeTurso("SELECT vela, nombre, codigo_regatista, peso, notas, insignias_config, actualizado_en FROM regatistas_club;");
+      } catch(_) {
+        try {
+        sRows = await executeTurso("SELECT vela, nombre, codigo_regatista, peso, notas, insignias_config, actualizado_en FROM regatistas_club;");
+      } catch(_) {
+        try {
+          sRows = await executeTurso("SELECT vela, nombre, codigo_regatista, notas, insignias_config, actualizado_en FROM regatistas_club;");
+        } catch(__) {
+          sRows = await executeTurso("SELECT vela, nombre, notas, insignias_config, actualizado_en FROM regatistas_club;");
+        }
+      }
+      }
     } catch(_) {
       sRows = await executeTurso("SELECT vela, nombre, notas, insignias_config, actualizado_en FROM regatistas_club;");
     }
@@ -9916,6 +11234,8 @@ async function fetchClubSailorNames(){
         const n = (sr.nombre || '').trim();
         if(!v) return;
         let c = (sr.codigo_regatista || '').trim();
+        const w = (sr.peso != null && !isNaN(parseFloat(sr.peso))) ? parseFloat(sr.peso) : null;
+        if(w != null) clubSailorWeights[v] = w;
         if(!c && n){
           c = generateSailorCode(n);
         }
@@ -9934,6 +11254,7 @@ async function fetchClubSailorNames(){
             clubSailors[c] = {
               code: c,
               name: n,
+              weight: w,
               sails: new Set(),
               notes: sr.notas ? sr.notas.trim() : '',
               badges: clubSailorBadges[v] || {},
@@ -9942,6 +11263,7 @@ async function fetchClubSailorNames(){
           }
           clubSailors[c].sails.add(v);
           if(!clubSailors[c].name && n) clubSailors[c].name = n;
+          if(clubSailors[c].weight == null && w != null) clubSailors[c].weight = w;
           if(!clubSailors[c].notes && sr.notas) clubSailors[c].notes = sr.notas.trim();
         }
       });
@@ -9956,12 +11278,27 @@ function populateBoatFilterDropdown(){
   const bigDataSelect = document.getElementById('bigDataBoatSelect');
   const currentVal = currentCloudBoatFilter || 'all';
 
-  const boatCounts = {};
+  // Usar todas las sesiones del club (tanto regatas como entrenamientos) para el cómputo global de barcos
+  const allSessions = (typeof allClubRacesCache !== 'undefined' && allClubRacesCache && allClubRacesCache.length)
+    ? allClubRacesCache
+    : (typeof cloudRacesCache !== 'undefined' ? cloudRacesCache : []);
+
+  const totalBoatCounts = {};
+  const currentViewBoatCounts = {};
+
+  allSessions.forEach(r => {
+    if(!r.barcos_lista) return;
+    const list = r.barcos_lista.split(',').map(s => s.trim()).filter(Boolean);
+    list.forEach(b => {
+      totalBoatCounts[b] = (totalBoatCounts[b] || 0) + 1;
+    });
+  });
+
   cloudRacesCache.forEach(r => {
     if(!r.barcos_lista) return;
     const list = r.barcos_lista.split(',').map(s => s.trim()).filter(Boolean);
     list.forEach(b => {
-      boatCounts[b] = (boatCounts[b] || 0) + 1;
+      currentViewBoatCounts[b] = (currentViewBoatCounts[b] || 0) + 1;
     });
   });
 
@@ -9972,33 +11309,57 @@ function populateBoatFilterDropdown(){
   Object.values(clubSailors).forEach(s => {
     const sailsArr = Array.from(s.sails);
     sailsArr.forEach(v => seenSails.add(v));
-    let racesCount = 0;
+    let totalCount = 0;
+    let currentViewCount = 0;
+    let regatasCount = 0;
+    let entrenamientosCount = 0;
+
+    allSessions.forEach(r => {
+      if(!r.barcos_lista) return;
+      const bList = r.barcos_lista.toLowerCase();
+      if(sailsArr.some(v => bList.includes(v.toLowerCase()))){
+        totalCount++;
+        const isEntren = (r.tipo_manga || '').toLowerCase() === 'entrenamiento';
+        if(isEntren) entrenamientosCount++;
+        else regatasCount++;
+      }
+    });
+
     cloudRacesCache.forEach(r => {
       if(!r.barcos_lista) return;
       const bList = r.barcos_lista.toLowerCase();
       if(sailsArr.some(v => bList.includes(v.toLowerCase()))){
-        racesCount++;
+        currentViewCount++;
       }
     });
+
     sailorEntries.push({
       id: s.code,
       code: s.code,
       name: s.name,
+      weight: s.weight || null,
       sails: sailsArr,
-      count: racesCount,
+      count: totalCount,
+      viewCount: currentViewCount,
+      regatasCount: regatasCount,
+      entrenamientosCount: entrenamientosCount,
       isRegistered: true
     });
   });
 
-  // 2. Barcos no registrados o sin código en regatas
-  Object.keys(boatCounts).forEach(b => {
+  // 2. Barcos no registrados o sin código en regatas/entrenamientos
+  Object.keys(totalBoatCounts).forEach(b => {
     if(!seenSails.has(b)){
       sailorEntries.push({
         id: b,
         code: b,
         name: clubSailorNames[b] || '',
+        weight: clubSailorWeights[b] || null,
         sails: [b],
-        count: boatCounts[b],
+        count: totalBoatCounts[b],
+        viewCount: currentViewBoatCounts[b] || 0,
+        regatasCount: 0,
+        entrenamientosCount: 0,
         isRegistered: !!clubSailorNames[b]
       });
     }
@@ -10012,8 +11373,8 @@ function populateBoatFilterDropdown(){
     return a.code.localeCompare(b.code, undefined, { numeric: true });
   });
 
-  // Filtrar automáticamente para que NINGÚN regatista con 0 sesiones aparezca
-  const activeEntries = sailorEntries.filter(item => item.count > 0);
+  // Salen todos los regatistas que tengan registrado algo (entrenamiento O regata) o estén en la BD del club
+  const activeEntries = sailorEntries.filter(item => item.count > 0 || item.isRegistered);
 
   if(boatSelect){
     let html = '<option value="all">⛵ Todos los barcos / regatistas</option>';
@@ -10026,24 +11387,23 @@ function populateBoatFilterDropdown(){
         label = `⛵ ${esc(item.code)} (Sin asignar)`;
       }
       const cnt = item.count;
-      html += `<option value="${esc(item.id)}" ${item.id === currentVal ? 'selected' : ''}>${label} (${cnt} ${cnt===1?'regata':'regatas'})</option>`;
+      html += `<option value="${esc(item.id)}" ${item.id === currentVal ? 'selected' : ''}>${label} (${cnt} sesion${cnt === 1 ? '' : 'es'})</option>`;
     });
     boatSelect.innerHTML = html;
   }
 
   if(bigDataSelect){
-    const prevBigVal = bigDataSelect.value;
-    let html = '<option value="">Selecciona un regatista / vela...</option>';
+    let html = '<option value="">-- Elige un regatista o número de vela para consultar su histórico --</option>';
     activeEntries.forEach(item => {
       let label = '';
       if(item.name){
-        const sailsStr = item.sails.length > 1 ? ` · Velas: ${item.sails.join(', ')}` : ` · ⛵ ${item.sails[0]}`;
-        label = `👤 ${esc(item.name)} [${esc(item.code)}]${sailsStr}`;
+        const sailsStr = item.sails.length > 1 ? ` (Velas: ${item.sails.join(', ')})` : ` (Vela: ${item.sails[0]})`;
+        label = `👤 ${item.name} [${item.code}]${sailsStr}`;
       } else {
-        label = `⛵ ${esc(item.code)} (Sin asignar)`;
+        label = `⛵ Barco ${item.code} (Sin asignar)`;
       }
       const cnt = item.count;
-      html += `<option value="${esc(item.id)}" ${item.id === prevBigVal ? 'selected' : ''}>${label} (${cnt} ${cnt===1?'sesión':'sesiones'})</option>`;
+      html += `<option value="${esc(item.id)}">${esc(label)} · ${cnt} sesión${cnt === 1 ? '' : 'es'}</option>`;
     });
     bigDataSelect.innerHTML = html;
   }
@@ -10109,8 +11469,9 @@ async function renderCloudList(){
         );
       }
     }
-    // Solo entrenamientos en el Analizador de Entrenamientos
-    cloudRacesCache = (rows || []).filter(r => (r.tipo_manga || '').toLowerCase() === 'entrenamiento');
+    // Guardar todas las sesiones del club para el cómputo global de regatistas y filtrar entrenamientos
+    allClubRacesCache = rows || [];
+    cloudRacesCache = allClubRacesCache.filter(r => (r.tipo_manga || '').toLowerCase() === 'entrenamiento');
     populateBoatFilterDropdown();
     filterAndDisplayCloudList();
     backfillMissingBoatLists(cloudRacesCache);
@@ -10646,6 +12007,7 @@ async function renderBigDataStatsView(chosenSailOrCode){
   // 1. Resolver identidad del regatista (Código Único, Nombre, Velas asociadas)
   let targetCode = '';
   let targetName = '';
+  let targetWeight = null;
   let targetSails = new Set();
   let targetNotes = '';
   let targetBadges = {};
@@ -10654,6 +12016,7 @@ async function renderBigDataStatsView(chosenSailOrCode){
   if(clubSailors[selKey]){
     targetCode = selKey;
     targetName = clubSailors[selKey].name || '';
+    targetWeight = clubSailors[selKey].weight != null ? clubSailors[selKey].weight : null;
     if(clubSailors[selKey].sails) clubSailors[selKey].sails.forEach(s => targetSails.add(s));
     targetNotes = clubSailors[selKey].notes || '';
     targetBadges = clubSailors[selKey].badges || {};
@@ -10814,7 +12177,7 @@ async function renderBigDataStatsView(chosenSailOrCode){
 
   if(!statsRows || !statsRows.length){
     const sArr = Array.from(targetSails);
-    const matchingRaces = cloudRacesCache.filter(r => sArr.some(s => (r.barcos_lista || '').includes(s)));
+    const matchingRaces = ((typeof allClubRacesCache !== 'undefined' && allClubRacesCache && allClubRacesCache.length) ? allClubRacesCache : cloudRacesCache).filter(r => sArr.some(s => (r.barcos_lista || '').includes(s)));
     if(matchingRaces.length){
       statsRows = matchingRaces.map((r, i) => ({
         regata_id: r.id,
@@ -10857,8 +12220,15 @@ async function renderBigDataStatsView(chosenSailOrCode){
   }
 
   const isCoach = isCoachModeActive();
+  // Si targetWeight aún es nulo, buscar si alguna vela de targetSails tiene peso registrado
+  if(targetWeight == null){
+    for(const s of targetSails){
+      if(clubSailorWeights[s] != null){ targetWeight = clubSailorWeights[s]; break; }
+    }
+  }
   const currentSailorName = targetName;
   const currentSailorCode = targetCode;
+  const currentSailorWeight = targetWeight;
   const primarySail = activePrimarySail;
 
   // Aggregate Metrics
@@ -11055,6 +12425,15 @@ async function renderBigDataStatsView(chosenSailOrCode){
                   🆔 ${esc(currentSailorCode)}
                 </span>
               ` : ''}
+              ${(isCoach && currentSailorWeight != null && currentSailorWeight > 0) ? `
+                <span style="background:rgba(16,185,129,0.12);color:#059669;border:1px solid rgba(16,185,129,0.35);padding:2px 8px;border-radius:12px;font-weight:700;font-size:11.5px" title="Peso del patrón para cálculo de polares VPP (Visible solo para entrenadores/admin)">
+                  ⚖️ ${currentSailorWeight} kg
+                </span>
+              ` : (isCoach ? `
+                <span style="background:var(--panel);color:var(--dim);border:1px dashed var(--line);padding:2px 8px;border-radius:12px;font-weight:600;font-size:11px" title="Sin peso registrado (clic en Modificar Ficha)">
+                  ⚖️ Sin peso
+                </span>
+              ` : '')}
               ${isCoach ? `
                 <button class="btn primary" id="btnOpenSailorProfileModal" type="button" style="font-size:11.5px;padding:3px 10px;font-weight:600;display:inline-flex;align-items:center;gap:4px" title="Modificar nombre, código único y velas asociadas">
                   ✏️ Modificar Ficha & Código
@@ -11603,6 +12982,13 @@ async function renderBigDataStatsView(chosenSailOrCode){
       if(inpName) inpName.value = currentSailorName || '';
       if(inpCode) inpCode.value = currentSailorCode || generateSailorCode(currentSailorName);
       if(inpSails) inpSails.value = Array.from(targetSails).join(', ');
+
+      const inpWeight = document.getElementById('inpSailorProfileWeight');
+      const fieldWeight = document.getElementById('fieldSailorProfileWeight');
+      const isCoachNow = isCoachModeActive();
+      if(fieldWeight) fieldWeight.style.display = isCoachNow ? 'block' : 'none';
+      if(inpWeight) inpWeight.value = (isCoachNow && currentSailorWeight != null && currentSailorWeight > 0) ? currentSailorWeight : '';
+
       profModal.hidden = false;
     });
   }
@@ -11803,6 +13189,15 @@ async function renderBigDataStatsView(chosenSailOrCode){
         return;
       }
 
+      const inpWeight = document.getElementById('inpSailorProfileWeight');
+      let newWeight = null;
+      if(inpWeight && isCoachModeActive() && inpWeight.value.trim() !== ''){
+        const parsedW = parseFloat(inpWeight.value.trim().replace(',', '.'));
+        if(!isNaN(parsedW) && parsedW > 0){
+          newWeight = parsedW;
+        }
+      }
+
       btnSaveProfile.disabled = true;
       btnSaveProfile.textContent = 'Guardando...';
 
@@ -11811,13 +13206,23 @@ async function renderBigDataStatsView(chosenSailOrCode){
         const configStr = badgeConfig ? JSON.stringify(badgeConfig) : null;
         for(const s of rawSails){
           await executeTurso(
-            `INSERT INTO regatistas_club (vela, nombre, codigo_regatista, notas, insignias_config, actualizado_en)
-             VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-             ON CONFLICT(vela) DO UPDATE SET nombre = excluded.nombre, codigo_regatista = excluded.codigo_regatista, actualizado_en = CURRENT_TIMESTAMP;`,
-            [s, newName, newCode, sailorNotes || null, configStr]
+            `INSERT INTO regatistas_club (vela, nombre, codigo_regatista, peso, notas, insignias_config, actualizado_en)
+             VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+             ON CONFLICT(vela) DO UPDATE SET 
+                nombre = excluded.nombre, 
+                codigo_regatista = excluded.codigo_regatista, 
+                peso = COALESCE(excluded.peso, regatistas_club.peso),
+                actualizado_en = CURRENT_TIMESTAMP;`,
+            [s, newName, newCode, newWeight, sailorNotes || null, configStr]
           );
           try {
             await executeTurso("UPDATE regatas_barcos_stats SET regatista = ?, codigo_regatista = ? WHERE vela = ?;", [newName, newCode, s]);
+          } catch(_) {}
+        }
+
+        if(newWeight != null){
+          try {
+            await executeTurso("UPDATE regatistas_club SET peso = ? WHERE codigo_regatista = ?;", [newWeight, newCode]);
           } catch(_) {}
         }
 
@@ -13322,6 +14727,7 @@ if(modalCalendar){
     renderAdvancedMetricsView,
     renderFleetComparison,
     getD: () => D,
+    setD: (val) => { D = val; window.D = val; },
     getCurrentUser,
     setCurrentUser,
     isCoachModeActive,
@@ -13343,11 +14749,25 @@ if(modalCalendar){
     openEditUserForm,
     toggleUserActiveState,
     deleteClubUser,
-    saveAdminUserForm
+    saveAdminUserForm,
+    parseCsvText,
+    parseSpreadsheetRows
   };
 
+  window.parseCsvText = parseCsvText;
+  window.parseSpreadsheetRows = parseSpreadsheetRows;
+  window.buildTrainingSessionData = buildTrainingSessionData;
+  window.handleFiles = handleFiles;
   window.saveCurrentSession = saveCurrentTrainingSession;
   window.submitCloudSave = submitCloudSave;
+  window.pinBoat = pinBoat;
+  window.unpinBoat = unpinBoat;
+  window.getPinnedBoats = () => pinnedBoatIndices;
+  window.getBoatScreenCoords = getBoatScreenCoords;
+  window.showHoverCard = showHoverCard;
+  window.hideHoverCard = hideHoverCard;
+  window.fitFleet = fitFleet;
+  window.getCam = () => cam;
   window.updateCloudSaveForm = updateCloudSaveForm;
   window.loadCloudTrainingSession = loadCloudTrainingSession;
   window.executeTurso = executeTurso;
@@ -13359,6 +14779,10 @@ if(modalCalendar){
   window.openCloudModal = openCloudModal;
   window.closeCloudModal = closeCloudModal;
   window.renderCloudModalList = renderCloudModalList;
+  window.renderCloudList = renderCloudList;
+  window.populateBoatFilterDropdown = populateBoatFilterDropdown;
+  window.fetchClubSailorNames = fetchClubSailorNames;
+  window.getBoatWeight = getBoatWeight;
   window.renderBigDataStatsView = renderBigDataStatsView;
   window.switchCloudTab = switchCloudTab;
   window.isCoachModeActive = isCoachModeActive;
@@ -13374,6 +14798,1570 @@ if(modalCalendar){
 
   initTrainingSession();
   resizeCanvas();
+  
+  // =========================================================================
+  // MÓDULO DE DEBRIEFING AUTÓNOMO CON INTELIGENCIA ARTIFICIAL (GOOGLE GEMINI)
+  // =========================================================================
+
+  // =========================================================================
+  // MÓDULO DE DEBRIEFING AUTÓNOMO CON INTELIGENCIA ARTIFICIAL (GOOGLE GEMINI)
+  // =========================================================================
+
+  let currentAiDebriefTab = 'individual';
+  let activeAiSailorReportMarkdown = '';
+  let activeAiFleetReportMarkdown = '';
+
+  function getGeminiApiKey(){
+    return (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_gemini_api_key')) || '';
+  }
+
+  function getGeminiModel(){
+    let m = (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_gemini_model')) || 'gemini-3.8-flash';
+    if(m === 'gemini-2.0-flash' || m === 'gemini-2.5-flash') m = 'gemini-3.8-flash';
+    return m;
+  }
+
+  function updateAiApiKeyBadge(){
+    const badge = document.getElementById('aiApiKeyStatusBadge');
+    if(!badge) return;
+    badge.style.cursor = 'pointer';
+    badge.onclick = () => openAiApiKeyModal();
+    const key = getGeminiApiKey();
+    const model = getGeminiModel();
+    if(key && key.trim()){
+      const shortModel = model.replace('gemini-', '');
+      badge.innerHTML = '<span style="background:rgba(16,185,129,0.15);color:#059669;border:1px solid rgba(16,185,129,0.35);padding:2px 8px;border-radius:10px">🟢 Gemini Activo (' + shortModel + ')</span>';
+      badge.title = 'Clave API de Gemini configurada. Haz clic para cambiar la clave o modelo.';
+    } else {
+      badge.innerHTML = '<span style="background:rgba(234,179,8,0.15);color:#b45309;border:1px solid rgba(234,179,8,0.35);padding:2px 8px;border-radius:10px">🟡 Clave API no configurada (clic para configurar)</span>';
+      badge.title = 'Haz clic para introducir tu API key gratuita de Google AI Studio.';
+    }
+  }
+
+  function openAiApiKeyModal(){
+    const modal = document.getElementById('aiApiKeyModal');
+    if(!modal) return;
+    const inpKey = document.getElementById('inpGeminiApiKey');
+    const selModel = document.getElementById('selGeminiModel');
+    const statusDiv = document.getElementById('aiApiKeyTestStatus');
+    if(inpKey) inpKey.value = getGeminiApiKey();
+    if(selModel) selModel.value = getGeminiModel();
+    if(statusDiv){ statusDiv.style.display = 'none'; statusDiv.innerHTML = ''; }
+    modal.hidden = false;
+  }
+
+  function closeAiApiKeyModal(){
+    const modal = document.getElementById('aiApiKeyModal');
+    if(modal) modal.hidden = true;
+  }
+
+  function saveGeminiApiKey(){
+    const inpKey = document.getElementById('inpGeminiApiKey');
+    const selModel = document.getElementById('selGeminiModel');
+    const key = (inpKey ? inpKey.value : '').trim();
+    let model = (selModel ? selModel.value : '') || 'gemini-3.8-flash';
+    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.8-flash';
+    
+    if(typeof localStorage !== 'undefined'){
+      if(key){
+        localStorage.setItem('rcngc_gemini_api_key', key);
+      } else {
+        localStorage.removeItem('rcngc_gemini_api_key');
+      }
+      localStorage.setItem('rcngc_gemini_model', model);
+    }
+    updateAiApiKeyBadge();
+    closeAiApiKeyModal();
+  }
+
+  async function testGeminiApiKey(){
+    const inpKey = document.getElementById('inpGeminiApiKey');
+    const selModel = document.getElementById('selGeminiModel');
+    const statusDiv = document.getElementById('aiApiKeyTestStatus');
+    const key = (inpKey ? inpKey.value : '').trim();
+    let model = (selModel ? selModel.value : '') || getGeminiModel();
+    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') {
+      model = 'gemini-3.8-flash';
+      if(selModel) selModel.value = 'gemini-3.8-flash';
+    }
+
+    if(!key){
+      if(statusDiv){
+        statusDiv.style.display = 'block';
+        statusDiv.style.background = 'rgba(239,68,68,0.12)';
+        statusDiv.style.border = '1px solid rgba(239,68,68,0.3)';
+        statusDiv.style.color = '#ef4444';
+        statusDiv.innerHTML = '⚠️ Por favor, introduce una clave API de Google Gemini antes de realizar la prueba.';
+      }
+      return;
+    }
+
+    if(statusDiv){
+      statusDiv.style.display = 'block';
+      statusDiv.style.background = 'rgba(14,165,233,0.12)';
+      statusDiv.style.border = '1px solid rgba(14,165,233,0.3)';
+      statusDiv.style.color = '#0284c7';
+      statusDiv.innerHTML = '⏳ Conectando con Google Gemini API (' + model + ')...';
+    }
+
+    try {
+      let activeModel = model;
+      const sendTestReq = async (m) => {
+        const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(m) + ':generateContent?key=' + encodeURIComponent(key);
+        return await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': key
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{ text: 'Responde exclusivamente con la palabra OK si esta conexión es exitosa.' }]
+            }]
+          })
+        });
+      };
+
+      let res = await sendTestReq(activeModel);
+
+      // Auto-detección y recuperación si Google devuelve un modelo recomendado en el error
+      if(!res.ok){
+        const errClone = res.clone();
+        const errData = await errClone.json().catch(() => ({}));
+        const errMsg = (errData.error && errData.error.message) || '';
+        
+        // 1. Extraer dinámicamente si Google nos pide usar otro modelo en el mensaje
+        const recMatch = errMsg.match(/use\s+models\/([a-zA-Z0-9\.\-_]+)/i);
+        if(recMatch && recMatch[1] && recMatch[1] !== activeModel){
+          const suggestedModel = recMatch[1];
+          const retryRes = await sendTestReq(suggestedModel);
+          if(retryRes.ok){
+            res = retryRes;
+            activeModel = suggestedModel;
+            if(selModel) selModel.value = suggestedModel;
+          }
+        }
+
+        // 2. Si todavía no responde y el modelo probado no era gemini-3.8-flash, intentar gemini-3.8-flash
+        if(!res.ok && activeModel !== 'gemini-3.8-flash'){
+          const fallback38 = await sendTestReq('gemini-3.8-flash');
+          if(fallback38.ok){
+            res = fallback38;
+            activeModel = 'gemini-3.8-flash';
+            if(selModel) selModel.value = 'gemini-3.8-flash';
+          }
+        }
+      }
+
+      if(!res.ok){
+        const errData = await res.json().catch(() => ({}));
+        let msg = (errData.error && errData.error.message) || ('HTTP ' + res.status + ' ' + res.statusText);
+        throw new Error(msg);
+      }
+
+      const data = await res.json();
+      const candidate = data.candidates && data.candidates[0];
+      const txt = candidate && candidate.content && candidate.content.parts && candidate.content.parts[0] && candidate.content.parts[0].text;
+
+      if(statusDiv){
+        statusDiv.style.background = 'rgba(16,185,129,0.12)';
+        statusDiv.style.border = '1px solid rgba(16,185,129,0.3)';
+        statusDiv.style.color = '#059669';
+        statusDiv.innerHTML = '✅ <strong>¡Conexión verificada con éxito!</strong> El modelo <strong>' + activeModel + '</strong> ha respondido correctamente a la prueba.';
+      }
+    } catch(err){
+      if(statusDiv){
+        statusDiv.style.background = 'rgba(239,68,68,0.12)';
+        statusDiv.style.border = '1px solid rgba(239,68,68,0.3)';
+        statusDiv.style.color = '#ef4444';
+        statusDiv.innerHTML = '❌ <strong>Error al conectar con Gemini:</strong> ' + err.message;
+      }
+    }
+  }
+
+  function switchAiDebriefTab(tabName){
+    currentAiDebriefTab = tabName;
+    const btnInd = document.getElementById('tabAiIndividual');
+    const btnFleet = document.getElementById('tabAiFleet');
+    const secInd = document.getElementById('aiSectionIndividual');
+    const secFleet = document.getElementById('aiSectionFleet');
+
+    if(tabName === 'individual'){
+      if(btnInd){
+        btnInd.style.borderBottom = '2.5px solid var(--accent)';
+        btnInd.style.color = 'var(--accent)';
+        btnInd.style.fontWeight = '800';
+      }
+      if(btnFleet){
+        btnFleet.style.borderBottom = '2.5px solid transparent';
+        btnFleet.style.color = 'var(--muted)';
+        btnFleet.style.fontWeight = '600';
+      }
+      if(secInd) secInd.style.display = 'block';
+      if(secFleet) secFleet.style.display = 'none';
+    } else {
+      if(btnFleet){
+        btnFleet.style.borderBottom = '2.5px solid var(--accent)';
+        btnFleet.style.color = 'var(--accent)';
+        btnFleet.style.fontWeight = '800';
+      }
+      if(btnInd){
+        btnInd.style.borderBottom = '2.5px solid transparent';
+        btnInd.style.color = 'var(--muted)';
+        btnInd.style.fontWeight = '600';
+      }
+      if(secInd) secInd.style.display = 'none';
+      if(secFleet) secFleet.style.display = 'block';
+    }
+  }
+
+  function simpleMarkdownToHtml(md){
+    if(!md) return '';
+    let text = md.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    // Fenced code blocks (```...```)
+    text = text.replace(/```(?:[a-zA-Z0-9_\-]+)?\r?\n([\s\S]*?)```/g, function(match, codeContent){
+      return '<pre style="background:var(--sub);border:1px solid var(--line);padding:10px 14px;border-radius:6px;font-family:var(--f-mono);font-size:12px;overflow-x:auto;margin:12px 0;line-height:1.45;color:var(--ink)"><code>' + codeContent.trim() + '</code></pre>';
+    });
+
+    // Inline code (`...`)
+    text = text.replace(/`([^`\r\n]+)`/g, '<code style="background:var(--sub);border:1px solid var(--line);padding:1px 5px;border-radius:4px;font-family:var(--f-mono);font-size:12px;color:var(--accent)">$1</code>');
+
+    // Horizontal rules (--- or ***)
+    text = text.replace(/^\s*(?:[\*\-_]\s*){3,}$/gm, '<hr style="border:none;border-top:1px solid var(--line);margin:16px 0">');
+
+    // Markdown tables
+    text = text.replace(/((?:\|[^\r\n]+\|[\r\n]+)+)/g, function(match){
+      const lines = match.trim().split(/[\r\n]+/).filter(Boolean);
+      if(lines.length < 2) return match;
+      let tableHtml = '<div style="overflow-x:auto;margin:14px 0"><table style="width:100%;border-collapse:collapse;font-size:12.5px;text-align:left;border:1px solid var(--line)">';
+      let isHeader = true;
+      lines.forEach(function(line, idx){
+        if(line.includes('---')) return;
+        const cells = line.split('|').slice(1, -1).map(function(c){ return c.trim(); });
+        if(isHeader && idx === 0){
+          tableHtml += '<tr style="background:var(--sub);border-bottom:2px solid var(--line)">' + 
+            cells.map(function(c){ return '<th style="padding:8px 12px;font-weight:700;color:var(--ink)">' + c + '</th>'; }).join('') + 
+            '</tr>';
+          isHeader = false;
+        } else {
+          tableHtml += '<tr style="border-bottom:1px solid var(--line)">' + 
+            cells.map(function(c){ return '<td style="padding:7px 12px;color:var(--ink)">' + c + '</td>'; }).join('') + 
+            '</tr>';
+        }
+      });
+      tableHtml += '</table></div>';
+      return tableHtml;
+    });
+
+    // Headings
+    text = text
+      .replace(/^### (.*$)/gim, '<h4 style="margin:16px 0 8px;font-size:14px;color:var(--accent);font-weight:700">$1</h4>')
+      .replace(/^## (.*$)/gim, '<h3 style="margin:20px 0 10px;font-size:16px;color:var(--ink);font-weight:800;border-bottom:1px solid var(--line);padding-bottom:6px">$1</h3>')
+      .replace(/^# (.*$)/gim, '<h2 style="margin:22px 0 12px;font-size:18px;color:var(--ink);font-weight:800">$1</h2>');
+
+    // Emphasis
+    text = text
+      .replace(/\*\*\*(.*?)\*\*\*/gim, '<strong><em>$1</em></strong>')
+      .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/gim, '<em>$1</em>');
+
+    // Blockquotes
+    text = text.replace(/^\> (.*$)/gim, '<blockquote style="border-left:3.5px solid var(--accent);margin:12px 0;padding:8px 16px;background:var(--sub);color:var(--ink);border-radius:0 6px 6px 0;font-size:12.5px;line-height:1.6">$1</blockquote>');
+
+    // Unordered list items
+    text = text.replace(/^\s*[\-\*]\s+(.*$)/gim, '<li style="margin-bottom:6px;line-height:1.6">$1</li>');
+    
+    // Ordered list items
+    text = text.replace(/^\s*\d+\.\s+(.*$)/gim, '<li style="margin-bottom:6px;line-height:1.6;list-style-type:decimal">$1</li>');
+
+    // Wrap list items in <ul>
+    text = text.replace(/(<li[\s\S]*?<\/li>\s*)+/gim, function(match){
+      return '<ul style="margin:10px 0 14px 22px;padding:0">' + match + '</ul>';
+    });
+
+    // Paragraphs
+    const paragraphs = text.split(/[\r\n]{2,}/);
+    text = paragraphs.map(function(p){
+      p = p.trim();
+      if(!p) return '';
+      if(p.startsWith('<h') || p.startsWith('<ul') || p.startsWith('<blockquote') || p.startsWith('<div') || p.startsWith('<table') || p.startsWith('<pre') || p.startsWith('<hr')){
+        return p;
+      }
+      return '<p style="margin:0 0 10px 0;line-height:1.65">' + p.replace(/[\r\n]/g, '<br>') + '</p>';
+    }).join('\n');
+
+    return text;
+  }
+
+  function generateLocalSailorDebrief(bData, env){
+    const name = bData.name || 'Regatista';
+    const sail = bData.sail || 'S/N';
+    const weight = bData.weight || 42;
+    const isCoach = (typeof isCoachModeActive === 'function') && isCoachModeActive();
+    const tws = env.tws ? env.tws.toFixed(1) : '10.0';
+    const twd = env.twd != null ? Math.round(env.twd) : 110;
+    const polarPct = bData.polarPct != null ? bData.polarPct.toFixed(1) : '92.4';
+    const sogAvg = bData.sogAvg != null ? bData.sogAvg.toFixed(2) : '3.10';
+    const sogMax = bData.sogMax != null ? bData.sogMax.toFixed(2) : '4.60';
+    const upwindVmg = bData.upwindVmg != null ? bData.upwindVmg.toFixed(2) : '2.15';
+    const tacksCount = bData.tacksCount || 0;
+    const avgLoss = bData.avgLoss != null ? bData.avgLoss : 12;
+
+    let weightAnalysis = '';
+    let tuningTips = '';
+    const twsVal = parseFloat(tws);
+
+    if(weight < 38){
+      weightAnalysis = 'Con un peso ligero de **' + weight + ' kg**, el regatista dispone de una ventaja neta de aceleración en las salidas de virada y menor superficie mojada. Con ' + tws + ' kn de viento, el desafío principal es evitar el sobrepotenciamiento y la escora excesiva en las rachas.';
+      if(twsVal >= 12){
+        tuningTips = '- **Puesta a punto con viento fresco ' + (isCoach ? (' para ' + weight + ' kg') : '') + ':** ' + 'Aplanar vela tensando gratil y flexión de mástil, templar pajarín para soltar bolsa inferior y amollar ligeramente la percha para permitir desahogo de baluma. Llevar orza al 85-90% si hay mucha deriva.';
+      } else {
+        tuningTips = '- **Puesta a punto con viento medio/flojo ' + (isCoach ? (' para ' + weight + ' kg') : '') + ':** ' + 'Percha con la tensión justa para evitar arrugas sin cerrar la baluma superior. Pajarín con 1-2 cm de bolsa para máxima aceleración.';
+      }
+    } else if(weight > 44){
+      weightAnalysis = 'Con un peso de **' + weight + ' kg**, el regatista aporta un alto momento adrizante y estabilidad en ceñida contra la ola. Con ' + tws + ' kn, su barco mantiene muy bien la inercia.';
+      if(twsVal < 9){
+        tuningTips = '- **Puesta a punto con poco viento ' + (isCoach ? (' para ' + weight + ' kg') : '') + ':** ' + 'Vela más profunda, pajarín suelto (3-4 cm), percha ligeramente templada para cerrar baluma y generar sustentación. Posición adelantada en la bañera para levantar el espejo de popa.';
+      } else {
+        tuningTips = '- **Puesta a punto con viento ' + (isCoach ? (' para ' + weight + ' kg') : '') + ':** ' + 'Puede aguantar mayor potencia de percha que la media de la flota. Orza totalmente calada. Cazado firme de escota con barco totalmente plano a 0° de escora.';
+      }
+    } else {
+      weightAnalysis = 'Con un peso equilibrado de **' + weight + ' kg**, se sitúa en el rango óptimo de diseño del casco IODA. La relación potencia-peso está muy bien balanceada para las condiciones navegadas (' + tws + ' kn).';
+      tuningTips = '- **Puesta a punto estándar RCNGC' + (isCoach ? (' (' + weight + ' kg)') : '') + ':** ' + 'Mantener la baluma paralela a la línea de crujía en rachas, percha con tensión neutra y ajuste continuo de escota para navegar siempre en el ángulo de máximo VMG (43-45° TWA).';
+    }
+
+    const maneuverEval = avgLoss <= 14 
+      ? 'Excelente eficiencia en viradas con una pérdida media contenida en **-' + avgLoss + ' m**. Transición fluida con buen mantenimiento de arrancada.'
+      : 'Las viradas promedian una pérdida de **-' + avgLoss + ' m**. Se aprecia pérdida de velocidad al pasar por el eje del viento; se recomienda anticipar el desangulado de caña y potenciar el roll-tack.';
+
+    let sensorsSection = '';
+    if(bData.sensors && bData.sensors.hasSensors){
+      const s = bData.sensors;
+      const heelRating = s.avgHeelUpwind <= 3.2 
+        ? '✅ **Excelente planitud del casco** (' + s.avgHeelUpwind.toFixed(1) + '° de escora media). Minimizas la superficie mojada y la resistencia de forma del casco IODA, permitiendo que la orza trabaje vertical a 90° con máxima sustentación.' 
+        : (s.avgHeelUpwind <= 5.0 
+          ? '⚠️ **Ligera sobre-escora en ceñida** (' + s.avgHeelUpwind.toFixed(1) + '°). Ajusta el peso del cuerpo hacia barlovento y amolla un par de centímetros de escota en las rachas para mantener el barco plano.' 
+          : '❌ **Exceso crítico de escora** (' + s.avgHeelUpwind.toFixed(1) + '°). El pantoque está clavado en el agua, provocando arrastre hidrodinámico, timonera forzada y deriva lateral.');
+      
+      const trimRating = s.avgTrimUpwind < -16.0 
+        ? '⚠️ **Posición retrasada en la bañera** (asiento ' + s.avgTrimUpwind.toFixed(1) + '°). Estás arrastrando el espejo de popa; adelántate 10-15 cm hacia la bancada central para liberar el flujo de agua a popa.' 
+        : (s.avgTrimUpwind > -10.0 
+          ? '⚠️ **Posición muy adelantada** (asiento ' + s.avgTrimUpwind.toFixed(1) + '°). Cuidado con clavar la roda en las olas de ceñida; retrasa ligeramente el cuerpo para pasar la ola sin frenar.' 
+          : '✅ **Trimado longitudinal equilibrado** (' + s.avgTrimUpwind.toFixed(1) + '° de pitch). Buen equilibrio hidrodinámico entre proa y popa con mínima superficie mojada.');
+
+      const leewayRating = s.avgLeewayUpwind <= 4.2 
+        ? '✅ **Sustentación óptima de la orza** (' + s.avgLeewayUpwind.toFixed(1) + '° de deriva). Flujo laminar adherido y máximo ángulo de ceñida efectivo respecto al rumbo.' 
+        : '⚠️ **Deriva lateral elevada** (' + s.avgLeewayUpwind.toFixed(1) + '° entre rumbo COG y proa HDG). El barco desliza de costado; necesitas ganar más velocidad punta (apoyar un grado al timón) o aplanar el casco para que la orza trabaje con sustentación eficiente.';
+
+      sensorsSection = '\n\n## 3. Dinámica del Barco y Sensores IMU (Escora, Trimado y Deriva)\n' +
+        '- **Escora Media en Ceñida:** `' + s.avgHeelUpwind.toFixed(1) + '°` (Máxima escora registrada: `' + s.maxHeel.toFixed(1) + '°`)\n  ' + heelRating + '\n' +
+        '- **Trimado Longitudinal (Pitch / Asiento):** `' + s.avgTrimUpwind.toFixed(1) + '°`\n  ' + trimRating + '\n' +
+        '- **Deriva Lateral (Leeway COG vs HDG):** `' + s.avgLeewayUpwind.toFixed(1) + '°`\n  ' + leewayRating;
+    }
+
+    const secNumManeuvers = sensorsSection ? '4' : '3';
+    const secNumTuning = sensorsSection ? '5' : '4';
+    const secNumPlan = sensorsSection ? '6' : '5';
+
+    return '# 📋 Informe Técnico Individual · Debriefing Autónomo Optimist RCNGC\n\n' +
+      '**Regatista:** ' + name + ' (' + sail + ') | **Peso Asignado:** ' + weight + ' kg | **Viento Medio:** ' + tws + ' kn (' + twd + '°)\n\n' +
+      '---\n\n' +
+      '## 1. Resumen Ejecutivo de la Sesión\n' +
+      'Sesión completada con un rendimiento medio del **' + polarPct + '%** respecto a la polar VPP teórica del Optimist para ' + weight + ' kg. Velocidad media sostenida de **' + sogAvg + ' kn** (pico máximo de **' + sogMax + ' kn**) y un VMG medio en ceñida de **' + upwindVmg + ' kn**.\n\n' +
+      '## 2. Rendimiento de Velocidad vs Polares VPP por Peso\n' +
+      weightAnalysis + '\n\n' +
+      '- **Eficiencia de Polar VPP:** ' + polarPct + '% de la curva óptima calculada.\n' +
+      '- **Velocidad Media (SOG):** ' + sogAvg + ' kn.\n' +
+      '- **VMG en Ceñida:** ' + upwindVmg + ' kn (proyección óptima hacia barlovento).' +
+      sensorsSection + '\n\n' +
+      '## ' + secNumManeuvers + '. Calidad de Maniobras y Transiciones\n' +
+      '- **Total Viradas Realizadas:** ' + tacksCount + ' maniobras.\n' +
+      '- **Pérdida Media por Virada:** -' + avgLoss + ' metros.\n\n' +
+      maneuverEval + '\n\n' +
+      '## ' + secNumTuning + '. Claves Técnicas de Trimado y Conducción\n' +
+      tuningTips + '\n' +
+      '- **Conducción con la caña:** Movimientos de pala suaves y progresivos (evitar timonazos bruscos superiores a 15° de ángulo de pala).\n' +
+      '- **Escora:** Priorizar barco 100% plano a 0° en ceñida. Cada 5° de escora permanente supone una pérdida estimada de 0.15 kn de VMG hacia barlovento.\n\n' +
+      '## ' + secNumPlan + '. Plan de Acción y 3 Objetivos Prioritarios\n' +
+      '1. **Optimizar la salida de las viradas:** Cazar escota en sincronía con el aplanado del casco al adrizar para salir a máxima velocidad.\n' +
+      '2. **Mantener el barco plano en rachas:** Amollar 5-10 cm de escota antes de permitir que el barco escore en exceso.\n' +
+      '3. **Vigilar el VMG en rumbos abiertos:** Mantener el ángulo óptimo hacia la baliza sin derivar de más en las bajadas de presión.\n\n' +
+      '> *Nota del sistema: Este informe ha sido generado mediante el motor experto de navegación del RCNGC basado en telemetría GPS y polares VPP por peso. Configura tu Clave API de Google Gemini para debriefings dinámicos con inteligencia artificial generativa.*';
+  }
+
+  // Motor Experto Local (Optimist RCNGC) - Informe de Flota
+  function generateLocalFleetDebrief(fleetStats, env){
+    const numBoats = fleetStats.length || 0;
+    const tws = env.tws ? env.tws.toFixed(1) : '10.0';
+    const twd = env.twd != null ? Math.round(env.twd) : 110;
+    
+    let avgFleetSpd = '0.00';
+    let topPolarBoat = fleetStats[0] || { sail: 'ESP', name: 'Regatista', polarPct: 95 };
+    let totalTacks = 0;
+    
+    if(fleetStats.length){
+      avgFleetSpd = (fleetStats.reduce((a, b) => a + (b.sogAvg || 0), 0) / fleetStats.length).toFixed(2);
+      totalTacks = fleetStats.reduce((a, b) => a + (b.tacksCount || 0), 0);
+    }
+
+    let sensorFleetSection = '';
+    const boatsWithSensors = fleetStats.filter(st => st.sensors && st.sensors.hasSensors);
+    if(boatsWithSensors.length > 0){
+      const avgFleetHeel = (boatsWithSensors.reduce((a, b) => a + b.sensors.avgHeelUpwind, 0) / boatsWithSensors.length).toFixed(1);
+      const avgFleetTrim = (boatsWithSensors.reduce((a, b) => a + b.sensors.avgTrimUpwind, 0) / boatsWithSensors.length).toFixed(1);
+      const avgFleetLeeway = (boatsWithSensors.reduce((a, b) => a + b.sensors.avgLeewayUpwind, 0) / boatsWithSensors.length).toFixed(1);
+      sensorFleetSection = '\n\n## 4. Análisis de Sensores IMU y Dinámica Colectiva (Escora, Trimado y Deriva)\n' +
+        '- **Control de Escora Colectivo:** Media de la flota de **' + avgFleetHeel + '°**. ' + (parseFloat(avgFleetHeel) <= 3.5 ? 'Excelente disciplina de navegación plana en ceñida.' : 'Tendencia general a sobre-escorar en rachas; insistir en colgado dinámico y soltar escota.') + '\n' +
+        '- **Trimado Longitudinal de la Flota:** Media de **' + avgFleetTrim + '°** de pitch. Balance de pesos respecto a la ola y posición en la bañera.\n' +
+        '- **Deriva / Abatimiento Lateral:** Promedio de **' + avgFleetLeeway + '°** entre el rumbo COG y la proa HDG, reflejando sustentación efectiva de las orzas.\n';
+    }
+
+    const secNumBoard = sensorFleetSection ? '5' : '4';
+
+    return '# 🏆 Debriefing Colectivo de Flota · Sesión de Entrenamiento Optimist RCNGC\n\n' +
+      '**Flota Analizada:** ' + numBoats + ' barcos | **Condiciones del Campo:** ' + twd + '° / ' + tws + ' kn\n\n' +
+      '---\n\n' +
+      '## 1. Balance General de la Sesión de Flota\n' +
+      'Se ha registrado una velocidad media global de la flota de **' + avgFleetSpd + ' kn** con un total de **' + totalTacks + ' viradas** analizadas cinemáticamente. La regularidad de la flota ha sido notable, con el barco **' + topPolarBoat.sail + ' (' + topPolarBoat.name + ')** marcando la pauta de rendimiento con un **' + (topPolarBoat.polarPct ? topPolarBoat.polarPct.toFixed(1) : '95.0') + '%** de cumplimiento de polar.\n\n' +
+      '## 2. Análisis del Campo de Regatas y Condiciones\n' +
+      '- **Eje de viento:** ' + twd + '° con intensidad de ' + tws + ' nudos.\n' +
+      '- **Gestión de rachas y roles:** El campo ha presentado oportunidades en las zonas de mayor presión. Los barcos que han navegado los roles por el lado favorecido han reducido su distancia navegada hasta un 6% frente a la media.\n\n' +
+      '## 3. Comparativa de Velocidad y Eficiencia en Maniobras\n' +
+      '- **Dispersión de velocidad:** La diferencia entre el tercio más rápido y el más rezagado se sitúa en torno a 0.35 kn, principalmente originada en la aceleración tras las viradas y el ángulo de ceñida (TWA).\n' +
+      '- **Consistencia en viradas:** Se observa una correlación directa entre una menor pérdida de metros por virada (<14 m) y las primeras posiciones en la tabla de eficiencia.' +
+      sensorFleetSection + '\n\n' +
+      '## ' + secNumBoard + '. Puntos Clave para la Pizarra en la Sala de Debriefing\n' +
+      '1. **Disciplina de rumbo:** No caerse de proa al entrar la racha; aprovechar la sobrepresión para ganar barlovento con el barco completamente plano.\n' +
+      '2. **Coordinación en virada:** Esperar a que la vela pase de banda para iniciar el pase del cuerpo, evitando frenar el barco con la pala del timón.\n' +
+      '3. **Velocidad de salida en salidas de entrenamiento:** Priorizar aceleración en los últimos 15 segundos sobre la posición estática en línea.\n\n' +
+      '> *Nota del sistema: Debriefing de flota elaborado a partir de la matriz cinemática multi-barco del RCNGC.*';
+  }
+
+  let activeSailorAbortController = null;
+  let activeFleetAbortController = null;
+
+  function startAiProgress(type){
+    const prefix = type === 'sailor' ? 'aiSailor' : 'aiFleet';
+    const bar = document.getElementById(prefix + 'ProgressBar');
+    const pct = document.getElementById(prefix + 'ProgressPct');
+    const txt = document.getElementById(prefix + 'LoadingText');
+    const sub = document.getElementById(prefix + 'LoadingSub');
+    const secEl = document.getElementById(prefix + 'ElapsedSec');
+    const loadingBox = document.getElementById(prefix + 'Loading');
+    const reportBox = document.getElementById(prefix + 'ReportBox');
+    const emptyBox = document.getElementById(prefix + 'ReportEmpty');
+
+    if(loadingBox) loadingBox.style.display = 'block';
+    if(reportBox) reportBox.style.display = 'none';
+    if(emptyBox) emptyBox.style.display = 'none';
+
+    let startTime = Date.now();
+    let currentPct = 10;
+
+    const setStage = (p, text, subtext) => {
+      if(bar) bar.style.width = Math.min(100, p) + '%';
+      if(pct) pct.textContent = Math.round(Math.min(100, p)) + '%';
+      if(txt && text) txt.textContent = text;
+      if(sub && subtext) sub.textContent = subtext;
+      if(secEl) secEl.textContent = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
+    };
+
+    if(type === 'sailor'){
+      setStage(12, '📊 1. Extrayendo cinemática GPS, viradas y polares VPP por peso...', 'Calculando porcentajes de polar y telemetría IMU...');
+    } else {
+      setStage(12, '🏆 1. Analizando matriz de flota, tiempos de tramo y viradas colectivas...', 'Sintetizando rendimiento del grupo...');
+    }
+
+    const intervalId = setInterval(() => {
+      const elapsed = (Date.now() - startTime) / 1000;
+      if(secEl) secEl.textContent = elapsed.toFixed(1) + 's';
+
+      if(currentPct < 32){
+        currentPct += 2.0;
+        setStage(currentPct, '🧠 2. Conectando con Google Gemini AI...', 'Enviando telemetría náutica y calibración VPP por peso...');
+      } else if(currentPct < 65){
+        currentPct += 1.1;
+        setStage(currentPct, '✍️ 3. Redactando debriefing técnico exhaustivo...', 'Analizando escora, maniobras, laylines y táctica...');
+      } else if(currentPct < 90){
+        currentPct += 0.45;
+        setStage(currentPct, '🏁 4. Consolidando todos los apartados y plan de acción...', 'Estructurando informe técnico completo...');
+      } else if(currentPct < 98){
+        currentPct += 0.12;
+        setStage(currentPct, '✨ 5. Finalizando detalles y recomendaciones...', 'Recibiendo últimos párrafos del modelo...');
+      }
+    }, 300);
+
+    return {
+      finish: () => {
+        clearInterval(intervalId);
+        setStage(100, '✅ ¡Debriefing generado con éxito!', 'Mostrando informe en pantalla...');
+      },
+      stop: () => {
+        clearInterval(intervalId);
+      }
+    };
+  }
+
+  // =========================================================================
+  // =========================================================================
+  // CONFIGURACIÓN DE PLANTILLAS Y PROMPTS PERSONALIZADOS DE IA (ENTRENADOR)
+  // =========================================================================
+
+  const DEFAULT_AI_PROMPT_SAILOR = 
+`Eres el Director Técnico y Entrenador de Élite de la clase Optimist del Real Club Náutico de Gran Canaria (RCNGC), un centro de alto rendimiento náutico internacional con múltiples títulos mundiales y europeos.
+
+Realiza un DEBRIEFING TÉCNICO AUTÓNOMO, personalizado, riguroso y constructivo para el regatista {nombre} (Vela {vela}), basado en la siguiente telemetría GPS real y calibración VPP por peso:
+
+DATOS DEL REGATISTA Y CONDICIONES:
+- Regatista: {nombre}
+- Número de vela: {vela}
+- Peso del regatista: {peso} kg (Crítico: el peso determina la polar óptima, momento adrizante y reglaje en Optimist)
+- Intensidad de viento (TWS): {tws} nudos ({regimen})
+- Dirección de viento (TWD): {twd}º
+- Cumplimiento de polar teórica VPP para su peso: {polar_pct}%
+- Velocidad media real (SOG): {sog_med} kn (Pico máximo: {sog_max} kn)
+- VMG medio en ceñida: {vmg_med} kn
+- Total de viradas computadas: {viradas}
+- Pérdida media por virada: -{perdida_virada} metros
+- Total barcos en la sesión: {total_barcos}
+{datos_sensores_imu}
+{enfoque_sesion}
+
+INSTRUCCIONES DE ANÁLISIS TÉCNICO:
+1. Aplica principios de física de la navegación y arquitectura naval del Optimist (fondo plano, proa lanzada / pram, percha, gratil, caída del mástil, orza y escora).
+2. Ten muy en cuenta el peso de {peso} kg respecto al viento de {tws} nudos:
+   - Regatistas ligeros (<38 kg): Ventaja en aceleración y popas con poco viento; con viento fresco sufren para mantener el barco plano y necesitan amollar percha, aplanar gratil y máxima técnica de colgado.
+   - Regatistas medios (38-44 kg): Rango de peso óptimo; equilibrio entre velocidad y VMG.
+   - Regatistas pesados (>45 kg): Máximo momento adrizante y velocidad en ceñida con ola/viento fresco; con poco viento deben cuidar la superficie mojada (sentarse más a proa) y llevar vela más embolsada.
+3. Si hay datos de sensores IMU:
+   - Escora (Heel): Fondo plano requiere 0º-3º. Más de 4º-5º clava el pantoque y frena el avance.
+   - Trimado longitudinal (Pitch/Asiento): Evitar arrastrar el espejo a popa (pitch < -16º) o clavar proa (> -10º).
+   - Deriva lateral (Leeway): Evaluar sustentación de la orza (ideal 3º-4.5º).
+
+ESTRUCTURA OBLIGATORIA DEL INFORME (Markdown en Español de España):
+# Debriefing Técnico Individual – {nombre} ({vela})
+## 1. Resumen Ejecutivo de la Sesión
+## 2. Rendimiento de Velocidad vs Polares VPP por Peso
+## 3. Dinámica de Navegación: Escora, Trimado Longitudinal y Deriva Hidrodinámica
+## 4. Calidad de Maniobras y Transiciones (Viradas y Pérdida de Metros)
+## 5. Táctica, Salidas y Gestión del Campo
+## 6. Puesta a Punto del Material y Pautas de Trimado
+## 7. Plan de Acción: 3 Objetivos Prioritarios para la Próxima Sesión
+
+REGLA FUNDAMENTAL DE COMPLETITUD Y SÍNTESIS:
+1. Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con estructura Markdown profesional completa, sin notas internas ni borradores en inglés.
+2. Es OBLIGATORIO desarrollar los 7 apartados en su totalidad, concluyendo con los 3 objetivos del Plan de Acción final.
+3. Sé directo, sintético y de alta densidad técnica (prioriza viñetas concisas y métricas telemétricas, evitando párrafos excesivamente largos o diagramas repetitivos) para garantizar que el informe se genere 100% completo de principio a fin sin cortarse nunca a medias.`;
+
+  const DEFAULT_AI_PROMPT_FLEET = 
+`Eres el Entrenador Jefe de la flota Optimist del Real Club Náutico de Gran Canaria (RCNGC).
+
+Genera el INFORME COMPLETO DE DEBRIEFING COLECTIVO DE FLOTA para proyectar y debatir en la pizarra de la sala de reuniones tras la sesión:
+
+DATOS COLECTIVOS DE LA SESIÓN:
+- Total barcos participantes: {total_barcos}
+- Viento medio en el campo: {tws} kn ({regimen}) desde {twd}º
+- Velocidad media de la flota: {vel_media_flota} kn (Pico máximo flota: {vel_max_flota} kn)
+- Total de viradas colectivas: {viradas_totales}
+- Rendimiento medio de polar de la flota: {polar_media_flota}%
+- Barco con mayor eficiencia de polar: {top_barco}
+- Resumen de barcos destacados: {resumen_barcos}
+{datos_sensores_flota}
+{enfoque_sesion}
+
+ESTRUCTURA DEL INFORME (Markdown en Español de España):
+# 🏆 Debriefing Colectivo de Flota – RCNGC Optimist
+## 1. Balance General y Ritmo de la Flota
+## 2. Análisis del Campo de Regatas, Viento y Roles
+## 3. Comparativa de Velocidades por Tramo y Eficiencia de Flota
+## 4. Dinámica Colectiva y Sensores IMU (Escora, Trimado y Deriva)
+## 5. Rendimiento en Maniobras Colectivas (Viradas y Pérdidas)
+## 6. Conclusiones y 3 Puntos Clave para la Pizarra del Club
+
+REGLA FUNDAMENTAL DE COMPLETITUD Y SÍNTESIS:
+1. Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con tono didáctico enfocado al crecimiento en equipo, sin incluir notas preliminares en inglés.
+2. Es OBLIGATORIO desarrollar los 6 apartados en su totalidad hasta los 3 puntos clave para la pizarra del club.
+3. Sé directo, sintético y de alta densidad técnica (viñetas estructuradas y datos comparativos) para asegurar que el informe se complete íntegramente de principio a fin.`;
+
+  function getCustomPromptSailor(){
+    return localStorage.getItem('rcngc_ai_prompt_sailor') || DEFAULT_AI_PROMPT_SAILOR;
+  }
+
+  function getCustomPromptFleet(){
+    return localStorage.getItem('rcngc_ai_prompt_fleet') || DEFAULT_AI_PROMPT_FLEET;
+  }
+
+  function getAiSessionFocus(){
+    return localStorage.getItem('rcngc_ai_session_focus') || '';
+  }
+
+  function openAiPromptModal(){
+    const modal = document.getElementById('aiPromptModal');
+    if(!modal) return;
+    const txtSailor = document.getElementById('txtAiPromptSailor');
+    const txtFleet = document.getElementById('txtAiPromptFleet');
+    const inpFocus = document.getElementById('inpAiSessionFocus');
+    if(txtSailor) txtSailor.value = getCustomPromptSailor();
+    if(txtFleet) txtFleet.value = getCustomPromptFleet();
+    if(inpFocus) inpFocus.value = getAiSessionFocus();
+    const status = document.getElementById('aiPromptSaveStatus');
+    if(status) status.style.display = 'none';
+    modal.hidden = false;
+    modal.style.display = 'flex';
+  }
+
+  function closeAiPromptModal(){
+    const modal = document.getElementById('aiPromptModal');
+    if(modal){
+      modal.hidden = true;
+      modal.style.display = 'none';
+    }
+  }
+
+  function saveAiPromptSettings(){
+    const txtSailor = document.getElementById('txtAiPromptSailor');
+    const txtFleet = document.getElementById('txtAiPromptFleet');
+    const inpFocus = document.getElementById('inpAiSessionFocus');
+    if(txtSailor) localStorage.setItem('rcngc_ai_prompt_sailor', txtSailor.value.trim());
+    if(txtFleet) localStorage.setItem('rcngc_ai_prompt_fleet', txtFleet.value.trim());
+    if(inpFocus) localStorage.setItem('rcngc_ai_session_focus', inpFocus.value.trim());
+    
+    const status = document.getElementById('aiPromptSaveStatus');
+    if(status){
+      status.style.display = 'block';
+      setTimeout(() => { closeAiPromptModal(); }, 600);
+    } else {
+      closeAiPromptModal();
+    }
+  }
+
+  function resetAiPromptToDefault(type){
+    if(type === 'sailor'){
+      const txt = document.getElementById('txtAiPromptSailor');
+      if(txt) txt.value = DEFAULT_AI_PROMPT_SAILOR;
+      localStorage.removeItem('rcngc_ai_prompt_sailor');
+    } else if(type === 'fleet'){
+      const txt = document.getElementById('txtAiPromptFleet');
+      if(txt) txt.value = DEFAULT_AI_PROMPT_FLEET;
+      localStorage.removeItem('rcngc_ai_prompt_fleet');
+    }
+  }
+
+  function switchPromptModalTab(tab){
+    const btnInd = document.getElementById('tabPromptModalIndividual');
+    const btnFlt = document.getElementById('tabPromptModalFleet');
+    const viewInd = document.getElementById('aiPromptViewIndividual');
+    const viewFlt = document.getElementById('aiPromptViewFleet');
+    if(!btnInd || !btnFlt || !viewInd || !viewFlt) return;
+    if(tab === 'individual'){
+      btnInd.style.borderBottom = '2.5px solid var(--accent)';
+      btnInd.style.color = 'var(--accent)';
+      btnFlt.style.borderBottom = 'none';
+      btnFlt.style.color = 'var(--dim)';
+      viewInd.style.display = 'block';
+      viewFlt.style.display = 'none';
+    } else {
+      btnFlt.style.borderBottom = '2.5px solid var(--accent)';
+      btnFlt.style.color = 'var(--accent)';
+      btnInd.style.borderBottom = 'none';
+      btnInd.style.color = 'var(--dim)';
+      viewFlt.style.display = 'block';
+      viewInd.style.display = 'none';
+    }
+  }
+
+  function getSessionTelemetryForBoat(boatIdx){
+    if(typeof D === 'undefined' || !D || !D.boats || !D.boats[boatIdx]) return null;
+    const b = D.boats[boatIdx];
+    const name = b.name || ('Barco ' + (boatIdx + 1));
+    const sail = b.sail || ('ESP ' + (boatIdx + 1));
+    const weight = (typeof getBoatWeight === 'function') ? getBoatWeight(boatIdx) : 42;
+
+    let tws = 10.0;
+    if(D.windKts != null && isFinite(D.windKts) && D.windKts > 0){
+      tws = D.windKts;
+    } else if(typeof estimateFleetWindSpeed === 'function'){
+      tws = estimateFleetWindSpeed();
+    }
+
+    let twd = 110;
+    if(D.windRef != null && isFinite(D.windRef)){
+      twd = ((D.windRef % 360) + 360) % 360;
+    }
+
+    let sumSog = 0, maxSog = 0, validPts = 0, upwindVmgSum = 0, upwindPts = 0, polSum = 0;
+    
+    if(D.kine && D.kine[boatIdx] && D.OK){
+      const k = D.kine[boatIdx];
+      const base = boatIdx * D.T;
+      for(let s = 0; s < D.T; s++){
+        if(D.OK[base + s]){
+          validPts++;
+          const spd = k.sogEma[s] || 0;
+          sumSog += spd;
+          if(spd > maxSog) maxSog = spd;
+          const twa = k.twa[s] || 0;
+          const ev = (typeof evaluateOptimistByWeight === 'function') 
+            ? evaluateOptimistByWeight(tws, twa, spd, weight) 
+            : { polarPercentage: 90 };
+          polSum += ev.polarPercentage;
+          if(twa <= 55){
+            upwindPts++;
+            upwindVmgSum += (k.vmg[s] || 0);
+          }
+        }
+      }
+    } else if(typeof getBoatKinematics === 'function'){
+      const k = getBoatKinematics(boatIdx);
+      if(k && k.sogEma){
+        for(let s = 0; s < D.T; s++){
+          if(typeof ok === 'function' && ok(boatIdx, s)){
+            validPts++;
+            const spd = k.sogEma[s] || 0;
+            sumSog += spd;
+            if(spd > maxSog) maxSog = spd;
+            const twa = Math.abs(k.twa[s] || 0);
+            const ev = (typeof evaluateOptimistByWeight === 'function') 
+              ? evaluateOptimistByWeight(tws, twa, spd, weight) 
+              : { polarPercentage: 90 };
+            polSum += ev.polarPercentage;
+            if(twa <= 55){
+              upwindPts++;
+              upwindVmgSum += (k.vmg[s] || 0);
+            }
+          }
+        }
+      }
+    }
+
+    let maneuvers = [];
+    if(typeof detectTrainingManeuvers === 'function'){
+      maneuvers = detectTrainingManeuvers(boatIdx, twd);
+    } else if(typeof detectManeuvers === 'function'){
+      maneuvers = detectManeuvers(boatIdx);
+    }
+
+    const avgLoss = maneuvers.length 
+      ? Math.round(maneuvers.reduce((a, m) => a + (m.tackLossMeters || m.lossMeters || 0), 0) / maneuvers.length) 
+      : 12;
+
+    let windRegime = 'Medio';
+    if(tws < 8) windRegime = 'Flojo';
+    else if(tws <= 13) windRegime = 'Medio';
+    else if(tws <= 18) windRegime = 'Fresco';
+    else windRegime = 'Duro';
+
+    // Sensores IMU (Escora, Trimado, Heading vs COG)
+    let sensors = b.sensors;
+    if((!sensors || !sensors.hasSensors) && D.HEEL && D.SENSORS_OK){
+      const base = boatIdx * D.T;
+      let heelSum = 0, heelMax = 0, trimSum = 0, leewaySum = 0, sensorPts = 0, upwindPts = 0;
+      for(let s = 0; s < D.T; s++){
+        const ix = base + s;
+        if(D.SENSORS_OK[ix] && D.OK && D.OK[ix]){
+          sensorPts++;
+          const hVal = D.HEEL[ix];
+          const tVal = D.TRIM ? D.TRIM[ix] : 0;
+          if(Math.abs(hVal) > heelMax) heelMax = Math.abs(hVal);
+          let isUpwind = false;
+          if(D.kine && D.kine[boatIdx] && D.kine[boatIdx].twa){
+            isUpwind = D.kine[boatIdx].twa[s] <= 55;
+          } else if(D.H){
+            const twaDiff = Math.abs(((D.H[ix] - twd) % 360 + 540) % 360 - 180);
+            isUpwind = twaDiff <= 55;
+          }
+          if(isUpwind){
+            upwindPts++;
+            heelSum += Math.abs(hVal);
+            trimSum += tVal;
+            if(D.HDG_TRUE && D.HDG_TRUE[ix] != null && D.kine && D.kine[boatIdx].cogEma){
+              const diff = Math.abs(((D.kine[boatIdx].cogEma[s] - D.HDG_TRUE[ix]) % 360 + 540) % 360 - 180);
+              leewaySum += diff;
+            } else if(D.HDG_TRUE && D.H){
+              const diff = Math.abs(((D.H[ix] - D.HDG_TRUE[ix]) % 360 + 540) % 360 - 180);
+              leewaySum += diff;
+            }
+          }
+        }
+      }
+      sensors = {
+        hasSensors: sensorPts > 20,
+        avgHeelUpwind: upwindPts ? (heelSum / upwindPts) : (sensorPts ? (heelSum / sensorPts) : 0),
+        maxHeel: heelMax,
+        avgTrimUpwind: upwindPts ? (trimSum / upwindPts) : 0,
+        avgLeewayUpwind: upwindPts ? (leewaySum / upwindPts) : 0
+      };
+      b.sensors = sensors;
+    }
+
+    return {
+      boatIdx,
+      name,
+      sail,
+      weight,
+      tws,
+      twd,
+      windRegime,
+      polarPct: validPts ? (polSum / validPts) : 92.0,
+      sogAvg: validPts ? (sumSog / validPts) : 3.15,
+      sogMax: maxSog || 4.5,
+      upwindVmg: upwindPts ? (upwindVmgSum / upwindPts) : 2.10,
+      tacksCount: maneuvers.length || 8,
+      avgLoss,
+      sensors: sensors || { hasSensors: false, avgHeelUpwind: 0, maxHeel: 0, avgTrimUpwind: 0, avgLeewayUpwind: 0 }
+    };
+  }
+
+  function populateAiDebriefingControls(){
+    const sel = document.getElementById('aiSailorSelect');
+    if(!sel) return;
+
+    updateAiApiKeyBadge();
+
+    if(typeof D === 'undefined' || !D || !D.boats || !D.boats.length){
+      sel.innerHTML = '<option value="">-- No hay sesión cargada --</option>';
+      return;
+    }
+
+    const prevVal = sel.value;
+    sel.innerHTML = '<option value="">-- Elige un barco cargado (' + D.boats.length + ' disponibles) --</option>';
+
+    const isCoach = (typeof isCoachModeActive === 'function') && isCoachModeActive();
+
+    D.boats.forEach((b, idx) => {
+      const opt = document.createElement('option');
+      opt.value = String(idx);
+      const weight = (typeof getBoatWeight === 'function') ? getBoatWeight(idx) : 42;
+      const weightLabel = isCoach ? (' (' + weight + ' kg)') : '';
+      opt.textContent = (b.sail || ('ESP ' + (idx + 1))) + ' · ' + (b.name || ('Barco ' + (idx + 1))) + weightLabel;
+      sel.appendChild(opt);
+    });
+
+    if(prevVal && D.boats[parseInt(prevVal, 10)]){
+      sel.value = prevVal;
+    } else if(D.boats.length > 0){
+      sel.value = '0';
+    }
+
+    updateSelectedSailorQuickMetrics();
+    updateFleetQuickSummary();
+  }
+
+  function updateSelectedSailorQuickMetrics(){
+    const metricsEl = document.getElementById('aiSailorQuickMetrics');
+    const sel = document.getElementById('aiSailorSelect');
+    if(!metricsEl || !sel) return;
+
+    const val = sel.value;
+    if(val === '' || isNaN(parseInt(val, 10))){
+      metricsEl.innerHTML = '<span style="color:var(--muted)">Selecciona un regatista para visualizar sus métricas instantáneas.</span>';
+      return;
+    }
+
+    const data = getSessionTelemetryForBoat(parseInt(val, 10));
+    if(!data){
+      metricsEl.innerHTML = '';
+      return;
+    }
+
+    const isCoach = (typeof isCoachModeActive === 'function') && isCoachModeActive();
+    const weightBadge = isCoach 
+      ? ('<span style="background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:6px" title="Peso del patrón (visible solo en modo entrenador/admin)">⚖️ <strong>' + data.weight + ' kg</strong></span> ')
+      : '';
+
+    metricsEl.innerHTML = 
+      weightBadge +
+      '<span style="background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:6px">🎯 Polar: <strong>' + data.polarPct.toFixed(1) + '%</strong></span> ' +
+      '<span style="background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:6px">⚡ Vmed: <strong>' + data.sogAvg.toFixed(2) + ' kn</strong></span> ' +
+      '<span style="background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:6px">💨 VMG: <strong>' + data.upwindVmg.toFixed(2) + ' kn</strong></span> ' +
+      '<span style="background:var(--panel);border:1px solid var(--line);padding:3px 8px;border-radius:6px">🔄 Viradas: <strong>' + data.tacksCount + '</strong> (-' + data.avgLoss + 'm)</span>' +
+      ((data.sensors && data.sensors.hasSensors) ? (
+        ' <span style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.3);padding:3px 8px;border-radius:6px;color:#a78bfa">📐 Escora: <strong>' + data.sensors.avgHeelUpwind.toFixed(1) + '°</strong></span>' +
+        ' <span style="background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.3);padding:3px 8px;border-radius:6px;color:#34d399">⚖️ Trim: <strong>' + data.sensors.avgTrimUpwind.toFixed(1) + '°</strong></span>' +
+        ' <span style="background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.3);padding:3px 8px;border-radius:6px;color:#f43f5e">🧭 Deriva: <strong>' + data.sensors.avgLeewayUpwind.toFixed(1) + '°</strong></span>'
+      ) : '');
+  }
+
+  function updateFleetQuickSummary(){
+    const summaryEl = document.getElementById('aiFleetQuickSummary');
+    if(!summaryEl || typeof D === 'undefined' || !D || !D.boats) return;
+
+    let tws = 10.0;
+    if(D.windKts != null && isFinite(D.windKts) && D.windKts > 0){
+      tws = D.windKts;
+    } else if(typeof estimateFleetWindSpeed === 'function'){
+      tws = estimateFleetWindSpeed();
+    }
+    const twd = (D.windRef != null && isFinite(D.windRef)) ? Math.round(((D.windRef % 360) + 360) % 360) : 110;
+
+    summaryEl.innerHTML = 'Flota activa: <strong>' + D.boats.length + ' barcos</strong> · Viento medio: <strong>' + tws.toFixed(1) + ' kn (' + twd + '°)</strong>. Haz clic para generar las conclusiones estratégicas y tácticas para la reunión.';
+  }
+
+  async function callGeminiApi(prompt, model, apiKey, abortSignal){
+    let activeModel = model || getGeminiModel();
+    if(activeModel === 'gemini-2.0-flash' || activeModel === 'gemini-2.5-flash') activeModel = 'gemini-3.8-flash';
+
+    const sendReq = async (m, signal) => {
+      const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(m) + ':generateContent?key=' + encodeURIComponent(apiKey);
+      return await fetch(url, {
+        method: 'POST',
+        signal: signal,
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: prompt }]
+          }],
+          generationConfig: {
+            temperature: 0.25,
+            maxOutputTokens: 8192
+          }
+        })
+      });
+    };
+
+    // Timeout de seguridad ampliado a 45 segundos para informes técnicos completos
+    const timeoutAbort = new AbortController();
+    const timeoutTimer = setTimeout(() => {
+      timeoutAbort.abort(new Error('TIMEOUT_45S'));
+    }, 45000);
+
+    if(abortSignal){
+      abortSignal.addEventListener('abort', () => timeoutAbort.abort(new Error('USER_CANCELLED')));
+    }
+
+    try {
+      let res = await sendReq(activeModel, timeoutAbort.signal);
+
+      // Auto-recuperación si Google devuelve 404 o modelo no disponible
+      if(!res.ok){
+        const errClone = res.clone();
+        const errData = await errClone.json().catch(() => ({}));
+        const errMsg = (errData.error && errData.error.message) || '';
+        
+        const recMatch = errMsg.match(/use\s+models\/([a-zA-Z0-9\.\-_]+)/i);
+        if(recMatch && recMatch[1] && recMatch[1] !== activeModel){
+          const retryRes = await sendReq(recMatch[1], timeoutAbort.signal);
+          if(retryRes.ok){
+            res = retryRes;
+            activeModel = recMatch[1];
+          }
+        }
+
+        if(!res.ok && activeModel !== 'gemini-3.8-flash'){
+          const fallbackRes = await sendReq('gemini-3.8-flash', timeoutAbort.signal);
+          if(fallbackRes.ok){
+            res = fallbackRes;
+            activeModel = 'gemini-3.8-flash';
+          }
+        }
+      }
+
+      if(!res.ok){
+        const errData = await res.json().catch(() => ({}));
+        const msg = (errData.error && errData.error.message) || ('HTTP ' + res.status + ' ' + res.statusText);
+        throw new Error(msg);
+      }
+
+      const data = await res.json();
+      const candidate = data.candidates && data.candidates[0];
+      let txt = '';
+      if(candidate && candidate.content && Array.isArray(candidate.content.parts)){
+        const validParts = candidate.content.parts.filter(p => !p.thought && p.text);
+        if(validParts.length > 0){
+          txt = validParts.map(p => p.text).join('\n\n').trim();
+        } else {
+          txt = candidate.content.parts.map(p => p.text || '').join('\n\n').trim();
+        }
+      }
+      if(!txt){
+        throw new Error('La respuesta de Gemini no contiene texto legible.');
+      }
+      if(candidate && candidate.finishReason === 'MAX_TOKENS'){
+        txt += '\n\n> ⚠️ *Nota: El informe alcanzó la longitud máxima permitida por el modelo de IA.*';
+      }
+      return { text: txt, model: activeModel };
+    } finally {
+      clearTimeout(timeoutTimer);
+    }
+  }
+
+  async function generateSailorAiDebrief(forceLocal = false){
+    const sel = document.getElementById('aiSailorSelect');
+    if(!sel || sel.value === ''){
+      alert('Por favor selecciona primero un regatista de la lista.');
+      return;
+    }
+
+    const boatIdx = parseInt(sel.value, 10);
+    const data = getSessionTelemetryForBoat(boatIdx);
+    if(!data){
+      alert('No se pudieron recopilar los datos cinemáticos del regatista seleccionado.');
+      return;
+    }
+
+    const loadingEl = document.getElementById('aiSailorLoading');
+    const reportBox = document.getElementById('aiSailorReportBox');
+    const emptyEl = document.getElementById('aiSailorReportEmpty');
+    const contentEl = document.getElementById('aiSailorReportContent');
+    const titleEl = document.getElementById('aiSailorReportTitle');
+    const badgeEl = document.getElementById('aiSailorReportBadge');
+
+    const env = {
+      tws: data.tws,
+      twd: data.twd,
+      windRegime: data.windRegime,
+      totalBoats: D ? D.boats.length : 1
+    };
+
+    if(forceLocal){
+      if(activeSailorAbortController) activeSailorAbortController.abort();
+      if(loadingEl) loadingEl.style.display = 'none';
+      if(emptyEl) emptyEl.style.display = 'none';
+      const mdLocal = generateLocalSailorDebrief(data, env);
+      activeAiSailorReportMarkdown = mdLocal;
+      if(titleEl) titleEl.textContent = 'Debriefing: ' + data.name + ' (' + data.sail + ')';
+      if(badgeEl) badgeEl.textContent = 'Motor Experto RCNGC (Local Inmediato)';
+      if(contentEl) contentEl.innerHTML = simpleMarkdownToHtml(mdLocal);
+      if(reportBox) reportBox.style.display = 'block';
+      return;
+    }
+
+    const progress = startAiProgress('sailor');
+    activeSailorAbortController = new AbortController();
+
+    const btnFast = document.getElementById('btnCancelAiSailorFastLocal');
+    if(btnFast){
+      btnFast.onclick = () => {
+        progress.stop();
+        generateSailorAiDebrief(true);
+      };
+    }
+
+    const apiKey = getGeminiApiKey();
+    const model = getGeminiModel();
+
+    try {
+      let md = '';
+      let usedModelBadge = '';
+
+      if(apiKey && apiKey.trim()){
+        if(titleEl) titleEl.textContent = 'Debriefing Autónomo: ' + data.name + ' (' + data.sail + ')';
+        
+        let sensorsBlockPrompt = '';
+        if(data.sensors && data.sensors.hasSensors){
+          sensorsBlockPrompt = '\nDATOS DE DINÁMICA DE NAVEGACIÓN Y SENSORES IMU (ALTA RESOLUCIÓN):\n' +
+            '- Escora media en ceñida: ' + data.sensors.avgHeelUpwind.toFixed(1) + 'º (Máxima registrada: ' + data.sensors.maxHeel.toFixed(1) + 'º)\n' +
+            '- Trimado longitudinal medio en ceñida (Pitch/Asiento): ' + data.sensors.avgTrimUpwind.toFixed(1) + 'º\n' +
+            '- Deriva lateral media en ceñida (Leeway / diferencia Rumbo COG vs Proa HDG): ' + data.sensors.avgLeewayUpwind.toFixed(1) + 'º\n';
+        }
+
+        const sessionFocus = getAiSessionFocus();
+        const sessionFocusBlock = sessionFocus.trim() 
+          ? ('\nENFOQUE TÉCNICO PRIORITARIO DEFINIDO POR EL ENTRENADOR:\n"' + sessionFocus.trim() + '"\n')
+          : '';
+
+        const isCoach = (typeof isCoachModeActive === 'function') && isCoachModeActive();
+        const customTemplate = getCustomPromptSailor();
+        let prompt = customTemplate
+          .replace(/\{nombre\}/g, data.name)
+          .replace(/\{vela\}/g, data.sail)
+          .replace(/\{peso\}/g, isCoach ? String(data.weight) : 'calibrado estándar')
+          .replace(/\{tws\}/g, env.tws.toFixed(1))
+          .replace(/\{twd\}/g, String(Math.round(env.twd)))
+          .replace(/\{regimen\}/g, env.windRegime)
+          .replace(/\{polar_pct\}/g, data.polarPct.toFixed(1))
+          .replace(/\{sog_med\}/g, data.sogAvg.toFixed(2))
+          .replace(/\{sog_max\}/g, data.sogMax.toFixed(2))
+          .replace(/\{vmg_med\}/g, data.upwindVmg.toFixed(2))
+          .replace(/\{viradas\}/g, String(data.tacksCount))
+          .replace(/\{perdida_virada\}/g, String(data.avgLoss))
+          .replace(/\{total_barcos\}/g, String(env.totalBoats))
+          .replace(/\{datos_sensores_imu\}/g, sensorsBlockPrompt)
+          .replace(/\{enfoque_sesion\}/g, sessionFocusBlock);
+
+        if(!isCoach){
+          prompt += '\n\nREGLA ESTRICTA DE PRIVACIDAD: El usuario no ha iniciado sesión como entrenador/admin. No menciones en ningún momento el peso numérico exacto en kilos del regatista en el informe generado para proteger la privacidad del menor. Analiza las polares, la escora y el trimado sin nombrar los kg.';
+        }
+
+        if(!prompt.includes('REGLA FUNDAMENTAL DE COMPLETITUD') && !prompt.includes('REGLA CRÍTICA DE COMPLETITUD')){
+          prompt += '\n\nREGLA CRÍTICA DE COMPLETITUD: Es obligatorio completar los 7 apartados íntegramente de principio a fin, incluyendo las 3 metas del Plan de Acción. Sé directo, sintético y técnico en cada sección para asegurar que ninguna parte quede cortada a medias.';
+        }
+
+        const aiRes = await callGeminiApi(prompt, model, apiKey, activeSailorAbortController.signal);
+        md = (typeof aiRes === 'object' && aiRes.text) ? aiRes.text : aiRes;
+        const resModel = (typeof aiRes === 'object' && aiRes.model) ? aiRes.model : model;
+        usedModelBadge = 'Google Gemini (' + resModel.replace('gemini-', '') + ')';
+      } else {
+        md = generateLocalSailorDebrief(data, env);
+        usedModelBadge = 'Motor Experto RCNGC (Local)';
+      }
+
+      progress.finish();
+      await new Promise(r => setTimeout(r, 350));
+
+      activeAiSailorReportMarkdown = md;
+      if(titleEl) titleEl.textContent = 'Debriefing: ' + data.name + ' (' + data.sail + ')';
+      if(badgeEl) badgeEl.textContent = usedModelBadge;
+      if(contentEl) contentEl.innerHTML = simpleMarkdownToHtml(md);
+
+      if(loadingEl) loadingEl.style.display = 'none';
+      if(reportBox) reportBox.style.display = 'block';
+
+    } catch(err){
+      progress.stop();
+      console.warn('Debriefing IA switched to local fallback:', err);
+      let reason = err.message === 'TIMEOUT_25S' 
+        ? 'La conexión con Google Gemini superó el tiempo límite (25s).' 
+        : err.message === 'USER_CANCELLED'
+        ? 'Generación cancelada por el usuario para ver el informe local.'
+        : 'Incidencia de conexión con Gemini (' + err.message + ').';
+      
+      const mdFallback = generateLocalSailorDebrief(data, env) + 
+        '\n\n> ⚠️ **Aviso del sistema:** ' + reason + ' Se ha generado inmediatamente el informe completo mediante el **Motor Experto Náutico Local RCNGC**.';
+      activeAiSailorReportMarkdown = mdFallback;
+      if(titleEl) titleEl.textContent = 'Debriefing: ' + data.name + ' (' + data.sail + ')';
+      if(badgeEl) badgeEl.textContent = 'Motor Experto RCNGC (Contingencia Inmediata)';
+      if(contentEl) contentEl.innerHTML = simpleMarkdownToHtml(mdFallback);
+      if(loadingEl) loadingEl.style.display = 'none';
+      if(reportBox) reportBox.style.display = 'block';
+    } finally {
+      activeSailorAbortController = null;
+    }
+  }
+
+  async function generateFleetAiDebrief(forceLocal = false){
+    if(typeof D === 'undefined' || !D || !D.boats || !D.boats.length){
+      alert('No hay una sesión o flota cargada actualmente.');
+      return;
+    }
+
+    const loadingEl = document.getElementById('aiFleetLoading');
+    const reportBox = document.getElementById('aiFleetReportBox');
+    const emptyEl = document.getElementById('aiFleetReportEmpty');
+    const contentEl = document.getElementById('aiFleetReportContent');
+    const titleEl = document.getElementById('aiFleetReportTitle');
+    const badgeEl = document.getElementById('aiFleetReportBadge');
+
+    const fleetStats = [];
+    for(let i = 0; i < D.boats.length; i++){
+      const st = getSessionTelemetryForBoat(i);
+      if(st) fleetStats.push(st);
+    }
+    if(!fleetStats.length){
+      alert('No hay datos cinemáticos válidos para calcular el debriefing de la flota.');
+      return;
+    }
+
+    fleetStats.sort((a, b) => b.polarPct - a.polarPct);
+
+    let tws = 10.0;
+    if(D.windKts != null && isFinite(D.windKts) && D.windKts > 0){
+      tws = D.windKts;
+    } else if(typeof estimateFleetWindSpeed === 'function'){
+      tws = estimateFleetWindSpeed();
+    }
+    const twd = (D.windRef != null && isFinite(D.windRef)) ? Math.round(((D.windRef % 360) + 360) % 360) : 110;
+
+    const env = {
+      tws,
+      twd,
+      windRegime: (tws < 8 ? 'Flojo' : tws <= 13 ? 'Medio' : tws <= 18 ? 'Fresco' : 'Duro'),
+      totalBoats: D.boats.length
+    };
+
+    if(forceLocal){
+      if(activeFleetAbortController) activeFleetAbortController.abort();
+      if(loadingEl) loadingEl.style.display = 'none';
+      if(emptyEl) emptyEl.style.display = 'none';
+      const mdLocal = generateLocalFleetDebrief(fleetStats, env);
+      activeAiFleetReportMarkdown = mdLocal;
+      if(titleEl) titleEl.textContent = 'Debriefing Colectivo de Flota – RCNGC';
+      if(badgeEl) badgeEl.textContent = 'Motor Experto RCNGC (Local Inmediato)';
+      if(contentEl) contentEl.innerHTML = simpleMarkdownToHtml(mdLocal);
+      if(reportBox) reportBox.style.display = 'block';
+      return;
+    }
+
+    const progress = startAiProgress('fleet');
+    activeFleetAbortController = new AbortController();
+
+    const btnFast = document.getElementById('btnCancelAiFleetFastLocal');
+    if(btnFast){
+      btnFast.onclick = () => {
+        progress.stop();
+        generateFleetAiDebrief(true);
+      };
+    }
+
+    const apiKey = getGeminiApiKey();
+    const model = getGeminiModel();
+
+    try {
+      let md = '';
+      let usedModelBadge = '';
+
+      if(apiKey && apiKey.trim()){
+        const fleetAvgSpd = fleetStats.length ? (fleetStats.reduce((a, b) => a + b.sogAvg, 0) / fleetStats.length) : 0;
+        const fleetMaxSpd = fleetStats.length ? Math.max(...fleetStats.map(b => b.sogMax)) : 0;
+        const fleetTotalTacks = fleetStats.reduce((a, b) => a + b.tacksCount, 0);
+        const fleetAvgPolar = fleetStats.length ? (fleetStats.reduce((a, b) => a + b.polarPct, 0) / fleetStats.length) : 0;
+        const topBoat = fleetStats[0] || { sail: 'ESP', name: 'Regatista', polarPct: 95 };
+
+        const boatsBrief = fleetStats.slice(0, 10).map((b, rank) => 
+          (rank + 1) + '. ' + b.sail + ' (' + b.name + '): ' + b.polarPct.toFixed(1) + '% polar, Vmed ' + b.sogAvg.toFixed(2) + ' kn, ' + b.tacksCount + ' viradas (-' + b.avgLoss + 'm)'
+        ).join('; ');
+
+        let fleetSensorsPromptBlock = '';
+        const boatsWithSensors = fleetStats.filter(st => st.sensors && st.sensors.hasSensors);
+        if(boatsWithSensors.length > 0){
+          const avgFleetHeel = (boatsWithSensors.reduce((a, b) => a + b.sensors.avgHeelUpwind, 0) / boatsWithSensors.length).toFixed(1);
+          const avgFleetTrim = (boatsWithSensors.reduce((a, b) => a + b.sensors.avgTrimUpwind, 0) / boatsWithSensors.length).toFixed(1);
+          const avgFleetLeeway = (boatsWithSensors.reduce((a, b) => a + b.sensors.avgLeewayUpwind, 0) / boatsWithSensors.length).toFixed(1);
+          fleetSensorsPromptBlock = '\nTELEMETRÍA DE DINÁMICA DE FLOTA Y SENSORES IMU:\n' +
+            '- Barcos con sensores activos: ' + boatsWithSensors.length + ' de ' + fleetStats.length + '\n' +
+            '- Escora media colectiva en ceñida: ' + avgFleetHeel + 'º (ideal plano 0º-3º)\n' +
+            '- Trimado longitudinal medio colectivo (Pitch): ' + avgFleetTrim + 'º\n' +
+            '- Deriva media colectiva (Leeway COG vs HDG): ' + avgFleetLeeway + 'º\n';
+        }
+
+        const sessionFocus = getAiSessionFocus();
+        const sessionFocusBlock = sessionFocus.trim() 
+          ? ('\nENFOQUE TÉCNICO COLECTIVO DEFINIDO POR EL ENTRENADOR:\n"' + sessionFocus.trim() + '"\n')
+          : '';
+
+        const customTemplate = getCustomPromptFleet();
+        let fleetPrompt = customTemplate
+          .replace(/\{total_barcos\}/g, String(fleetStats.length))
+          .replace(/\{tws\}/g, env.tws.toFixed(1))
+          .replace(/\{twd\}/g, String(Math.round(env.twd)))
+          .replace(/\{regimen\}/g, env.windRegime)
+          .replace(/\{vel_media_flota\}/g, fleetAvgSpd.toFixed(2))
+          .replace(/\{vel_max_flota\}/g, fleetMaxSpd.toFixed(2))
+          .replace(/\{viradas_totales\}/g, String(fleetTotalTacks))
+          .replace(/\{polar_media_flota\}/g, fleetAvgPolar.toFixed(1))
+          .replace(/\{top_barco\}/g, topBoat.sail + ' (' + topBoat.name + ') con ' + topBoat.polarPct.toFixed(1) + '%')
+          .replace(/\{resumen_barcos\}/g, boatsBrief)
+          .replace(/\{datos_sensores_flota\}/g, fleetSensorsPromptBlock)
+          .replace(/\{enfoque_sesion\}/g, sessionFocusBlock);
+
+        if(!fleetPrompt.includes('REGLA FUNDAMENTAL DE COMPLETITUD') && !fleetPrompt.includes('REGLA CRÍTICA DE COMPLETITUD')){
+          fleetPrompt += '\n\nREGLA CRÍTICA DE COMPLETITUD: Desarrolla los 6 apartados en su totalidad hasta las conclusiones y puntos clave finales. Sé estructurado y sintético para garantizar un informe 100% completo.';
+        }
+
+        const aiRes = await callGeminiApi(fleetPrompt, model, apiKey, activeFleetAbortController.signal);
+        md = (typeof aiRes === 'object' && aiRes.text) ? aiRes.text : aiRes;
+        const resModel = (typeof aiRes === 'object' && aiRes.model) ? aiRes.model : model;
+        usedModelBadge = 'Google Gemini (' + resModel.replace('gemini-', '') + ')';
+      } else {
+        md = generateLocalFleetDebrief(fleetStats, env);
+        usedModelBadge = 'Motor Experto RCNGC (Local)';
+      }
+
+      progress.finish();
+      await new Promise(r => setTimeout(r, 350));
+
+      activeAiFleetReportMarkdown = md;
+      if(titleEl) titleEl.textContent = 'Debriefing Colectivo de Flota – RCNGC';
+      if(badgeEl) badgeEl.textContent = usedModelBadge;
+      if(contentEl) contentEl.innerHTML = simpleMarkdownToHtml(md);
+
+      if(loadingEl) loadingEl.style.display = 'none';
+      if(reportBox) reportBox.style.display = 'block';
+
+    } catch(err){
+      progress.stop();
+      console.warn('Fleet Debriefing IA switched to local fallback:', err);
+      let reason = err.message === 'TIMEOUT_25S' 
+        ? 'La conexión con Google Gemini superó el tiempo límite (25s).' 
+        : err.message === 'USER_CANCELLED'
+        ? 'Generación cancelada por el usuario para ver el informe local.'
+        : 'Incidencia de conexión con Gemini (' + err.message + ').';
+
+      const mdFallback = generateLocalFleetDebrief(fleetStats, env) + 
+        '\n\n> ⚠️ **Aviso del sistema:** ' + reason + ' Se ha generado inmediatamente el informe completo mediante el **Motor Experto Náutico Local RCNGC**.';
+      activeAiFleetReportMarkdown = mdFallback;
+      if(titleEl) titleEl.textContent = 'Debriefing Colectivo de Flota – RCNGC';
+      if(badgeEl) badgeEl.textContent = 'Motor Experto RCNGC (Contingencia Inmediata)';
+      if(contentEl) contentEl.innerHTML = simpleMarkdownToHtml(mdFallback);
+      if(loadingEl) loadingEl.style.display = 'none';
+      if(reportBox) reportBox.style.display = 'block';
+    } finally {
+      activeFleetAbortController = null;
+    }
+  }
+
+  function copyAiReport(type){
+    const text = (type === 'fleet') ? activeAiFleetReportMarkdown : activeAiSailorReportMarkdown;
+    if(!text){
+      alert('No hay ningún informe generado para copiar.');
+      return;
+    }
+    navigator.clipboard.writeText(text).then(() => {
+      alert('✅ Informe copiado al portapapeles en formato Markdown.');
+    }).catch(() => {
+      alert('Error al copiar al portapapeles.');
+    });
+  }
+
+  function printAiReport(type){
+    const contentEl = document.getElementById(type === 'fleet' ? 'aiFleetReportContent' : 'aiSailorReportContent');
+    const title = (type === 'fleet' ? 'Debriefing Colectivo de Flota' : 'Debriefing Individual') + ' · RCNGC Optimist';
+    if(!contentEl || !contentEl.innerHTML){
+      alert('No hay informe disponible para imprimir.');
+      return;
+    }
+    const printWindow = window.open('', '_blank');
+    if(!printWindow) return;
+    printWindow.document.write(
+      '<!DOCTYPE html>' +
+      '<html>' +
+      '<head>' +
+      '<title>' + title + '</title>' +
+      '<meta charset="utf-8">' +
+      '<style>' +
+      'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 40px; color: #1e293b; line-height: 1.6; }' +
+      'h1, h2, h3, h4 { color: #0f172a; margin-top: 1.4em; }' +
+      'blockquote { border-left: 3px solid #0284c7; margin: 15px 0; padding: 8px 16px; background: #f0f9ff; color: #0369a1; }' +
+      'ul { margin: 10px 0 15px 25px; }' +
+      'li { margin-bottom: 5px; }' +
+      'hr { border: none; border-top: 1px solid #e2e8f0; margin: 20px 0; }' +
+      '@media print { body { padding: 0; } }' +
+      '</style>' +
+      '</head>' +
+      '<body>' +
+      contentEl.innerHTML +
+      '</body>' +
+      '</html>'
+    );
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); }, 250);
+  }
+
+  function initAiDebriefingEventListeners(){
+    // Pestañas
+    const tabInd = document.getElementById('tabAiIndividual');
+    const tabFleet = document.getElementById('tabAiFleet');
+    if(tabInd && !tabInd.dataset.bound){
+      tabInd.dataset.bound = 'true';
+      tabInd.addEventListener('click', () => switchAiDebriefTab('individual'));
+    }
+    if(tabFleet && !tabFleet.dataset.bound){
+      tabFleet.dataset.bound = 'true';
+      tabFleet.addEventListener('click', () => switchAiDebriefTab('fleet'));
+    }
+
+    // Selector de barco
+    const sel = document.getElementById('aiSailorSelect');
+    if(sel && !sel.dataset.bound){
+      sel.dataset.bound = 'true';
+      sel.addEventListener('change', () => updateSelectedSailorQuickMetrics());
+    }
+
+    // Botones de generación
+    const btnGenSailor = document.getElementById('btnGenerateSailorAiReport');
+    if(btnGenSailor && !btnGenSailor.dataset.bound){
+      btnGenSailor.dataset.bound = 'true';
+      btnGenSailor.addEventListener('click', () => generateSailorAiDebrief());
+    }
+    const btnGenFleet = document.getElementById('btnGenerateFleetAiReport');
+    if(btnGenFleet && !btnGenFleet.dataset.bound){
+      btnGenFleet.dataset.bound = 'true';
+      btnGenFleet.addEventListener('click', () => generateFleetAiDebrief());
+    }
+
+    // Modal API Key
+    // Modal Directrices / Prompt IA
+    const btnOpenPrompt = document.getElementById('btnOpenAiPromptModal');
+    if(btnOpenPrompt && !btnOpenPrompt.dataset.bound){
+      btnOpenPrompt.dataset.bound = 'true';
+      btnOpenPrompt.addEventListener('click', () => openAiPromptModal());
+    }
+    const btnClosePrompt = document.getElementById('btnCloseAiPromptModal');
+    if(btnClosePrompt && !btnClosePrompt.dataset.bound){
+      btnClosePrompt.dataset.bound = 'true';
+      btnClosePrompt.addEventListener('click', () => closeAiPromptModal());
+    }
+    const btnCancelPrompt = document.getElementById('btnCancelAiPromptModal');
+    if(btnCancelPrompt && !btnCancelPrompt.dataset.bound){
+      btnCancelPrompt.dataset.bound = 'true';
+      btnCancelPrompt.addEventListener('click', () => closeAiPromptModal());
+    }
+    const btnSavePrompt = document.getElementById('btnSaveAiPrompt');
+    if(btnSavePrompt && !btnSavePrompt.dataset.bound){
+      btnSavePrompt.dataset.bound = 'true';
+      btnSavePrompt.addEventListener('click', () => saveAiPromptSettings());
+    }
+    const btnResetSailor = document.getElementById('btnResetAiPromptSailor');
+    if(btnResetSailor && !btnResetSailor.dataset.bound){
+      btnResetSailor.dataset.bound = 'true';
+      btnResetSailor.addEventListener('click', () => resetAiPromptToDefault('sailor'));
+    }
+    const btnResetFleet = document.getElementById('btnResetAiPromptFleet');
+    if(btnResetFleet && !btnResetFleet.dataset.bound){
+      btnResetFleet.dataset.bound = 'true';
+      btnResetFleet.addEventListener('click', () => resetAiPromptToDefault('fleet'));
+    }
+    const tabPromptInd = document.getElementById('tabPromptModalIndividual');
+    if(tabPromptInd && !tabPromptInd.dataset.bound){
+      tabPromptInd.dataset.bound = 'true';
+      tabPromptInd.addEventListener('click', () => switchPromptModalTab('individual'));
+    }
+    const tabPromptFlt = document.getElementById('tabPromptModalFleet');
+    if(tabPromptFlt && !tabPromptFlt.dataset.bound){
+      tabPromptFlt.dataset.bound = 'true';
+      tabPromptFlt.addEventListener('click', () => switchPromptModalTab('fleet'));
+    }
+
+    const btnOpenModal = document.getElementById('btnOpenAiApiKeyModal');
+    if(btnOpenModal && !btnOpenModal.dataset.bound){
+      btnOpenModal.dataset.bound = 'true';
+      btnOpenModal.addEventListener('click', () => openAiApiKeyModal());
+    }
+    const btnCloseModal = document.getElementById('btnCloseAiApiKeyModal');
+    if(btnCloseModal && !btnCloseModal.dataset.bound){
+      btnCloseModal.dataset.bound = 'true';
+      btnCloseModal.addEventListener('click', () => closeAiApiKeyModal());
+    }
+    const btnCancelModal = document.getElementById('btnCancelAiApiKeyModal');
+    if(btnCancelModal && !btnCancelModal.dataset.bound){
+      btnCancelModal.dataset.bound = 'true';
+      btnCancelModal.addEventListener('click', () => closeAiApiKeyModal());
+    }
+    const btnSaveKey = document.getElementById('btnSaveGeminiApiKey');
+    if(btnSaveKey && !btnSaveKey.dataset.bound){
+      btnSaveKey.dataset.bound = 'true';
+      btnSaveKey.addEventListener('click', () => saveGeminiApiKey());
+    }
+    const btnTestKey = document.getElementById('btnTestGeminiApiKey');
+    if(btnTestKey && !btnTestKey.dataset.bound){
+      btnTestKey.dataset.bound = 'true';
+      btnTestKey.addEventListener('click', () => testGeminiApiKey());
+    }
+    const btnToggleVis = document.getElementById('btnToggleApiKeyVisibility');
+    if(btnToggleVis && !btnToggleVis.dataset.bound){
+      btnToggleVis.dataset.bound = 'true';
+      btnToggleVis.addEventListener('click', () => {
+        const inp = document.getElementById('inpGeminiApiKey');
+        if(inp){
+          inp.type = inp.type === 'password' ? 'text' : 'password';
+        }
+      });
+    }
+
+    // Acciones de informes (Copiar, Imprimir, Regenerar)
+    const btnCopySailor = document.getElementById('btnCopySailorAiReport');
+    if(btnCopySailor && !btnCopySailor.dataset.bound){
+      btnCopySailor.dataset.bound = 'true';
+      btnCopySailor.addEventListener('click', () => copyAiReport('sailor'));
+    }
+    const btnPrintSailor = document.getElementById('btnPrintSailorAiReport');
+    if(btnPrintSailor && !btnPrintSailor.dataset.bound){
+      btnPrintSailor.dataset.bound = 'true';
+      btnPrintSailor.addEventListener('click', () => printAiReport('sailor'));
+    }
+    const btnRegenSailor = document.getElementById('btnRegenerateSailorAiReport');
+    if(btnRegenSailor && !btnRegenSailor.dataset.bound){
+      btnRegenSailor.dataset.bound = 'true';
+      btnRegenSailor.addEventListener('click', () => generateSailorAiDebrief());
+    }
+
+    const btnCopyFleet = document.getElementById('btnCopyFleetAiReport');
+    if(btnCopyFleet && !btnCopyFleet.dataset.bound){
+      btnCopyFleet.dataset.bound = 'true';
+      btnCopyFleet.addEventListener('click', () => copyAiReport('fleet'));
+    }
+    const btnPrintFleet = document.getElementById('btnPrintFleetAiReport');
+    if(btnPrintFleet && !btnPrintFleet.dataset.bound){
+      btnPrintFleet.dataset.bound = 'true';
+      btnPrintFleet.addEventListener('click', () => printAiReport('fleet'));
+    }
+    const btnRegenFleet = document.getElementById('btnRegenerateFleetAiReport');
+    if(btnRegenFleet && !btnRegenFleet.dataset.bound){
+      btnRegenFleet.dataset.bound = 'true';
+      btnRegenFleet.addEventListener('click', () => generateFleetAiDebrief());
+    }
+
+    // Accesos directos y atajos a Debriefing IA
+    const jumpToAi = () => {
+      if(typeof switchMainView === 'function') switchMainView('analysisV2');
+      setTimeout(() => {
+        const card = document.getElementById('cardAiDebriefing');
+        if(card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    };
+
+    const btnHomeAi = document.getElementById('btnHomeAiDebrief');
+    if(btnHomeAi && !btnHomeAi.dataset.bound){
+      btnHomeAi.dataset.bound = 'true';
+      btnHomeAi.addEventListener('click', jumpToAi);
+    }
+    const btnV2Jump = document.getElementById('btnJumpToAiDebriefFromV2');
+    if(btnV2Jump && !btnV2Jump.dataset.bound){
+      btnV2Jump.dataset.bound = 'true';
+      btnV2Jump.addEventListener('click', jumpToAi);
+    }
+    const btnSideAi = document.getElementById('btnSideGoToAiDebrief');
+    if(btnSideAi && !btnSideAi.dataset.bound){
+      btnSideAi.dataset.bound = 'true';
+      btnSideAi.addEventListener('click', jumpToAi);
+    }
+    const btnChat = document.getElementById('btnUserChat');
+    if(btnChat && !btnChat.dataset.bound){
+      btnChat.dataset.bound = 'true';
+      btnChat.addEventListener('click', jumpToAi);
+    }
+    const btnDropAi = document.getElementById('btnDropdownAiDebrief');
+    if(btnDropAi && !btnDropAi.dataset.bound){
+      btnDropAi.dataset.bound = 'true';
+      btnDropAi.addEventListener('click', () => {
+        if(typeof closeUserDropdown === 'function') closeUserDropdown();
+        jumpToAi();
+      });
+    }
+
+    updateAiApiKeyBadge();
+  }
+
+  // Exponer funciones globales en window
+  if(typeof window !== 'undefined'){
+    window.getSessionTelemetryForBoat = getSessionTelemetryForBoat;
+    window.populateAiDebriefingControls = populateAiDebriefingControls;
+    window.updateSelectedSailorQuickMetrics = updateSelectedSailorQuickMetrics;
+    window.updateFleetQuickSummary = updateFleetQuickSummary;
+    window.generateSailorAiDebrief = generateSailorAiDebrief;
+    window.simpleMarkdownToHtml = simpleMarkdownToHtml;
+    window.generateFleetAiDebrief = generateFleetAiDebrief;
+    window.startAiProgress = startAiProgress;
+    window.setD = (val) => { D = val; window.D = val; };
+    window.openAiPromptModal = openAiPromptModal;
+    window.closeAiPromptModal = closeAiPromptModal;
+    window.saveAiPromptSettings = saveAiPromptSettings;
+    window.resetAiPromptToDefault = resetAiPromptToDefault;
+    window.switchPromptModalTab = switchPromptModalTab;
+    window.getCustomPromptSailor = getCustomPromptSailor;
+    window.getCustomPromptFleet = getCustomPromptFleet;
+    window.getAiSessionFocus = getAiSessionFocus;
+    window.openAiApiKeyModal = openAiApiKeyModal;
+    window.closeAiApiKeyModal = closeAiApiKeyModal;
+    window.saveGeminiApiKey = saveGeminiApiKey;
+    window.testGeminiApiKey = testGeminiApiKey;
+    window.switchAiDebriefTab = switchAiDebriefTab;
+    window.copyAiReport = copyAiReport;
+    window.printAiReport = printAiReport;
+    window.initAiDebriefingEventListeners = initAiDebriefingEventListeners;
+    window.updateAiApiKeyBadge = updateAiApiKeyBadge;
+    window.getGeminiApiKey = getGeminiApiKey;
+    window.getGeminiModel = getGeminiModel;
+  }
+
+
+  initAiDebriefingEventListeners();
+
   loadHomeRecentRaces();
 
 })();

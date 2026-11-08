@@ -137,6 +137,24 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.9.4] - Acceso Directo a la Nube del Club desde la Pantalla de Estado Vacio
+* **Nuevo Boton de Acceso a la Nube Central**: En las pestanas de analisis (tanto en «Analisis V2» como en «Metricas Avanzadas»), cuando no hay ninguna regata cargada se anadio un boton principal azul destacado: «☁️ Acceder a la Nube del Club (Cargar sesion)». Al pulsarlo, abre directamente la ventana de la biblioteca central de regatas en Turso SQLite para cargar cualquier sesion guardada con 1 solo clic.
+* **Correccion del Boton «Ir a Visualizar el track»**: Se resolvio la asociacion de eventos que impedia su funcionamiento previo al cargar datos en memoria. Ahora cuenta con manejadores globales y de respaldo (`switchMainView('track')`), permitiendo regresar de forma inmediata a la pantalla principal para arrastrar o seleccionar archivos locales.
+
+### [v1.9.3] - Eliminacion de Columnas IMU (Escora, Trim y Deriva) en Analisis V2
+* **Depuracion de la Tabla General de Flota**: Se han eliminado por completo las columnas «Escora ⬍», «Trim ⬍» y «Deriva ⬍» de la tabla de clasificacion y rendimiento en la pestana Analisis V2, dado que en regatas oficiales los barcos navegan con dispositivos GPS estandar (relojes/trackers) y estas columnas se mostraban vacias con guiones («—»), ocupando espacio innecesario.
+* **Diseno Limpio y Proporcionado**: La tabla ahora se centra exclusivamente en las metricas de competicion esenciales: Posicion, Barco / Vela, Velocidades medias por tramo (Vmed T1..T4), Distancia navegada y Tiempo navegado.
+* **Eliminacion del Bloque IMU en Fichas de Barco**: Se retiro el modulo de sensores en las tarjetas individuales de regatista, agilizando la lectura de la tabla de tramos y debriefing tactico.
+
+### [v1.9.2] - Consolidación de Tramos Tácticos V2: Vista General por Tramo (Ceñida, Través y Popa)
+* **Eliminación de la micro-fragmentación de tramos**: Se corrigió la segmentación cinemática automática en la sección «Desglose Táctico y Rendimiento por Barco» de Análisis V2, evitando que en sesiones de entrenamiento libre o sin marcas definidas se crearan decenas de micro-filas de 15 segundos («Ceñida libre (1)...(11)»).
+* **Vista General Consolidada por Tramo («Ceñida», «Través», «Popa»)**:
+  * Ahora el sistema presenta una vista general por tramo limpia y clara con exactamente 3 filas resumen (o 4 tramos si hay recorrido IODA balizado):
+    1. **CEÑIDA**: «Ceñida (General)» con duración total acumulada, distancia náutica real, eficiencia de derrota media, total de viradas con metros de pérdida acumulados y cumplimiento del objetivo polar VMG.
+    2. **TRAVÉS**: «Través (General)» con tiempo, distancia, maniobras y velocidad media frente a polares.
+    3. **POPA**: «Popa (General)» con tiempo acumulado, distancia, total de trasluchadas y rendimiento polar VMG a sotavento.
+  * En regatas oficiales con marcas IODA, se preservan con precisión los 4 tramos de la manga («Ceñida a B1», «Través a B2», «Popa a Puerta 3» y «Ceñida a Llegada»).
+
 ### [v1.9.1] - Blindaje de Seguridad en Autenticación y Sustitución de Avatar por Emoji 👤
 * **Seguridad Estricta en el Inicio de Sesión Multi-Usuario**:
   * **Eliminación total del bypass maestro (`isMasterMatch`)**: Se erradicó por completo la vulnerabilidad que permitía iniciar sesión en la cuenta del administrador (`admin`) utilizando la contraseña genérica o PIN del entrenador (`RCNGC2026`).
@@ -300,6 +318,14 @@ Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan
 ### [v1.6.0] - App Móvil PWA para Entrenadores: Marcado GPS de Comité y Pin en el Agua y Sincronización en la Nube con Turso
 * **Aplicación Móvil Web PWA para Entrenadores (`gps-salidas/`)**:
   * **Diseñada para el Agua y la Neumática**: Interfaz táctil adaptada para uso en lancha de apoyo con salpicaduras, viento y sol brillante. Incluye botones de marcado gigantes, feedback háptico (vibración en el teléfono) y conmutador de **«Modo Sol (Alto Contraste)»** para máxima legibilidad bajo luz diurna intensa.
+  * **Optimización Integral para Teléfonos Móviles (Ergonomía Náutica en Neumática)**:
+    * **Pantalla Siempre Activa («💡 Pantalla ON»)**: Evita que el móvil se bloquee o se apague solo en la lancha mientras se espera el procedimiento o se maniobra.
+    * **Barra Fija Inferior al Alcance del Pulgar (*Sticky Action Dock*)**: Mantiene visible el estado de la línea y el botón gigante **«☁️ SINCRONIZAR CON TURSO»** en la parte inferior de la pantalla sin necesidad de hacer scroll.
+    * **Avisos Sonoros Acústicos (Bips en el Agua)**: Confirmación sonora inmediata sintetizada por audio para cada pulsación de botón, aviso sonoro de advertencia y doble campanada armónica al sincronizar con la nube.
+    * **Compás Visual con Aguja Giratoria**: Nuevo visor circular con aguja de compás y rumbos cardinales (`N`, `NE`, `ENE`...) para fijar el viento encarando el móvil o la proa hacia barlovento.
+    * **Filtro Anti-Oleaje (3s)**: Estabilizador de coordenadas para neutralizar el cabeceo y balanceo de la neumática con las olas del mar.
+    * **Gráficos Tácticos en Alta Definición (Retina / OLED)**: El dibujo de la línea y la flecha de viento se renderiza a la máxima resolución nativa del teléfono con total nitidez.
+    * **Protección Anti-Zoom y Márgenes de Seguridad (*Safe Areas*)**: Integración con las muescas y barras de inicio de iOS y Android, evitando zooms indeseados al tocar casillas numéricas.
   * **Memoria Persistente a Prueba de F5 y Cierre de App**:
     * Guarda en tiempo real cada marca y ajuste en la memoria privada del dispositivo (`localStorage`), con salvaguarda automática en segundo plano (`beforeunload` y `visibilitychange`).
     * Al pulsar F5, recargar o cerrar la app y volver a abrirla, se restauran inmediatamente la posición exacta del Comité, Pin, Baliza 1, la prueba activa (`R1`, `R2`...), el viento (grados y nudos) y los cálculos tácticos de línea.

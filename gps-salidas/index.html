@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
   <title>RCNGC Salidas · GPS Campo de Regatas</title>
   
   <!-- PWA Meta Tags -->
@@ -53,7 +55,13 @@
       --green: #1b5e20;
     }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+    * { 
+      box-sizing: border-box; 
+      -webkit-tap-highlight-color: transparent; 
+      margin: 0; 
+      padding: 0; 
+      touch-action: manipulation;
+    }
     
     html, body {
       width: 100%;
@@ -64,16 +72,127 @@
       font-size: 15px;
       line-height: 1.4;
       overflow-x: hidden;
-      padding-bottom: env(safe-area-inset-bottom, 20px);
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     .app-container {
       max-width: 540px;
       margin: 0 auto;
-      padding: 12px 14px 90px 14px;
+      padding: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(110px, calc(env(safe-area-inset-bottom) + 90px)) max(12px, env(safe-area-inset-left));
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
+    }
+
+    /* PREVENIR ZOOM ACCIDENTAL EN INPUTS EN SAFARI iOS */
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+
+    /* BOTONES TÁCTILES MEJORADOS */
+    button {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    /* STICKY BOTTOM ACTION DOCK */
+    .bottom-dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(7, 22, 28, 0.92);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-top: 1px solid var(--surface-border);
+      padding: 10px 14px max(14px, env(safe-area-inset-bottom));
+      z-index: 900;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.5);
+    }
+    body.sun-mode .bottom-dock {
+      background: rgba(244, 247, 249, 0.95);
+      border-color: #c0d3dc;
+    }
+    .dock-content {
+      max-width: 540px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .dock-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-dim);
+      padding: 0 4px;
+    }
+    .dock-btn {
+      width: 100%;
+      height: 52px;
+      background: linear-gradient(135deg, #00c853 0%, #009624 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(0, 200, 83, 0.35);
+      transition: transform 0.1s ease, filter 0.15s ease;
+    }
+    .dock-btn:active {
+      transform: scale(0.98);
+      filter: brightness(1.15);
+    }
+    .dock-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* SCROLL HORIZONTAL SUAVE PARA BOTONES R1..R6 */
+    .quick-mangas {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 4px 2px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .quick-mangas::-webkit-scrollbar {
+      display: none;
+    }
+    .btn-manga {
+      min-width: 48px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* STEPPERS CON ÁREA DE TOQUE GENEROSA */
+    .btn-step {
+      min-width: 46px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px !important;
+      font-weight: 800 !important;
+    }
+    .btn-step:active {
+      transform: scale(0.95);
+      background: var(--surface-border) !important;
     }
 
     /* HEADER */
@@ -626,7 +745,8 @@
       </div>
     </div>
     <div class="header-actions">
-      <button class="btn-icon" id="btnClearAllData" title="Vaciar todos los datos y empezar de nuevo sin guardarlos" style="color:#ef4444;border-color:rgba(239,68,68,0.4);font-weight:700">🗑️ Vaciar datos</button>
+      <button class="btn-icon" id="btnWakeLock" title="Mantener pantalla siempre encendida en el agua" style="border-color:rgba(0,240,255,0.4);color:var(--cyan)">💡 Pantalla</button>
+      <button class="btn-icon" id="btnClearAllData" title="Vaciar todos los datos y empezar de nuevo sin guardarlos" style="color:#ef4444;border-color:rgba(239,68,68,0.4);font-weight:700">🗑️ Vaciar</button>
       <button class="btn-icon" id="btnSunMode" title="Alternar Modo Sol / Contraste">☀️ Sol</button>
       <button class="btn-icon" id="btnSettings" title="Ajustes de Conexión Turso">⚙️</button>
     </div>
@@ -669,9 +789,15 @@
 
   <!-- TARJETA GPS EN VIVO (POSICIÓN ACTUAL DE LA LANCHA) -->
   <div class="card gps-card">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
       <span style="font-size:12px;font-weight:700;text-transform:uppercase;color:var(--text-dim);letter-spacing:0.5px;">📍 Posición GPS de la Lancha</span>
-      <span id="gpsFixAge" style="font-size:11px;color:var(--text-dim);font-family:var(--f-mono);">Actualizando...</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <label style="font-size:11.5px;color:var(--cyan);font-weight:700;display:flex;align-items:center;gap:4px;cursor:pointer">
+          <input type="checkbox" id="chkWaveFilter" checked style="accent-color:var(--cyan);width:15px;height:15px">
+          🎯 Anti-Oleaje (3s)
+        </label>
+        <span id="gpsFixAge" style="font-size:11px;color:var(--text-dim);font-family:var(--f-mono);">0s</span>
+      </div>
     </div>
     <div class="gps-grid">
       <div class="gps-val-box">
@@ -846,20 +972,47 @@
     <canvas id="lineCanvas" width="400" height="140"></canvas>
   </div>
 
-  <!-- BOTÓN DE SINCRONIZACIÓN CON TURSO -->
-  <button class="btn-sync-cloud" id="btnSyncCloud">
-    <span>☁️</span>
-    <span id="btnSyncText">SINCRONIZAR CON LA NUBE TURSO</span>
-  </button>
-
-  <div style="text-align:center;font-size:11.5px;color:var(--text-dim);line-height:1.5;">
-    Al sincronizar, las marcas GPS quedan disponibles al instante en el programa de tracking del club.
+  <div style="text-align:center;font-size:11.5px;color:var(--text-dim);line-height:1.5;margin-top:6px;padding-bottom:10px;">
+    Al sincronizar, las marcas GPS se transmiten en tiempo real al programa de tracking del club.
   </div>
 
 </div>
 
+<!-- BARRA FIJA INFERIOR PARA TELÉFONO (STICKY BOTTOM DOCK) -->
+<div class="bottom-dock">
+  <div class="dock-content">
+    <div class="dock-status-row">
+      <span id="dockStatusText">📍 Marca Comité y Pin en el agua</span>
+      <span id="dockAccuracyText" style="font-family:var(--f-mono)">GPS activo</span>
+    </div>
+    <button class="dock-btn" id="btnSyncCloud">
+      <span>☁️</span>
+      <span id="btnSyncText">SINCRONIZAR CON TURSO</span>
+    </button>
+  </div>
+</div>
+
 <!-- TOAST NOTIFICACIÓN -->
 <div class="toast" id="toastMsg">Mensaje informativo</div>
+
+<!-- MODAL COMPÁS EN VIVO -->
+<div class="modal-backdrop" id="compassModal">
+  <div class="modal-box" style="text-align:center;max-width:340px;">
+    <h3 style="margin-bottom:2px;">🧭 Compás de Viento</h3>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:14px;">Enfoca el móvil o la proa hacia donde viene el viento</p>
+    
+    <div style="width:140px;height:140px;border-radius:50%;border:3px solid var(--cyan);margin:0 auto 14px auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,240,255,0.06);position:relative;">
+      <div id="compassNeedle" style="position:absolute;top:10px;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:22px solid #ff3d00;transform-origin:50% 60px;"></div>
+      <div style="font-family:var(--f-mono);font-size:32px;font-weight:900;color:#fff;" id="compassLiveDegrees">---°</div>
+      <div style="font-size:13px;font-weight:800;color:var(--cyan);" id="compassCardinal">--</div>
+    </div>
+
+    <div style="display:flex;gap:8px;">
+      <button class="btn-icon" id="btnCancelCompass" style="flex:1;justify-content:center;height:44px;">✕ Cancelar</button>
+      <button class="btn-icon" id="btnLockCompass" style="flex:2;justify-content:center;height:44px;background:var(--cyan);color:#031118;font-weight:800;">✓ Fijar Viento</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL DE AJUSTES TURSO -->
 <div class="modal-backdrop" id="settingsModal">
@@ -918,13 +1071,95 @@ const state = {
 const D2R = Math.PI / 180;
 const R2D = 180 / Math.PI;
 
+
+// AUDIO FEEDBACK SINTETIZADO (WEB AUDIO API - SIN ARCHIVOS EXTERNOS)
+let audioCtx = null;
+function playTone(freq = 880, duration = 0.08, type = 'sine') {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  } catch (_) {}
+}
+
+function playSuccessChime() {
+  playTone(880, 0.08);
+  setTimeout(() => playTone(1174, 0.14), 90);
+}
+
+function playWarningTone() {
+  playTone(330, 0.16, 'triangle');
+}
+
+// SCREEN WAKE LOCK API (EVITAR QUE LA PANTALLA DEL MÓVIL SE APAGUE EN EL AGUA)
+let wakeLock = null;
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      updateWakeLockBtn(true);
+      wakeLock.addEventListener('release', () => updateWakeLockBtn(false));
+    } else {
+      updateWakeLockBtn(false);
+    }
+  } catch (err) {
+    console.warn('Wake Lock no disponible:', err);
+    updateWakeLockBtn(false);
+  }
+}
+
+function updateWakeLockBtn(isActive) {
+  const btn = document.getElementById('btnWakeLock');
+  if (btn) {
+    if (isActive) {
+      btn.textContent = '💡 Pantalla ON';
+      btn.style.color = 'var(--cyan)';
+      btn.style.borderColor = 'var(--cyan)';
+      btn.style.background = 'rgba(0, 240, 255, 0.15)';
+    } else {
+      btn.textContent = '💡 Pantalla';
+      btn.style.color = 'var(--text-dim)';
+      btn.style.borderColor = 'var(--surface-border)';
+      btn.style.background = 'transparent';
+    }
+  }
+}
+
+const btnWake = document.getElementById('btnWakeLock');
+if (btnWake) {
+  btnWake.addEventListener('click', async () => {
+    if (wakeLock !== null) {
+      await wakeLock.release();
+      wakeLock = null;
+      updateWakeLockBtn(false);
+      showToast('Pantalla: apagado automático según tu móvil', 'info');
+    } else {
+      await requestWakeLock();
+      showToast('💡 Pantalla fijada SIEMPRE encendida para el agua', 'success');
+      playTone(980, 0.1);
+    }
+  });
+}
+
 // SONIDO O VIBRACIÓN HÁPTICA PARA EL AGUA
 function hapticFeedback(type = 'success') {
   if (navigator.vibrate) {
     if (type === 'success') navigator.vibrate([40, 30, 40]);
-    else if (type === 'warn') navigator.vibrate([100]);
+    else if (type === 'warn') navigator.vibrate([120]);
     else navigator.vibrate([80, 50, 80]);
   }
+  if (type === 'success') playTone(880, 0.09);
+  else if (type === 'warn') playWarningTone();
+  else playTone(440, 0.1);
 }
 
 // TOAST
@@ -988,6 +1223,10 @@ function initGPS() {
         dotGps.className = 'dot red';
         textGps.textContent = `GPS ±${c.accuracy.toFixed(1)}m (Poco preciso)`;
       }
+
+      const dockAcc = document.getElementById('dockAccuracyText');
+      if (dockAcc) dockAcc.textContent = `±${c.accuracy.toFixed(1)}m`;
+      updateDockStatus();
     },
     (err) => {
       console.warn('Error GPS:', err);
@@ -1189,10 +1428,21 @@ function calculateTactics() {
 // DIBUJO DEL ESQUEMA TÁCTICO EN CANVAS
 function drawMiniTacticsCanvas(dx, dy, lenM, twd, brgPinToRc) {
   const canvas = document.getElementById('lineCanvas');
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width;
-  const h = canvas.height;
+  if (!canvas) return;
 
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = rect.width || 360;
+  const h = 140;
+
+  if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+  }
+
+  const ctx = canvas.getContext('2d');
+  ctx.resetTransform();
+  ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, w, h);
 
   // Orientar el dibujo de modo que el VIENTO venga siempre desde arriba (0° en pantalla)
@@ -1363,48 +1613,6 @@ function adjustWind(delta) {
   calculateTactics();
   saveLocalState();
 }
-
-// BRÚJULA PARA APUNTAR AL VIENTO
-document.getElementById('btnCompassWind').addEventListener('click', async () => {
-  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-    try {
-      const perm = await DeviceOrientationEvent.requestPermission();
-      if (perm !== 'granted') {
-        showToast('Permiso de compás denegado', 'warn');
-        return;
-      }
-    } catch (e) {
-      console.warn('Error al solicitar permiso de compás:', e);
-    }
-  }
-
-  showToast('Apuntando... mantén el móvil encarado al viento', 'info', 2500);
-
-  function handleOrientation(e) {
-    let heading = null;
-    if (e.webkitCompassHeading != null) {
-      heading = e.webkitCompassHeading;
-    } else if (e.alpha != null) {
-      heading = (360 - e.alpha) % 360;
-    }
-
-    if (heading != null) {
-      const wVal = Math.round(heading);
-      state.windDir = wVal;
-      windInput.value = wVal;
-      calculateTactics();
-      saveLocalState();
-      window.removeEventListener('deviceorientation', handleOrientation);
-      showToast(`🧭 Viento fijado por compás en ${wVal}°`, 'success');
-      hapticFeedback('success');
-    }
-  }
-
-  window.addEventListener('deviceorientation', handleOrientation);
-  setTimeout(() => {
-    window.removeEventListener('deviceorientation', handleOrientation);
-  }, 4000);
-});
 
 // SELECTOR DE MANGAS RÁPIDAS
 document.querySelectorAll('.btn-manga').forEach(btn => {
@@ -1627,7 +1835,7 @@ btnSync.addEventListener('click', async () => {
   try {
     await executeTurso(sql, args);
     hapticFeedback('success');
-    showToast(`☁️ ¡Línea de ${sName} guardada en Turso! Ya está lista en el tracking del club.`, 'success', 4000);
+    showToast(`☁️ ¡Línea de ${sName} guardada en Turso! Ya está lista en el tracking del club.`, 'success', 4000); playSuccessChime();
     document.getElementById('dotCloud').className = 'dot green';
     document.getElementById('textCloud').textContent = 'Turso Sincronizado';
   } catch (err) {
@@ -1687,6 +1895,97 @@ document.getElementById('btnSaveSettings').addEventListener('click', () => {
   showToast('Ajustes guardados correctamente', 'success');
 });
 
+
+function updateDockStatus() {
+  const statusEl = document.getElementById('dockStatusText');
+  if (!statusEl) return;
+  if (!state.comite && !state.pin) {
+    statusEl.textContent = '📍 Marca Comité y Pin en el agua';
+  } else if (state.comite && !state.pin) {
+    statusEl.textContent = '🚩 Falta fijar el Pin (Boya)';
+  } else if (!state.comite && state.pin) {
+    statusEl.textContent = '⛵ Falta fijar el Barco Comité';
+  } else {
+    const len = document.getElementById('lineLengthVal')?.textContent || '';
+    const biasTitle = document.getElementById('biasTitle')?.textContent || '';
+    statusEl.textContent = `✅ Línea ${len} · ${biasTitle}`;
+  }
+}
+
+// COMPÁS EN VIVO CON MODAL VISUAL
+let compassHeadingLive = 45;
+let compassListener = null;
+
+function cardinalFromDeg(deg) {
+  const dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+  return dirs[Math.round(deg / 22.5) % 16];
+}
+
+const btnCompassWind = document.getElementById('btnCompassWind');
+const compassModal = document.getElementById('compassModal');
+const btnCancelCompass = document.getElementById('btnCancelCompass');
+const btnLockCompass = document.getElementById('btnLockCompass');
+
+if (btnCompassWind) {
+  btnCompassWind.addEventListener('click', async () => {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      try {
+        const perm = await DeviceOrientationEvent.requestPermission();
+        if (perm !== 'granted') {
+          showToast('Permiso de compás no concedido', 'warn');
+          return;
+        }
+      } catch (e) {
+        console.warn('Error solicitando permiso:', e);
+      }
+    }
+
+    if (compassModal) compassModal.classList.add('open');
+
+    function onOrientation(e) {
+      let heading = null;
+      if (e.webkitCompassHeading != null) {
+        heading = e.webkitCompassHeading;
+      } else if (e.alpha != null) {
+        heading = (360 - e.alpha) % 360;
+      }
+      if (heading != null) {
+        compassHeadingLive = Math.round(heading);
+        const degEl = document.getElementById('compassLiveDegrees');
+        const cardEl = document.getElementById('compassCardinal');
+        const needle = document.getElementById('compassNeedle');
+        if (degEl) degEl.textContent = `${compassHeadingLive}°`;
+        if (cardEl) cardEl.textContent = cardinalFromDeg(compassHeadingLive);
+        if (needle) needle.style.transform = `rotate(${compassHeadingLive}deg)`;
+      }
+    }
+
+    compassListener = onOrientation;
+    window.addEventListener('deviceorientation', onOrientation);
+  });
+}
+
+if (btnCancelCompass) {
+  btnCancelCompass.addEventListener('click', () => {
+    if (compassListener) window.removeEventListener('deviceorientation', compassListener);
+    if (compassModal) compassModal.classList.remove('open');
+  });
+}
+
+if (btnLockCompass) {
+  btnLockCompass.addEventListener('click', () => {
+    if (compassListener) window.removeEventListener('deviceorientation', compassListener);
+    if (compassModal) compassModal.classList.remove('open');
+    state.windDir = compassHeadingLive;
+    const wInput = document.getElementById('windInput');
+    if (wInput) wInput.value = compassHeadingLive;
+    calculateTactics();
+    saveLocalState();
+    showToast(`🧭 Viento fijado por compás en ${compassHeadingLive}°`, 'success');
+    playTone(940, 0.1);
+  });
+}
+
 // MEMORIA AUTOMÁTICA EN SEGUNDO PLANO Y AL CERRAR
 window.addEventListener('beforeunload', saveLocalState);
 document.addEventListener('visibilitychange', () => {
@@ -1700,6 +1999,19 @@ function startup() {
   loadLocalState();
   initGPS();
 }
+
+
+window.addEventListener('resize', () => {
+  if (state.comite && state.pin) calculateTactics();
+});
+
+// AUTO-ACTIVAR WAKE LOCK EN EL PRIMER TOQUE
+window.addEventListener('touchstart', () => {
+  if (wakeLock === null) requestWakeLock();
+}, { once: true });
+window.addEventListener('click', () => {
+  if (wakeLock === null) requestWakeLock();
+}, { once: true });
 
 if (document.readyState === 'loading') {
   window.addEventListener('DOMContentLoaded', startup);
