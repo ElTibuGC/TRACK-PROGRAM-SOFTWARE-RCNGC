@@ -2969,10 +2969,9 @@ body.map-fullscreen-active {
               Modelo de Inteligencia Artificial:
             </label>
             <select id="selGeminiModel" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
-              <option value="gemini-3.8-flash">Gemini 3.8 Flash (Recomendado Oficial · Rápido y Máxima Inteligencia)</option>
-              <option value="gemini-3.5-flash">Gemini 3.5 Flash (Ultrarrápido y Alta Capacidad)</option>
-              <option value="gemini-2.5-flash">Gemini 2.5 Flash (Cuentas con acceso previo)</option>
-              <option value="gemini-1.5-flash">Gemini 1.5 Flash (Versión Estable Anterior)</option>
+              <option value="gemini-3.5-flash" selected>Gemini 3.5 Flash (Recomendado Oficial RCNGC · Estable, Rápido y Operativo)</option>
+              <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite (Ultrarrápido y Ligero)</option>
+              <option value="gemini-3.8-flash">Gemini 3.8 Flash (Experimental · Sujeto a alta demanda temporal)</option>
             </select>
           </div>
 
@@ -16402,12 +16401,14 @@ window.updateSailorNotesInputsLockState = updateSailorNotesInputsLockState;
 
   // =========================================================================
     // =========================================================================
+    // =========================================================================
   // MÓDULO DE DEBRIEFING AUTÓNOMO CON INTELIGENCIA ARTIFICIAL (GOOGLE GEMINI)
   // =========================================================================
 
   let currentAiDebriefTab = 'individual';
   let activeAiSailorReportMarkdown = '';
   let activeAiFleetReportMarkdown = '';
+  let activeAiAbortController = null;
 
   var clubConfigCache = (typeof window !== "undefined" && window.clubConfigCache) ? window.clubConfigCache : {};
   if(typeof window !== "undefined") window.clubConfigCache = clubConfigCache;
@@ -16557,8 +16558,9 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
   function getGeminiModel(){
     let m = (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_gemini_model')) || 
             (clubConfigCache && clubConfigCache.gemini_model) || 
-            'gemini-3.8-flash';
-    if(m === 'gemini-2.0-flash' || m === 'gemini-2.5-flash') m = 'gemini-3.8-flash';
+            (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_cloud_gemini_model')) || 
+            'gemini-3.5-flash';
+    if(m === 'gemini-2.0-flash' || m === 'gemini-2.5-flash' || m === 'gemini-3.8-flash') m = 'gemini-3.5-flash';
     return m;
   }
 
@@ -16694,8 +16696,8 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     const selModel = document.getElementById('selGeminiModel');
     let key = (inpKey ? inpKey.value : '').trim();
     if(!key) key = getGeminiApiKey();
-    let model = (selModel ? selModel.value : '') || 'gemini-3.8-flash';
-    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.8-flash';
+    let model = (selModel ? selModel.value : '') || 'gemini-3.5-flash';
+    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.5-flash';
     
     if(typeof localStorage !== 'undefined'){
       if(key){
@@ -16718,8 +16720,8 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     const inpKey = document.getElementById('inpGeminiApiKey');
     const selModel = document.getElementById('selGeminiModel');
     const key = (inpKey ? inpKey.value : '').trim();
-    let model = (selModel ? selModel.value : '') || 'gemini-3.8-flash';
-    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.8-flash';
+    let model = (selModel ? selModel.value : '') || 'gemini-3.5-flash';
+    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.5-flash';
 
     if(!key){
       if(!confirm('¿Deseas borrar la clave central del club de la nube? Los usuarios sin clave personal no podrán generar debriefings hasta que se configure una nueva.')){
@@ -16776,8 +16778,8 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     const statusDiv = document.getElementById('aiApiKeyTestStatus');
     let key = (inpKey ? inpKey.value : '').trim();
     if(!key) key = getGeminiApiKey();
-    let model = (selModel ? selModel.value : '') || 'gemini-3.8-flash';
-    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.8-flash';
+    let model = (selModel ? selModel.value : '') || 'gemini-3.5-flash';
+    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.5-flash';
 
     if(!key){
       if(statusDiv){
@@ -16972,6 +16974,81 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
       if(secInd) secInd.style.display = 'none';
       updateFleetQuickSummary();
     }
+  }
+
+  // --- BARRA DE PROGRESO INTELIGENTE Y CRONÓMETRO EN VIVO ---
+  function startAiProgress(type){
+    const isSailor = type === 'sailor';
+    const loadingEl = document.getElementById(isSailor ? 'aiSailorLoading' : 'aiFleetLoading');
+    const barEl = document.getElementById(isSailor ? 'aiSailorProgressBar' : 'aiFleetProgressBar');
+    const pctEl = document.getElementById(isSailor ? 'aiSailorProgressPct' : 'aiFleetProgressPct');
+    const textEl = document.getElementById(isSailor ? 'aiSailorLoadingText' : 'aiFleetLoadingText');
+    const subEl = document.getElementById(isSailor ? 'aiSailorLoadingSub' : 'aiFleetLoadingSub');
+    const timerEl = document.getElementById(isSailor ? 'aiSailorElapsedSec' : 'aiFleetElapsedSec');
+    const reportBox = document.getElementById(isSailor ? 'aiSailorReportBox' : 'aiFleetReportBox');
+    const emptyEl = document.getElementById(isSailor ? 'aiSailorReportEmpty' : 'aiFleetReportEmpty');
+
+    if(loadingEl) loadingEl.style.display = 'block';
+    if(reportBox) reportBox.style.display = 'none';
+    if(emptyEl) emptyEl.style.display = 'none';
+
+    let pct = 10;
+    const startTime = Date.now();
+
+    const setStage = (p, text, sub) => {
+      pct = Math.min(Math.round(p), 98);
+      if(barEl) barEl.style.width = pct + '%';
+      if(pctEl) pctEl.textContent = pct + '%';
+      if(textEl && text) textEl.textContent = text;
+      if(subEl && sub) subEl.textContent = sub;
+    };
+
+    setStage(12, 
+      isSailor ? '📊 1. Recopilando telemetría GPS y polares VPP por peso...' : '📊 1. Analizando matriz de flota, salidas y tramos...',
+      'Calculando ángulos TWA, velocidades VMG y maniobras...'
+    );
+
+    const interval = setInterval(() => {
+      const elapsedSec = (Date.now() - startTime) / 1000;
+      if(timerEl) timerEl.textContent = elapsedSec.toFixed(1) + 's';
+
+      if(elapsedSec < 1.5){
+        setStage(12 + elapsedSec * 12, null, null);
+      } else if(elapsedSec < 5.0){
+        setStage(30 + (elapsedSec - 1.5) * 8.5, 
+          isSailor ? '🧠 2. Conectando con Google Gemini AI...' : '🧠 2. Conectando con Google Gemini AI...',
+          'Enviando calibración de diseño Optimist y telemetría...'
+        );
+      } else if(elapsedSec < 12.0){
+        setStage(60 + (elapsedSec - 5.0) * 3.8,
+          isSailor ? '✍️ 3. Redactando debriefing técnico y polares VPP...' : '✍️ 3. Redactando conclusiones colectivas de flota...',
+          'Generando análisis de dinámica, escora y viradas...'
+        );
+      } else if(elapsedSec < 22.0){
+        setStage(87 + (elapsedSec - 12.0) * 1.0,
+          isSailor ? '🔍 4. Consolidando plan de acción y objetivos...' : '🔍 4. Estructurando puntos clave para la pizarra...',
+          'Finalizando informe técnico estructurado en Markdown...'
+        );
+      } else {
+        setStage(97, '⏳ Recibiendo los últimos datos de la nube...', 'Casi listo...');
+      }
+    }, 100);
+
+    return {
+      finish: (successText) => {
+        clearInterval(interval);
+        if(barEl) barEl.style.width = '100%';
+        if(pctEl) pctEl.textContent = '100%';
+        if(textEl && successText) textEl.textContent = successText;
+        setTimeout(() => {
+          if(loadingEl) loadingEl.style.display = 'none';
+        }, 300);
+      },
+      stop: () => {
+        clearInterval(interval);
+        if(loadingEl) loadingEl.style.display = 'none';
+      }
+    };
   }
 
   function simpleMarkdownToHtml(md){
@@ -17203,55 +17280,96 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
       '> *Nota del sistema: Debriefing de flota elaborado a partir de la matriz cinemática multi-barco del RCNGC.*';
   }
 
-  async function callGeminiApi(prompt, model, apiKey){
-    let cleanModel = model || 'gemini-3.8-flash';
-    if(cleanModel === 'gemini-2.0-flash' || cleanModel === 'gemini-2.5-flash') cleanModel = 'gemini-3.8-flash';
-    const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(cleanModel) + ':generateContent?key=' + encodeURIComponent(apiKey);
-    
-    const controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-    const timeoutId = controller ? setTimeout(() => controller.abort(), 45000) : null;
+  async function callGeminiApi(prompt, model, apiKey, abortSignal){
+    let activeModel = model || getGeminiModel();
+    if(activeModel === 'gemini-2.0-flash' || activeModel === 'gemini-2.5-flash') activeModel = 'gemini-3.5-flash';
+    if(!activeModel) activeModel = 'gemini-3.5-flash';
 
-    let res;
-    try {
-      res = await fetch(url, {
+    const sendReq = async (m, signal) => {
+      const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(m) + ':generateContent?key=' + encodeURIComponent(apiKey);
+      return await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        signal: controller ? controller.signal : undefined,
+        signal: signal,
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey
+        },
         body: JSON.stringify({
           contents: [{
             parts: [{ text: prompt }]
           }],
           generationConfig: {
-            temperature: 0.3,
+            temperature: 0.25,
             maxOutputTokens: 8192
           }
         })
       });
-    } catch(fetchErr){
-      if(timeoutId) clearTimeout(timeoutId);
-      if(fetchErr.name === 'AbortError'){
-        throw new Error('La consulta a Google Gemini superó el tiempo límite de espera (45s). Por favor reintenta.');
+    };
+
+    // Timeout de seguridad a 25 segundos
+    const timeoutAbort = new AbortController();
+    const timeoutTimer = setTimeout(() => {
+      timeoutAbort.abort(new Error('TIMEOUT_25S'));
+    }, 25000);
+
+    if(abortSignal){
+      abortSignal.addEventListener('abort', () => timeoutAbort.abort(new Error('USER_CANCELLED')));
+    }
+
+    try {
+      let res = await sendReq(activeModel, timeoutAbort.signal);
+
+      // Auto-fallback inteligente si Google devuelve 503 (alta demanda) o 404 (no disponible)
+      if(!res.ok){
+        console.warn('Fallo con modelo ' + activeModel + ' (' + res.status + '). Intentando fallback...');
+        const fallbacks = ['gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.8-flash'].filter(f => f !== activeModel);
+        for(const altModel of fallbacks){
+          try {
+            const altRes = await sendReq(altModel, timeoutAbort.signal);
+            if(altRes.ok){
+              res = altRes;
+              activeModel = altModel;
+              console.log('Fallback exitoso con modelo: ' + altModel);
+              break;
+            }
+          } catch(e){}
+        }
       }
-      throw fetchErr;
-    }
-    if(timeoutId) clearTimeout(timeoutId);
 
-    if(!res.ok){
-      const errData = await res.json().catch(() => ({}));
-      const msg = (errData.error && errData.error.message) || ('HTTP ' + res.status + ' ' + res.statusText);
-      throw new Error(msg);
-    }
+      if(!res.ok){
+        const errData = await res.json().catch(() => ({}));
+        const msg = (errData.error && errData.error.message) || ('HTTP ' + res.status + ' ' + res.statusText);
+        throw new Error(msg);
+      }
 
-    const data = await res.json();
-    const candidate = data.candidates && data.candidates[0];
-    const txt = candidate && candidate.content && candidate.content.parts && candidate.content.parts[0] && candidate.content.parts[0].text;
-    if(!txt){
-      throw new Error('La respuesta recibida de Gemini no contiene texto válido.');
+      const data = await res.json();
+      const candidate = data.candidates && data.candidates[0];
+      let txt = '';
+      if(candidate && candidate.content && Array.isArray(candidate.content.parts)){
+        const validParts = candidate.content.parts.filter(p => !p.thought && p.text);
+        if(validParts.length > 0){
+          txt = validParts.map(p => p.text).join('\n\n').trim();
+        } else {
+          txt = candidate.content.parts.map(p => p.text || '').join('\n\n').trim();
+        }
+      }
+      if(!txt){
+        throw new Error('La respuesta recibida de Gemini no contiene texto legible.');
+      }
+      return { text: txt, model: activeModel };
+    } finally {
+      clearTimeout(timeoutTimer);
     }
-    return txt;
+  }
+
+  function getActiveSessionData(){
+    if(typeof D !== 'undefined' && D && D.boats) return D;
+    if(typeof window !== 'undefined' && window.D && window.D.boats) return window.D;
+    return null;
   }
 
   function getSessionTelemetryForBoat(boatIdx){
+    const D = getActiveSessionData();
     if(typeof D === 'undefined' || !D || !D.boats || !D.boats[boatIdx]) return null;
     const b = D.boats[boatIdx];
     const name = b.name || ('Barco ' + (boatIdx + 1));
@@ -17532,7 +17650,7 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
       .replace(/{enfoque_sesion}/g, focusBlock);
   }
 
-  async function generateSailorAiDebrief(){
+  async function generateSailorAiDebrief(forceLocal = false){
     const sel = document.getElementById('aiSailorSelect');
     if(!sel || sel.value === ''){
       alert('Por favor selecciona primero un regatista de la lista.');
@@ -17546,16 +17664,10 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
       return;
     }
 
-    const loadingEl = document.getElementById('aiSailorLoading');
     const reportBox = document.getElementById('aiSailorReportBox');
-    const emptyEl = document.getElementById('aiSailorReportEmpty');
     const contentEl = document.getElementById('aiSailorReportContent');
     const titleEl = document.getElementById('aiSailorReportTitle');
     const badgeEl = document.getElementById('aiSailorReportBadge');
-
-    if(loadingEl) loadingEl.style.display = 'block';
-    if(reportBox) reportBox.style.display = 'none';
-    if(emptyEl) emptyEl.style.display = 'none';
 
     const env = {
       tws: data.tws,
@@ -17563,6 +17675,28 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
       windRegime: data.windRegime,
       totalBoats: D ? D.boats.length : 1
     };
+
+    if(forceLocal){
+      if(activeAiAbortController) activeAiAbortController.abort();
+      const mdLocal = generateLocalSailorDebrief(data, env);
+      activeAiSailorReportMarkdown = mdLocal;
+      if(titleEl) titleEl.textContent = 'Debriefing: ' + data.name + ' (' + data.sail + ')';
+      if(badgeEl) badgeEl.textContent = 'Motor Experto RCNGC (Local Inmediato)';
+      if(contentEl) contentEl.innerHTML = simpleMarkdownToHtml(mdLocal);
+      if(reportBox) reportBox.style.display = 'block';
+      return;
+    }
+
+    const progress = startAiProgress('sailor');
+    activeAiAbortController = new AbortController();
+
+    const btnFast = document.getElementById('btnCancelAiSailorFastLocal');
+    if(btnFast){
+      btnFast.onclick = () => {
+        progress.stop();
+        generateSailorAiDebrief(true);
+      };
+    }
 
     const apiKey = getGeminiApiKey();
     const model = getGeminiModel();
@@ -17574,57 +17708,53 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
       if(apiKey && apiKey.trim()){
         if(titleEl) titleEl.textContent = 'Debriefing Autónomo: ' + data.name + ' (' + data.sail + ')';
         const prompt = buildSailorAiDebriefPrompt(data, env);
-        md = await callGeminiApi(prompt, model, apiKey);
-        usedModelBadge = 'Google Gemini (' + model.replace('gemini-', '') + ')';
+        const resObj = await callGeminiApi(prompt, model, apiKey, activeAiAbortController.signal);
+        md = resObj.text;
+        usedModelBadge = 'Google Gemini (' + resObj.model.replace('gemini-', '') + ')';
       } else {
         md = generateLocalSailorDebrief(data, env);
         usedModelBadge = 'Motor Experto RCNGC (Local)';
       }
 
+      progress.finish('✅ ¡Debriefing generado con éxito! Mostrando informe...');
       activeAiSailorReportMarkdown = md;
       if(titleEl) titleEl.textContent = 'Debriefing: ' + data.name + ' (' + data.sail + ')';
       if(badgeEl) badgeEl.textContent = usedModelBadge;
       if(contentEl) contentEl.innerHTML = simpleMarkdownToHtml(md);
-
-      if(loadingEl) loadingEl.style.display = 'none';
       if(reportBox) reportBox.style.display = 'block';
 
     } catch(err){
-      console.error('Error in generateSailorAiDebrief:', err);
+      console.warn('Error en debriefing con Gemini, pasando a motor experto:', err);
+      progress.stop();
+      let reason = (err.message && err.message.includes('TIMEOUT')) 
+        ? 'Tiempo de espera superado (25s)' 
+        : (err.message || 'Error de red o conexión');
       const mdFallback = generateLocalSailorDebrief(data, env) + 
-        '\n\n> ⚠️ *Nota: Se utilizó el motor experto local debido a un error de conexión con la API de Gemini: ' + err.message + '*';
+        '\n\n> ⚠️ *Nota: Se generó el informe con el motor experto local (' + reason + ').*';
       activeAiSailorReportMarkdown = mdFallback;
       if(titleEl) titleEl.textContent = 'Debriefing: ' + data.name + ' (' + data.sail + ')';
       if(badgeEl) badgeEl.textContent = 'Motor Experto RCNGC (Local Contingencia)';
       if(contentEl) contentEl.innerHTML = simpleMarkdownToHtml(mdFallback);
-      if(loadingEl) loadingEl.style.display = 'none';
       if(reportBox) reportBox.style.display = 'block';
     }
   }
 
-  async function generateFleetAiDebrief(){
+  async function generateFleetAiDebrief(forceLocal = false){
     if(typeof D === 'undefined' || !D || !D.boats || !D.boats.length){
       alert('No hay una sesión o flota cargada actualmente.');
       return;
     }
 
-    const loadingEl = document.getElementById('aiFleetLoading');
     const reportBox = document.getElementById('aiFleetReportBox');
-    const emptyEl = document.getElementById('aiFleetReportEmpty');
     const contentEl = document.getElementById('aiFleetReportContent');
     const titleEl = document.getElementById('aiFleetReportTitle');
     const badgeEl = document.getElementById('aiFleetReportBadge');
-
-    if(loadingEl) loadingEl.style.display = 'block';
-    if(reportBox) reportBox.style.display = 'none';
-    if(emptyEl) emptyEl.style.display = 'none';
 
     const fleetStats = [];
     for(let i = 0; i < D.boats.length; i++){
       const st = getSessionTelemetryForBoat(i);
       if(st) fleetStats.push(st);
     }
-
     fleetStats.sort((a, b) => b.polarPct - a.polarPct);
 
     let tws = 10.0;
@@ -17641,6 +17771,28 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
       windRegime: (tws < 8 ? 'Flojo' : tws <= 13 ? 'Medio' : tws <= 18 ? 'Fresco' : 'Duro'),
       totalBoats: D.boats.length
     };
+
+    if(forceLocal){
+      if(activeAiAbortController) activeAiAbortController.abort();
+      const mdLocal = generateLocalFleetDebrief(fleetStats, env);
+      activeAiFleetReportMarkdown = mdLocal;
+      if(titleEl) titleEl.textContent = 'Debriefing Colectivo de Flota · RCNGC';
+      if(badgeEl) badgeEl.textContent = 'Motor Experto RCNGC (Local Inmediato)';
+      if(contentEl) contentEl.innerHTML = simpleMarkdownToHtml(mdLocal);
+      if(reportBox) reportBox.style.display = 'block';
+      return;
+    }
+
+    const progress = startAiProgress('fleet');
+    activeAiAbortController = new AbortController();
+
+    const btnFast = document.getElementById('btnCancelAiFleetFastLocal');
+    if(btnFast){
+      btnFast.onclick = () => {
+        progress.stop();
+        generateFleetAiDebrief(true);
+      };
+    }
 
     const apiKey = getGeminiApiKey();
     const model = getGeminiModel();
@@ -17670,35 +17822,37 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
             '- Barcos con sensores activos: ' + boatsWithSensors.length + ' de ' + fleetStats.length + '\n' +
             '- Escora media colectiva en ceñida: ' + avgFleetHeel + '° (ideal plano 0°-3°)\n' +
             '- Trimado longitudinal medio colectivo (Pitch): ' + avgFleetTrim + '°\n' +
-            '- Deriva media colectiva (Leeway COG vs HDG): ' + avgFleetLeeway + '°\n' +
-            'Añade un análisis de estabilidad colectiva, control de escora en rachas y sustentación de orzas.\n';
+            '- Deriva media colectiva (Leeway COG vs HDG): ' + avgFleetLeeway + '°\n';
         }
 
         const prompt = buildFleetAiDebriefPrompt(fleetStats, env, fleetSensorsPromptBlock, boatsBrief, topBoat, fleetAvgSpd, fleetMaxSpd, fleetTotalTacks, fleetAvgPolar);
-        md = await callGeminiApi(prompt, model, apiKey);
-        usedModelBadge = 'Google Gemini (' + model.replace('gemini-', '') + ')';
+        const resObj = await callGeminiApi(prompt, model, apiKey, activeAiAbortController.signal);
+        md = resObj.text;
+        usedModelBadge = 'Google Gemini (' + resObj.model.replace('gemini-', '') + ')';
       } else {
         md = generateLocalFleetDebrief(fleetStats, env);
         usedModelBadge = 'Motor Experto RCNGC (Local)';
       }
 
+      progress.finish('✅ ¡Debriefing de flota generado con éxito! Mostrando informe...');
       activeAiFleetReportMarkdown = md;
       if(titleEl) titleEl.textContent = 'Debriefing Colectivo de Flota · RCNGC';
       if(badgeEl) badgeEl.textContent = usedModelBadge;
       if(contentEl) contentEl.innerHTML = simpleMarkdownToHtml(md);
-
-      if(loadingEl) loadingEl.style.display = 'none';
       if(reportBox) reportBox.style.display = 'block';
 
     } catch(err){
-      console.error('Error in generateFleetAiDebrief:', err);
+      console.warn('Error en debriefing de flota con Gemini:', err);
+      progress.stop();
+      let reason = (err.message && err.message.includes('TIMEOUT')) 
+        ? 'Tiempo de espera superado (25s)' 
+        : (err.message || 'Error de red o conexión');
       const mdFallback = generateLocalFleetDebrief(fleetStats, env) + 
-        '\n\n> ⚠️ *Nota: Se utilizó el motor experto local debido a un error de conexión con la API de Gemini: ' + err.message + '*';
+        '\n\n> ⚠️ *Nota: Se generó el informe de flota con el motor experto local (' + reason + ').*';
       activeAiFleetReportMarkdown = mdFallback;
       if(titleEl) titleEl.textContent = 'Debriefing Colectivo de Flota · RCNGC';
       if(badgeEl) badgeEl.textContent = 'Motor Experto RCNGC (Local Contingencia)';
       if(contentEl) contentEl.innerHTML = simpleMarkdownToHtml(mdFallback);
-      if(loadingEl) loadingEl.style.display = 'none';
       if(reportBox) reportBox.style.display = 'block';
     }
   }
@@ -17935,6 +18089,9 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     window.fetchClubConfig = fetchClubConfig;
     window.clubConfigCache = clubConfigCache;
     window.simpleMarkdownToHtml = simpleMarkdownToHtml;
+    window.startAiProgress = startAiProgress;
+    window.getActiveSessionData = getActiveSessionData;
+    window.setSessionData = function(data){ if(typeof D !== "undefined") D = data; if(typeof window !== "undefined") window.D = data; };
   }
 
   initAiDebriefingEventListeners();
