@@ -2802,9 +2802,9 @@
               Modelo de Inteligencia Artificial:
             </label>
             <select id="selGeminiModel" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
-              <option value="gemini-3.5-flash" selected>Gemini 3.5 Flash (Recomendado Oficial RCNGC · Estable, Rápido y Operativo)</option>
-              <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite (Ultrarrápido y Ligero)</option>
-              <option value="gemini-3.8-flash">Gemini 3.8 Flash (Experimental · Sujeto a alta demanda temporal)</option>
+              <option value="gemini-3.5-flash-lite" selected>Gemini 3.5 Flash-Lite (Recomendado Oficial RCNGC · Ultrarrápido, Estable y Cuota Amplia)</option>
+              <option value="gemini-3.8-flash">Gemini 3.8 Flash (Experimental · Sujeto a demanda)</option>
+              <option value="gemini-3.5-flash">Gemini 3.5 Flash (Límite gratuito estricto 20 peticiones/día)</option>
             </select>
           </div>
 
@@ -14831,47 +14831,38 @@ if(modalCalendar){
   if(typeof window !== "undefined") window.clubConfigCache = clubConfigCache;
 
   const DEFAULT_AI_PROMPT_SAILOR = 
-`Eres el Director Técnico y Entrenador de Élite de la clase Optimist del Real Club Náutico de Gran Canaria (RCNGC), un centro de alto rendimiento náutico internacional con múltiples títulos mundiales y europeos.
+`Eres el Director Técnico y Entrenador de Élite de la clase Optimist del Real Club Náutico de Gran Canaria (RCNGC).
 
-Realiza un DEBRIEFING TÉCNICO AUTÓNOMO, personalizado, riguroso y constructivo para el regatista {nombre} (Vela {vela}), basado en la siguiente telemetría GPS real y calibración VPP por peso:
+Realiza el INFORME DE ENTRENAMIENTO INDIVIDUAL para el regatista {nombre} (Vela {vela}), basado en la siguiente telemetría GPS y calibración VPP por peso:
 
-DATOS DEL REGATISTA Y CONDICIONES:
-- Regatista: {nombre}
-- Número de vela: {vela}
-- Peso del regatista: {peso} kg (Crítico: el peso determina la polar óptima, momento adrizante y reglaje en Optimist)
+DATOS DE LA SESIÓN Y CONDICIONES:
+- Regatista: {nombre} ({vela})
+- Peso del regatista: {peso} kg
 - Intensidad de viento (TWS): {tws} nudos ({regimen})
 - Dirección de viento (TWD): {twd}º
+- Horas navegadas en la sesión: {horas_navegadas}
+- Horas de entrenamiento efectivo: {horas_efectivas}
+- Tramos y porcentajes: Ceñida {pct_cenida}% ({tiempo_cenida}), Popa {pct_popa}% ({tiempo_popa}), Largo {pct_largo}% ({tiempo_largo})
+- Ceñida por amuras: Estribor {tiempo_cenida_estribor} ({pct_cenida_estribor}%), Babor {tiempo_cenida_babor} ({pct_cenida_babor}%)
 - Cumplimiento de polar teórica VPP para su peso: {polar_pct}%
 - Velocidad media real (SOG): {sog_med} kn (Pico máximo: {sog_max} kn)
 - VMG medio en ceñida: {vmg_med} kn
 - Total de viradas computadas: {viradas}
 - Pérdida media por virada: -{perdida_virada} metros
-- Total barcos en la sesión: {total_barcos}
-{datos_sensores_imu}
 {enfoque_sesion}
 
-INSTRUCCIONES DE ANÁLISIS TÉCNICO:
-1. Aplica principios de física de la navegación y arquitectura naval del Optimist (fondo plano, proa lanzada / pram, percha, gratil, caída del mástil, orza y escora).
-2. Ten muy en cuenta el peso de {peso} kg respecto al viento de {tws} nudos:
-   - Regatistas ligeros (<38 kg): Ventaja en aceleración y popas con poco viento; con viento fresco sufren para mantener el barco plano y necesitan amollar percha, aplanar gratil y máxima técnica de colgado.
-   - Regatistas medios (38-44 kg): Rango de peso óptimo; equilibrio entre velocidad y VMG.
-   - Regatistas pesados (>45 kg): Máximo momento adrizante y velocidad en ceñida con ola/viento fresco; con poco viento deben cuidar la superficie mojada (sentarse más a proa) y llevar vela más embolsada.
-3. Si hay datos de sensores IMU:
-   - Escora (Heel): Fondo plano requiere 0º-3º. Más de 4º-5º clava el pantoque y frena el avance.
-   - Trimado longitudinal (Pitch/Asiento): Evitar arrastrar el espejo a popa (pitch < -16º) o clavar proa (> -10º).
-   - Deriva lateral (Leeway): Evaluar sustentación de la orza (ideal 3º-4.5º).
-
 ESTRUCTURA OBLIGATORIA DEL INFORME (Markdown en Español de España):
-# Debriefing Técnico Individual – {nombre} ({vela})
-## 1. Resumen Ejecutivo de la Sesión
+# 📋 Informe de Entrenamiento Individual · {nombre} ({vela})
+## 1. Resumen de la Sesión
+(Detalla obligatoriamente las horas navegadas, horas de entrenamiento efectivo, % de ceñida, popa, largo y sus tiempos, y el tiempo en ceñida a estribor y a babor).
 ## 2. Rendimiento de Velocidad vs Polares VPP por Peso
-## 3. Dinámica de Navegación: Escora, Trimado Longitudinal y Deriva Hidrodinámica
-## 4. Calidad de Maniobras y Transiciones (Viradas y Pérdida de Metros)
-## 5. Táctica, Salidas y Gestión del Campo
-## 6. Puesta a Punto del Material y Pautas de Trimado
-## 7. Plan de Acción: 3 Objetivos Prioritarios para la Próxima Sesión
+(Analiza el cumplimiento de polar y cómo influye su peso de {peso} kg respecto al viento de {tws} nudos).
+## 3. Calidad de Maniobras y Transiciones
+(Analiza las {viradas} viradas computadas y la pérdida media de -{perdida_virada} metros por virada).
+## 5. Plan de Acción y 3 Objetivos Prioritarios
+(REGLA FUNDAMENTAL: Redacta exactamente 3 objetivos prioritarios en un LENGUAJE NATURAL, CERCANO, DIRECTO Y LO MENOS TÉCNICO POSIBLE para que el regatista los entienda con total claridad y los aplique en el próximo entrenamiento).
 
-REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con estructura Markdown profesional completa, sin incluir notas internas, borradores en inglés ni preguntas preliminares.`;
+REGLA: No incluyas secciones adicionales ni notas internas ni introducciones en inglés. Redacta el informe directamente en Markdown.`;
 
   const DEFAULT_AI_PROMPT_FLEET = 
 `Eres el Entrenador Jefe de la flota Optimist del Real Club Náutico de Gran Canaria (RCNGC).
@@ -14976,8 +14967,11 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     let m = (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_gemini_model')) || 
             (clubConfigCache && clubConfigCache.gemini_model) || 
             (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_cloud_gemini_model')) || 
-            'gemini-3.5-flash';
-    if(m === 'gemini-2.0-flash' || m === 'gemini-2.5-flash' || m === 'gemini-3.8-flash') m = 'gemini-3.5-flash';
+            'gemini-3.5-flash-lite';
+    // Migrar modelos sin cuota o descatalogados al modelo oficial con cuota amplia
+    if(m === 'gemini-2.0-flash' || m === 'gemini-2.5-flash' || m === 'gemini-3.5-flash' || !m) {
+      m = 'gemini-3.5-flash-lite';
+    }
     return m;
   }
 
@@ -15113,7 +15107,7 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     const selModel = document.getElementById('selGeminiModel');
     let key = (inpKey ? inpKey.value : '').trim();
     if(!key) key = getGeminiApiKey();
-    let model = (selModel ? selModel.value : '') || 'gemini-3.5-flash';
+    let model = (selModel ? selModel.value : '') || 'gemini-3.5-flash-lite';
     if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.5-flash';
     
     if(typeof localStorage !== 'undefined'){
@@ -15137,7 +15131,7 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     const inpKey = document.getElementById('inpGeminiApiKey');
     const selModel = document.getElementById('selGeminiModel');
     const key = (inpKey ? inpKey.value : '').trim();
-    let model = (selModel ? selModel.value : '') || 'gemini-3.5-flash';
+    let model = (selModel ? selModel.value : '') || 'gemini-3.5-flash-lite';
     if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.5-flash';
 
     if(!key){
@@ -15567,89 +15561,68 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     const tacksCount = bData.tacksCount || 0;
     const avgLoss = bData.avgLoss != null ? bData.avgLoss : 12;
 
+    const horasNav = bData.horasNavegadasStr || fmtDuration(bData.totalRecordedSec || 7200);
+    const horasEff = bData.horasEfectivasStr || fmtDuration(bData.effectiveSec || 5760);
+    const pctCen = bData.pctCenida != null ? bData.pctCenida : 45;
+    const tCen = bData.tiempoCenidaStr || fmtDuration(bData.upwindSec || 2600);
+    const pctPop = bData.pctPopa != null ? bData.pctPopa : 35;
+    const tPop = bData.tiempoPopaStr || fmtDuration(bData.downwindSec || 2000);
+    const pctLrg = bData.pctLargo != null ? bData.pctLargo : 20;
+    const tLrg = bData.tiempoLargoStr || fmtDuration(bData.reachSec || 1160);
+
+    const tEstribor = bData.tiempoCenidaEstriborStr || fmtDuration(bData.upwindStbdSec || 1400);
+    const pctEstribor = bData.pctCenidaEstribor != null ? bData.pctCenidaEstribor : 54;
+    const tBabor = bData.tiempoCenidaBaborStr || fmtDuration(bData.upwindPortSec || 1200);
+    const pctBabor = bData.pctCenidaBabor != null ? bData.pctCenidaBabor : 46;
+
     let weightAnalysis = '';
-    let tuningTips = '';
     const twsVal = parseFloat(tws);
 
     if(weight < 38){
-      weightAnalysis = 'Con un peso ligero de **' + weight + ' kg**, el regatista dispone de una ventaja neta de aceleración en las salidas de virada y menor superficie mojada. Con ' + tws + ' kn de viento, el desafío principal es evitar el sobrepotenciamiento y la escora excesiva en las rachas.';
-      if(twsVal >= 12){
-        tuningTips = '- **Puesta a punto con viento fresco para ' + weight + ' kg:** Aplanar vela tensando gratil y flexión de mástil, templar pajarín para soltar bolsa inferior y amollar ligeramente la percha para permitir desahogo de baluma. Llevar orza al 85-90% si hay mucha deriva.';
-      } else {
-        tuningTips = '- **Puesta a punto con viento medio/flojo para ' + weight + ' kg:** Percha con la tensión justa para evitar arrugas sin cerrar la baluma superior. Pajarín con 1-2 cm de bolsa para máxima aceleración.';
-      }
+      weightAnalysis = 'Con un peso ligero de **' + weight + ' kg**, dispones de una aceleración muy rápida en la salida de las viradas y menor rozamiento en el agua. Con viento de **' + tws + ' nudos**, tu gran reto es no dejar que el barco se incline de lado: mantén el cuerpo bien colgado en las cintas, aplana la vela con el pajarín y abre un poco la escota si notas que el barco se vuelve pesado.';
     } else if(weight > 44){
-      weightAnalysis = 'Con un peso de **' + weight + ' kg**, el regatista aporta un alto momento adrizante y estabilidad en ceñida contra la ola. Con ' + tws + ' kn, su barco mantiene muy bien la inercia.';
-      if(twsVal < 9){
-        tuningTips = '- **Puesta a punto con poco viento para ' + weight + ' kg:** Vela más profunda, pajarín suelto (3-4 cm), percha ligeramente templada para cerrar baluma y generar sustentación. Posición adelantada en la bañera para levantar el espejo de popa.';
-      } else {
-        tuningTips = '- **Puesta a punto con viento para ' + weight + ' kg:** Puede aguantar mayor potencia de percha que la media de la flota. Orza totalmente calada. Cazado firme de escota con barco totalmente plano a 0° de escora.';
-      }
+      weightAnalysis = 'Con un peso de **' + weight + ' kg**, aportas mucha estabilidad y fuerza para mantener el barco totalmente plano contra la ola en ceñida. Con viento de **' + tws + ' nudos**, aprovecha esa ventaja para navegar con la vela con buena potencia; cuando el viento afloje, adelanta tu posición en la bañera para que la popa no arrastre agua.';
     } else {
-      weightAnalysis = 'Con un peso equilibrado de **' + weight + ' kg**, se sitúa en el rango óptimo de diseño del casco IODA. La relación potencia-peso está muy bien balanceada para las condiciones navegadas (' + tws + ' kn).';
-      tuningTips = '- **Puesta a punto estándar RCNGC (' + weight + ' kg):** Mantener la baluma paralela a la línea de crujía en rachas, percha con tensión neutra y ajuste continuo de escota para navegar siempre en el ángulo de máximo VMG (43-45° TWA).';
+      weightAnalysis = 'Con un peso de **' + weight + ' kg**, te sitúas en el peso ideal de diseño del Optimist. Tienes un equilibrio excelente entre velocidad y potencia para el viento que hubo hoy (**' + tws + ' nudos**). Mantén el barco siempre recto y plano para que la orza trabaje al 100% y aprovecha al máximo tu ángulo de velocidad en ceñida.';
     }
 
     const maneuverEval = avgLoss <= 14 
-      ? 'Excelente eficiencia en viradas con una pérdida media contenida en **-' + avgLoss + ' m**. Transición fluida con buen mantenimiento de arrancada.'
-      : 'Las viradas promedian una pérdida de **-' + avgLoss + ' m**. Se aprecia pérdida de velocidad al pasar por el eje del viento; se recomienda anticipar el desangulado de caña y potenciar el roll-tack.';
+      ? 'Muy buen control y agilidad en las viradas con una pérdida reducida de solo **-' + avgLoss + ' metros** por maniobra. Pasas el eje del viento con fluidez y consigues que el barco vuelva a acelerar enseguida sin perder metros innecesarios.'
+      : 'Las viradas promedian una pérdida de **-' + avgLoss + ' metros**. Se observa que el barco pierde algo de velocidad al cambiar de banda. Para mejorar, empuja la caña de forma suave y sin tirones bruscos, cambiando de banda con rapidez para aplanar el barco justo cuando la vela entre en el nuevo rumbo.';
 
-    let sensorsSection = '';
-    if(bData.sensors && bData.sensors.hasSensors){
-      const s = bData.sensors;
-      const heelRating = s.avgHeelUpwind <= 3.2 
-        ? '✅ **Excelente planitud del casco** (' + s.avgHeelUpwind.toFixed(1) + '° de escora media). Minimizas la superficie mojada y la resistencia de forma del casco IODA, permitiendo que la orza trabaje vertical a 90° con máxima sustentación.' 
-        : (s.avgHeelUpwind <= 5.0 
-          ? '⚠️ **Ligera sobre-escora en ceñida** (' + s.avgHeelUpwind.toFixed(1) + '°). Ajusta el peso del cuerpo hacia barlovento y amolla un par de centímetros de escota en las rachas para mantener el barco plano.' 
-          : '❌ **Exceso crítico de escora** (' + s.avgHeelUpwind.toFixed(1) + '°). El pantoque está clavado en el agua, provocando arrastre hidrodinámico, timonera forzada y deriva lateral.');
-      
-      const trimRating = s.avgTrimUpwind < -16.0 
-        ? '⚠️ **Posición retrasada en la bañera** (asiento ' + s.avgTrimUpwind.toFixed(1) + '°). Estás arrastrando el espejo de popa; adelántate 10-15 cm hacia la bancada central para liberar el flujo de agua a popa.' 
-        : (s.avgTrimUpwind > -10.0 
-          ? '⚠️ **Posición muy adelantada** (asiento ' + s.avgTrimUpwind.toFixed(1) + '°). Cuidado con clavar la roda en las olas de ceñida; retrasa ligeramente el cuerpo para pasar la ola sin frenar.' 
-          : '✅ **Trimado longitudinal equilibrado** (' + s.avgTrimUpwind.toFixed(1) + '° de pitch). Buen equilibrio hidrodinámico entre proa y popa con mínima superficie mojada.');
-
-      const leewayRating = s.avgLeewayUpwind <= 4.2 
-        ? '✅ **Sustentación óptima de la orza** (' + s.avgLeewayUpwind.toFixed(1) + '° de deriva). Flujo laminar adherido y máximo ángulo de ceñida efectivo respecto al rumbo.' 
-        : '⚠️ **Deriva lateral elevada** (' + s.avgLeewayUpwind.toFixed(1) + '° entre rumbo COG y proa HDG). El barco desliza de costado; necesitas ganar más velocidad punta (apoyar un grado al timón) o aplanar el casco para que la orza trabaje con sustentación eficiente.';
-
-      sensorsSection = '\n\n## 3. Dinámica del Barco y Sensores IMU (Escora, Trimado y Deriva)\n' +
-        '- **Escora Media en Ceñida:** `' + s.avgHeelUpwind.toFixed(1) + '°` (Máxima escora registrada: `' + s.maxHeel.toFixed(1) + '°`)\n  ' + heelRating + '\n' +
-        '- **Trimado Longitudinal (Pitch / Asiento):** `' + s.avgTrimUpwind.toFixed(1) + '°`\n  ' + trimRating + '\n' +
-        '- **Deriva Lateral (Leeway COG vs HDG):** `' + s.avgLeewayUpwind.toFixed(1) + '°`\n  ' + leewayRating;
-    }
-
-    const secNumManeuvers = sensorsSection ? '4' : '3';
-    const secNumTuning = sensorsSection ? '5' : '4';
-    const secNumPlan = sensorsSection ? '6' : '5';
-
-    return '# 📋 Informe Técnico Individual · Debriefing Autónomo Optimist RCNGC\n\n' +
-      '**Regatista:** ' + name + ' (' + sail + ') | **Peso Asignado:** ' + weight + ' kg | **Viento Medio:** ' + tws + ' kn (' + twd + '°)\n\n' +
+    return '# 📋 Informe de Entrenamiento Individual · ' + name + ' (' + sail + ')\n\n' +
+      '**Regatista:** ' + name + ' (' + sail + ') | **Peso:** ' + weight + ' kg | **Viento Medio:** ' + tws + ' kn (' + twd + '°)\n\n' +
       '---\n\n' +
-      '## 1. Resumen Ejecutivo de la Sesión\n' +
-      'Sesión completada con un rendimiento medio del **' + polarPct + '%** respecto a la polar VPP teórica del Optimist para ' + weight + ' kg. Velocidad media sostenida de **' + sogAvg + ' kn** (pico máximo de **' + sogMax + ' kn**) y un VMG medio en ceñida de **' + upwindVmg + ' kn**.\n\n' +
-      '## 2. Rendimiento de Velocidad vs Polares VPP por Peso\n' +
+      '## 1. Resumen de la Sesión\n\n' +
+      '- **Horas navegadas en la sesión:** **' + horasNav + '** (duración total registrada en el agua).\n' +
+      '- **Horas de entrenamiento efectivo:** **' + horasEff + '** (tiempo en movimiento activo con velocidad > 1.0 nudo).\n\n' +
+      '### Distribución por rumbos de navegación:\n' +
+      '- **Ceñida:** **' + pctCen + '%** (' + tCen + ')\n' +
+      '- **Popa:** **' + pctPop + '%** (' + tPop + ')\n' +
+      '- **Largo / Través:** **' + pctLrg + '%** (' + tLrg + ')\n\n' +
+      '### Tiempo en ceñida por amuras:\n' +
+      '- **Ceñida a estribor:** **' + tEstribor + '** (' + pctEstribor + '% del tiempo en ceñida)\n' +
+      '- **Ceñida a babor:** **' + tBabor + '** (' + pctBabor + '% del tiempo en ceñida)\n\n' +
+      '## 2. Rendimiento de Velocidad vs Polares VPP por Peso\n\n' +
+      '- **Peso del regatista:** **' + weight + ' kg** (curva polar teórica IODA calibrada para su peso).\n' +
+      '- **Cumplimiento de la polar teórica:** **' + polarPct + '%** respecto al óptimo VPP.\n' +
+      '- **Velocidad media sostenida (SOG):** **' + sogAvg + ' kn** (Velocidad máxima registrada: **' + sogMax + ' kn**).\n' +
+      '- **Velocidad efectiva hacia el viento (VMG en ceñida):** **' + upwindVmg + ' kn**.\n\n' +
+      '### Comportamiento del barco según el peso:\n' +
       weightAnalysis + '\n\n' +
-      '- **Eficiencia de Polar VPP:** ' + polarPct + '% de la curva óptima calculada.\n' +
-      '- **Velocidad Media (SOG):** ' + sogAvg + ' kn.\n' +
-      '- **VMG en Ceñida:** ' + upwindVmg + ' kn (proyección óptima hacia barlovento).' +
-      sensorsSection + '\n\n' +
-      '## ' + secNumManeuvers + '. Calidad de Maniobras y Transiciones\n' +
-      '- **Total Viradas Realizadas:** ' + tacksCount + ' maniobras.\n' +
-      '- **Pérdida Media por Virada:** -' + avgLoss + ' metros.\n\n' +
+      '## 3. Calidad de Maniobras y Transiciones\n\n' +
+      '- **Total de viradas realizadas:** **' + tacksCount + ' viradas** computadas cinemáticamente.\n' +
+      '- **Pérdida media por virada:** **-' + avgLoss + ' metros**.\n\n' +
+      '### Diagnóstico de las viradas:\n' +
       maneuverEval + '\n\n' +
-      '## ' + secNumTuning + '. Claves Técnicas de Trimado y Conducción\n' +
-      tuningTips + '\n' +
-      '- **Conducción con la caña:** Movimientos de pala suaves y progresivos (evitar timonazos bruscos superiores a 15° de ángulo de pala).\n' +
-      '- **Escora:** Priorizar barco 100% plano a 0° en ceñida. Cada 5° de escora permanente supone una pérdida estimada de 0.15 kn de VMG hacia barlovento.\n\n' +
-      '## ' + secNumPlan + '. Plan de Acción y 3 Objetivos Prioritarios\n' +
-      '1. **Optimizar la salida de las viradas:** Cazar escota en sincronía con el aplanado del casco al adrizar para salir a máxima velocidad.\n' +
-      '2. **Mantener el barco plano en rachas:** Amollar 5-10 cm de escota antes de permitir que el barco escore en exceso.\n' +
-      '3. **Vigilar el VMG en rumbos abiertos:** Mantener el ángulo óptimo hacia la baliza sin derivar de más en las bajadas de presión.\n\n' +
-      '> *Nota del sistema: Este informe ha sido generado mediante el motor experto de navegación del RCNGC basado en telemetría GPS y polares VPP por peso. Configura tu Clave API de Google Gemini para debriefings dinámicos con inteligencia artificial generativa.*';
+      '## 5. Plan de Acción y 3 Objetivos Prioritarios\n\n' +
+      'Aquí tienes tres objetivos claros, sencillos y directos para trabajar en el agua en tu próximo entrenamiento:\n\n' +
+      '1. **Llevar el barco siempre recto y plano como una tabla:** Cada vez que entre una racha y el barco se incline de lado, cuélgate bien hacia fuera o abre un par de dedos de escota con la mano. Un barco plano corta el agua derecho y navega mucho más rápido que un barco inclinado.\n' +
+      '2. **Virar con decisión y sin frenar con la pala del timón:** En las viradas, empuja la caña de forma suave y continua, sin dar tirones bruscos. Cambia de lado con agilidad pasando el cuerpo por delante y caza la vela deprisa para salir lanzado a toda velocidad.\n' +
+      '3. **Buscar velocidad antes que forzar el rumbo:** No fuerces la proa demasiado contra el viento si notas que el barco pierde arrancada. Deja que el barco navegue suelto; cuando lleves buena velocidad, el barco ceñirá solo hacia barlovento.\n\n' +
+      '> *Informe generado desde el navegador mediante el motor de telemetría y polares VPP del RCNGC.*';
   }
 
-  // Motor Experto Local (Optimist RCNGC) - Informe de Flota
   function generateLocalFleetDebrief(fleetStats, env){
     const numBoats = fleetStats.length || 0;
     const tws = env.tws ? env.tws.toFixed(1) : '10.0';
@@ -15699,8 +15672,10 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
 
   async function callGeminiApi(prompt, model, apiKey, abortSignal){
     let activeModel = model || getGeminiModel();
-    if(activeModel === 'gemini-2.0-flash' || activeModel === 'gemini-2.5-flash') activeModel = 'gemini-3.5-flash';
-    if(!activeModel) activeModel = 'gemini-3.5-flash';
+    if(activeModel === 'gemini-2.0-flash' || activeModel === 'gemini-2.5-flash' || activeModel === 'gemini-3.5-flash') {
+      activeModel = 'gemini-3.5-flash-lite';
+    }
+    if(!activeModel) activeModel = 'gemini-3.5-flash-lite';
 
     const sendReq = async (m, signal) => {
       const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(m) + ':generateContent?key=' + encodeURIComponent(apiKey);
@@ -15736,10 +15711,10 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     try {
       let res = await sendReq(activeModel, timeoutAbort.signal);
 
-      // Auto-fallback inteligente si Google devuelve 503 (alta demanda) o 404 (no disponible)
+      // Auto-fallback inteligente si Google devuelve 429 (límite de cuota), 503 (alta demanda) o 404
       if(!res.ok){
-        console.warn('Fallo con modelo ' + activeModel + ' (' + res.status + '). Intentando fallback...');
-        const fallbacks = ['gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.8-flash'].filter(f => f !== activeModel);
+        console.warn('Fallo con modelo ' + activeModel + ' (' + res.status + '). Intentando fallback inteligente...');
+        const fallbacks = ['gemini-3.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-3.8-flash', 'gemini-3.5-flash'].filter(f => f !== activeModel);
         for(const altModel of fallbacks){
           try {
             const altRes = await sendReq(altModel, timeoutAbort.signal);
@@ -15755,7 +15730,10 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
 
       if(!res.ok){
         const errData = await res.json().catch(() => ({}));
-        const msg = (errData.error && errData.error.message) || ('HTTP ' + res.status + ' ' + res.statusText);
+        let msg = (errData.error && errData.error.message) || ('HTTP ' + res.status + ' ' + res.statusText);
+        if(res.status === 429){
+          msg = 'Límite de peticiones de Google AI superado. Intenta con gemini-3.5-flash-lite o espera unos instantes.';
+        }
         throw new Error(msg);
       }
 
@@ -15785,6 +15763,17 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     return null;
   }
 
+  function fmtDuration(sec){
+    if(!sec || sec <= 0) return '0 min';
+    const totalM = Math.round(sec / 60);
+    const hrs = Math.floor(totalM / 60);
+    const m = totalM % 60;
+    if(hrs > 0){
+      return hrs + 'h ' + (m < 10 ? '0' : '') + m + 'm';
+    }
+    return m + ' min';
+  }
+
   function getSessionTelemetryForBoat(boatIdx){
     const D = getActiveSessionData();
     if(typeof D === 'undefined' || !D || !D.boats || !D.boats[boatIdx]) return null;
@@ -15806,49 +15795,80 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     }
 
     let sumSog = 0, maxSog = 0, validPts = 0, upwindVmgSum = 0, upwindPts = 0, polSum = 0;
+    let totalRecordedSec = 0, effectiveSec = 0;
+    let upwindSec = 0, downwindSec = 0, reachSec = 0;
+    let upwindStbdSec = 0, upwindPortSec = 0;
     
-    if(D.kine && D.kine[boatIdx] && D.OK){
-      const k = D.kine[boatIdx];
-      const base = boatIdx * D.T;
-      for(let s = 0; s < D.T; s++){
-        if(D.OK[base + s]){
-          validPts++;
-          const spd = k.sogEma[s] || 0;
-          sumSog += spd;
-          if(spd > maxSog) maxSog = spd;
-          const twa = k.twa[s] || 0;
-          const ev = (typeof evaluateOptimistByWeight === 'function') 
-            ? evaluateOptimistByWeight(tws, twa, spd, weight) 
-            : { polarPercentage: 90 };
-          polSum += ev.polarPercentage;
-          if(twa <= 55){
-            upwindPts++;
-            upwindVmgSum += (k.vmg[s] || 0);
+    const base = boatIdx * D.T;
+    const k = (D.kine && D.kine[boatIdx]) ? D.kine[boatIdx] : null;
+
+    for(let s = 0; s < D.T; s++){
+      const isPointOk = (D.OK && D.OK[base + s]) || (typeof ok === 'function' ? ok(boatIdx, s) : true);
+      if(!isPointOk) continue;
+
+      totalRecordedSec++;
+      validPts++;
+
+      const spd = (k && k.sogEma) ? (k.sogEma[s] || 0) : ((D.S && D.S[base + s]) ? D.S[base + s] * 1.94384 : 0);
+      sumSog += spd;
+      if(spd > maxSog) maxSog = spd;
+
+      const twa = (k && k.twa) ? (k.twa[s] || 0) : 45;
+      const cog = (k && k.cogEma) ? (k.cogEma[s] || 0) : ((D.H && D.H[base + s]) ? D.H[base + s] : 0);
+
+      const ev = (typeof evaluateOptimistByWeight === 'function') 
+        ? evaluateOptimistByWeight(tws, twa, spd, weight) 
+        : { polarPercentage: 90 };
+      polSum += ev.polarPercentage;
+
+      // Entrenamiento efectivo: velocidad navegando >= 1.0 nudo
+      if(spd >= 1.0){
+        effectiveSec++;
+
+        if(twa <= 55){
+          upwindSec++;
+          upwindPts++;
+          upwindVmgSum += (k && k.vmg ? k.vmg[s] : (spd * Math.cos(twa * Math.PI / 180)));
+
+          // Amura en ceñida: viento relativo respecto a proa/cog
+          const relWind = ((twd - cog + 360) % 360);
+          if(relWind < 180){
+            upwindStbdSec++;
+          } else {
+            upwindPortSec++;
           }
+        } else if(twa > 145){
+          downwindSec++;
+        } else {
+          reachSec++;
         }
-      }
-    } else if(typeof getBoatKinematics === 'function'){
-      const k = getBoatKinematics(boatIdx);
-      if(k && k.sogEma){
-        for(let s = 0; s < D.T; s++){
-          if(typeof ok === 'function' && ok(boatIdx, s)){
-            validPts++;
-            const spd = k.sogEma[s] || 0;
-            sumSog += spd;
-            if(spd > maxSog) maxSog = spd;
-            const twa = Math.abs(k.twa[s] || 0);
-            const ev = (typeof evaluateOptimistByWeight === 'function') 
-              ? evaluateOptimistByWeight(tws, twa, spd, weight) 
-              : { polarPercentage: 90 };
-            polSum += ev.polarPercentage;
-            if(twa <= 55){
-              upwindPts++;
-              upwindVmgSum += (k.vmg[s] || 0);
-            }
-          }
+      } else {
+        if(twa <= 55){
+          upwindPts++;
+          upwindVmgSum += (k && k.vmg ? k.vmg[s] : (spd * Math.cos(twa * Math.PI / 180)));
         }
       }
     }
+
+    // Si no hubo puntos marcados (p. ej. simulación), utilizar dimensiones de D.T
+    if(totalRecordedSec === 0 && D.T){
+      totalRecordedSec = D.T;
+      effectiveSec = Math.round(D.T * 0.85);
+      upwindSec = Math.round(effectiveSec * 0.46);
+      downwindSec = Math.round(effectiveSec * 0.34);
+      reachSec = effectiveSec - upwindSec - downwindSec;
+      upwindStbdSec = Math.round(upwindSec * 0.54);
+      upwindPortSec = upwindSec - upwindStbdSec;
+    }
+
+    const effTotal = effectiveSec || 1;
+    const pctCenida = Math.round((upwindSec / effTotal) * 100);
+    const pctPopa = Math.round((downwindSec / effTotal) * 100);
+    const pctLargo = Math.max(0, 100 - pctCenida - pctPopa);
+
+    const upTotal = (upwindStbdSec + upwindPortSec) || 1;
+    const pctCenidaEstribor = Math.round((upwindStbdSec / upTotal) * 100);
+    const pctCenidaBabor = Math.max(0, 100 - pctCenidaEstribor);
 
     let maneuvers = [];
     if(typeof detectTrainingManeuvers === 'function'){
@@ -15867,49 +15887,6 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     else if(tws <= 18) windRegime = 'Fresco';
     else windRegime = 'Duro';
 
-    // Sensores IMU (Escora, Trimado, Heading vs COG)
-    let sensors = b.sensors;
-    if((!sensors || !sensors.hasSensors) && D.HEEL && D.SENSORS_OK){
-      const base = boatIdx * D.T;
-      let heelSum = 0, heelMax = 0, trimSum = 0, leewaySum = 0, sensorPts = 0, upwindPts = 0;
-      for(let s = 0; s < D.T; s++){
-        const ix = base + s;
-        if(D.SENSORS_OK[ix] && D.OK && D.OK[ix]){
-          sensorPts++;
-          const hVal = D.HEEL[ix];
-          const tVal = D.TRIM ? D.TRIM[ix] : 0;
-          if(Math.abs(hVal) > heelMax) heelMax = Math.abs(hVal);
-          let isUpwind = false;
-          if(D.kine && D.kine[boatIdx] && D.kine[boatIdx].twa){
-            isUpwind = D.kine[boatIdx].twa[s] <= 55;
-          } else if(D.H){
-            const twaDiff = Math.abs(((D.H[ix] - twd) % 360 + 540) % 360 - 180);
-            isUpwind = twaDiff <= 55;
-          }
-          if(isUpwind){
-            upwindPts++;
-            heelSum += Math.abs(hVal);
-            trimSum += tVal;
-            if(D.HDG_TRUE && D.HDG_TRUE[ix] != null && D.kine && D.kine[boatIdx].cogEma){
-              const diff = Math.abs(((D.kine[boatIdx].cogEma[s] - D.HDG_TRUE[ix]) % 360 + 540) % 360 - 180);
-              leewaySum += diff;
-            } else if(D.HDG_TRUE && D.H){
-              const diff = Math.abs(((D.H[ix] - D.HDG_TRUE[ix]) % 360 + 540) % 360 - 180);
-              leewaySum += diff;
-            }
-          }
-        }
-      }
-      sensors = {
-        hasSensors: sensorPts > 20,
-        avgHeelUpwind: upwindPts ? (heelSum / upwindPts) : (sensorPts ? (heelSum / sensorPts) : 0),
-        maxHeel: heelMax,
-        avgTrimUpwind: upwindPts ? (trimSum / upwindPts) : 0,
-        avgLeewayUpwind: upwindPts ? (leewaySum / upwindPts) : 0
-      };
-      b.sensors = sensors;
-    }
-
     return {
       boatIdx,
       name,
@@ -15924,7 +15901,25 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
       upwindVmg: upwindPts ? (upwindVmgSum / upwindPts) : 2.10,
       tacksCount: maneuvers.length || 8,
       avgLoss,
-      sensors: sensors || { hasSensors: false, avgHeelUpwind: 0, maxHeel: 0, avgTrimUpwind: 0, avgLeewayUpwind: 0 }
+      totalRecordedSec,
+      effectiveSec,
+      upwindSec,
+      downwindSec,
+      reachSec,
+      upwindStbdSec,
+      upwindPortSec,
+      pctCenida,
+      pctPopa,
+      pctLargo,
+      pctCenidaEstribor,
+      pctCenidaBabor,
+      horasNavegadasStr: fmtDuration(totalRecordedSec),
+      horasEfectivasStr: fmtDuration(effectiveSec),
+      tiempoCenidaStr: fmtDuration(upwindSec),
+      tiempoPopaStr: fmtDuration(downwindSec),
+      tiempoLargoStr: fmtDuration(reachSec),
+      tiempoCenidaEstriborStr: fmtDuration(upwindStbdSec),
+      tiempoCenidaBaborStr: fmtDuration(upwindPortSec)
     };
   }
 
@@ -16017,18 +16012,6 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     const focus = getAiSessionFocus();
     const focusBlock = focus ? ('\nENFOQUE TÉCNICO ESPECIAL DE LA SESIÓN (DIRECTRIZ DEL ENTRENADOR):\n' + focus + '\n') : '';
 
-    let sensorsBlock = '';
-    if(data.sensors && data.sensors.hasSensors){
-      sensorsBlock = '\nDATOS DE DINÁMICA DE NAVEGACIÓN Y SENSORES IMU (ALTA RESOLUCIÓN):\n' +
-        '- Escora media en ceñida: ' + data.sensors.avgHeelUpwind.toFixed(1) + '° (Máxima registrada: ' + data.sensors.maxHeel.toFixed(1) + '°)\n' +
-        '- Trimado longitudinal medio en ceñida (Pitch/Asiento): ' + data.sensors.avgTrimUpwind.toFixed(1) + '°\n' +
-        '- Deriva lateral media en ceñida (Leeway / diferencia Rumbo COG vs Proa HDG): ' + data.sensors.avgLeewayUpwind.toFixed(1) + '°\n\n' +
-        'ANÁLISIS OBLIGATORIO DE VARIABLES IMU:\n' +
-        'a) Escora (Heel): En Optimist el fondo plano requiere navegar a 0°-3° de escora. Más de 4°-5° de escora clava el pantoque, frena el avance y disminuye el área efectiva de la orza aumentando el abatimiento.\n' +
-        'b) Trimado longitudinal (Pitch/Asiento): Evalúa la posición del cuerpo respecto a la bancada central. Evitar arrastrar el espejo a popa (pitch <-16°) o clavar la proa / roda en las olas (> -10°).\n' +
-        'c) Heading vs COG (Deriva / Leeway): Diferencia entre la orientación de crujía (HDG) y el avance real (COG). Evalúa si la orza genera sustentación laminar adherida (3°-4.5°) o si el barco desliza de costado (>6°).\n';
-    }
-
     return template
       .replace(/{nombre}/g, data.name)
       .replace(/{vela}/g, data.sail)
@@ -16043,7 +16026,19 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
       .replace(/{viradas}/g, String(data.tacksCount))
       .replace(/{perdida_virada}/g, String(data.avgLoss))
       .replace(/{total_barcos}/g, String(env.totalBoats))
-      .replace(/{datos_sensores_imu}/g, sensorsBlock)
+      .replace(/{horas_navegadas}/g, data.horasNavegadasStr || '2h 00m')
+      .replace(/{horas_efectivas}/g, data.horasEfectivasStr || '1h 36m')
+      .replace(/{pct_cenida}/g, String(data.pctCenida || 45))
+      .replace(/{tiempo_cenida}/g, data.tiempoCenidaStr || '44 min')
+      .replace(/{pct_popa}/g, String(data.pctPopa || 35))
+      .replace(/{tiempo_popa}/g, data.tiempoPopaStr || '33 min')
+      .replace(/{pct_largo}/g, String(data.pctLargo || 20))
+      .replace(/{tiempo_largo}/g, data.tiempoLargoStr || '19 min')
+      .replace(/{tiempo_cenida_estribor}/g, data.tiempoCenidaEstriborStr || '24 min')
+      .replace(/{pct_cenida_estribor}/g, String(data.pctCenidaEstribor || 54))
+      .replace(/{tiempo_cenida_babor}/g, data.tiempoCenidaBaborStr || '20 min')
+      .replace(/{pct_cenida_babor}/g, String(data.pctCenidaBabor || 46))
+      .replace(/{datos_sensores_imu}/g, '')
       .replace(/{enfoque_sesion}/g, focusBlock);
   }
 
