@@ -5538,10 +5538,39 @@ const OPTIMIST_POLAR_DATA = {
       renderPinnedBoats();
     }
   }
+  window.unpinBoat = unpinBoat;
+  window.pinBoat = pinBoat;
+
+  function setupPinnedBoatsContainerEvents(){
+    const container = document.getElementById('pinnedBoatsContainer');
+    if(!container || container.dataset.eventsBound) return;
+    container.dataset.eventsBound = 'true';
+
+    container.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const closeBtn = e.target.closest('.btc-close-btn');
+      if(closeBtn){
+        const card = closeBtn.closest('.pinned-card');
+        const idx = card ? parseInt(card.dataset.boatIdx, 10) : parseInt(closeBtn.dataset.boatIdx, 10);
+        if(!isNaN(idx)){
+          unpinBoat(idx);
+        }
+        return;
+      }
+      const card = e.target.closest('.pinned-card');
+      if(card){
+        const idx = parseInt(card.dataset.boatIdx, 10);
+        if(!isNaN(idx)){
+          if(typeof setActiveBoat === 'function') setActiveBoat(idx);
+        }
+      }
+    });
+  }
 
   function renderPinnedBoats(){
     const container = document.getElementById('pinnedBoatsContainer');
     if(!container) return;
+    setupPinnedBoatsContainerEvents();
     if(!D || !pinnedBoatIndices.length){
       container.innerHTML = '';
       return;
@@ -5558,7 +5587,7 @@ const OPTIMIST_POLAR_DATA = {
               <span class="btc-sail" style="color:${d.color}">${d.sail}</span>
               ${d.name ? `<span class="btc-name" title="${d.name}">${d.name}</span>` : ''}
             </div>
-            <button class="btc-close-btn" type="button" title="Desfijar" onclick="event.stopPropagation(); unpinBoat(${idx});">✕</button>
+            <button class="btc-close-btn" type="button" title="Desfijar" data-action="unpin" data-boat-idx="${idx}" onclick="event.stopPropagation(); unpinBoat(${idx});">✕</button>
           </div>
           <div class="btc-grid">
             <div class="btc-cell">

@@ -137,6 +137,71 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.9.15] - Corrección del Botón de Cierre (✕) en Recuadros de Telemetría Fijados
+* **Cierre Inmediato de Tarjetas Fijadas de Telemetría**:
+  * Solucionado el problema por el cual el botón de cierre `✕` de los recuadros de barcos fijados en el mapa interactivo no respondía al hacer clic.
+  * Implementada delegación de eventos (`setupPinnedBoatsContainerEvents`) en `#pinnedBoatsContainer` que captura los clics sobre el botón `.btc-close-btn` y los atributos `data-action="unpin"`, desvinculando y cerrando la tarjeta al instante.
+  * Exportadas las funciones `unpinBoat` y `pinBoat` al ámbito global (`window`) para evitar fallos por encapsulamiento dentro de la IIFE.
+  * Optimizado el área de pulsación con `pointer-events: auto;`, `z-index: 5` y mayor padding para asegurar una respuesta táctil y de ratón perfecta.
+  * Corrección aplicada y sincronizada en el **Visor de Regatas** y en el **Analizador de Entrenamientos**.
+
+### [v1.9.14] - Botón de Acceso Directo «Inicio» al Visor de Regatas
+* **Botón `🏠 Inicio` en la Barra Superior**:
+  * Incorporado un botón destacado en color cian **`🏠 Inicio`** en la cabecera superior de la aplicación.
+  * Permite regresar en un solo clic a la pantalla de inicio del **Visor y Analizador de Regatas** desde cualquier lugar, funcionando automáticamente tanto si abres el archivo directo en la raíz como desde la subcarpeta `/video-telemetria/`.
+
+### [v1.9.13] - Simplificación y Limpieza de Textos e Indicadores
+* **Limpieza del Mini-Mapa**:
+  * Sustituida la descripción extensa `📍 Gando · RCNGC Track (Haz clic para saltar al instante)` por el rótulo directo **`📍 Vista previa del track`**.
+* **Simplificación de Amuras**:
+  * Eliminadas las indicaciones entre paréntesis `(Verde)` y `(Rojo)` en el indicador de amuras, mostrando directamente **`Estribor`** o **`Babor`** con sus colores característicos.
+* **Cabecera Simplificada del HUD**:
+  * Cambiado el título superior del recuadro del ángulo de viento de `TWA & RUMBO` a únicamente **`TWA`**, dejando la pantalla más limpia y despejada.
+
+### [v1.9.12] - Sincronización Inteligente de Zonas Horarias (UTC vs Hora Local del Vídeo)
+* **Resolución del Desfase de Zona Horaria (UTC vs Hora Local)**:
+  * Los relojes y registradores GPS guardan siempre sus marcas en tiempo universal **UTC** (hora de satélite / GMT), mientras que los móviles y cámaras graban con la **hora local del reloj del dispositivo** (ejemplo: UTC+1 en Canarias verano / Península invierno, o UTC+2 en Península verano).
+  * El sistema cuenta ahora con **detección y compensación inteligente**: al cargar el vídeo, detecta automáticamente si la marca del archivo coincide con el track GPS aplicando la diferencia horaria (`UTC`, `UTC+1`, `UTC+2` o `UTC-1`) y sitúa el vídeo en el instante exacto.
+* **Selector de Zona Horaria Integrado**:
+  * Desplegable en la barra de sincronización para elegir la zona horaria del vídeo. Al cambiarlo, el programa desplaza automáticamente la sincronización para que coincida al segundo.
+* **Botones de Salto Rápido de Hora (`-2h`, `-1h`, `+1h`, `+2h`)**:
+  * Nuevos botones en verde para adelantar o retroceder la sincronización en bloques exactos de 1 hora (3.600 s) o 2 horas (7.200 s) con un solo clic si el móvil tenía un huso horario diferente.
+* **Doble Lectura Temporal Simultánea (Hora Local y Hora UTC)**:
+  * El marcador flotante HUD del vídeo, la barra de sincronización y el tooltip de la línea de tiempo muestran ahora tanto la hora local del entrenador como la hora de satélite GPS (ejemplo: `15:54:50 (UTC+1) · 14:54:50 UTC`), eliminando cualquier duda sobre desfases.
+
+### [v1.9.11] - Corrección Náutica de Amuras y Escora (Estribor / Babor)
+* **Inversión y Corrección de la Detección de Amuras (Tack)**:
+  * Corregido el signo del viento relativo respecto a la proa (`TWA`), alineándolo con la regla náutica oficial del club:
+    * Cuando el viento entra por la banda de estribor, el software muestra con exactitud **`Amurado a Estribor`** (verde `#10b981`, distintivo `ESTR`).
+    * Cuando el viento entra por la banda de babor, muestra **`Amurado a Babor`** (rojo `#f43f5e`, distintivo `BAB`).
+  * Corrige la contradicción visual observada en los vídeos donde la botavara iba a babor pero el sistema indicaba erróneamente amurado a babor.
+* **Sincronización Física de Escora a Sotavento**:
+  * Vinculado el lado de escora con la amura real: al navegar amurado a estribor el barco escora a babor (sotavento) e inclina el visualizador hacia la izquierda; al ir amurado a babor escora a estribor (sotavento) e inclina hacia la derecha.
+
+### [v1.9.10] - Optimización de Recuadros HUD en Vídeo: Proporciones Compactas y Modo Inferior
+* **Corrección de Proporciones y Eliminación del Estiramiento Vertical**:
+  * Los recuadros de telemetría flotantes sobre el vídeo (`Velocidad GPS` y `TWA & Rumbo`) ya no se estiran verticalmente hacia abajo con fondos negros vacíos.
+  * Ahora tienen proporciones exactas y compactas, ajustándose limpiamente al contenido con la misma estética cuidada que el recuadro de escora y trim.
+  * Los tamaños de letra se mantienen intactos y bien visibles (32px para velocidad, 30px para rumbo y 16px para escora y trim).
+* **Modo HUD Inferior (`📌 HUD Abajo` por defecto)**:
+  * Todos los recuadros se ubican ahora de forma natural y compacta en la parte inferior del vídeo, dejando libre toda la zona superior y central para ver las velas, la botavara, los catavientos y las olas sin ningún obstáculo.
+* **Selector Rápido de Posición (`📌 HUD Abajo` / `📌 HUD Esquinas`)**:
+  * Nuevo botón integrado en los mandos del reproductor para cambiar al instante la posición del HUD entre la parte inferior o las esquinas según lo que prefieras en cada grabación, guardando la preferencia automáticamente en la memoria del navegador.
+
+### [v1.9.9] - Viento Oficial de Sesión Automático y Rendimiento Polar VPP (Optimist IOD95)
+* **Botón de Viento Oficial de la Sesión (`🎯 Viento Sesión`)**:
+  * Nuevo botón inteligente integrado en los controles de viento real que aplica de forma automática la dirección (TWD) e intensidad (TWS) calculadas cuando se subieron y procesaron los archivos en el software de entrenamiento (`regatas_club` en Turso SQLite / CSV).
+  * Al seleccionar cualquier barco de la Biblioteca de Entrenamientos, el sistema identifica el viento registrado en el club (ej: `🎯 Viento Sesión (040°)`), posiciona la rosa náutica y calibra los instrumentos al instante.
+  * Incorpora controles independientes para afinar tanto la dirección (0° a 359°) como la fuerza del viento (4 a 25 kts), con indicativo cardinal en vivo (`NNE`, `ENE`, `NE`, etc.) y persistencia en memoria.
+* **Integración de Polares Oficiales de Optimist (VPP IOD95)**:
+  * Cargada la matriz de rendimiento polar oficial de la clase Internacional Optimist Dinghy (IOD95) para intensidades de 4 a 20 nudos y ángulos de 0° a 180°.
+  * **Velocidad Objetivo en Tiempo Real (Target SOG)**: Indica cuál es la velocidad teórica óptima a la que debería ir el regatista con ese viento y rumbo.
+  * **Porcentaje de Rendimiento Polar (`Eficiencia VPP`)**: Calcula segundo a segundo qué porcentaje del rendimiento óptimo está logrando el regatista:
+    * 🟢 **Verde (≥95%)**: Rendimiento excelente, por encima o rozando la polar ideal.
+    * 🟡 **Ámbar (80% a 95%)**: Buen rendimiento o aceleración tras maniobra.
+    * 🔴 **Rojo (<80%)**: Velocidad por debajo del objetivo (posible pérdida por exceso de escora, cazado incorrecto o salida lenta de virada).
+  * **Métricas en Pantalla y en el Vídeo (HUD Overlay)**: La estadística de rendimiento polar se muestra en vivo tanto en el cuadro de instrumentos como flotando sobre el propio vídeo (`POLAR: 96%`) junto al velocímetro GPS y el VMG.
+
 ### [v1.9.8] - Doble Opción de Ingesta CSV: Local y Biblioteca Cloud de Entrenamientos
 * **Doble Opción de Carga de Telemetría**: La tarjeta de CSV ahora ofrece dos vías directas de ingesta:
   1. **📂 Subir desde PC**: Selección tradicional de archivos `.csv` en local o arrastrar/soltar desde el explorador de Windows.
