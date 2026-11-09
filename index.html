@@ -581,11 +581,7 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:0}
   display:block;
 }
 .tool-card-desc{
-  font-size:10.5px;
-  color:var(--dim);
-  line-height:1.2;
-  margin-top:2px;
-  display:block;
+  display:none !important;
 }
 .home-local-box{
   background:var(--panel);
@@ -2224,35 +2220,30 @@ body.map-fullscreen-active {
           <button class="home-tool-card tool-bigdata" id="btnHomeBigData" type="button" title="Abrir histórico central de estadísticas, viradas y rendimiento de la flota">
             <div class="tool-card-icon" style="background:rgba(2,132,199,0.15);color:#0284c7">📊</div>
             <strong class="tool-card-title">Histórico & Big Data</strong>
-            <span class="tool-card-desc">Estadísticas y flota</span>
           </button>
 
           <!-- 2. Analizador de Entrenamientos -->
           <a href="analizador-entrenamientos/index.html" class="home-tool-card tool-analizador" title="Abrir Analizador de Entrenamientos, Polares VPP y debriefing de maniobras">
             <div class="tool-card-icon" style="background:rgba(0,240,255,0.12);color:#00f0ff">🏋️</div>
             <strong class="tool-card-title">Analizador Entrenamientos</strong>
-            <span class="tool-card-desc">Polares VPP & VMG</span>
           </a>
 
           <!-- 3. App Móvil Salidas GPS -->
           <a href="gps-salidas/index.html" target="_blank" class="home-tool-card tool-gps" title="Abrir app móvil para marcar Comité y Pin en el agua con GPS">
             <div class="tool-card-icon" style="background:rgba(16,185,129,0.15);color:#10b981">📲</div>
             <strong class="tool-card-title">App Salidas GPS</strong>
-            <span class="tool-card-desc">Comité y Pin en agua</span>
           </a>
 
-                    <!-- 4. Vídeo & Telemetría -->
+          <!-- 4. Vídeo & Telemetría -->
           <a href="video-telemetria/index.html" class="home-tool-card tool-video" title="Sincronizar vídeo en tiempo real con datos de velocidad, escora, TWA y VMG">
             <div class="tool-card-icon" style="background:rgba(244,63,94,0.15);color:#f43f5e">🎬</div>
             <strong class="tool-card-title">Vídeo & Telemetría</strong>
-            <span class="tool-card-desc">Sincro, Escora & VMG</span>
           </a>
 
-<!-- 4. Debriefing IA (En pruebas) -->
+          <!-- 5. Debriefing IA (En pruebas) -->
           <button class="home-tool-card tool-ai" id="btnHomeAiDebrief" type="button" title="Abrir Debriefing Autónomo con IA (Google Gemini)">
             <div class="tool-card-icon" style="background:rgba(14,165,233,0.15);color:#0284c7">🤖</div>
             <strong class="tool-card-title">Debriefing IA <span style="background:rgba(245,158,11,0.25);color:#fbbf24;font-size:9.5px;padding:1px 5px;border-radius:4px;font-weight:700">En pruebas</span></strong>
-            <span class="tool-card-desc">Google Gemini Autónomo</span>
           </button>
         </div>
       </div>

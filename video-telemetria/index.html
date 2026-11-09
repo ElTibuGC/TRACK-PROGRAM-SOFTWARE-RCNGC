@@ -127,6 +127,21 @@
       border-color: var(--cyan);
       color: #fff;
     }
+    .suite-pill.btn-suite-home {
+      background: rgba(0, 240, 255, 0.12);
+      border-color: rgba(0, 240, 255, 0.4);
+      color: #00f0ff;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .suite-pill.btn-suite-home:hover {
+      background: rgba(0, 240, 255, 0.25);
+      border-color: #00f0ff;
+      color: #fff;
+      transform: translateY(-1px);
+    }
     .suite-pill.active {
       background: rgba(244,63,94,0.18);
       border-color: #f43f5e;
@@ -1321,17 +1336,17 @@
 
     <!-- Pestañas de Suite -->
     <nav class="suite-nav-pills">
-      <a href="../index.html" class="suite-pill" title="Volver al Visor de Regatas">
-        ⛵ Visor Regatas
+      <a href="../index.html" onclick="goToHome(event)" class="suite-pill btn-suite-home" title="Volver al Inicio del Visor de Regatas">
+        🏠 Inicio
       </a>
-      <a href="../analizador-entrenamientos/index.html" class="suite-pill" title="Abrir Analizador de Entrenamientos">
+      <a href="../analizador-entrenamientos/index.html" onclick="goToAnalizador(event)" class="suite-pill" title="Abrir Analizador de Entrenamientos">
         📊 Analizador Entrenamientos
       </a>
-      <a href="../gps-salidas/index.html" target="_blank" class="suite-pill" title="Abrir App Salidas GPS">
+      <a href="../gps-salidas/index.html" onclick="goToSalidas(event)" target="_blank" class="suite-pill" title="Abrir App Salidas GPS">
         📲 Salidas GPS
       </a>
       <span class="suite-pill active">
-        🎬 Vídeo & Datos
+        🎬 Vídeo & Telemetría
       </span>
     </nav>
 
@@ -3138,6 +3153,39 @@
       drawMiniMap();
       drawStripChart();
     }
+
+    // =========================================================================
+    // NAVEGACIÓN DE LA SUITE RCNGC (INICIO, ANALIZADOR, SALIDAS)
+    // =========================================================================
+    window.goToHome = function(e) {
+      if (e) e.preventDefault();
+      const path = window.location.pathname.replace(/\\/g, '/');
+      if (path.includes('/video-telemetria/')) {
+        window.location.href = '../index.html';
+      } else {
+        window.location.href = 'index.html';
+      }
+    };
+
+    window.goToAnalizador = function(e) {
+      if (e) e.preventDefault();
+      const path = window.location.pathname.replace(/\\/g, '/');
+      if (path.includes('/video-telemetria/')) {
+        window.location.href = '../Analizador Entrenamientos Optimist.html';
+      } else {
+        window.location.href = 'Analizador Entrenamientos Optimist.html';
+      }
+    };
+
+    window.goToSalidas = function(e) {
+      if (e) e.preventDefault();
+      const path = window.location.pathname.replace(/\\/g, '/');
+      if (path.includes('/video-telemetria/')) {
+        window.open('../gps-salidas/index.html', '_blank');
+      } else {
+        window.open('gps-salidas/index.html', '_blank');
+      }
+    };
 
     // =========================================================================
     // AUTENTICACIÓN ENTRENADORES (RCNGC SUITE)
