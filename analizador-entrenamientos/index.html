@@ -1522,7 +1522,7 @@
     }
     .home-tools-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 10px;
     }
     @media (max-width: 1080px){
@@ -1605,6 +1605,27 @@
     .home-tool-card.tool-gps .tool-card-title {
       color: #34d399;
     }
+
+    .home-tool-card.tool-video {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.16) 0%, rgba(244, 63, 94, 0.05) 100%);
+      border: 1.5px solid rgba(244, 63, 94, 0.45);
+      box-shadow: 0 3px 12px rgba(244, 63, 94, 0.1);
+    }
+    .home-tool-card.tool-video:hover {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.28) 0%, rgba(244, 63, 94, 0.12) 100%);
+      border-color: #f43f5e;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(244, 63, 94, 0.35);
+    }
+    .home-tool-card.tool-video .tool-card-icon {
+      background: rgba(244, 63, 94, 0.25);
+      border: 1px solid rgba(244, 63, 94, 0.55);
+      color: #fb7185;
+    }
+    .home-tool-card.tool-video .tool-card-title {
+      color: #fb7185;
+    }
+
     .tool-card-icon {
       width: 32px;
       height: 32px;
@@ -1939,7 +1960,14 @@
             <span class="tool-card-desc">Comité y Pin en agua</span>
           </a>
 
-          <!-- 4. Debriefing IA (En pruebas) -->
+                    <!-- 4. Vídeo & Telemetría -->
+          <a href="../video-telemetria/index.html" class="home-tool-card tool-video" title="Sincronizar vídeo en tiempo real con datos de velocidad, escora, TWA y VMG">
+            <div class="tool-card-icon" style="background:rgba(244,63,94,0.15);color:#f43f5e">🎬</div>
+            <strong class="tool-card-title">Vídeo & Telemetría</strong>
+            <span class="tool-card-desc">Sincro, Escora & VMG</span>
+          </a>
+
+<!-- 4. Debriefing IA (En pruebas) -->
           <button class="home-tool-card tool-ai" id="btnHomeAiDebrief" type="button" title="Abrir Debriefing Autónomo con IA (Google Gemini)">
             <div class="tool-card-icon" style="background:rgba(14,165,233,0.15);color:#0284c7">🤖</div>
             <strong class="tool-card-title">Debriefing IA <span style="background:rgba(245,158,11,0.25);color:#fbbf24;font-size:9.5px;padding:1px 5px;border-radius:4px;font-weight:700">En pruebas</span></strong>
@@ -2638,37 +2666,95 @@
 
     </div>
 
-    <!-- Modal de Configuración de Clave API Google Gemini -->
+    <!-- Modal 1: Configuración de Clave API Google Gemini (Acceso Abierto para Todos) -->
     <div class="modal-overlay" id="aiApiKeyModal" style="z-index: 10600;" hidden>
-      <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="aiApiKeyModalTitle" style="max-width:540px">
+      <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="aiApiKeyModalTitle" style="max-width:580px;width:95%">
         <div class="modal-head" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)">
-          <div style="display:flex;align-items:center;gap:8px">
-            <span style="font-size:18px">🔑</span>
-            <h3 id="aiApiKeyModalTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--ink)">Configuración de Google Gemini AI</h3>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:20px">🔑</span>
+            <div>
+              <h3 id="aiApiKeyModalTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--ink)">Configuración de Google Gemini AI</h3>
+              <div style="font-size:11.5px;color:var(--dim)">Configura tu clave personal gratuita para habilitar los informes autónomos con IA</div>
+            </div>
           </div>
           <button class="modal-close" id="btnCloseAiApiKeyModal" type="button" aria-label="Cerrar modal">✕</button>
         </div>
-        <div class="modal-body" style="padding:18px 20px">
-          <!-- Banner dinámico de estado en la nube -->
-          <div id="aiCloudKeyInfoBanner" style="display:none;margin-bottom:14px;border-radius:6px;padding:10px 14px;font-size:12px;line-height:1.45"></div>
-
-          <!-- Aviso en pruebas en el modal de clave API -->
-          <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:6px;padding:10px 14px;font-size:12px;color:#fbbf24;margin-bottom:14px;display:flex;align-items:center;gap:10px">
-            <span style="font-size:20px;flex-shrink:0">⚠️</span>
-            <div>
-              <strong>Función en fase de pruebas:</strong> La integración de debriefings autónomos con Google Gemini AI es experimental. Las conclusiones emitidas deben ser supervisadas por el entrenador.
+        
+        <div class="modal-body" style="padding:18px 20px;max-height:75vh;overflow-y:auto">
+          <!-- Guía paso a paso para obtener la clave -->
+          <div style="background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.3);border-radius:8px;padding:14px 16px;margin-bottom:16px;font-size:12px;line-height:1.55;color:var(--ink)">
+            <div style="font-weight:700;color:var(--accent);margin-bottom:8px;font-size:13px;display:flex;align-items:center;gap:6px">
+              <span>📖</span> ¿Cómo obtener y configurar tu clave API gratuita en 1 minuto?
+            </div>
+            <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px">
+              <li>Entra en <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700;text-decoration:underline">Google AI Studio (aistudio.google.com)</a> e inicia sesión con tu cuenta de Google habitual.</li>
+              <li>Pulsa el botón azul <strong>«Crear clave de API»</strong> (o <em>«Create API key»</em>) en la esquina superior.</li>
+              <li>Selecciona tu proyecto o crea uno nuevo con un clic. La clave de Gemini es <strong>100% gratuita</strong>.</li>
+              <li>Copia la clave generada (suele empezar por <code>AIzaSy...</code> o <code>AQ...</code>).</li>
+              <li>Pégala en la casilla inferior, selecciona el modelo recomendado y pulsa <strong>«🧪 Probar Conexión»</strong>.</li>
+              <li>Haz clic en <strong>«💾 Guardar Clave»</strong>. ¡Listo! Ya dispondrás de debriefings autónomos con IA.</li>
+            </ol>
+            <div style="margin-top:10px;padding-top:8px;border-top:1px dashed rgba(14,165,233,0.3);font-size:11px;color:var(--dim);display:flex;align-items:center;gap:6px">
+              <span>🔒</span>
+              <span><strong>Privacidad garantizada:</strong> Tu clave se almacena exclusivamente en tu navegador local (<code>localStorage</code>). No se comparte con otros usuarios ni se guarda en servidores externos.</span>
             </div>
           </div>
 
-    <!-- Modal: Personalizador de Directrices y Prompt del Entrenador -->
+          <div style="margin-bottom:14px">
+            <label for="inpGeminiApiKey" style="display:block;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink)">
+              Tu Clave API de Gemini:
+            </label>
+            <div style="display:flex;gap:6px">
+              <input type="password" id="inpGeminiApiKey" placeholder="Pega aquí tu clave API (AIzaSy... o AQ...)" autocomplete="off" style="flex:1;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-family:var(--f-mono);font-size:13px">
+              <button class="btn" id="btnToggleApiKeyVisibility" type="button" style="padding:8px 12px;font-size:13px" title="Mostrar u ocultar clave">👁️</button>
+            </div>
+            <div style="font-size:11px;color:var(--dim);margin-top:5px;display:flex;justify-content:space-between">
+              <span>Enlace directo: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">Obtener clave gratis en Google AI Studio ↗</a></span>
+              <button type="button" id="btnClearGeminiApiKey" style="background:none;border:none;color:#ef4444;font-size:11px;cursor:pointer;text-decoration:underline;padding:0">Borrar mi clave</button>
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px">
+            <label for="selGeminiModel" style="display:block;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink)">
+              Modelo de Inteligencia Artificial:
+            </label>
+            <select id="selGeminiModel" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
+              <option value="gemini-3.5-flash-lite" selected>Gemini 3.5 Flash-Lite (Recomendado · Ultrarrápido, Gratuito y Gran Cuota)</option>
+              <option value="gemini-3.8-flash">Gemini 3.8 Flash (Última Generación · Análisis Profundo)</option>
+              <option value="gemini-3.5-flash">Gemini 3.5 Flash (Estándar · Límite diario estricto)</option>
+              <option value="gemini-1.5-flash">Gemini 1.5 Flash (Clásico)</option>
+            </select>
+            <div style="font-size:11px;color:var(--dim);margin-top:4px">
+              💡 <em>Gemini 3.5 Flash-Lite</em> es el modelo recomendado por su gran rapidez de respuesta (menos de 2 segundos) y su amplia cuota gratuita.
+            </div>
+          </div>
+
+          <div id="aiApiKeyTestStatus" style="display:none;padding:10px 14px;border-radius:6px;font-size:12px;margin-bottom:14px;line-height:1.4"></div>
+        </div>
+
+        <div class="modal-foot" style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-top:1px solid var(--line);background:var(--sub)">
+          <button class="btn" id="btnTestGeminiApiKey" type="button" style="font-size:12px;padding:6px 14px">
+            🧪 Probar Conexión
+          </button>
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="btnCancelAiApiKeyModal" type="button" style="font-size:12px;padding:6px 14px">Cancelar</button>
+            <button class="btn primary" id="btnSaveGeminiApiKey" type="button" style="font-size:12px;padding:6px 18px;font-weight:700">
+              💾 Guardar Clave
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 2: Personalizador de Directrices y Prompt de IA (Acceso Abierto para Todos) -->
     <div class="modal-overlay" id="aiPromptModal" style="z-index: 10650;" hidden>
       <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="aiPromptModalTitle" style="max-width:780px;width:95%">
         <div class="modal-head" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)">
           <div style="display:flex;align-items:center;gap:10px">
             <span style="font-size:22px">🎯</span>
             <div>
-              <h3 id="aiPromptModalTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--ink)">Directrices y Prompt del Entrenador para IA</h3>
-              <div style="font-size:11.5px;color:var(--dim)">Define qué variables debe priorizar la IA, los objetivos del entrenamiento y cómo estructurar los informes</div>
+              <h3 id="aiPromptModalTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--ink)">Directrices y Prompt para la Inteligencia Artificial</h3>
+              <div style="font-size:11.5px;color:var(--dim)">Define qué variables debe priorizar la IA, los objetivos del entrenamiento y la estructura de los informes</div>
             </div>
           </div>
           <button class="modal-close" id="btnCloseAiPromptModal" type="button" aria-label="Cerrar modal">✕</button>
@@ -2685,6 +2771,17 @@
         </div>
 
         <div class="modal-body" style="padding:18px 20px;max-height:70vh;overflow-y:auto">
+          <!-- Tarjeta de instrucciones sobre cómo personalizar el prompt -->
+          <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.3);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px;line-height:1.55;color:var(--ink)">
+            <div style="font-weight:700;color:#10b981;margin-bottom:6px;font-size:13px;display:flex;align-items:center;gap:6px">
+              <span>💡</span> Instrucciones para Personalizar el Prompt de IA
+            </div>
+            <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px">
+              <li>Puedes adaptar las instrucciones para que la IA enfatice ciertos aspectos técnicos (velocidad, viradas, colgado, estrategia).</li>
+              <li>Las variables entre llaves como <code>{nombre}</code>, <code>{polar_pct}</code> o <code>{viradas}</code> se sustituyen automáticamente por la telemetría real calculada.</li>
+              <li>Si en cualquier momento deseas restablecer las instrucciones oficiales del RCNGC, pulsa el botón <strong>«↺ Restaurar Plantilla RCNGC»</strong>.</li>
+            </ul>
+          </div>
 
           <!-- ENFOQUE DE LA SESIÓN (DIRECTRIZ RÁPIDA) -->
           <div style="background:rgba(14,165,233,0.06);border:1px solid rgba(14,165,233,0.25);border-radius:6px;padding:12px 14px;margin-bottom:16px">
@@ -2774,54 +2871,6 @@
             <button class="btn" id="btnCancelAiPromptModal" type="button" style="font-size:12px;padding:6px 14px">Cerrar</button>
             <button class="btn primary" id="btnSaveAiPrompt" type="button" style="font-size:12px;padding:6px 18px;font-weight:700">
               💾 Guardar Directrices
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-          <div style="font-size:12.5px;color:var(--dim);margin-bottom:14px;line-height:1.5">
-            Introduce tu clave API de <strong>Google Gemini</strong> para habilitar el motor de análisis y debriefing autónomo en tiempo real. La clave se almacena de forma segura en tu navegador local (localStorage).
-          </div>
-
-          <div style="margin-bottom:14px">
-            <label for="inpGeminiApiKey" style="display:block;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink)">
-              Clave API de Gemini (Google AI Studio):
-            </label>
-            <div style="display:flex;gap:6px">
-              <input type="password" id="inpGeminiApiKey" placeholder="AIzaSy..." style="flex:1;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-family:var(--f-mono);font-size:13px">
-              <button class="btn" id="btnToggleApiKeyVisibility" type="button" style="padding:8px 12px;font-size:13px" title="Mostrar/Ocultar clave">👁️</button>
-            </div>
-            <div style="font-size:11px;color:var(--dim);margin-top:5px;display:flex;justify-content:space-between">
-              <span>¿No tienes clave? Puedes obtenerla gratis en <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="color:var(--accent);font-weight:700">Google AI Studio</a>.</span>
-            </div>
-          </div>
-
-          <div style="margin-bottom:16px">
-            <label for="selGeminiModel" style="display:block;font-size:12.5px;font-weight:700;margin-bottom:4px;color:var(--ink)">
-              Modelo de Inteligencia Artificial:
-            </label>
-            <select id="selGeminiModel" style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font-size:13px">
-              <option value="gemini-3.5-flash-lite" selected>Gemini 3.5 Flash-Lite (Recomendado Oficial RCNGC · Ultrarrápido, Estable y Cuota Amplia)</option>
-              <option value="gemini-3.8-flash">Gemini 3.8 Flash (Experimental · Sujeto a demanda)</option>
-              <option value="gemini-3.5-flash">Gemini 3.5 Flash (Límite gratuito estricto 20 peticiones/día)</option>
-            </select>
-          </div>
-
-          <div id="aiApiKeyTestStatus" style="display:none;padding:10px 14px;border-radius:6px;font-size:12px;margin-bottom:14px;line-height:1.4"></div>
-        </div>
-
-        <div class="modal-foot" style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-top:1px solid var(--line);background:var(--sub)">
-          <button class="btn" id="btnTestGeminiApiKey" type="button" style="font-size:12px;padding:6px 14px">
-            🧪 Probar Conexión
-          </button>
-          <div style="display:flex;gap:8px">
-            <button class="btn" id="btnCancelAiApiKeyModal" type="button" style="font-size:12px;padding:6px 14px">Cancelar</button>
-            <button class="btn" id="btnSaveGeminiApiKeyCloud" type="button" style="display:none;background:rgba(2,132,199,0.15);border:1px solid #0284c7;color:#38bdf8;font-size:12px;padding:6px 16px;font-weight:700" title="Guardar como clave central para todos los usuarios en la web (Solo Administrador)">
-              ☁️ Guardar como Clave Central del Club
-            </button>
-            <button class="btn primary" id="btnSaveGeminiApiKey" type="button" style="font-size:12px;padding:6px 16px;font-weight:700" title="Guardar únicamente en este navegador local">
-              💾 Guardar Local
             </button>
           </div>
         </div>
@@ -7624,6 +7673,7 @@ const OPTIMIST_POLAR_DATA = {
 
   function setActiveBoat(idx){
     activeBoatIdx = idx;
+    if(typeof window !== 'undefined') window.activeBoatIdx = idx;
     if(!selectedBoatIndices.has(idx)){
       if(selectedBoatIndices.size >= 5){
         const first = selectedBoatIndices.values().next().value;
@@ -14922,8 +14972,8 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
           rows.forEach(r => {
             if(r.clave) clubConfigCache[r.clave] = r.valor;
           });
-          if(clubConfigCache.gemini_api_key && typeof localStorage !== 'undefined'){
-            localStorage.setItem('rcngc_cloud_gemini_key', clubConfigCache.gemini_api_key);
+          if(typeof localStorage !== 'undefined'){
+            localStorage.removeItem('rcngc_cloud_gemini_key');
           }
           if(clubConfigCache.gemini_model && typeof localStorage !== 'undefined'){
             localStorage.setItem('rcngc_cloud_gemini_model', clubConfigCache.gemini_model);
@@ -14942,9 +14992,8 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     } catch(err) {
       console.warn('No se pudo sincronizar la configuración central de Turso:', err);
     }
-    if(!clubConfigCache.gemini_api_key && typeof localStorage !== 'undefined'){
-      const cachedKey = localStorage.getItem('rcngc_cloud_gemini_key');
-      if(cachedKey) clubConfigCache.gemini_api_key = cachedKey;
+    if(typeof localStorage !== 'undefined'){
+      localStorage.removeItem('rcngc_cloud_gemini_key');
     }
     if(!clubConfigCache.gemini_model && typeof localStorage !== 'undefined'){
       const cachedModel = localStorage.getItem('rcngc_cloud_gemini_model');
@@ -14957,67 +15006,41 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
   function getGeminiApiKey(){
     const personal = (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_gemini_api_key')) || '';
     if(personal && personal.trim()) return personal.trim();
-    if(clubConfigCache && clubConfigCache.gemini_api_key && clubConfigCache.gemini_api_key.trim()) return clubConfigCache.gemini_api_key.trim();
-    const cloudMirror = (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_cloud_gemini_key')) || '';
-    if(cloudMirror && cloudMirror.trim()) return cloudMirror.trim();
     return '';
   }
 
   function getGeminiModel(){
     let m = (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_gemini_model')) || 
             (clubConfigCache && clubConfigCache.gemini_model) || 
-            (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_cloud_gemini_model')) || 
             'gemini-3.5-flash-lite';
-    // Migrar modelos sin cuota o descatalogados al modelo oficial con cuota amplia
-    if(m === 'gemini-2.0-flash' || m === 'gemini-2.5-flash' || m === 'gemini-3.5-flash' || !m) {
+    if(m === 'gemini-2.0-flash' || m === 'gemini-2.5-flash' || !m) {
       m = 'gemini-3.5-flash-lite';
     }
     return m;
   }
 
   function updateAiAdminButtonsState(){
-    const isAdmin = (typeof isAdminUser === 'function') && isAdminUser();
     const btnPrompt = document.getElementById('btnOpenAiPromptModal');
     const btnApiKey = document.getElementById('btnOpenAiApiKeyModal');
 
     if(btnPrompt){
-      if(isAdmin){
-        btnPrompt.innerHTML = '🎯 Personalizar Prompt / Directrices <span style="font-size:10px;background:rgba(16,185,129,0.25);padding:1px 6px;border-radius:4px;margin-left:4px;font-weight:700">👑 Admin</span>';
-        btnPrompt.title = 'Personalizar las instrucciones, objetivos y formato del informe para la IA (Acceso Administrador)';
-        btnPrompt.style.borderColor = 'rgba(16,185,129,0.5)';
-        btnPrompt.style.color = '#10b981';
-        btnPrompt.style.background = 'rgba(16,185,129,0.08)';
-        btnPrompt.style.opacity = '1';
-        btnPrompt.style.cursor = 'pointer';
-      } else {
-        btnPrompt.innerHTML = '🔒 Personalizar Prompt (Solo Admin)';
-        btnPrompt.title = 'Acceso restringido: Solo el Administrador puede personalizar el prompt de la IA';
-        btnPrompt.style.borderColor = 'rgba(148,163,184,0.3)';
-        btnPrompt.style.color = 'var(--dim)';
-        btnPrompt.style.background = 'rgba(148,163,184,0.06)';
-        btnPrompt.style.opacity = '0.85';
-        btnPrompt.style.cursor = 'pointer';
-      }
+      btnPrompt.innerHTML = '🎯 Personalizar Prompt / Directrices';
+      btnPrompt.title = 'Personalizar las instrucciones, objetivos y formato del debriefing de la IA';
+      btnPrompt.style.borderColor = 'rgba(16,185,129,0.5)';
+      btnPrompt.style.color = '#10b981';
+      btnPrompt.style.background = 'rgba(16,185,129,0.08)';
+      btnPrompt.style.opacity = '1';
+      btnPrompt.style.cursor = 'pointer';
     }
 
     if(btnApiKey){
-      if(isAdmin){
-        btnApiKey.innerHTML = '🔑 Configurar Clave API Gemini <span style="font-size:10px;background:rgba(14,165,233,0.25);padding:1px 6px;border-radius:4px;margin-left:4px;font-weight:700">👑 Admin</span>';
-        btnApiKey.title = 'Configurar la Clave API de Google Gemini para el club (Acceso Administrador)';
-        btnApiKey.style.borderColor = 'rgba(14,165,233,0.5)';
-        btnApiKey.style.color = 'var(--accent)';
-        btnApiKey.style.background = 'rgba(14,165,233,0.08)';
-        btnApiKey.style.opacity = '1';
-        btnApiKey.style.cursor = 'pointer';
-      } else {
-        btnApiKey.innerHTML = '🔒 Clave API Gemini (Solo Admin)';
-        btnApiKey.title = 'Acceso restringido: Solo el Administrador del club puede configurar o consultar la clave API';
-        btnApiKey.style.borderColor = 'rgba(148,163,184,0.3)';
-        btnApiKey.style.color = 'var(--dim)';
-        btnApiKey.style.background = 'rgba(148,163,184,0.06)';
-        btnApiKey.style.opacity = '0.85';
-        btnApiKey.style.cursor = 'pointer';
-      }
+      btnApiKey.innerHTML = '🔑 Configurar Clave API Gemini';
+      btnApiKey.title = 'Configurar tu clave API personal de Google Gemini y elegir modelo';
+      btnApiKey.style.borderColor = 'rgba(14,165,233,0.5)';
+      btnApiKey.style.color = 'var(--accent)';
+      btnApiKey.style.background = 'rgba(14,165,233,0.08)';
+      btnApiKey.style.opacity = '1';
+      btnApiKey.style.cursor = 'pointer';
     }
   }
 
@@ -15032,56 +15055,28 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
         badge.title = 'Clave API de Gemini configurada. Los debriefings se generan en tiempo real con IA de Google.';
       } else {
         badge.innerHTML = '<span style="background:rgba(234,179,8,0.15);color:#b45309;border:1px solid rgba(234,179,8,0.35);padding:2px 8px;border-radius:10px">🟡 Clave API no configurada (usa motor experto local)</span>';
-        badge.title = 'Haz clic en «Configurar Clave API Gemini» para introducir la API key de Google AI Studio.';
+        badge.title = 'Haz clic en «Configurar Clave API Gemini» para introducir tu API key de Google AI Studio.';
       }
     }
     updateAiAdminButtonsState();
   }
 
   function openAiApiKeyModal(){
-    const isAdmin = (typeof isAdminUser === 'function') && isAdminUser();
-    if(!isAdmin){
-      alert('🔒 Acceso Restringido: Solo el usuario Administrador del club puede configurar o consultar la Clave API de Google Gemini.\n\nPor favor, inicia sesión con la cuenta de Administrador.');
-      if(typeof openLoginModal === 'function') openLoginModal();
-      return;
-    }
-
     const modal = document.getElementById('aiApiKeyModal');
     if(!modal) return;
     const inpKey = document.getElementById('inpGeminiApiKey');
     const selModel = document.getElementById('selGeminiModel');
     const statusDiv = document.getElementById('aiApiKeyTestStatus');
-    const banner = document.getElementById('aiCloudKeyInfoBanner');
-    const btnCloud = document.getElementById('btnSaveGeminiApiKeyCloud');
 
     const personalKey = (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_gemini_api_key')) || '';
-    const cloudKey = (clubConfigCache && clubConfigCache.gemini_api_key) || (typeof localStorage !== 'undefined' && localStorage.getItem('rcngc_cloud_gemini_key')) || '';
 
     if(inpKey){
-      if(personalKey){
-        inpKey.value = personalKey;
-      } else if(cloudKey){
-        inpKey.value = cloudKey;
-      } else {
-        inpKey.value = '';
-      }
-      inpKey.placeholder = cloudKey ? '•••••••••••••••••••••••••••••••••••• (Clave Central del Club Activa)' : 'AIzaSy...';
+      inpKey.value = personalKey;
+      inpKey.placeholder = 'Pega aquí tu clave API (AIzaSy... o AQ...)';
     }
 
     if(selModel) selModel.value = getGeminiModel();
     if(statusDiv){ statusDiv.style.display = 'none'; statusDiv.innerHTML = ''; }
-
-    if(btnCloud){
-      btnCloud.style.display = 'inline-flex';
-    }
-
-    if(banner){
-      banner.style.display = 'block';
-      banner.style.background = 'rgba(2,132,199,0.12)';
-      banner.style.border = '1px solid rgba(2,132,199,0.35)';
-      banner.style.color = '#0284c7';
-      banner.innerHTML = '👑 <strong>Modo Administrador</strong>: Puedes configurar o actualizar la <strong>Clave Central de Google Gemini</strong> que utilizarán todos los regatistas y entrenadores en GitHub Pages sin necesidad de que ellos introduzcan nada.';
-    }
 
     modal.hidden = false;
     modal.style.display = 'flex';
@@ -15093,22 +15088,14 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
       modal.hidden = true;
       modal.style.display = 'none';
     }
-    const inpKey = document.getElementById('inpGeminiApiKey');
-    if(inpKey) inpKey.value = '';
   }
 
   function saveGeminiApiKey(){
-    const isAdmin = (typeof isAdminUser === 'function') && isAdminUser();
-    if(!isAdmin){
-      alert('🔒 Acceso Restringido: Solo el Administrador del club puede modificar la configuración de Gemini.');
-      return;
-    }
     const inpKey = document.getElementById('inpGeminiApiKey');
     const selModel = document.getElementById('selGeminiModel');
     let key = (inpKey ? inpKey.value : '').trim();
-    if(!key) key = getGeminiApiKey();
     let model = (selModel ? selModel.value : '') || 'gemini-3.5-flash-lite';
-    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.5-flash';
+    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.5-flash-lite';
     
     if(typeof localStorage !== 'undefined'){
       if(key){
@@ -15117,70 +15104,17 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
         localStorage.removeItem('rcngc_gemini_api_key');
       }
       localStorage.setItem('rcngc_gemini_model', model);
+      localStorage.removeItem('rcngc_cloud_gemini_key');
     }
     updateAiApiKeyBadge();
     closeAiApiKeyModal();
+    if(typeof showToast === 'function'){
+      showToast(key ? '✓ Clave API y modelo de Gemini guardados en tu navegador.' : '✓ Clave API eliminada. Se usará el motor experto local.', 'ok');
+    }
   }
 
   async function saveGeminiApiKeyToCloud(){
-    const isAdmin = (typeof isAdminUser === 'function') && isAdminUser();
-    if(!isAdmin){
-      alert('🔒 Acceso Restringido: Solo el Administrador del club puede modificar la clave central en la nube.');
-      return;
-    }
-    const inpKey = document.getElementById('inpGeminiApiKey');
-    const selModel = document.getElementById('selGeminiModel');
-    const key = (inpKey ? inpKey.value : '').trim();
-    let model = (selModel ? selModel.value : '') || 'gemini-3.5-flash-lite';
-    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.5-flash';
-
-    if(!key){
-      if(!confirm('¿Deseas borrar la clave central del club de la nube? Los usuarios sin clave personal no podrán generar debriefings hasta que se configure una nueva.')){
-        return;
-      }
-    }
-
-    const btnCloud = document.getElementById('btnSaveGeminiApiKeyCloud');
-    if(btnCloud) { btnCloud.disabled = true; btnCloud.textContent = '⏳ Guardando en la nube...'; }
-
-    try {
-      if(typeof ensureTursoSchema === 'function') await ensureTursoSchema();
-      const u = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
-      const adminName = (u && (u.nombre || u.usuario)) || 'admin';
-      
-      await executeTurso(
-        "INSERT OR REPLACE INTO configuracion_club (clave, valor, actualizado_por) VALUES ('gemini_api_key', ?, ?);",
-        [key, adminName]
-      );
-      await executeTurso(
-        "INSERT OR REPLACE INTO configuracion_club (clave, valor, actualizado_por) VALUES ('gemini_model', ?, ?);",
-        [model, adminName]
-      );
-
-      clubConfigCache.gemini_api_key = key;
-      clubConfigCache.gemini_model = model;
-      if(key && typeof localStorage !== 'undefined'){
-        localStorage.setItem('rcngc_cloud_gemini_key', key);
-      } else if(typeof localStorage !== 'undefined'){
-        localStorage.removeItem('rcngc_cloud_gemini_key');
-      }
-      if(typeof localStorage !== 'undefined'){
-        localStorage.setItem('rcngc_cloud_gemini_model', model);
-      }
-
-      updateAiApiKeyBadge();
-      closeAiApiKeyModal();
-      if(typeof showToast === 'function'){
-        showToast('¡Clave Central del Club guardada en la nube con éxito! Activa para toda la flota en GitHub Pages.', 'ok');
-      } else {
-        alert('¡Clave Central del Club guardada en la nube con éxito! Activa para toda la flota en GitHub Pages.');
-      }
-    } catch(err){
-      console.error('Error al guardar clave de Gemini en Turso:', err);
-      alert('Error al guardar en la nube: ' + err.message);
-    } finally {
-      if(btnCloud) { btnCloud.disabled = false; btnCloud.textContent = '☁️ Guardar en Nube (Club)'; }
-    }
+    return saveGeminiApiKey();
   }
 
   async function testGeminiApiKey(){
@@ -15189,8 +15123,8 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     const statusDiv = document.getElementById('aiApiKeyTestStatus');
     let key = (inpKey ? inpKey.value : '').trim();
     if(!key) key = getGeminiApiKey();
-    let model = (selModel ? selModel.value : '') || 'gemini-3.5-flash';
-    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.5-flash';
+    let model = (selModel ? selModel.value : '') || 'gemini-3.5-flash-lite';
+    if(model === 'gemini-2.0-flash' || model === 'gemini-2.5-flash') model = 'gemini-3.5-flash-lite';
 
     if(!key){
       if(statusDiv){
@@ -15198,7 +15132,7 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
         statusDiv.style.background = 'rgba(239,68,68,0.12)';
         statusDiv.style.border = '1px solid rgba(239,68,68,0.3)';
         statusDiv.style.color = '#ef4444';
-        statusDiv.innerHTML = '⚠️ Por favor, introduce una clave API de Google Gemini antes de realizar la prueba.';
+        statusDiv.innerHTML = '⚠️ Por favor, introduce tu clave API de Google Gemini antes de realizar la prueba.';
       }
       return;
     }
@@ -15217,26 +15151,20 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
         statusDiv.style.background = 'rgba(16,185,129,0.12)';
         statusDiv.style.border = '1px solid rgba(16,185,129,0.3)';
         statusDiv.style.color = '#10b981';
-        statusDiv.innerHTML = '✅ ¡Conexión con Google Gemini exitosa! Modelo: <strong>' + model + '</strong>. La clave y el modelo son plenamente operativos.';
+        statusDiv.innerHTML = '✅ ¡Conexión exitosa con Google Gemini! Modelo: <strong>' + model + '</strong>. La clave y el modelo son plenamente operativos.';
       }
     } catch(err){
       if(statusDiv){
         statusDiv.style.background = 'rgba(239,68,68,0.12)';
         statusDiv.style.border = '1px solid rgba(239,68,68,0.3)';
         statusDiv.style.color = '#ef4444';
-        statusDiv.innerHTML = '❌ Error al conectar con Gemini: ' + err.message + '<br><span style="font-size:11px;color:var(--dim)">Revisa que la clave sea válida y que el modelo esté disponible.</span>';
+        statusDiv.innerHTML = '❌ Error al conectar con Gemini: ' + err.message + '<br><span style="font-size:11px;color:var(--dim)">Revisa que la clave sea correcta y que no tenga restricciones incompatibles.</span>';
       }
     }
   }
 
-  // --- MODAL PERSONALIZADOR DE PROMPT Y DIRECTRICES (ADMIN) ---
+  // --- MODAL PERSONALIZADOR DE PROMPT Y DIRECTRICES (ACCESO ABIERTO) ---
   function openAiPromptModal(){
-    const isAdmin = (typeof isAdminUser === 'function') && isAdminUser();
-    if(!isAdmin){
-      alert('🔒 Acceso Restringido: Solo el usuario Administrador del club tiene permisos para personalizar las directrices técnicas y el prompt de la Inteligencia Artificial.\n\nPor favor, inicia sesión con la cuenta de Administrador.');
-      if(typeof openLoginModal === 'function') openLoginModal();
-      return;
-    }
     const modal = document.getElementById('aiPromptModal');
     if(!modal) return;
     const txtSailor = document.getElementById('txtAiPromptSailor');
@@ -15260,11 +15188,6 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
   }
 
   async function saveAiPromptSettings(){
-    const isAdmin = (typeof isAdminUser === 'function') && isAdminUser();
-    if(!isAdmin){
-      alert('🔒 Acceso Restringido: Solo el Administrador del club puede guardar directrices de IA.');
-      return;
-    }
     const txtSailor = document.getElementById('txtAiPromptSailor');
     const txtFleet = document.getElementById('txtAiPromptFleet');
     const inpFocus = document.getElementById('inpAiSessionFocus');
@@ -15288,7 +15211,8 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     clubConfigCache.ai_prompt_fleet = fPrompt;
     clubConfigCache.ai_session_focus = focus;
 
-    if(typeof executeTurso === 'function'){
+    const isAdmin = (typeof isAdminUser === 'function') && isAdminUser();
+    if(isAdmin && typeof executeTurso === 'function'){
       try {
         const u = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
         const adminName = (u && (u.nombre || u.usuario)) || 'admin';
@@ -15312,7 +15236,7 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     const status = document.getElementById('aiPromptSaveStatus');
     if(status){
       status.style.display = 'block';
-      status.innerHTML = '✓ Directrices guardadas y sincronizadas correctamente para todo el club.';
+      status.innerHTML = '✓ Directrices guardadas en tu navegador.';
       setTimeout(() => { closeAiPromptModal(); }, 600);
     } else {
       closeAiPromptModal();
@@ -15671,8 +15595,8 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
   }
 
   async function callGeminiApi(prompt, model, apiKey, abortSignal){
-    let activeModel = model || getGeminiModel();
-    if(activeModel === 'gemini-2.0-flash' || activeModel === 'gemini-2.5-flash' || activeModel === 'gemini-3.5-flash') {
+    let activeModel = model || getGeminiModel() || 'gemini-3.5-flash-lite';
+    if(activeModel === 'gemini-2.0-flash' || activeModel === 'gemini-2.5-flash') {
       activeModel = 'gemini-3.5-flash-lite';
     }
     if(!activeModel) activeModel = 'gemini-3.5-flash-lite';
@@ -16317,7 +16241,85 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     setTimeout(() => { printWindow.print(); }, 250);
   }
 
+  function navigateToAiDebrief(sailorIndex = null){
+    // 1. Cambiar a la vista de análisis V2 / Debriefing IA
+    if(typeof switchMainView === 'function'){
+      switchMainView('analysisV2');
+    }
+
+    // 2. Preseleccionar el regatista activo y enfocar la sección de IA
+    setTimeout(() => {
+      if(typeof populateAiDebriefingControls === 'function'){
+        populateAiDebriefingControls();
+      }
+
+      let targetIdx = sailorIndex;
+      if(targetIdx === null || targetIdx === undefined || targetIdx < 0){
+        if(typeof activeBoatIdx !== 'undefined' && activeBoatIdx !== null && activeBoatIdx >= 0){
+          targetIdx = activeBoatIdx;
+        } else if(typeof window !== 'undefined' && window.activeBoatIdx !== undefined && window.activeBoatIdx !== null && window.activeBoatIdx >= 0){
+          targetIdx = window.activeBoatIdx;
+        } else if(typeof state !== 'undefined' && state && state.sel !== undefined && state.sel !== null && state.sel >= 0){
+          targetIdx = state.sel;
+        }
+      }
+
+      if(targetIdx !== null && targetIdx !== undefined && typeof D !== 'undefined' && D && D.boats && D.boats[targetIdx]){
+        const sel = document.getElementById('aiSailorSelect');
+        if(sel){
+          sel.value = String(targetIdx);
+          if(typeof updateSelectedSailorQuickMetrics === 'function'){
+            updateSelectedSailorQuickMetrics();
+          }
+        }
+      }
+
+      // 3. Scroll suave directo a la tarjeta del Debriefing IA
+      const card = document.getElementById('cardAiDebriefing');
+      if(card){
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        card.style.transition = 'box-shadow 0.4s ease, border-color 0.4s ease';
+        card.style.borderColor = 'var(--accent)';
+        card.style.boxShadow = '0 0 25px rgba(14,165,233,0.45)';
+        setTimeout(() => {
+          card.style.boxShadow = '';
+          card.style.borderColor = 'rgba(14,165,233,0.35)';
+        }, 1800);
+      }
+    }, 80);
+  }
+
   function initAiDebriefingEventListeners(){
+    // Navegación directa a Debriefing IA desde barra lateral y menús
+    const btnSideDebrief = document.getElementById('btnSideGoToAiDebrief');
+    if(btnSideDebrief && !btnSideDebrief.dataset.bound){
+      btnSideDebrief.dataset.bound = 'true';
+      btnSideDebrief.addEventListener('click', (e) => {
+        e.preventDefault();
+        const idx = (typeof window !== 'undefined' && window.activeBoatIdx !== undefined && window.activeBoatIdx !== null) ? window.activeBoatIdx : ((typeof activeBoatIdx !== 'undefined') ? activeBoatIdx : ((typeof state !== 'undefined' && state) ? state.sel : null));
+        navigateToAiDebrief(idx);
+      });
+    }
+
+    const btnJumpV2 = document.getElementById('btnJumpToAiDebriefFromV2');
+    if(btnJumpV2 && !btnJumpV2.dataset.bound){
+      btnJumpV2.dataset.bound = 'true';
+      btnJumpV2.addEventListener('click', (e) => {
+        e.preventDefault();
+        navigateToAiDebrief();
+      });
+    }
+
+    const btnDropDebrief = document.getElementById('btnDropdownAiDebrief');
+    if(btnDropDebrief && !btnDropDebrief.dataset.bound){
+      btnDropDebrief.dataset.bound = 'true';
+      btnDropDebrief.addEventListener('click', (e) => {
+        e.preventDefault();
+        navigateToAiDebrief();
+        const menu = document.getElementById('userDropdownMenu');
+        if(menu) menu.hidden = true;
+      });
+    }
     // Pestañas
     const tabInd = document.getElementById('tabAiIndividual');
     const tabFleet = document.getElementById('tabAiFleet');
@@ -16349,7 +16351,7 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
       btnGenFleet.addEventListener('click', () => generateFleetAiDebrief());
     }
 
-    // Modal API Key (Solo Administrador)
+    // Modal API Key (Acceso Abierto)
     const btnOpenModal = document.getElementById('btnOpenAiApiKeyModal');
     if(btnOpenModal && !btnOpenModal.dataset.bound){
       btnOpenModal.dataset.bound = 'true';
@@ -16370,10 +16372,26 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
       btnSaveKey.dataset.bound = 'true';
       btnSaveKey.addEventListener('click', () => saveGeminiApiKey());
     }
-    const btnSaveKeyCloud = document.getElementById('btnSaveGeminiApiKeyCloud');
-    if(btnSaveKeyCloud && !btnSaveKeyCloud.dataset.bound){
-      btnSaveKeyCloud.dataset.bound = 'true';
-      btnSaveKeyCloud.addEventListener('click', () => saveGeminiApiKeyToCloud());
+    const btnClearKey = document.getElementById('btnClearGeminiApiKey');
+    if(btnClearKey && !btnClearKey.dataset.bound){
+      btnClearKey.dataset.bound = 'true';
+      btnClearKey.addEventListener('click', () => {
+        const inp = document.getElementById('inpGeminiApiKey');
+        if(inp) inp.value = '';
+        if(typeof localStorage !== 'undefined'){
+          localStorage.removeItem('rcngc_gemini_api_key');
+          localStorage.removeItem('rcngc_cloud_gemini_key');
+        }
+        updateAiApiKeyBadge();
+        const statusDiv = document.getElementById('aiApiKeyTestStatus');
+        if(statusDiv){
+          statusDiv.style.display = 'block';
+          statusDiv.style.background = 'rgba(234,179,8,0.12)';
+          statusDiv.style.border = '1px solid rgba(234,179,8,0.3)';
+          statusDiv.style.color = '#fbbf24';
+          statusDiv.innerHTML = '🗑️ Clave borrada de este navegador. Se utilizará el motor experto local.';
+        }
+      });
     }
     const btnTestKey = document.getElementById('btnTestGeminiApiKey');
     if(btnTestKey && !btnTestKey.dataset.bound){
@@ -16391,7 +16409,7 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
       });
     }
 
-    // Modal Prompt / Directrices (Solo Administrador)
+    // Modal Prompt / Directrices (Acceso Abierto)
     const btnOpenPrompt = document.getElementById('btnOpenAiPromptModal');
     if(btnOpenPrompt && !btnOpenPrompt.dataset.bound){
       btnOpenPrompt.dataset.bound = 'true';
@@ -16472,6 +16490,7 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
 
   // Exponer funciones globales en window
   if(typeof window !== 'undefined'){
+    window.navigateToAiDebrief = navigateToAiDebrief;
     window.populateAiDebriefingControls = populateAiDebriefingControls;
     window.updateSelectedSailorQuickMetrics = updateSelectedSailorQuickMetrics;
     window.updateFleetQuickSummary = updateFleetQuickSummary;
@@ -16504,6 +16523,7 @@ REGLA FUNDAMENTAL: Escribe el informe DIRECTAMENTE en ESPAÑOL DE ESPAÑA, con t
     window.startAiProgress = startAiProgress;
     window.getActiveSessionData = getActiveSessionData;
     window.setSessionData = function(data){ if(typeof D !== "undefined") D = data; if(typeof window !== "undefined") window.D = data; };
+    window.setActiveBoat = function(idx){ if(typeof setActiveBoat === "function") setActiveBoat(idx); if(typeof activeBoatIdx !== "undefined") activeBoatIdx = idx; if(typeof window !== "undefined") window.activeBoatIdx = idx; };
   }
 
   initAiDebriefingEventListeners();

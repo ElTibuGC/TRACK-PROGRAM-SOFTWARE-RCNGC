@@ -137,6 +137,23 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.9.5] - Nueva Aplicación: Vídeo & Telemetría en Tiempo Real (RCNGC Suite)
+* **Nuevo Software de Vídeo & Telemetría**: Añadida una nueva aplicación a la suite (`video-telemetria/index.html` y acceso directo en `Sincronizador Video Telemetria Optimist.html`) que permite subir vídeos cortos de entrenamientos (2-3 minutos) junto al archivo CSV de sensores del barco (`timestamp, latitude, longitude, sog_kts, cog, hdg_true, heel, trim`).
+* **Sincronización Automática e Inteligente**: Detecta automáticamente la fecha y hora de grabación del vídeo (vía metadatos MP4, fecha de modificación o nombre de archivo) y la sincroniza con el intervalo exacto del archivo CSV. Si el reloj de la cámara tiene desfase, incluye una barra de sincronización visual con controles de ajuste fino (`-10s`, `-1s`, `-0.5s`, `-0.1s`, `+0.1s`, `+1s`, `+10s`), ajuste por clic en el track o sincronización por viradas.
+* **Instrumentos y Gauges en Tiempo Real (60 FPS)**:
+  * **Velocidad Barco (SOG)** con indicación de tendencia y comparativa de velocidad objetivo.
+  * **Inclinómetro de Escora (Heel)** con visualización dinámica del barco en sección transversal, indicación de banda (Babor/Estribor) y zonas de escora óptima para Optimist (3° a 5°).
+  * **Trim / Cabeceo (Pitch)** en grados de proa arriba / abajo.
+  * **Rosa Náutica y Ángulo del Viento Real (TWA)** con aguja de rumbo (HDG), aguja de rumbo efectivo (COG), dirección del viento ajustable (TWD) y modo de navegación (Ceñida, Través, Largo, Popa).
+  * **VMG en Tiempo Real** calculando el progreso efectivo a barlovento o sotavento.
+  * **Mini-Mapa GPS Sincronizado** con la traza del barco, flecha de rumbo y buscador por clic en cualquier punto del recorrido.
+  * **Gráfica de Curva Temporal** con las curvas de velocidad y escora a lo largo del vídeo.
+* **Superposición HUD estilo Televisión (Broadcast)**: Permite activar datos en pantalla sobre el reproductor de vídeo o trabajar en modo lado a lado, con herramienta de captura fotográfica telemétrica integrada.
+* **Integración Completa en la Suite RCNGC**:
+  * Acceso directo con tarjeta destacada en el bloque "Herramientas y Apps Conectadas" de todos los programas de la suite (`index.html`, `Visor Regata Optimist_Entrenadores v1.html`, `analizador-entrenamientos`, etc.).
+  * Barra superior de navegación entre aplicaciones, acceso de entrenadores unificado (`🔑 Acceso Entrenador` con PIN de club) y pie de página oficial con la autoría de Pablo Quintana Labarta.
+  * Datos de prueba preinstalados (sesión real de María Guindín en Gando) y simulador dinámico náutico para pruebas inmediatas sin necesidad de archivos externos.
+
 ### [v1.9.4] - Acceso Directo a la Nube del Club desde la Pantalla de Estado Vacio
 * **Nuevo Boton de Acceso a la Nube Central**: En las pestanas de analisis (tanto en «Analisis V2» como en «Metricas Avanzadas»), cuando no hay ninguna regata cargada se anadio un boton principal azul destacado: «☁️ Acceder a la Nube del Club (Cargar sesion)». Al pulsarlo, abre directamente la ventana de la biblioteca central de regatas en Turso SQLite para cargar cualquier sesion guardada con 1 solo clic.
 * **Correccion del Boton «Ir a Visualizar el track»**: Se resolvio la asociacion de eventos que impedia su funcionamiento previo al cargar datos en memoria. Ahora cuenta con manejadores globales y de respaldo (`switchMainView('track')`), permitiendo regresar de forma inmediata a la pantalla principal para arrastrar o seleccionar archivos locales.

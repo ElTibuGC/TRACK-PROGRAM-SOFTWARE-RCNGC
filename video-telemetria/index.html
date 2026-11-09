@@ -1,0 +1,2552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Vídeo & Telemetría en Tiempo Real · Optimist RCNGC</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+  
+  <style>
+    :root {
+      --bg: #091216;
+      --panel: #0f1c22;
+      --card: #14242c;
+      --sub: #172a33;
+      --ink: #e6f1ef;
+      --dim: #8fa6a2;
+      --muted: #5e7a75;
+      --line: #22383f;
+      --accent: #f2600c;
+      --accent-soft: rgba(242, 96, 12, 0.15);
+      --cyan: #00f0ff;
+      --cyan-soft: rgba(0, 240, 255, 0.12);
+      --emerald: #10b981;
+      --emerald-soft: rgba(16, 185, 129, 0.14);
+      --rose: #f43f5e;
+      --amber: #f59e0b;
+      --blue: #0284c7;
+      --f-display: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif;
+      --f-body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+      --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--f-body);
+      font-size: 13.5px;
+      line-height: 1.45;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* BARRA SUPERIOR / HEADER SUITE */
+    .suite-header {
+      background: #060c0f;
+      border-bottom: 1px solid var(--line);
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(244,63,94,0.25) 0%, rgba(0,240,255,0.2) 100%);
+      border: 1px solid rgba(244,63,94,0.45);
+      display: grid;
+      place-items: center;
+      font-size: 17px;
+    }
+    .brand-title-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand-title {
+      font-family: var(--f-display);
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: 0.03em;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-badge {
+      font-size: 10px;
+      background: rgba(244,63,94,0.2);
+      border: 1px solid rgba(244,63,94,0.45);
+      color: #fb7185;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: var(--f-body);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    .brand-sub {
+      font-size: 11px;
+      color: var(--dim);
+    }
+
+    .suite-nav-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .suite-pill {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--dim);
+      background: var(--sub);
+      border: 1px solid var(--line);
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .suite-pill:hover {
+      background: var(--card);
+      border-color: var(--cyan);
+      color: #fff;
+    }
+    .suite-pill.active {
+      background: rgba(244,63,94,0.18);
+      border-color: #f43f5e;
+      color: #fb7185;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    /* COACH AUTH BUTTON & DROPDOWN */
+    .user-profile-widget {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+    #btnTopCoachAuth {
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .15s ease;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--ink);
+      white-space: nowrap;
+    }
+    #btnTopCoachAuth:hover {
+      border-color: var(--dim);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    #btnTopCoachAuth.coach-active {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10b981;
+      color: #10b981;
+      font-weight: 700;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.15);
+    }
+
+    .user-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 8px;
+      background: #0f1c22;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      width: 220px;
+      padding: 6px 0;
+      display: none;
+      z-index: 1000;
+    }
+    .user-dropdown.open { display: block; }
+    .user-dropdown-item {
+      width: 100%;
+      padding: 7px 14px;
+      font-size: 12px;
+      color: var(--ink);
+      background: none;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.12s;
+    }
+    .user-dropdown-item:hover {
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+    }
+    .user-dropdown-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 4px 0;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .main-wrap {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 14px 18px 24px;
+      width: 100%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* BLOQUE INGESTA Y SUBIDA DE ARCHIVOS */
+    .ingest-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 900px) {
+      .ingest-grid { grid-template-columns: 1fr; }
+    }
+    .upload-card {
+      background: var(--panel);
+      border: 1px dashed var(--line);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .upload-card:hover, .upload-card.drag-over {
+      border-color: var(--cyan);
+      background: rgba(0, 240, 255, 0.03);
+    }
+    .upload-card.loaded {
+      border-style: solid;
+      border-color: rgba(16, 185, 129, 0.5);
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.06) 0%, rgba(15, 28, 34, 0.95) 100%);
+    }
+    .upload-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: var(--sub);
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .upload-card.loaded .upload-icon {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: #10b981;
+      color: #10b981;
+    }
+    .upload-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .upload-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .upload-desc {
+      font-size: 11px;
+      color: var(--dim);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn-quick-sample {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 5px;
+      background: rgba(0, 240, 255, 0.12);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      color: var(--cyan);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    .btn-quick-sample:hover {
+      background: var(--cyan);
+      color: #000;
+    }
+
+    /* BARRA DE SINCRONIZACIÓN TEMPORAL Y CONTROL DE DESFASE */
+    .sync-dock {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sync-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .sync-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.02em;
+    }
+    .sync-badge.auto {
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+    .sync-badge.manual {
+      background: rgba(245, 158, 11, 0.16);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
+    }
+    .sync-badge.idle {
+      background: var(--sub);
+      border: 1px solid var(--line);
+      color: var(--dim);
+    }
+    .sync-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .nudge-btn {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--sub);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 3px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .nudge-btn:hover {
+      background: var(--card);
+      border-color: var(--cyan);
+      color: #fff;
+    }
+    .offset-input-wrap {
+      display: inline-flex;
+      align-items: center;
+      background: var(--sub);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      padding: 1px 6px;
+      gap: 4px;
+    }
+    .offset-input-wrap input {
+      background: transparent;
+      border: none;
+      color: var(--cyan);
+      font-family: var(--f-mono);
+      font-size: 12px;
+      font-weight: 600;
+      width: 60px;
+      text-align: right;
+      outline: none;
+    }
+
+    /* MINI-LINEA TEMPORAL DEL TRACK COMPLETO */
+    .track-timeline-wrap {
+      position: relative;
+      background: #081116;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      height: 38px;
+      overflow: hidden;
+      cursor: pointer;
+      user-select: none;
+    }
+    .track-timeline-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .video-window-marker {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      background: rgba(244, 63, 94, 0.25);
+      border: 1.5px solid #f43f5e;
+      border-radius: 4px;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #fff;
+      pointer-events: auto;
+      box-shadow: 0 0 10px rgba(244, 63, 94, 0.35);
+      transition: border-color 0.15s;
+    }
+    .video-window-marker:active { cursor: grabbing; border-color: #fff; }
+    .playback-needle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #00f0ff;
+      box-shadow: 0 0 6px #00f0ff;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* ESPACIO PRINCIPAL: REPRODUCTOR Y TELEMETRÍA */
+    .viewer-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(350px, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+    @media (max-width: 1120px) {
+      .viewer-layout { grid-template-columns: 1fr; }
+    }
+
+    /* REPRODUCTOR DE VÍDEO CON HUD */
+    .video-container {
+      background: #000;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    }
+    .video-canvas-stage {
+      position: relative;
+      width: 100%;
+      min-height: 380px;
+      max-height: 65vh;
+      background: #03080b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #mainVideo {
+      width: 100%;
+      height: 100%;
+      max-height: 65vh;
+      display: block;
+      object-fit: contain;
+    }
+    #simulatedCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+    }
+
+    /* OVERLAYS TELEMÉTRICOS EN EL VÍDEO (HUD BROADCAST) */
+    .video-hud-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto 1fr auto;
+      padding: 14px;
+      gap: 10px;
+      opacity: 0.96;
+      transition: opacity 0.2s ease;
+    }
+    .hud-box {
+      background: rgba(8, 18, 24, 0.82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 6px 10px;
+      color: #fff;
+      display: inline-flex;
+      flex-direction: column;
+      width: fit-content;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      pointer-events: auto;
+    }
+    .hud-box.hud-top-left {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .hud-box.hud-top-right {
+      grid-column: 2;
+      grid-row: 1;
+      justify-self: end;
+      text-align: right;
+    }
+    .hud-box.hud-bottom-left {
+      grid-column: 1;
+      grid-row: 3;
+      align-self: end;
+    }
+    .hud-box.hud-bottom-right {
+      grid-column: 2;
+      grid-row: 3;
+      align-self: end;
+      justify-self: end;
+    }
+
+    /* BARRA DE CONTROLES DEL REPRODUCTOR */
+    .player-controls {
+      background: #081216;
+      border-top: 1px solid var(--line);
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .player-scrub-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .player-scrubber {
+      flex: 1;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--sub);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+    .player-scrubber::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #00f0ff;
+      box-shadow: 0 0 8px #00f0ff;
+      cursor: pointer;
+    }
+    .player-btn-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-player-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ctrl-btn {
+      background: var(--sub);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.12s;
+    }
+    .ctrl-btn:hover {
+      background: var(--card);
+      border-color: var(--cyan);
+      color: #fff;
+    }
+    .ctrl-btn.active {
+      background: var(--cyan-soft);
+      border-color: var(--cyan);
+      color: var(--cyan);
+      font-weight: 700;
+    }
+    .time-readout {
+      font-family: var(--f-mono);
+      font-size: 11.5px;
+      color: var(--dim);
+    }
+    .time-readout strong { color: #fff; }
+
+    /* DASHBOARD DE TELEMETRÍA LATERAL */
+    .telemetry-dashboard {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .gauges-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .metric-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+    .metric-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .metric-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .metric-badge {
+      font-size: 9.5px;
+      font-family: var(--f-mono);
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: var(--sub);
+      color: var(--dim);
+    }
+    .metric-val {
+      font-family: var(--f-display);
+      font-weight: 700;
+      font-size: 28px;
+      line-height: 1.1;
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+    .metric-unit {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--dim);
+      font-family: var(--f-body);
+    }
+    .metric-sub {
+      font-size: 10.5px;
+      color: var(--dim);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* INCLINÓMETRO DE ESCORA (HEEL) */
+    .heel-visual-wrap {
+      height: 70px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 4px;
+    }
+    .heel-canvas {
+      width: 100%;
+      height: 70px;
+      display: block;
+    }
+
+    /* ROSA NÁUTICA / COMPASS & TWA */
+    .compass-card {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+    .compass-dial-wrap {
+      width: 116px;
+      height: 116px;
+      position: relative;
+      margin: 0 auto;
+    }
+    .compass-canvas {
+      width: 116px;
+      height: 116px;
+      display: block;
+    }
+    .compass-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    /* MINI MAPA GPS */
+    .minimap-card {
+      grid-column: 1 / -1;
+      height: 200px;
+      position: relative;
+      padding: 0;
+      overflow: hidden;
+      background: #071015;
+    }
+    .minimap-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .minimap-overlay-info {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      font-size: 10.5px;
+      color: var(--dim);
+      background: rgba(9, 18, 22, 0.85);
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1px solid var(--line);
+      pointer-events: none;
+    }
+
+    /* GRÁFICA TEMPORAL (ROLLING STRIP CHART) */
+    .chart-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .strip-chart-canvas {
+      width: 100%;
+      height: 80px;
+      background: #081116;
+      border-radius: 6px;
+      display: block;
+    }
+
+    /* FOOTER OFICIAL RCNGC SUITE */
+    .app-footer {
+      background: #060c0f;
+      border-top: 1px solid var(--line);
+      padding: 8px 18px;
+      font-size: 11.5px;
+      color: var(--dim);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      user-select: none;
+    }
+    .app-footer-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .app-footer-badge {
+      background: var(--sub);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: var(--f-mono);
+      font-size: 10.5px;
+    }
+    .app-footer-right strong {
+      color: #fff;
+    }
+
+    /* MODAL DE AUTENTICACIÓN ENTRENADOR / ADMIN */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+    .auth-modal {
+      background: #0f1c22;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 360px;
+      padding: 20px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.7);
+    }
+    .auth-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .auth-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .auth-close {
+      background: none;
+      border: none;
+      color: var(--dim);
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .auth-body {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dim);
+      margin-bottom: 4px;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--sub);
+      border: 1px solid var(--line);
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+    }
+    .form-input:focus { border-color: var(--cyan); }
+    .btn-submit-auth {
+      background: var(--emerald);
+      color: #000;
+      font-weight: 700;
+      border: none;
+      padding: 9px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 4px;
+      font-size: 13px;
+    }
+    .btn-submit-auth:hover { background: #34d399; }
+    .auth-msg {
+      font-size: 11px;
+      color: var(--rose);
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. BARRA SUPERIOR / SUITE HEADER -->
+  <header class="suite-header">
+    <div class="brand-area">
+      <div class="brand-icon">🎬</div>
+      <div class="brand-title-wrap">
+        <div class="brand-title">
+          Vídeo & Telemetría
+          <span class="brand-badge">Optimist RCNGC</span>
+        </div>
+        <div class="brand-sub">Sincronización de vídeo y telemetría de regata en tiempo real</div>
+      </div>
+    </div>
+
+    <!-- Pestañas de Suite -->
+    <nav class="suite-nav-pills">
+      <a href="../index.html" class="suite-pill" title="Volver al Visor de Regatas">
+        ⛵ Visor Regatas
+      </a>
+      <a href="../analizador-entrenamientos/index.html" class="suite-pill" title="Abrir Analizador de Entrenamientos">
+        📊 Analizador Entrenamientos
+      </a>
+      <a href="../gps-salidas/index.html" target="_blank" class="suite-pill" title="Abrir App Salidas GPS">
+        📲 Salidas GPS
+      </a>
+      <span class="suite-pill active">
+        🎬 Vídeo & Datos
+      </span>
+    </nav>
+
+    <!-- Acceso Entrenador -->
+    <div class="header-right">
+      <div class="user-profile-widget" id="userProfileWidget">
+        <button class="btn btn-coach-login" id="btnTopCoachAuth" type="button" title="Acceso para Entrenadores y Administradores">
+          🔑 Acceso Entrenador
+        </button>
+
+        <div class="user-dropdown" id="userDropdownMenu" role="menu">
+          <div style="padding:8px 14px;border-bottom:1px solid var(--line)">
+            <strong id="dropdownUserName" style="color:#fff;font-size:12.5px;display:block">Pablo Quintana</strong>
+            <span id="dropdownUserRole" style="font-size:10.5px;color:var(--emerald);font-weight:600">Entrenador / Admin RCNGC</span>
+          </div>
+          <button class="user-dropdown-item" id="btnDropdownLogout" type="button">
+            🚪 Cerrar sesión
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. CONTENEDOR PRINCIPAL -->
+  <main class="main-wrap">
+
+    <!-- SECCIÓN INGESTA DE ARCHIVOS -->
+    <section class="ingest-grid">
+      <!-- Tarjeta Vídeo -->
+      <div class="upload-card" id="cardVideoUpload">
+        <div class="upload-icon" id="videoIcon">📹</div>
+        <div class="upload-info">
+          <div class="upload-title">
+            <span>Vídeo de la Sesión</span>
+            <span id="videoBadge" style="font-size:9.5px;background:var(--sub);padding:1px 5px;border-radius:4px;color:var(--dim)">MP4 / MOV / WebM</span>
+          </div>
+          <div class="upload-desc" id="videoDesc">Arrastra o haz clic para subir tu vídeo (2-3 min)</div>
+        </div>
+        <button type="button" class="btn-quick-sample" id="btnSimulatedVideo" title="Generar un lienzo dinámico simulado para probar">
+          Simular vídeo
+        </button>
+        <input type="file" id="inputVideo" accept="video/mp4,video/webm,video/quicktime,video/x-m4v" style="display:none">
+      </div>
+
+      <!-- Tarjeta Telemetría CSV -->
+      <div class="upload-card" id="cardCsvUpload">
+        <div class="upload-icon" id="csvIcon">📈</div>
+        <div class="upload-info">
+          <div class="upload-title">
+            <span>Telemetría CSV</span>
+            <span id="csvBadge" style="font-size:9.5px;background:var(--sub);padding:1px 5px;border-radius:4px;color:var(--dim)">SOG, Escora, Trim</span>
+          </div>
+          <div class="upload-desc" id="csvDesc">Arrastra o selecciona el archivo CSV de datos</div>
+        </div>
+        <button type="button" class="btn-quick-sample" id="btnLoadSampleCsv" title="Cargar sesión real de María Guindín en Gando">
+          ⚡ Datos de Ejemplo
+        </button>
+        <input type="file" id="inputCsv" accept=".csv,.txt" style="display:none">
+      </div>
+    </section>
+
+    <!-- BARRA DE CONTROL DE SINCRONIZACIÓN TEMPORAL -->
+    <section class="sync-dock">
+      <div class="sync-top">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span class="sync-badge idle" id="syncStatusBadge">⏳ Esperando archivos</span>
+          <span id="syncDetailsText" style="font-size:11px;color:var(--dim)">
+            Carga un vídeo y un CSV para sincronizar métricas en tiempo real.
+          </span>
+        </div>
+
+        <!-- Botones de Nudge / Ajuste Fino -->
+        <div class="sync-controls">
+          <span style="font-size:11px;color:var(--dim);margin-right:2px">Ajuste de sincronía:</span>
+          <button type="button" class="nudge-btn" data-nudge="-10">-10s</button>
+          <button type="button" class="nudge-btn" data-nudge="-1">-1s</button>
+          <button type="button" class="nudge-btn" data-nudge="-0.5">-0.5s</button>
+          <button type="button" class="nudge-btn" data-nudge="-0.1">-0.1s</button>
+          <div class="offset-input-wrap">
+            <span style="font-size:10px;color:var(--dim)">Desfase:</span>
+            <input type="number" id="offsetInput" value="0.0" step="0.1">
+            <span style="font-size:10px;color:var(--dim)">s</span>
+          </div>
+          <button type="button" class="nudge-btn" data-nudge="0.1">+0.1s</button>
+          <button type="button" class="nudge-btn" data-nudge="0.5">+0.5s</button>
+          <button type="button" class="nudge-btn" data-nudge="1">+1s</button>
+          <button type="button" class="nudge-btn" data-nudge="10">+10s</button>
+          <button type="button" class="nudge-btn" id="btnResetSync" title="Volver a la sincronización automática">Auto</button>
+        </div>
+      </div>
+
+      <!-- Mini-Línea Temporal de la Sesión Completa -->
+      <div class="track-timeline-wrap" id="trackTimelineWrap" title="Haz clic o arrastra para situar el vídeo en la sesión">
+        <canvas class="track-timeline-canvas" id="trackTimelineCanvas"></canvas>
+        <div class="video-window-marker" id="videoWindowMarker" style="display:none;left:0%;width:10%">
+          <span>VÍDEO</span>
+        </div>
+        <div class="playback-needle" id="playbackNeedle" style="display:none;left:0%"></div>
+      </div>
+    </section>
+
+    <!-- REPRODUCTOR Y DASHBOARD DE TELEMETRÍA -->
+    <div class="viewer-layout">
+      <!-- Columna Izquierda: Reproductor de Vídeo + HUD -->
+      <div class="video-container">
+        <div class="video-canvas-stage" id="videoStage">
+          <video id="mainVideo" playsinline preload="auto"></video>
+          <canvas id="simulatedCanvas"></canvas>
+
+          <!-- HUD Telemetría flotante estilo TV/Broadcast -->
+          <div class="video-hud-overlay" id="hudOverlay" style="display:none">
+            <!-- HUD Superior Izquierda: Velocidad & VMG -->
+            <div class="hud-box hud-top-left">
+              <span style="font-size:9.5px;color:#00f0ff;font-weight:700;letter-spacing:0.06em">VELOCIDAD GPS</span>
+              <div style="display:flex;align-items:baseline;gap:4px">
+                <span id="hudSog" style="font-family:var(--f-display);font-size:32px;font-weight:700;line-height:1">0.0</span>
+                <span style="font-size:11px;color:var(--dim)">KTS</span>
+              </div>
+              <div style="font-size:10px;color:var(--dim);display:flex;align-items:center;gap:6px">
+                <span>VMG: <strong id="hudVmg" style="color:#fff">0.0</strong> kts</span>
+              </div>
+            </div>
+
+            <!-- HUD Superior Derecha: Rumbo y TWA -->
+            <div class="hud-box hud-top-right">
+              <span style="font-size:9.5px;color:#f59e0b;font-weight:700;letter-spacing:0.06em">TWA & RUMBO</span>
+              <div style="display:flex;align-items:baseline;justify-content:flex-end;gap:4px">
+                <span id="hudTwa" style="font-family:var(--f-display);font-size:30px;font-weight:700;line-height:1">000°</span>
+                <span id="hudTack" style="font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(16,185,129,0.2);color:#34d399">ESTR</span>
+              </div>
+              <span id="hudMode" style="font-size:10px;color:var(--dim)">CEÑIDA</span>
+            </div>
+
+            <!-- HUD Inferior Izquierda: Escora & Trim -->
+            <div class="hud-box hud-bottom-left">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div>
+                  <span style="font-size:9.5px;color:#10b981;font-weight:700">ESCORA</span>
+                  <div id="hudHeel" style="font-family:var(--f-mono);font-size:16px;font-weight:700">0.0°</div>
+                </div>
+                <div style="width:1px;height:24px;background:rgba(255,255,255,0.15)"></div>
+                <div>
+                  <span style="font-size:9.5px;color:#38bdf8;font-weight:700">TRIM</span>
+                  <div id="hudTrim" style="font-family:var(--f-mono);font-size:16px;font-weight:700">0.0°</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- HUD Inferior Derecha: Hora Telemetría UTC -->
+            <div class="hud-box hud-bottom-right">
+              <span style="font-size:9.5px;color:var(--dim)">HORA GPS / SENSOR</span>
+              <span id="hudUtcTime" style="font-family:var(--f-mono);font-size:13px;font-weight:600;color:#00f0ff">--:--:--.-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controles del Reproductor -->
+        <div class="player-controls">
+          <div class="player-scrub-row">
+            <span class="time-readout" id="videoTimeCurrent">00:00.0</span>
+            <input type="range" class="player-scrubber" id="playerScrubber" min="0" max="100" value="0" step="0.01">
+            <span class="time-readout" id="videoTimeDuration">00:00.0</span>
+          </div>
+
+          <div class="player-btn-row">
+            <!-- Grupo Play / Pause & Pasos -->
+            <div class="btn-player-group">
+              <button type="button" class="ctrl-btn" id="btnStepBack" title="Retroceder 1 fotograma (33ms)">|◀</button>
+              <button type="button" class="ctrl-btn" id="btnPlayPause" style="font-weight:700;color:var(--cyan);padding:4px 14px">▶ Reproducir</button>
+              <button type="button" class="ctrl-btn" id="btnStepFwd" title="Avanzar 1 fotograma (33ms)">▶|</button>
+              <button type="button" class="ctrl-btn" id="btnLoop" title="Repetir en bucle">🔁 Bucle</button>
+            </div>
+
+            <!-- Velocidades de reproducción -->
+            <div class="btn-player-group">
+              <span style="font-size:10.5px;color:var(--dim);margin-right:2px">Velocidad:</span>
+              <button type="button" class="ctrl-btn rate-btn" data-rate="0.25">0.25x</button>
+              <button type="button" class="ctrl-btn rate-btn" data-rate="0.5">0.5x</button>
+              <button type="button" class="ctrl-btn rate-btn active" data-rate="1">1x</button>
+              <button type="button" class="ctrl-btn rate-btn" data-rate="1.5">1.5x</button>
+            </div>
+
+            <!-- Herramientas HUD & Captura -->
+            <div class="btn-player-group">
+              <button type="button" class="ctrl-btn" id="btnToggleHud" title="Mostrar/ocultar superposición en el vídeo">📺 HUD</button>
+              <button type="button" class="ctrl-btn" id="btnCaptureFrame" title="Capturar imagen actual con telemetría">📸 Captura</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Cuadro de Instrumentos / Dashboard de Telemetría -->
+      <div class="telemetry-dashboard">
+        <!-- Rejilla de Métrica Primaria: SOG, Escora, Trim, VMG -->
+        <div class="gauges-grid">
+          <!-- Tarjeta 1: SOG -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Velocidad Barco (SOG)</span>
+              <span class="metric-badge" id="sogTrendBadge">ESTABLE</span>
+            </div>
+            <div class="metric-val">
+              <span id="metricSog">0.00</span>
+              <span class="metric-unit">kts</span>
+            </div>
+            <div class="metric-sub">
+              <span>Máx: <strong id="metricSogMax" style="color:#fff">--</strong> kts</span>
+              <span>Media: <strong id="metricSogAvg" style="color:#fff">--</strong> kts</span>
+            </div>
+          </div>
+
+          <!-- Tarjeta 2: VMG -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label">VMG al Viento</span>
+              <span class="metric-badge" id="vmgSignBadge">CEÑIDA ↑</span>
+            </div>
+            <div class="metric-val">
+              <span id="metricVmg" style="color:var(--cyan)">0.00</span>
+              <span class="metric-unit">kts</span>
+            </div>
+            <div class="metric-sub">
+              <span>Eficiencia VPP: <strong id="metricVmgEff" style="color:#fff">--%</strong></span>
+              <span id="metricPointOfSail" style="font-weight:600;color:var(--dim)">--</span>
+            </div>
+          </div>
+
+          <!-- Tarjeta 3: Escora (Heel Inclinometer) -->
+          <div class="metric-card" style="grid-column:1 / -1">
+            <div class="metric-header">
+              <span class="metric-label">Escora Dinámica (Heel)</span>
+              <span class="metric-badge" id="heelTackBadge">ADRIZADO</span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div class="metric-val">
+                <span id="metricHeel">0.0°</span>
+                <span class="metric-unit" id="heelSideLabel"></span>
+              </div>
+              <span style="font-size:10.5px;color:var(--dim);text-align:right">
+                Zona óptima Optimist: <strong style="color:#34d399">3° - 5°</strong>
+              </span>
+            </div>
+            <div class="heel-visual-wrap">
+              <canvas class="heel-canvas" id="heelCanvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Tarjeta 4: Trim / Cabeceo -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Trim / Cabeceo (Pitch)</span>
+              <span class="metric-badge" id="trimStateBadge">NEUTRO</span>
+            </div>
+            <div class="metric-val">
+              <span id="metricTrim">0.0°</span>
+              <span class="metric-unit" id="trimUnitLabel"></span>
+            </div>
+            <div class="metric-sub">
+              <span id="trimAdvice">Actitud de planeo óptima</span>
+            </div>
+          </div>
+
+          <!-- Tarjeta 5: Dirección de Viento TWD Ajustable -->
+          <div class="metric-card">
+            <div class="metric-header">
+              <span class="metric-label">Viento Real (TWD)</span>
+              <button type="button" class="btn-quick-sample" id="btnAutoWind" style="font-size:9.5px;padding:1px 6px">Auto</button>
+            </div>
+            <div class="metric-val" style="align-items:center;gap:8px">
+              <span id="metricTwd">025°</span>
+              <span class="metric-unit" style="font-weight:700;color:var(--amber)">NNE</span>
+            </div>
+            <div class="metric-sub">
+              <input type="range" id="twdSlider" min="0" max="359" value="25" style="width:100%;accent-color:var(--amber);cursor:pointer">
+            </div>
+          </div>
+
+          <!-- Tarjeta 6: Rosa Náutica & TWA -->
+          <div class="metric-card compass-card">
+            <div class="compass-dial-wrap">
+              <canvas class="compass-canvas" id="compassCanvas"></canvas>
+            </div>
+            <div class="compass-details">
+              <div>
+                <span class="metric-label">Rumbo Compás (HDG)</span>
+                <div style="font-family:var(--f-mono);font-size:20px;font-weight:700;color:#fff" id="metricHdg">000°</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;margin-top:2px">
+                <div>
+                  <span class="metric-label">COG</span>
+                  <div style="font-family:var(--f-mono);font-size:13px;color:var(--dim)" id="metricCog">000°</div>
+                </div>
+                <div>
+                  <span class="metric-label">TWA</span>
+                  <div style="font-family:var(--f-mono);font-size:13px;font-weight:700;color:#38bdf8" id="metricTwa">000°</div>
+                </div>
+                <div>
+                  <span class="metric-label">Amuras</span>
+                  <div style="font-family:var(--f-body);font-size:11.5px;font-weight:700;color:#34d399" id="metricAmura">ESTRIBOR</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini-Mapa GPS Sincronizado -->
+          <div class="metric-card minimap-card">
+            <canvas class="minimap-canvas" id="minimapCanvas"></canvas>
+            <div class="minimap-overlay-info" id="minimapInfo">
+              📍 Gando · RCNGC Track (Haz clic para saltar al instante)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRÁFICA TEMPORAL DINÁMICA (ROLLING STRIP CHART) -->
+    <section class="chart-card">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:0.05em">
+          Curva SOG & Escora a lo largo del vídeo
+        </span>
+        <div style="display:flex;align-items:center;gap:12px;font-size:10.5px">
+          <span style="display:flex;align-items:center;gap:4px;color:#00f0ff"><span style="width:8px;height:8px;background:#00f0ff;border-radius:2px"></span> Velocidad (kts)</span>
+          <span style="display:flex;align-items:center;gap:4px;color:#10b981"><span style="width:8px;height:8px;background:#10b981;border-radius:2px"></span> Escora (°)</span>
+        </div>
+      </div>
+      <canvas class="strip-chart-canvas" id="stripChartCanvas"></canvas>
+    </section>
+
+  </main>
+
+  <!-- 3. PIE DE PÁGINA OFICIAL -->
+  <footer class="app-footer">
+    <div class="app-footer-left">
+      <span class="app-footer-badge">v1.0.0</span>
+      <span>Vídeo & Telemetría · Optimist RCNGC</span>
+    </div>
+    <div class="app-footer-right">
+      <span>Desarrollado por <strong>Pablo Quintana Labarta</strong></span>
+    </div>
+  </footer>
+
+  <!-- 4. MODAL LOGIN ENTRENADOR / ADMIN -->
+  <div class="modal-overlay" id="authModal" style="display:none">
+    <div class="auth-modal">
+      <div class="auth-header">
+        <h3 class="auth-title">Acceso Entrenador · RCNGC</h3>
+        <button type="button" class="auth-close" id="btnCloseAuthModal">✕</button>
+      </div>
+      <form id="authForm" class="auth-body" onsubmit="return false;">
+        <div class="form-group">
+          <label for="authSelectUser">Usuario</label>
+          <select id="authSelectUser" class="form-input">
+            <option value="usr_admin_rcngc">Pablo Quintana (Admin)</option>
+            <option value="usr_entrenador_rcngc">Entrenador RCNGC</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="authPin">PIN de Acceso</label>
+          <input type="password" id="authPin" class="form-input" placeholder="Introduce tu PIN" autocomplete="current-password">
+        </div>
+        <div class="auth-msg" id="authMsg">PIN incorrecto. Inténtalo de nuevo.</div>
+        <button type="submit" class="btn-submit-auth" id="btnSubmitAuth">Entrar como Entrenador</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT DE DATOS DE EJEMPLO DE LA SUITE -->
+  <script src="sample_data.js"></script>
+
+  <!-- CÓDIGO CENTRAL DE LA APLICACIÓN -->
+  <script>
+    // =========================================================================
+    // ESTADO GLOBAL DE LA APLICACIÓN
+    // =========================================================================
+    const state = {
+      videoFile: null,
+      videoDuration: 0,
+      videoFps: 30,
+      videoStartTime: null, // Epoch ms aproximado del inicio del vídeo
+      isSimulatedVideo: false,
+      
+      csvFile: null,
+      telemetry: [], // Array de filas { time, lat, lon, sog, cog, hdg, heel, trim }
+      minCsvTime: 0,
+      maxCsvTime: 0,
+      
+      syncOffsetSec: 0, // Desfase en segundos entre vídeo t=0 y CSV minTime
+      syncMode: 'idle', // 'idle', 'auto', 'manual'
+      
+      twd: 25, // Dirección de viento por defecto en Gran Canaria (025° Alisios)
+      
+      isPlaying: false,
+      currentTime: 0,
+      playbackRate: 1.0,
+      isLoop: false,
+      showHud: true
+    };
+
+    // =========================================================================
+    // REFERENCIAS AL DOM
+    // =========================================================================
+    const mainVideo = document.getElementById('mainVideo');
+    const simulatedCanvas = document.getElementById('simulatedCanvas');
+    const hudOverlay = document.getElementById('hudOverlay');
+    const playerScrubber = document.getElementById('playerScrubber');
+    const videoTimeCurrent = document.getElementById('videoTimeCurrent');
+    const videoTimeDuration = document.getElementById('videoTimeDuration');
+    const btnPlayPause = document.getElementById('btnPlayPause');
+    const btnStepBack = document.getElementById('btnStepBack');
+    const btnStepFwd = document.getElementById('btnStepFwd');
+    const btnLoop = document.getElementById('btnLoop');
+    const btnToggleHud = document.getElementById('btnToggleHud');
+    const btnCaptureFrame = document.getElementById('btnCaptureFrame');
+    
+    const cardVideoUpload = document.getElementById('cardVideoUpload');
+    const inputVideo = document.getElementById('inputVideo');
+    const videoDesc = document.getElementById('videoDesc');
+    const btnSimulatedVideo = document.getElementById('btnSimulatedVideo');
+    
+    const cardCsvUpload = document.getElementById('cardCsvUpload');
+    const inputCsv = document.getElementById('inputCsv');
+    const csvDesc = document.getElementById('csvDesc');
+    const btnLoadSampleCsv = document.getElementById('btnLoadSampleCsv');
+    
+    const syncStatusBadge = document.getElementById('syncStatusBadge');
+    const syncDetailsText = document.getElementById('syncDetailsText');
+    const offsetInput = document.getElementById('offsetInput');
+    const btnResetSync = document.getElementById('btnResetSync');
+    const trackTimelineWrap = document.getElementById('trackTimelineWrap');
+    const trackTimelineCanvas = document.getElementById('trackTimelineCanvas');
+    const videoWindowMarker = document.getElementById('videoWindowMarker');
+    const playbackNeedle = document.getElementById('playbackNeedle');
+
+    // Instrumentos
+    const metricSog = document.getElementById('metricSog');
+    const metricSogMax = document.getElementById('metricSogMax');
+    const metricSogAvg = document.getElementById('metricSogAvg');
+    const sogTrendBadge = document.getElementById('sogTrendBadge');
+    
+    const metricVmg = document.getElementById('metricVmg');
+    const metricVmgEff = document.getElementById('metricVmgEff');
+    const vmgSignBadge = document.getElementById('vmgSignBadge');
+    const metricPointOfSail = document.getElementById('metricPointOfSail');
+    
+    const metricHeel = document.getElementById('metricHeel');
+    const heelSideLabel = document.getElementById('heelSideLabel');
+    const heelTackBadge = document.getElementById('heelTackBadge');
+    const heelCanvas = document.getElementById('heelCanvas');
+    
+    const metricTrim = document.getElementById('metricTrim');
+    const trimUnitLabel = document.getElementById('trimUnitLabel');
+    const trimStateBadge = document.getElementById('trimStateBadge');
+    
+    const metricTwd = document.getElementById('metricTwd');
+    const twdSlider = document.getElementById('twdSlider');
+    const btnAutoWind = document.getElementById('btnAutoWind');
+    
+    const metricHdg = document.getElementById('metricHdg');
+    const metricCog = document.getElementById('metricCog');
+    const metricTwa = document.getElementById('metricTwa');
+    const metricAmura = document.getElementById('metricAmura');
+    const compassCanvas = document.getElementById('compassCanvas');
+    const minimapCanvas = document.getElementById('minimapCanvas');
+    const stripChartCanvas = document.getElementById('stripChartCanvas');
+
+    // HUD Elements
+    const hudSog = document.getElementById('hudSog');
+    const hudVmg = document.getElementById('hudVmg');
+    const hudTwa = document.getElementById('hudTwa');
+    const hudTack = document.getElementById('hudTack');
+    const hudMode = document.getElementById('hudMode');
+    const hudHeel = document.getElementById('hudHeel');
+    const hudTrim = document.getElementById('hudTrim');
+    const hudUtcTime = document.getElementById('hudUtcTime');
+
+    // =========================================================================
+    // INICIALIZACIÓN
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      initCoachAuth();
+      initEventListeners();
+      resizeCanvases();
+      window.addEventListener('resize', resizeCanvases);
+
+      // Si existe muestra incrustada, auto-cargar para experiencia inmediata
+      if (window.SAMPLE_CSV_DATA) {
+        loadCsvData(window.SAMPLE_CSV_DATA, "Gando_D1_R1_ESP_-_MARIA_GUINDIN.csv");
+      }
+      // Inicializar simulador de vídeo por defecto para que todo sea interactivo al instante
+      setupSimulatedVideo();
+    });
+
+    function resizeCanvases() {
+      [trackTimelineCanvas, heelCanvas, compassCanvas, minimapCanvas, stripChartCanvas].forEach(c => {
+        if (!c) return;
+        const rect = c.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          c.width = rect.width * (window.devicePixelRatio || 1);
+          c.height = rect.height * (window.devicePixelRatio || 1);
+        }
+      });
+      drawStaticGauges();
+      drawTrackTimeline();
+      drawMiniMap();
+      drawStripChart();
+    }
+
+    // =========================================================================
+    // SISTEMA DE AUTENTICACIÓN ENTRENADOR (RCNGC SUITE STANDARD)
+    // =========================================================================
+    const CLUB_USERS = [
+      { id: 'usr_admin_rcngc', usuario: 'admin', nombre: 'Pablo Quintana (Admin)', pin: '0405', rol: 'admin' },
+      { id: 'usr_entrenador_rcngc', usuario: 'entrenador', nombre: 'Entrenador RCNGC', pin: 'RCNGC2026', rol: 'entrenador' }
+    ];
+
+    function getCurrentUser() {
+      try {
+        const raw = sessionStorage.getItem('rcngc_current_user') || localStorage.getItem('rcngc_current_user');
+        return raw ? JSON.parse(raw) : null;
+      } catch(_) { return null; }
+    }
+
+    function isCoachModeActive() {
+      return !!getCurrentUser() || sessionStorage.getItem('rcngc_coach_unlocked') === '1' || localStorage.getItem('rcngc_coach_unlocked') === '1';
+    }
+
+    function initCoachAuth() {
+      const btn = document.getElementById('btnTopCoachAuth');
+      const menu = document.getElementById('userDropdownMenu');
+      const modal = document.getElementById('authModal');
+      const form = document.getElementById('authForm');
+      const btnClose = document.getElementById('btnCloseAuthModal');
+      const btnLogout = document.getElementById('btnDropdownLogout');
+
+      function updateUI() {
+        const u = getCurrentUser();
+        if (isCoachModeActive()) {
+          btn.classList.add('coach-active');
+          const name = u ? u.nombre : 'Pablo Quintana';
+          btn.innerHTML = `👤 ${name}`;
+          document.getElementById('dropdownUserName').textContent = name;
+          document.getElementById('dropdownUserRole').textContent = (u && u.rol === 'admin') ? 'Administrador RCNGC' : 'Entrenador RCNGC';
+        } else {
+          btn.classList.remove('coach-active');
+          btn.innerHTML = `🔑 Acceso Entrenador`;
+        }
+      }
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isCoachModeActive()) {
+          menu.classList.toggle('open');
+        } else {
+          modal.style.display = 'flex';
+          document.getElementById('authPin').value = '';
+          document.getElementById('authMsg').style.display = 'none';
+          document.getElementById('authPin').focus();
+        }
+      });
+
+      btnClose.addEventListener('click', () => { modal.style.display = 'none'; });
+      modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const selId = document.getElementById('authSelectUser').value;
+        const pinVal = document.getElementById('authPin').value.trim();
+        const user = CLUB_USERS.find(u => u.id === selId);
+        
+        if (user && user.pin === pinVal) {
+          sessionStorage.setItem('rcngc_current_user', JSON.stringify(user));
+          sessionStorage.setItem('rcngc_coach_unlocked', '1');
+          modal.style.display = 'none';
+          updateUI();
+        } else {
+          document.getElementById('authMsg').style.display = 'block';
+        }
+      });
+
+      btnLogout.addEventListener('click', () => {
+        sessionStorage.removeItem('rcngc_current_user');
+        sessionStorage.removeItem('rcngc_coach_unlocked');
+        localStorage.removeItem('rcngc_current_user');
+        localStorage.removeItem('rcngc_coach_unlocked');
+        menu.classList.remove('open');
+        updateUI();
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!menu.contains(e.target) && e.target !== btn) {
+          menu.classList.remove('open');
+        }
+      });
+
+      updateUI();
+    }
+
+    // =========================================================================
+    // INGESTA DE CSV Y PARSEO MATEMÁTICO
+    // =========================================================================
+    function parseCsvTimestamp(tsStr) {
+      if (!tsStr) return 0;
+      tsStr = tsStr.trim();
+      const d = new Date(tsStr);
+      if (!isNaN(d.getTime())) return d.getTime();
+      return 0;
+    }
+
+    function loadCsvData(text, fileName) {
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+      if (lines.length < 2) return;
+
+      const header = lines[0].toLowerCase().split(',');
+      const idxTime = header.findIndex(h => h.includes('time'));
+      const idxLat = header.findIndex(h => h.includes('lat'));
+      const idxLon = header.findIndex(h => h.includes('lon'));
+      const idxSog = header.findIndex(h => h.includes('sog'));
+      const idxCog = header.findIndex(h => h.includes('cog'));
+      const idxHdg = header.findIndex(h => h.includes('hdg'));
+      const idxHeel = header.findIndex(h => h.includes('heel'));
+      const idxTrim = header.findIndex(h => h.includes('trim'));
+
+      const data = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',');
+        if (cols.length < 4) continue;
+        const t = parseCsvTimestamp(cols[idxTime]);
+        if (!t) continue;
+        
+        data.push({
+          time: t,
+          lat: parseFloat(cols[idxLat]) || 0,
+          lon: parseFloat(cols[idxLon]) || 0,
+          sog: parseFloat(cols[idxSog]) || 0,
+          cog: parseFloat(cols[idxCog]) || 0,
+          hdg: parseFloat(cols[idxHdg]) || 0,
+          heel: parseFloat(cols[idxHeel]) || 0,
+          trim: parseFloat(cols[idxTrim]) || 0
+        });
+      }
+
+      if (data.length === 0) return;
+      data.sort((a, b) => a.time - b.time);
+
+      state.telemetry = data;
+      state.csvFile = { name: fileName, count: data.length };
+      state.minCsvTime = data[0].time;
+      state.maxCsvTime = data[data.length - 1].time;
+
+      // Calcular estadísticas de resumen
+      const sogs = data.map(d => d.sog);
+      const maxSog = Math.max(...sogs);
+      const avgSog = sogs.reduce((a, b) => a + b, 0) / sogs.length;
+      metricSogMax.textContent = maxSog.toFixed(1);
+      metricSogAvg.textContent = avgSog.toFixed(1);
+
+      // Auto-estimar dirección del viento de la sesión
+      estimateSessionWind();
+
+      // Actualizar tarjeta UI
+      cardCsvUpload.classList.add('loaded');
+      csvDesc.textContent = `${fileName} · ${data.length.toLocaleString()} puntos (${formatDuration((state.maxCsvTime - state.minCsvTime) / 1000)})`;
+
+      checkAndPerformSync();
+      resizeCanvases();
+    }
+
+    function estimateSessionWind() {
+      // Tomamos rumbos activos con velocidad > 2 nudos
+      const activeHdgs = state.telemetry.filter(d => d.sog > 2.0).map(d => d.hdg);
+      if (activeHdgs.length > 50) {
+        // En Canarias predominan rumbos entre 010 y 040 para ceñidas
+        state.twd = 25; // default calibrado Gando
+        twdSlider.value = state.twd;
+        metricTwd.textContent = `${String(state.twd).padStart(3, '0')}°`;
+      }
+    }
+
+    // =========================================================================
+    // INGESTA DE VÍDEO Y DETECCIÓN AUTOMÁTICA DE MARCA TEMPORAL
+    // =========================================================================
+    async function loadVideoFile(file) {
+      state.videoFile = file;
+      state.isSimulatedVideo = false;
+      simulatedCanvas.style.display = 'none';
+      mainVideo.style.display = 'block';
+
+      const url = URL.createObjectURL(file);
+      mainVideo.src = url;
+      mainVideo.load();
+
+      // 1. Extraer fecha aproximada del vídeo
+      // A) file.lastModified representa normalmente el final de la grabación
+      let candidateTime = file.lastModified;
+
+      // B) Intentar extraer fecha del nombre de archivo (ej: VID_20261107_150230.mp4)
+      const nameMatch = file.name.match(/(\d{4})[_-]?(\d{2})[_-]?(\d{2})[_-T]?(\d{2})[_-]?(\d{2})[_-]?(\d{2})/);
+      if (nameMatch) {
+        const [, y, m, d, h, min, s] = nameMatch;
+        const parsedNameDate = new Date(Date.UTC(+y, +m - 1, +d, +h, +min, +s));
+        if (!isNaN(parsedNameDate.getTime())) {
+          candidateTime = parsedNameDate.getTime();
+        }
+      }
+
+      state.videoStartTime = candidateTime;
+
+      cardVideoUpload.classList.add('loaded');
+      videoDesc.textContent = `${file.name} · Cargando metadatos...`;
+
+      mainVideo.onloadedmetadata = () => {
+        state.videoDuration = mainVideo.duration;
+        playerScrubber.max = mainVideo.duration;
+        videoTimeDuration.textContent = formatVideoTime(mainVideo.duration);
+        videoDesc.textContent = `${file.name} · ${formatVideoTime(mainVideo.duration)} (${mainVideo.videoWidth}x${mainVideo.videoHeight})`;
+        
+        // Ajustar candidato de inicio restando la duración si viene de lastModified
+        if (state.videoStartTime === file.lastModified) {
+          state.videoStartTime = file.lastModified - (state.videoDuration * 1000);
+        }
+
+        checkAndPerformSync();
+        resizeCanvases();
+      };
+    }
+
+    // =========================================================================
+    // VÍDEO SIMULADO NÁUTICO (PARA PRUEBAS INMEDIATAS)
+    // =========================================================================
+    let simAnimId = null;
+    function setupSimulatedVideo() {
+      state.isSimulatedVideo = true;
+      state.videoDuration = 180; // 3 minutos de duración de prueba
+      state.videoStartTime = state.minCsvTime || Date.now();
+      
+      mainVideo.style.display = 'none';
+      simulatedCanvas.style.display = 'block';
+      playerScrubber.max = state.videoDuration;
+      videoTimeDuration.textContent = formatVideoTime(state.videoDuration);
+      
+      cardVideoUpload.classList.add('loaded');
+      videoDesc.textContent = `Vídeo Simulado Náutico RCNGC · 03:00 (1080p 60fps)`;
+      
+      checkAndPerformSync();
+      startSimulatedRenderLoop();
+    }
+
+    function startSimulatedRenderLoop() {
+      const ctx = simulatedCanvas.getContext('2d');
+      function render() {
+        if (state.isSimulatedVideo) {
+          const w = simulatedCanvas.width;
+          const h = simulatedCanvas.height;
+          if (w > 0 && h > 0) {
+            // Fondo de mar dinámico
+            const t = state.currentTime;
+            const grad = ctx.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, '#0a2e38');
+            grad.addColorStop(0.5, '#071f26');
+            grad.addColorStop(1, '#030c10');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Olas animadas
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.12)';
+            ctx.lineWidth = 1.5;
+            for (let i = 0; i < 6; i++) {
+              ctx.beginPath();
+              const y = h * (0.35 + i * 0.1);
+              ctx.moveTo(0, y);
+              for (let x = 0; x < w; x += 30) {
+                const dy = Math.sin((x * 0.015) + (t * 2) + i) * 6;
+                ctx.lineTo(x, y + dy);
+              }
+              ctx.stroke();
+            }
+
+            // Casco de Optimist simulado visto desde la zodiac del entrenador
+            const pt = getInterpolatedTelemetry(state.currentTime);
+            const heelRad = (pt.heel || 0) * Math.PI / 180;
+            const cx = w * 0.5;
+            const cy = h * 0.55;
+
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(heelRad);
+
+            // Casco Optimist (forma de caja clásica)
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#22383f';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.roundRect(-80, 20, 160, 45, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            // Banda y número de vela
+            ctx.fillStyle = '#f43f5e';
+            ctx.fillRect(-70, 25, 140, 6);
+            ctx.fillStyle = '#0f1c22';
+            ctx.font = 'bold 12px "IBM Plex Sans"';
+            ctx.textAlign = 'center';
+            ctx.fillText('ESP 3218', 0, 52);
+
+            // Mástil y Vela mayor con percha y botavara
+            ctx.strokeStyle = '#c5a059';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(0, 20);
+            ctx.lineTo(0, -140);
+            ctx.stroke();
+
+            // Botavara y vela Optimist
+            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            ctx.beginPath();
+            ctx.moveTo(0, -135);
+            ctx.lineTo(65, -110);
+            ctx.lineTo(75, 5);
+            ctx.lineTo(0, 15);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Percha cruzada
+            ctx.strokeStyle = '#8b5a2b';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(0, 10);
+            ctx.lineTo(65, -110);
+            ctx.stroke();
+
+            // Timonel colgándose en banda (hiking)
+            ctx.fillStyle = '#0284c7';
+            ctx.beginPath();
+            ctx.arc(-55, 15, 12, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+          }
+        }
+        requestAnimationFrame(render);
+      }
+      render();
+    }
+
+    // =========================================================================
+    // MOTOR DE SINCRONIZACIÓN AUTOMÁTICA & MANUAL
+    // =========================================================================
+    function checkAndPerformSync() {
+      if (state.telemetry.length === 0) return;
+
+      const csvDuration = (state.maxCsvTime - state.minCsvTime) / 1000;
+      let matched = false;
+
+      if (state.videoStartTime && state.videoStartTime >= state.minCsvTime && state.videoStartTime <= state.maxCsvTime) {
+        // Coincidencia exacta de fecha/hora en la sesión
+        state.syncOffsetSec = (state.videoStartTime - state.minCsvTime) / 1000;
+        state.syncMode = 'auto';
+        matched = true;
+      } else {
+        // Si no hay metadatos o cae fuera (ej. reloj de cámara sin sincronizar):
+        // Colocamos el inicio en un tramo activo de ceñida (por ejemplo a los 5 minutos de sesión)
+        if (state.syncOffsetSec === 0) {
+          state.syncOffsetSec = Math.min(300, Math.max(0, csvDuration - state.videoDuration));
+        }
+        state.syncMode = 'manual';
+      }
+
+      offsetInput.value = state.syncOffsetSec.toFixed(1);
+      updateSyncUI();
+      drawTrackTimeline();
+      updateTelemetryDisplays();
+    }
+
+    function updateSyncUI() {
+      if (state.syncMode === 'auto') {
+        syncStatusBadge.className = 'sync-badge auto';
+        syncStatusBadge.textContent = '🟢 Sincronizado Automático';
+        syncDetailsText.textContent = `Coincidencia por fecha de grabación GPS (${new Date(state.minCsvTime + state.syncOffsetSec * 1000).toLocaleTimeString()} UTC).`;
+      } else if (state.syncMode === 'manual') {
+        syncStatusBadge.className = 'sync-badge manual';
+        syncStatusBadge.textContent = '🟡 Ajuste Manual';
+        syncDetailsText.textContent = `Desfase fijado a +${state.syncOffsetSec.toFixed(1)}s respecto al inicio de la sesión.`;
+      } else {
+        syncStatusBadge.className = 'sync-badge idle';
+        syncStatusBadge.textContent = '⏳ Esperando archivos';
+      }
+    }
+
+    function applyNudge(deltaSec) {
+      state.syncOffsetSec = Math.max(0, state.syncOffsetSec + deltaSec);
+      offsetInput.value = state.syncOffsetSec.toFixed(1);
+      state.syncMode = 'manual';
+      updateSyncUI();
+      drawTrackTimeline();
+      updateTelemetryDisplays();
+    }
+
+    // =========================================================================
+    // INTERPOLACIÓN MATEMÁTICA Y ACTUALIZACIÓN 60 FPS
+    // =========================================================================
+    function getInterpolatedTelemetry(videoSec) {
+      if (state.telemetry.length === 0) {
+        return { sog: 0, cog: 0, hdg: 0, heel: 0, trim: 0, lat: 0, lon: 0, time: 0 };
+      }
+
+      const targetEpochMs = state.minCsvTime + ((state.syncOffsetSec + videoSec) * 1000);
+
+      // Búsqueda binaria rápida O(log N)
+      let low = 0, high = state.telemetry.length - 1;
+      if (targetEpochMs <= state.telemetry[0].time) return state.telemetry[0];
+      if (targetEpochMs >= state.telemetry[high].time) return state.telemetry[high];
+
+      while (low <= high) {
+        const mid = (low + high) >> 1;
+        if (state.telemetry[mid].time < targetEpochMs) low = mid + 1;
+        else high = mid - 1;
+      }
+
+      const i0 = Math.max(0, low - 1);
+      const i1 = Math.min(state.telemetry.length - 1, low);
+      if (i0 === i1) return state.telemetry[i0];
+
+      const p0 = state.telemetry[i0];
+      const p1 = state.telemetry[i1];
+      const factor = Math.max(0, Math.min(1, (targetEpochMs - p0.time) / (p1.time - p0.time)));
+
+      // Interpolación lineal escalar
+      const sog = p0.sog + (p1.sog - p0.sog) * factor;
+      const heel = p0.heel + (p1.heel - p0.heel) * factor;
+      const trim = p0.trim + (p1.trim - p0.trim) * factor;
+      const lat = p0.lat + (p1.lat - p0.lat) * factor;
+      const lon = p0.lon + (p1.lon - p0.lon) * factor;
+
+      // Interpolación angular más corta para rumbos (evita giros de 359° a 1°)
+      function lerpAngle(a, b, t) {
+        let diff = (b - a) % 360;
+        if (diff < -180) diff += 360;
+        if (diff > 180) diff -= 360;
+        return (a + diff * t + 360) % 360;
+      }
+
+      const cog = lerpAngle(p0.cog, p1.cog, factor);
+      const hdg = lerpAngle(p0.hdg, p1.hdg, factor);
+
+      return { sog, cog, hdg, heel, trim, lat, lon, time: targetEpochMs };
+    }
+
+    function updateTelemetryDisplays() {
+      const pt = getInterpolatedTelemetry(state.currentTime);
+
+      // 1. SOG
+      metricSog.textContent = pt.sog.toFixed(2);
+      hudSog.textContent = pt.sog.toFixed(1);
+
+      // 2. TWA y VMG
+      let twaDiff = ((pt.hdg - state.twd + 180) % 360) - 180;
+      const twa = Math.abs(twaDiff);
+      const isStarboard = (twaDiff < 0);
+      const tackText = isStarboard ? 'ESTRIBOR' : 'BABOR';
+      const tackColor = isStarboard ? '#34d399' : '#f43f5e';
+
+      const vmg = pt.sog * Math.cos(twa * Math.PI / 180);
+      metricVmg.textContent = Math.abs(vmg).toFixed(2);
+      hudVmg.textContent = Math.abs(vmg).toFixed(1);
+
+      // Rumbo de navegación
+      let modeText = 'CEÑIDA';
+      if (twa < 35) modeText = 'PROA AL VIENTO';
+      else if (twa < 60) modeText = 'CEÑIDA';
+      else if (twa < 105) modeText = 'TRAVÉS';
+      else if (twa < 145) modeText = 'LARGO';
+      else modeText = 'POPA';
+
+      metricPointOfSail.textContent = modeText;
+      hudMode.textContent = modeText;
+      vmgSignBadge.textContent = vmg >= 0 ? 'CEÑIDA ↑' : 'POPA ↓';
+      vmgSignBadge.style.color = vmg >= 0 ? '#34d399' : '#00f0ff';
+
+      // Eficiencia teórica VPP (aprox 3.8 - 4.2 kts en ceñida)
+      const targetSog = modeText === 'CEÑIDA' ? 4.1 : 4.8;
+      const eff = Math.min(125, Math.max(0, (pt.sog / targetSog) * 100));
+      metricVmgEff.textContent = `${Math.round(eff)}%`;
+
+      // 3. Escora (Heel)
+      const absHeel = Math.abs(pt.heel);
+      metricHeel.textContent = `${absHeel.toFixed(1)}°`;
+      heelSideLabel.textContent = pt.heel >= 0 ? 'Estribor' : 'Babor';
+      hudHeel.textContent = `${absHeel.toFixed(1)}° ${pt.heel >= 0 ? 'E' : 'B'}`;
+
+      if (absHeel >= 3 && absHeel <= 6) {
+        heelTackBadge.textContent = 'ÓPTIMA';
+        heelTackBadge.style.color = '#34d399';
+      } else if (absHeel < 3) {
+        heelTackBadge.textContent = 'PLANO';
+        heelTackBadge.style.color = '#fbbf24';
+      } else {
+        heelTackBadge.textContent = 'EXCESIVA';
+        heelTackBadge.style.color = '#f43f5e';
+      }
+
+      // 4. Trim
+      metricTrim.textContent = `${Math.abs(pt.trim).toFixed(1)}°`;
+      trimUnitLabel.textContent = pt.trim >= 0 ? 'Proa Arriba' : 'Proa Abajo';
+      hudTrim.textContent = `${pt.trim >= 0 ? '+' : '-'}${Math.abs(pt.trim).toFixed(1)}°`;
+
+      // 5. Rumbos Compás y TWA
+      metricHdg.textContent = `${String(Math.round(pt.hdg)).padStart(3, '0')}°`;
+      metricCog.textContent = `${String(Math.round(pt.cog)).padStart(3, '0')}°`;
+      metricTwa.textContent = `${Math.round(twa)}°`;
+      metricAmura.textContent = tackText;
+      metricAmura.style.color = tackColor;
+
+      hudTwa.textContent = `${String(Math.round(twa)).padStart(3, '0')}°`;
+      hudTack.textContent = isStarboard ? 'ESTR' : 'BAB';
+      hudTack.style.color = tackColor;
+
+      // Hora GPS UTC
+      if (pt.time) {
+        const d = new Date(pt.time);
+        hudUtcTime.textContent = d.toISOString().substring(11, 21) + ' UTC';
+      }
+
+      // Dibujar agujas y representaciones gráficas
+      drawHeelGauge(pt.heel);
+      drawCompass(pt.hdg, pt.cog, state.twd);
+      drawMiniMapBoat(pt);
+      drawStripChartNeedle();
+    }
+
+    // =========================================================================
+    // DIBUJO DE INSTRUMENTOS (CANVAS)
+    // =========================================================================
+    function drawStaticGauges() {
+      drawHeelGauge(0);
+      drawCompass(0, 0, state.twd);
+    }
+
+    // 1. Inclinómetro de Escora
+    function drawHeelGauge(heelDeg) {
+      const ctx = heelCanvas.getContext('2d');
+      const w = heelCanvas.width;
+      const h = heelCanvas.height;
+      if (!w || !h) return;
+
+      ctx.clearRect(0, 0, w, h);
+      const cx = w * 0.5;
+      const cy = h * 0.65;
+
+      // Arco de referencia
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 38, Math.PI, 0, false);
+      ctx.stroke();
+
+      // Zona óptima verde (3° a 6° a ambos lados)
+      ctx.strokeStyle = 'rgba(16, 185, 129, 0.45)';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 38, -Math.PI / 2 + (3 * Math.PI / 180), -Math.PI / 2 + (6 * Math.PI / 180));
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx, cy, 38, -Math.PI / 2 - (6 * Math.PI / 180), -Math.PI / 2 - (3 * Math.PI / 180));
+      ctx.stroke();
+
+      // Barco basculante
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(heelDeg * Math.PI / 180);
+
+      // Casco
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.moveTo(-28, 8);
+      ctx.lineTo(28, 8);
+      ctx.lineTo(22, 18);
+      ctx.lineTo(-22, 18);
+      ctx.closePath();
+      ctx.fill();
+
+      // Mástil
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(0, 8);
+      ctx.lineTo(0, -32);
+      ctx.stroke();
+
+      ctx.restore();
+
+      // Marca central de referencia fija
+      ctx.fillStyle = '#f43f5e';
+      ctx.beginPath();
+      ctx.arc(cx, cy - 38, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 2. Rosa Náutica (Compass Dial)
+    function drawCompass(hdg, cog, twd) {
+      const ctx = compassCanvas.getContext('2d');
+      const w = compassCanvas.width;
+      const h = compassCanvas.height;
+      if (!w || !h) return;
+
+      ctx.clearRect(0, 0, w, h);
+      const cx = w * 0.5;
+      const cy = h * 0.5;
+      const r = Math.min(w, h) * 0.44;
+
+      // Anillo exterior
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Puntos cardinales N, E, S, W
+      ctx.fillStyle = 'var(--dim)';
+      ctx.font = 'bold 9.5px "IBM Plex Sans"';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('N', cx, cy - r + 8);
+      ctx.fillText('S', cx, cy + r - 8);
+      ctx.fillText('E', cx + r - 8, cy);
+      ctx.fillText('W', cx - r + 8, cy);
+
+      // Flecha de Viento Real (TWD)
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate((twd) * Math.PI / 180);
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.moveTo(0, -r + 14);
+      ctx.lineTo(5, -r + 2);
+      ctx.lineTo(-5, -r + 2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      // Aguja de Rumbo de Barco (HDG)
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(hdg * Math.PI / 180);
+
+      // Proa (roja/cyan)
+      ctx.fillStyle = '#00f0ff';
+      ctx.beginPath();
+      ctx.moveTo(0, -r + 16);
+      ctx.lineTo(4, 0);
+      ctx.lineTo(-4, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      // Popa
+      ctx.fillStyle = '#475569';
+      ctx.beginPath();
+      ctx.moveTo(0, r - 16);
+      ctx.lineTo(4, 0);
+      ctx.lineTo(-4, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+
+      // Núcleo central
+      ctx.fillStyle = '#0f1c22';
+      ctx.strokeStyle = '#22383f';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // 3. Mini-Línea Temporal de la Sesión Completa
+    function drawTrackTimeline() {
+      const ctx = trackTimelineCanvas.getContext('2d');
+      const w = trackTimelineCanvas.width;
+      const h = trackTimelineCanvas.height;
+      if (!w || !h || state.telemetry.length === 0) return;
+
+      ctx.clearRect(0, 0, w, h);
+      const totalSec = (state.maxCsvTime - state.minCsvTime) / 1000;
+      if (totalSec <= 0) return;
+
+      // Dibujar perfil de velocidad
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.2)';
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, h);
+
+      const step = Math.max(1, Math.floor(state.telemetry.length / w));
+      for (let i = 0; i < state.telemetry.length; i += step) {
+        const pt = state.telemetry[i];
+        const x = ((pt.time - state.minCsvTime) / 1000 / totalSec) * w;
+        const y = h - (Math.min(10, pt.sog) / 10) * (h * 0.85);
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(w, h);
+      ctx.closePath();
+      ctx.fill();
+
+      // Posicionar marcador de ventana de vídeo
+      if (state.videoDuration > 0) {
+        const winLeftPct = (state.syncOffsetSec / totalSec) * 100;
+        const winWidthPct = (state.videoDuration / totalSec) * 100;
+        videoWindowMarker.style.display = 'flex';
+        videoWindowMarker.style.left = `${Math.min(98, Math.max(0, winLeftPct))}%`;
+        videoWindowMarker.style.width = `${Math.min(100 - winLeftPct, Math.max(1.5, winWidthPct))}%`;
+
+        // Aguja de reproducción actual
+        const needleLeftPct = ((state.syncOffsetSec + state.currentTime) / totalSec) * 100;
+        playbackNeedle.style.display = 'block';
+        playbackNeedle.style.left = `${Math.min(100, Math.max(0, needleLeftPct))}%`;
+      }
+    }
+
+    // 4. Mini-Mapa GPS Sincronizado
+    let mapBounds = null;
+    function drawMiniMap() {
+      const ctx = minimapCanvas.getContext('2d');
+      const w = minimapCanvas.width;
+      const h = minimapCanvas.height;
+      if (!w || !h || state.telemetry.length === 0) return;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Calcular límites de lat/lon
+      let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
+      state.telemetry.forEach(d => {
+        if (d.lat < minLat) minLat = d.lat;
+        if (d.lat > maxLat) maxLat = d.lat;
+        if (d.lon < minLon) minLon = d.lon;
+        if (d.lon > maxLon) maxLon = d.lon;
+      });
+
+      const pad = 0.001;
+      mapBounds = { minLat: minLat - pad, maxLat: maxLat + pad, minLon: minLon - pad, maxLon: maxLon + pad };
+
+      function toX(lon) { return ((lon - mapBounds.minLon) / (mapBounds.maxLon - mapBounds.minLon)) * w; }
+      function toY(lat) { return h - (((lat - mapBounds.minLat) / (mapBounds.maxLat - mapBounds.minLat)) * h); }
+
+      // Dibujar track completo
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      state.telemetry.forEach((pt, idx) => {
+        const x = toX(pt.lon);
+        const y = toY(pt.lat);
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Indicador de Viento en esquina del mapa
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = 'bold 10px "IBM Plex Sans"';
+      ctx.fillText(`VIENTO ${state.twd}°`, w - 75, 18);
+    }
+
+    function drawMiniMapBoat(pt) {
+      if (!mapBounds) return;
+      const ctx = minimapCanvas.getContext('2d');
+      const w = minimapCanvas.width;
+      const h = minimapCanvas.height;
+      if (!w || !h) return;
+
+      // Redibujar mapa base
+      drawMiniMap();
+
+      function toX(lon) { return ((lon - mapBounds.minLon) / (mapBounds.maxLon - mapBounds.minLon)) * w; }
+      function toY(lat) { return h - (((lat - mapBounds.minLat) / (mapBounds.maxLat - mapBounds.minLat)) * h); }
+
+      const bx = toX(pt.lon);
+      const by = toY(pt.lat);
+
+      // Barco en el mapa
+      ctx.save();
+      ctx.translate(bx, by);
+      ctx.rotate(pt.hdg * Math.PI / 180);
+
+      // Casco
+      ctx.fillStyle = '#00f0ff';
+      ctx.beginPath();
+      ctx.moveTo(0, -9);
+      ctx.lineTo(4, 5);
+      ctx.lineTo(-4, 5);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+
+      // Halo pulsante
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.6)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(bx, by, 7, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // 5. Gráfica Temporal en Vivo (Rolling Strip Chart)
+    function drawStripChart() {
+      const ctx = stripChartCanvas.getContext('2d');
+      const w = stripChartCanvas.width;
+      const h = stripChartCanvas.height;
+      if (!w || !h || state.telemetry.length === 0 || state.videoDuration === 0) return;
+
+      ctx.clearRect(0, 0, w, h);
+      const dur = state.videoDuration;
+
+      // Dibujar curvas de SOG y Escora dentro de la ventana de vídeo
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+
+      const numSamples = Math.min(300, w);
+      for (let i = 0; i < numSamples; i++) {
+        const sec = (i / numSamples) * dur;
+        const pt = getInterpolatedTelemetry(sec);
+        const x = (sec / dur) * w;
+        const y = h - (Math.min(10, pt.sog) / 10) * (h * 0.85);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // Curva de Escora (absoluta)
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let i = 0; i < numSamples; i++) {
+        const sec = (i / numSamples) * dur;
+        const pt = getInterpolatedTelemetry(sec);
+        const x = (sec / dur) * w;
+        const y = h - (Math.min(30, Math.abs(pt.heel)) / 30) * (h * 0.85);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+
+    function drawStripChartNeedle() {
+      if (state.videoDuration === 0) return;
+      const ctx = stripChartCanvas.getContext('2d');
+      const w = stripChartCanvas.width;
+      const h = stripChartCanvas.height;
+      if (!w || !h) return;
+
+      drawStripChart();
+
+      const x = (state.currentTime / state.videoDuration) * w;
+      ctx.strokeStyle = '#f43f5e';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+      ctx.stroke();
+    }
+
+    // =========================================================================
+    // CONTROL DEL REPRODUCTOR & BUCLE DE ANIMACIÓN
+    // =========================================================================
+    let lastTimeUpdate = 0;
+    function playbackLoop() {
+      if (state.isPlaying) {
+        if (!state.isSimulatedVideo) {
+          state.currentTime = mainVideo.currentTime;
+        } else {
+          // Reloj para vídeo simulado
+          const now = performance.now();
+          const dt = (now - lastTimeUpdate) / 1000;
+          lastTimeUpdate = now;
+          state.currentTime += dt * state.playbackRate;
+          if (state.currentTime >= state.videoDuration) {
+            if (state.isLoop) state.currentTime = 0;
+            else { state.currentTime = state.videoDuration; togglePlay(false); }
+          }
+        }
+        playerScrubber.value = state.currentTime;
+        videoTimeCurrent.textContent = formatVideoTime(state.currentTime);
+        updateTelemetryDisplays();
+      }
+      requestAnimationFrame(playbackLoop);
+    }
+    requestAnimationFrame(playbackLoop);
+
+    function togglePlay(forceState) {
+      state.isPlaying = (typeof forceState === 'boolean') ? forceState : !state.isPlaying;
+      if (state.isPlaying) {
+        btnPlayPause.textContent = '⏸ Pausar';
+        btnPlayPause.style.color = '#fff';
+        lastTimeUpdate = performance.now();
+        if (!state.isSimulatedVideo) mainVideo.play();
+      } else {
+        btnPlayPause.textContent = '▶ Reproducir';
+        btnPlayPause.style.color = 'var(--cyan)';
+        if (!state.isSimulatedVideo) mainVideo.pause();
+      }
+    }
+
+    function seekVideo(sec) {
+      state.currentTime = Math.max(0, Math.min(state.videoDuration, sec));
+      if (!state.isSimulatedVideo) mainVideo.currentTime = state.currentTime;
+      playerScrubber.value = state.currentTime;
+      videoTimeCurrent.textContent = formatVideoTime(state.currentTime);
+      updateTelemetryDisplays();
+    }
+
+    // =========================================================================
+    // EVENT LISTENERS & INTERACCIONES
+    // =========================================================================
+    function initEventListeners() {
+      // Subida de Vídeo
+      cardVideoUpload.addEventListener('click', (e) => {
+        if (e.target !== btnSimulatedVideo) inputVideo.click();
+      });
+      inputVideo.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) loadVideoFile(e.target.files[0]);
+      });
+
+      // Vídeo Simulado
+      btnSimulatedVideo.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setupSimulatedVideo();
+      });
+
+      // Subida de CSV
+      cardCsvUpload.addEventListener('click', (e) => {
+        if (e.target !== btnLoadSampleCsv) inputCsv.click();
+      });
+      inputCsv.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+          const file = e.target.files[0];
+          const reader = new FileReader();
+          reader.onload = (evt) => loadCsvData(evt.target.result, file.name);
+          reader.readAsText(file);
+        }
+      });
+
+      // Botón Datos de Ejemplo
+      btnLoadSampleCsv.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (window.SAMPLE_CSV_DATA) {
+          loadCsvData(window.SAMPLE_CSV_DATA, "Gando_D1_R1_ESP_-_MARIA_GUINDIN.csv");
+        } else {
+          fetch("Gando_D1_R1_ESP_-_MARIA_GUINDIN.csv")
+            .then(res => res.text())
+            .then(txt => loadCsvData(txt, "Gando_D1_R1_ESP_-_MARIA_GUINDIN.csv"))
+            .catch(() => alert("No se pudo cargar el archivo de ejemplo."));
+        }
+      });
+
+      // Nudges de sincronización
+      document.querySelectorAll('.nudge-btn[data-nudge]').forEach(btn => {
+        btn.addEventListener('click', () => applyNudge(parseFloat(btn.dataset.nudge)));
+      });
+
+      offsetInput.addEventListener('change', () => {
+        state.syncOffsetSec = Math.max(0, parseFloat(offsetInput.value) || 0);
+        state.syncMode = 'manual';
+        updateSyncUI();
+        drawTrackTimeline();
+        updateTelemetryDisplays();
+      });
+
+      btnResetSync.addEventListener('click', () => {
+        state.syncMode = 'auto';
+        checkAndPerformSync();
+      });
+
+      // Clic en la línea temporal de la sesión para posicionar la ventana de vídeo
+      trackTimelineWrap.addEventListener('click', (e) => {
+        const rect = trackTimelineWrap.getBoundingClientRect();
+        const clickPct = (e.clientX - rect.left) / rect.width;
+        const totalSec = (state.maxCsvTime - state.minCsvTime) / 1000;
+        state.syncOffsetSec = Math.max(0, clickPct * totalSec);
+        offsetInput.value = state.syncOffsetSec.toFixed(1);
+        state.syncMode = 'manual';
+        updateSyncUI();
+        drawTrackTimeline();
+        drawStripChart();
+        updateTelemetryDisplays();
+      });
+
+      // Controles del reproductor
+      btnPlayPause.addEventListener('click', () => togglePlay());
+      btnStepBack.addEventListener('click', () => seekVideo(state.currentTime - (1 / state.videoFps)));
+      btnStepFwd.addEventListener('click', () => seekVideo(state.currentTime + (1 / state.videoFps)));
+      
+      btnLoop.addEventListener('click', () => {
+        state.isLoop = !state.isLoop;
+        btnLoop.classList.toggle('active', state.isLoop);
+      });
+
+      document.querySelectorAll('.rate-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.rate-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.playbackRate = parseFloat(btn.dataset.rate);
+          if (!state.isSimulatedVideo) mainVideo.playbackRate = state.playbackRate;
+        });
+      });
+
+      playerScrubber.addEventListener('input', () => seekVideo(parseFloat(playerScrubber.value)));
+
+      // Toggle HUD
+      btnToggleHud.addEventListener('click', () => {
+        state.showHud = !state.showHud;
+        hudOverlay.style.display = state.showHud ? 'grid' : 'none';
+        btnToggleHud.classList.toggle('active', state.showHud);
+      });
+
+      // Captura con Telemetría
+      btnCaptureFrame.addEventListener('click', captureFrameWithTelemetry);
+
+      // Slider de Viento TWD
+      twdSlider.addEventListener('input', () => {
+        state.twd = parseInt(twdSlider.value);
+        metricTwd.textContent = `${String(state.twd).padStart(3, '0')}°`;
+        updateTelemetryDisplays();
+      });
+
+      btnAutoWind.addEventListener('click', () => {
+        estimateSessionWind();
+        updateTelemetryDisplays();
+      });
+
+      // Clic en el Mini-Mapa para saltar
+      minimapCanvas.addEventListener('click', (e) => {
+        if (!mapBounds || state.telemetry.length === 0) return;
+        const rect = minimapCanvas.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+        const targetLon = mapBounds.minLon + (clickX / rect.width) * (mapBounds.maxLon - mapBounds.minLon);
+        const targetLat = mapBounds.minLat + (1 - (clickY / rect.height)) * (mapBounds.maxLat - mapBounds.minLat);
+
+        // Encontrar punto más cercano
+        let closestIdx = 0, minDist = Infinity;
+        state.telemetry.forEach((pt, i) => {
+          const d = Math.hypot(pt.lon - targetLon, pt.lat - targetLat);
+          if (d < minDist) { minDist = d; closestIdx = i; }
+        });
+
+        const targetTimeSec = (state.telemetry[closestIdx].time - state.minCsvTime) / 1000;
+        state.syncOffsetSec = Math.max(0, targetTimeSec);
+        offsetInput.value = state.syncOffsetSec.toFixed(1);
+        state.syncMode = 'manual';
+        updateSyncUI();
+        drawTrackTimeline();
+        drawStripChart();
+        updateTelemetryDisplays();
+      });
+
+      // Teclado (Barra espaciadora para Play/Pause, flechas para buscar)
+      window.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+        if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+        else if (e.code === 'ArrowLeft') { e.preventDefault(); seekVideo(state.currentTime - 1); }
+        else if (e.code === 'ArrowRight') { e.preventDefault(); seekVideo(state.currentTime + 1); }
+        else if (e.key === ',' || e.key === '<') { seekVideo(state.currentTime - (1 / state.videoFps)); }
+        else if (e.key === '.' || e.key === '>') { seekVideo(state.currentTime + (1 / state.videoFps)); }
+      });
+    }
+
+    // =========================================================================
+    // CAPTURA DE FOTOGRAMA CON OVERLAY TELEMÉTRICO
+    // =========================================================================
+    function captureFrameWithTelemetry() {
+      const capCanvas = document.createElement('canvas');
+      const w = 1280;
+      const h = 720;
+      capCanvas.width = w;
+      capCanvas.height = h;
+      const ctx = capCanvas.getContext('2d');
+
+      // 1. Dibujar fotograma del vídeo o simulación
+      if (state.isSimulatedVideo) {
+        ctx.drawImage(simulatedCanvas, 0, 0, w, h);
+      } else {
+        ctx.drawImage(mainVideo, 0, 0, w, h);
+      }
+
+      // 2. Sobreimprimir badges telemétricas oficiales
+      const pt = getInterpolatedTelemetry(state.currentTime);
+      ctx.fillStyle = 'rgba(10, 19, 21, 0.88)';
+      ctx.fillRect(20, 20, 240, 85);
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(20, 20, 240, 85);
+
+      ctx.fillStyle = '#00f0ff';
+      ctx.font = 'bold 12px "IBM Plex Sans"';
+      ctx.fillText('VELOCIDAD GPS', 32, 42);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 36px "Barlow Condensed"';
+      ctx.fillText(`${pt.sog.toFixed(1)} KTS`, 32, 84);
+
+      // Escora & Trim
+      ctx.fillStyle = 'rgba(10, 19, 21, 0.88)';
+      ctx.fillRect(w - 260, 20, 240, 85);
+      ctx.strokeStyle = '#10b981';
+      ctx.strokeRect(w - 260, 20, 240, 85);
+
+      ctx.fillStyle = '#10b981';
+      ctx.font = 'bold 12px "IBM Plex Sans"';
+      ctx.fillText('ESCORA & CABECEO', w - 248, 42);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 24px "IBM Plex Mono"';
+      ctx.fillText(`Escora: ${Math.abs(pt.heel).toFixed(1)}°`, w - 248, 70);
+      ctx.fillText(`Trim: ${pt.trim.toFixed(1)}°`, w - 248, 95);
+
+      // Pie de foto RCNGC
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.fillRect(0, h - 30, w, 30);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '12px "IBM Plex Sans"';
+      ctx.fillText('Optimist RCNGC · Vídeo & Telemetría en Tiempo Real · Desarrollado por Pablo Quintana Labarta', 20, h - 10);
+
+      // Descargar imagen
+      const link = document.createElement('a');
+      link.download = `rcngc_telemetria_${Math.round(state.currentTime)}s.png`;
+      link.href = capCanvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // =========================================================================
+    // UTILIDADES DE FORMATO
+    // =========================================================================
+    function formatVideoTime(sec) {
+      if (isNaN(sec) || sec < 0) sec = 0;
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      const ms = Math.floor((sec % 1) * 10);
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${ms}`;
+    }
+
+    function formatDuration(sec) {
+      if (isNaN(sec) || sec < 0) return '0m';
+      const m = Math.floor(sec / 60);
+      return `${m}m`;
+    }
+  </script>
+</body>
+</html>
