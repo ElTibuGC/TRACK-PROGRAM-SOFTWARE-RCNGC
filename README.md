@@ -137,6 +137,12 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.9.6] - Persistencia Total en Navegador (IndexedDB) y Flujo de Trabajo Real
+* **Persistencia Total sin Pérdida de Datos (Resistente a F5)**: Integración del motor de persistencia local mediante `IndexedDB` y `localStorage`. Si el usuario pulsa **F5**, recarga la página o cierra la pestaña, el vídeo subido, el archivo CSV de sensores, las 5.400+ lecturas de telemetría, el desfase de sincronización, el rumbo del viento y el punto exacto de reproducción se restauran de forma instantánea y automática.
+* **Flujo 100% Real (Sin Simulaciones)**: Se han eliminado por completo las opciones de vídeo simulado y datos prefabricados para centrar toda la experiencia en archivos reales grabados por entrenadores y regatistas en el agua.
+* **Control de Sesión y Reinicio Rápido**: Incorporado un botón `🗑️ Nueva sesión` junto al estado de sincronización para que el entrenador pueda vaciar los datos guardados en un clic y cargar una nueva pareja de vídeo y CSV cuando lo desee.
+* **Zona de Carga Interactiva y Soporte Drag & Drop Reforzado**: El reproductor ahora cuenta con un área receptora elegante que indica claramente el estado y permite arrastrar archivos de vídeo directamente sobre el visor.
+
 ### [v1.9.5] - Nueva Aplicación: Vídeo & Telemetría en Tiempo Real (RCNGC Suite)
 * **Nuevo Software de Vídeo & Telemetría**: Añadida una nueva aplicación a la suite (`video-telemetria/index.html` y acceso directo en `Sincronizador Video Telemetria Optimist.html`) que permite subir vídeos cortos de entrenamientos (2-3 minutos) junto al archivo CSV de sensores del barco (`timestamp, latitude, longitude, sog_kts, cog, hdg_true, heel, trim`).
 * **Sincronización Automática e Inteligente**: Detecta automáticamente la fecha y hora de grabación del vídeo (vía metadatos MP4, fecha de modificación o nombre de archivo) y la sincroniza con el intervalo exacto del archivo CSV. Si el reloj de la cámara tiene desfase, incluye una barra de sincronización visual con controles de ajuste fino (`-10s`, `-1s`, `-0.5s`, `-0.1s`, `+0.1s`, `+1s`, `+10s`), ajuste por clic en el track o sincronización por viradas.

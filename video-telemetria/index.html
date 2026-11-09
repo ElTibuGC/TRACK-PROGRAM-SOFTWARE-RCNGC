@@ -235,7 +235,7 @@
     }
     .upload-card {
       background: var(--panel);
-      border: 1px dashed var(--line);
+      border: 1.5px dashed var(--line);
       border-radius: 10px;
       padding: 12px 14px;
       display: flex;
@@ -244,15 +244,17 @@
       transition: all 0.2s ease;
       cursor: pointer;
       position: relative;
+      user-select: none;
     }
     .upload-card:hover, .upload-card.drag-over {
       border-color: var(--cyan);
-      background: rgba(0, 240, 255, 0.03);
+      background: rgba(0, 240, 255, 0.04);
+      transform: translateY(-1px);
     }
     .upload-card.loaded {
       border-style: solid;
       border-color: rgba(16, 185, 129, 0.5);
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.06) 0%, rgba(15, 28, 34, 0.95) 100%);
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 28, 34, 0.95) 100%);
     }
     .upload-icon {
       width: 44px;
@@ -293,17 +295,30 @@
     .btn-quick-sample {
       font-size: 11px;
       font-weight: 600;
-      padding: 4px 9px;
-      border-radius: 5px;
+      padding: 5px 10px;
+      border-radius: 6px;
       background: rgba(0, 240, 255, 0.12);
       border: 1px solid rgba(0, 240, 255, 0.35);
       color: var(--cyan);
       cursor: pointer;
       white-space: nowrap;
       transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
     .btn-quick-sample:hover {
       background: var(--cyan);
+      color: #000;
+    }
+    .btn-quick-sample.btn-primary-action {
+      background: var(--sub);
+      border-color: var(--line);
+      color: #fff;
+    }
+    .btn-quick-sample.btn-primary-action:hover {
+      background: var(--cyan);
+      border-color: var(--cyan);
       color: #000;
     }
 
@@ -873,6 +888,55 @@
       color: var(--rose);
       display: none;
     }
+  
+    .video-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, #102129 0%, #060e12 100%);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+      padding: 24px;
+      text-align: center;
+    }
+    .video-placeholder:hover {
+      background: radial-gradient(circle at center, #142a34 0%, #081318 100%);
+    }
+    .session-badge {
+      font-size: 10.5px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn-clear-session {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      color: #fb7185;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+    .btn-clear-session:hover {
+      background: rgba(244, 63, 94, 0.3);
+      border-color: #f43f5e;
+      color: #fff;
+    }
+
   </style>
 </head>
 <body>
@@ -932,7 +996,7 @@
     <!-- SECCIÓN INGESTA DE ARCHIVOS -->
     <section class="ingest-grid">
       <!-- Tarjeta Vídeo -->
-      <div class="upload-card" id="cardVideoUpload">
+      <div class="upload-card" id="cardVideoUpload" title="Arrastra un vídeo o haz clic para seleccionarlo">
         <div class="upload-icon" id="videoIcon">📹</div>
         <div class="upload-info">
           <div class="upload-title">
@@ -941,14 +1005,15 @@
           </div>
           <div class="upload-desc" id="videoDesc">Arrastra o haz clic para subir tu vídeo (2-3 min)</div>
         </div>
-        <button type="button" class="btn-quick-sample" id="btnSimulatedVideo" title="Generar un lienzo dinámico simulado para probar">
-          Simular vídeo
-        </button>
-        <input type="file" id="inputVideo" accept="video/mp4,video/webm,video/quicktime,video/x-m4v" style="display:none">
+        <div style="display:flex;align-items:center;gap:6px">
+          <button type="button" class="btn-quick-sample btn-primary-action" id="btnPickVideo">
+            📂 Elegir vídeo
+          </button>
+        </div>
       </div>
 
       <!-- Tarjeta Telemetría CSV -->
-      <div class="upload-card" id="cardCsvUpload">
+      <div class="upload-card" id="cardCsvUpload" title="Arrastra un archivo CSV o haz clic para seleccionarlo">
         <div class="upload-icon" id="csvIcon">📈</div>
         <div class="upload-info">
           <div class="upload-title">
@@ -957,12 +1022,17 @@
           </div>
           <div class="upload-desc" id="csvDesc">Arrastra o selecciona el archivo CSV de datos</div>
         </div>
-        <button type="button" class="btn-quick-sample" id="btnLoadSampleCsv" title="Cargar sesión real de María Guindín en Gando">
-          ⚡ Datos de Ejemplo
-        </button>
-        <input type="file" id="inputCsv" accept=".csv,.txt" style="display:none">
+        <div style="display:flex;align-items:center;gap:6px">
+          <button type="button" class="btn-quick-sample btn-primary-action" id="btnPickCsv">
+            📂 Elegir CSV
+          </button>
+        </div>
       </div>
     </section>
+
+    <!-- Inputs ocultos fuera de las tarjetas -->
+    <input type="file" id="inputVideo" accept="video/mp4,video/webm,video/quicktime,video/x-m4v,video/*" style="display:none">
+    <input type="file" id="inputCsv" accept=".csv,.txt,text/csv,text/plain" style="display:none">
 
     <!-- BARRA DE CONTROL DE SINCRONIZACIÓN TEMPORAL -->
     <section class="sync-dock">
@@ -972,6 +1042,10 @@
           <span id="syncDetailsText" style="font-size:11px;color:var(--dim)">
             Carga un vídeo y un CSV para sincronizar métricas en tiempo real.
           </span>
+          <span id="sessionStorageBadge" class="session-badge" style="display:none">💾 Sesión persistente activa</span>
+          <button type="button" class="btn-clear-session" id="btnClearSession" title="Vaciar la sesión guardada y reiniciar limpio" style="display:none">
+            🗑️ Nueva sesión
+          </button>
         </div>
 
         <!-- Botones de Nudge / Ajuste Fino -->
@@ -1010,7 +1084,14 @@
       <div class="video-container">
         <div class="video-canvas-stage" id="videoStage">
           <video id="mainVideo" playsinline preload="auto"></video>
-          <canvas id="simulatedCanvas"></canvas>
+          <div class="video-placeholder" id="videoPlaceholder" title="Haz clic o arrastra un vídeo aquí">
+            <div style="font-size:44px;margin-bottom:8px">🎬</div>
+            <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:4px">Esperando vídeo de la sesión</div>
+            <div style="font-size:12px;color:var(--dim);max-width:380px;line-height:1.5">
+              Arrastra tu vídeo aquí o pulsa en <strong>📂 Elegir vídeo</strong> en la barra superior.
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:10px">Formatos compatibles: MP4, MOV, WebM</div>
+          </div>
 
           <!-- HUD Telemetría flotante estilo TV/Broadcast -->
           <div class="video-hud-overlay" id="hudOverlay" style="display:none">
@@ -1271,22 +1352,28 @@
   </div>
 
   <!-- SCRIPT DE DATOS DE EJEMPLO DE LA SUITE -->
-  <script src="sample_data.js"></script>
-
   <!-- CÓDIGO CENTRAL DE LA APLICACIÓN -->
+  
   <script>
     // =========================================================================
-    // ESTADO GLOBAL DE LA APLICACIÓN
+    // VARIABLES GLOBALES HOISTED
+    // =========================================================================
+    let mapBounds = null;
+    let lastTimeUpdate = 0;
+    let lastThrottledSave = 0;
+
+    // =========================================================================
+    // ESTADO DE LA APLICACIÓN
     // =========================================================================
     const state = {
       videoFile: null,
       videoDuration: 0,
       videoFps: 30,
-      videoStartTime: null, // Epoch ms aproximado del inicio del vídeo
-      isSimulatedVideo: false,
+      videoStartTime: null, // Epoch ms aproximado del vídeo
+      savedInitialTime: 0,
       
       csvFile: null,
-      telemetry: [], // Array de filas { time, lat, lon, sog, cog, hdg, heel, trim }
+      telemetry: [], // Array de { time, lat, lon, sog, cog, hdg, heel, trim }
       minCsvTime: 0,
       maxCsvTime: 0,
       
@@ -1303,10 +1390,240 @@
     };
 
     // =========================================================================
+    // MOTOR DE PERSISTENCIA LOCAL (INDEXEDDB + LOCALSTORAGE)
+    // Permite que al pulsar F5 o recargar NO se pierdan los archivos ni el estado
+    // =========================================================================
+    const DB_NAME = 'rcngc_video_telemetria_db';
+    const DB_VERSION = 1;
+
+    function openDB() {
+      return new Promise((resolve) => {
+        if (!window.indexedDB) {
+          console.warn('IndexedDB no está soportado en este navegador');
+          resolve(null);
+          return;
+        }
+        try {
+          const req = indexedDB.open(DB_NAME, DB_VERSION);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('media')) {
+              db.createObjectStore('media');
+            }
+            if (!db.objectStoreNames.contains('session')) {
+              db.createObjectStore('session');
+            }
+          };
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => {
+            console.warn('Error al abrir IndexedDB:', req.error);
+            resolve(null);
+          };
+        } catch (err) {
+          console.warn('Excepción al abrir IndexedDB:', err);
+          resolve(null);
+        }
+      });
+    }
+
+    async function saveVideoToStorage(file) {
+      if (!file) return;
+      try {
+        const db = await openDB();
+        if (!db) return;
+        const tx = db.transaction('media', 'readwrite');
+        const store = tx.objectStore('media');
+        store.put({
+          blob: file,
+          name: file.name,
+          type: file.type || 'video/mp4',
+          size: file.size,
+          lastModified: file.lastModified,
+          savedAt: Date.now()
+        }, 'active_video');
+      } catch (err) {
+        console.warn('Error guardando vídeo en IndexedDB:', err);
+      }
+    }
+
+    async function saveCsvToStorage(text, fileName) {
+      if (!text) return;
+      try {
+        const db = await openDB();
+        if (!db) return;
+        const tx = db.transaction('media', 'readwrite');
+        const store = tx.objectStore('media');
+        store.put({
+          text: text,
+          name: fileName,
+          savedAt: Date.now()
+        }, 'active_csv');
+      } catch (err) {
+        console.warn('Error guardando CSV en IndexedDB:', err);
+      }
+    }
+
+    async function saveSessionState() {
+      try {
+        // Guardar parámetros instantáneos en localStorage
+        localStorage.setItem('rcngc_vt_offset', String(state.syncOffsetSec));
+        localStorage.setItem('rcngc_vt_twd', String(state.twd));
+        localStorage.setItem('rcngc_vt_current_time', String(state.currentTime));
+        localStorage.setItem('rcngc_vt_loop', state.isLoop ? '1' : '0');
+        localStorage.setItem('rcngc_vt_hud', state.showHud ? '1' : '0');
+
+        // Guardar copia completa en IndexedDB
+        const db = await openDB();
+        if (!db) return;
+        const tx = db.transaction('session', 'readwrite');
+        const store = tx.objectStore('session');
+        store.put({
+          offsetSec: state.syncOffsetSec,
+          twd: state.twd,
+          currentTime: state.currentTime,
+          isLoop: state.isLoop,
+          showHud: state.showHud,
+          updatedAt: Date.now()
+        }, 'app_state');
+      } catch (err) {
+        console.warn('Error guardando estado de sesión:', err);
+      }
+    }
+
+    function throttledSaveCurrentTime() {
+      const now = Date.now();
+      if (now - lastThrottledSave > 1500) {
+        lastThrottledSave = now;
+        try {
+          localStorage.setItem('rcngc_vt_current_time', String(state.currentTime));
+        } catch (_) {}
+      }
+    }
+
+    async function restoreSessionFromStorage() {
+      try {
+        // 1. Restaurar preferencias rápidas desde localStorage
+        const savedOffset = localStorage.getItem('rcngc_vt_offset');
+        if (savedOffset !== null) {
+          const num = parseFloat(savedOffset);
+          if (!isNaN(num)) state.syncOffsetSec = num;
+        }
+        const savedTwd = localStorage.getItem('rcngc_vt_twd');
+        if (savedTwd !== null) {
+          const num = parseFloat(savedTwd);
+          if (!isNaN(num)) state.twd = num;
+        }
+        const savedTime = localStorage.getItem('rcngc_vt_current_time');
+        if (savedTime !== null) {
+          const num = parseFloat(savedTime);
+          if (!isNaN(num) && num > 0) state.savedInitialTime = num;
+        }
+        const savedLoop = localStorage.getItem('rcngc_vt_loop');
+        if (savedLoop !== null) state.isLoop = savedLoop === '1';
+        const savedHud = localStorage.getItem('rcngc_vt_hud');
+        if (savedHud !== null) state.showHud = savedHud === '1';
+
+        // Actualizar controles UI inmediatos
+        offsetInput.value = (state.syncOffsetSec >= 0 ? '+' : '') + state.syncOffsetSec.toFixed(2);
+        twdSlider.value = Math.round(state.twd);
+        metricTwd.textContent = String(Math.round(state.twd)).padStart(3, '0') + '°';
+        btnLoop.classList.toggle('active', state.isLoop);
+        hudOverlay.style.display = state.showHud ? 'flex' : 'none';
+        btnToggleHud.classList.toggle('active', state.showHud);
+
+        // 2. Restaurar archivos desde IndexedDB
+        const db = await openDB();
+        if (!db) return;
+
+        // Leer CSV guardado
+        await new Promise((resolve) => {
+          try {
+            const tx = db.transaction('media', 'readonly');
+            const reqCsv = tx.objectStore('media').get('active_csv');
+            reqCsv.onsuccess = () => {
+              if (reqCsv.result && reqCsv.result.text) {
+                console.log('Restaurando CSV guardado:', reqCsv.result.name);
+                loadCsvData(reqCsv.result.text, reqCsv.result.name, true);
+              }
+              resolve();
+            };
+            reqCsv.onerror = () => resolve();
+          } catch (_) { resolve(); }
+        });
+
+        // Leer Vídeo guardado
+        await new Promise((resolve) => {
+          try {
+            const tx = db.transaction('media', 'readonly');
+            const reqVid = tx.objectStore('media').get('active_video');
+            reqVid.onsuccess = () => {
+              if (reqVid.result && reqVid.result.blob) {
+                console.log('Restaurando vídeo guardado:', reqVid.result.name);
+                const fileObj = new File([reqVid.result.blob], reqVid.result.name, {
+                  type: reqVid.result.type || 'video/mp4',
+                  lastModified: reqVid.result.lastModified || Date.now()
+                });
+                loadVideoFile(fileObj, true);
+              }
+              resolve();
+            };
+            reqVid.onerror = () => resolve();
+          } catch (_) { resolve(); }
+        });
+
+      } catch (err) {
+        console.warn('Error restaurando sesión guardada:', err);
+      }
+    }
+
+    async function clearStorageSession() {
+      if (!confirm('¿Deseas vaciar la sesión guardada y cargar un nuevo vídeo y CSV?')) return;
+      try {
+        const db = await openDB();
+        if (db) {
+          const tx = db.transaction(['media', 'session'], 'readwrite');
+          tx.objectStore('media').clear();
+          tx.objectStore('session').clear();
+        }
+      } catch (err) {
+        console.warn('Error al vaciar IndexedDB:', err);
+      }
+      try {
+        localStorage.removeItem('rcngc_vt_offset');
+        localStorage.removeItem('rcngc_vt_twd');
+        localStorage.removeItem('rcngc_vt_current_time');
+        localStorage.removeItem('rcngc_vt_loop');
+        localStorage.removeItem('rcngc_vt_hud');
+      } catch (_) {}
+      window.location.reload();
+    }
+
+    function updateStorageBadges() {
+      const badge = document.getElementById('sessionStorageBadge');
+      const btnClear = document.getElementById('btnClearSession');
+      const hasData = !!(state.videoFile || (state.telemetry && state.telemetry.length > 0));
+      if (badge) {
+        badge.style.display = hasData ? 'inline-flex' : 'none';
+        if (hasData) {
+          if (state.videoFile && state.telemetry.length > 0) {
+            badge.textContent = '💾 Sesión guardada: Vídeo + CSV';
+          } else if (state.videoFile) {
+            badge.textContent = '💾 Sesión guardada: Vídeo cargado';
+          } else {
+            badge.textContent = '💾 Sesión guardada: CSV cargado';
+          }
+        }
+      }
+      if (btnClear) {
+        btnClear.style.display = hasData ? 'inline-flex' : 'none';
+      }
+    }
+
+    // =========================================================================
     // REFERENCIAS AL DOM
     // =========================================================================
     const mainVideo = document.getElementById('mainVideo');
-    const simulatedCanvas = document.getElementById('simulatedCanvas');
+    const videoPlaceholder = document.getElementById('videoPlaceholder');
     const hudOverlay = document.getElementById('hudOverlay');
     const playerScrubber = document.getElementById('playerScrubber');
     const videoTimeCurrent = document.getElementById('videoTimeCurrent');
@@ -1321,12 +1638,13 @@
     const cardVideoUpload = document.getElementById('cardVideoUpload');
     const inputVideo = document.getElementById('inputVideo');
     const videoDesc = document.getElementById('videoDesc');
-    const btnSimulatedVideo = document.getElementById('btnSimulatedVideo');
+    const btnPickVideo = document.getElementById('btnPickVideo');
     
     const cardCsvUpload = document.getElementById('cardCsvUpload');
     const inputCsv = document.getElementById('inputCsv');
     const csvDesc = document.getElementById('csvDesc');
-    const btnLoadSampleCsv = document.getElementById('btnLoadSampleCsv');
+    const btnPickCsv = document.getElementById('btnPickCsv');
+    const btnClearSession = document.getElementById('btnClearSession');
     
     const syncStatusBadge = document.getElementById('syncStatusBadge');
     const syncDetailsText = document.getElementById('syncDetailsText');
@@ -1380,22 +1698,8 @@
     const hudUtcTime = document.getElementById('hudUtcTime');
 
     // =========================================================================
-    // INICIALIZACIÓN
+    // REDIMENSIONADO DE LIENZOS
     // =========================================================================
-    window.addEventListener('DOMContentLoaded', () => {
-      initCoachAuth();
-      initEventListeners();
-      resizeCanvases();
-      window.addEventListener('resize', resizeCanvases);
-
-      // Si existe muestra incrustada, auto-cargar para experiencia inmediata
-      if (window.SAMPLE_CSV_DATA) {
-        loadCsvData(window.SAMPLE_CSV_DATA, "Gando_D1_R1_ESP_-_MARIA_GUINDIN.csv");
-      }
-      // Inicializar simulador de vídeo por defecto para que todo sea interactivo al instante
-      setupSimulatedVideo();
-    });
-
     function resizeCanvases() {
       [trackTimelineCanvas, heelCanvas, compassCanvas, minimapCanvas, stripChartCanvas].forEach(c => {
         if (!c) return;
@@ -1412,18 +1716,18 @@
     }
 
     // =========================================================================
-    // SISTEMA DE AUTENTICACIÓN ENTRENADOR (RCNGC SUITE STANDARD)
+    // AUTENTICACIÓN ENTRENADORES (RCNGC SUITE)
     // =========================================================================
-    const CLUB_USERS = [
-      { id: 'usr_admin_rcngc', usuario: 'admin', nombre: 'Pablo Quintana (Admin)', pin: '0405', rol: 'admin' },
-      { id: 'usr_entrenador_rcngc', usuario: 'entrenador', nombre: 'Entrenador RCNGC', pin: 'RCNGC2026', rol: 'entrenador' }
+    const COACH_USERS = [
+      { id: 'pablo', name: 'Pablo Quintana', role: 'Entrenador RCNGC', pin: '1928' },
+      { id: 'coach1', name: 'Entrenador Optimist', role: 'Staff Técnico RCNGC', pin: '2026' }
     ];
 
     function getCurrentUser() {
       try {
-        const raw = sessionStorage.getItem('rcngc_current_user') || localStorage.getItem('rcngc_current_user');
-        return raw ? JSON.parse(raw) : null;
-      } catch(_) { return null; }
+        const u = sessionStorage.getItem('rcngc_current_user') || localStorage.getItem('rcngc_current_user');
+        return u ? JSON.parse(u) : null;
+      } catch (_) { return null; }
     }
 
     function isCoachModeActive() {
@@ -1432,89 +1736,109 @@
 
     function initCoachAuth() {
       const btn = document.getElementById('btnTopCoachAuth');
-      const menu = document.getElementById('userDropdownMenu');
-      const modal = document.getElementById('authModal');
-      const form = document.getElementById('authForm');
-      const btnClose = document.getElementById('btnCloseAuthModal');
+      const widget = document.getElementById('userProfileWidget');
+      const dropdown = document.getElementById('userDropdownMenu');
       const btnLogout = document.getElementById('btnDropdownLogout');
 
       function updateUI() {
-        const u = getCurrentUser();
-        if (isCoachModeActive()) {
-          btn.classList.add('coach-active');
-          const name = u ? u.nombre : 'Pablo Quintana';
-          btn.innerHTML = `👤 ${name}`;
-          document.getElementById('dropdownUserName').textContent = name;
-          document.getElementById('dropdownUserRole').textContent = (u && u.rol === 'admin') ? 'Administrador RCNGC' : 'Entrenador RCNGC';
+        const user = getCurrentUser();
+        if (user || isCoachModeActive()) {
+          btn.innerHTML = `👤 ${user ? user.name : 'Entrenador RCNGC'}`;
+          btn.classList.add('logged-in');
+          if (document.getElementById('dropdownUserName')) {
+            document.getElementById('dropdownUserName').textContent = user ? user.name : 'Pablo Quintana';
+          }
         } else {
-          btn.classList.remove('coach-active');
-          btn.innerHTML = `🔑 Acceso Entrenador`;
+          btn.innerHTML = '🔑 Acceso Entrenador';
+          btn.classList.remove('logged-in');
         }
       }
 
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         if (isCoachModeActive()) {
-          menu.classList.toggle('open');
+          dropdown.classList.toggle('open');
         } else {
-          modal.style.display = 'flex';
-          document.getElementById('authPin').value = '';
-          document.getElementById('authMsg').style.display = 'none';
-          document.getElementById('authPin').focus();
+          openAuthModal();
         }
       });
 
-      btnClose.addEventListener('click', () => { modal.style.display = 'none'; });
-      modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
-
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const selId = document.getElementById('authSelectUser').value;
-        const pinVal = document.getElementById('authPin').value.trim();
-        const user = CLUB_USERS.find(u => u.id === selId);
-        
-        if (user && user.pin === pinVal) {
-          sessionStorage.setItem('rcngc_current_user', JSON.stringify(user));
-          sessionStorage.setItem('rcngc_coach_unlocked', '1');
-          modal.style.display = 'none';
+      if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+          sessionStorage.removeItem('rcngc_current_user');
+          sessionStorage.removeItem('rcngc_coach_unlocked');
+          localStorage.removeItem('rcngc_coach_unlocked');
+          dropdown.classList.remove('open');
           updateUI();
-        } else {
-          document.getElementById('authMsg').style.display = 'block';
-        }
-      });
+        });
+      }
 
-      btnLogout.addEventListener('click', () => {
-        sessionStorage.removeItem('rcngc_current_user');
-        sessionStorage.removeItem('rcngc_coach_unlocked');
-        localStorage.removeItem('rcngc_current_user');
-        localStorage.removeItem('rcngc_coach_unlocked');
-        menu.classList.remove('open');
-        updateUI();
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!menu.contains(e.target) && e.target !== btn) {
-          menu.classList.remove('open');
-        }
-      });
-
+      window.addEventListener('click', () => dropdown.classList.remove('open'));
       updateUI();
     }
 
-    // =========================================================================
-    // INGESTA DE CSV Y PARSEO MATEMÁTICO
-    // =========================================================================
-    function parseCsvTimestamp(tsStr) {
-      if (!tsStr) return 0;
-      tsStr = tsStr.trim();
-      const d = new Date(tsStr);
-      if (!isNaN(d.getTime())) return d.getTime();
-      return 0;
+    function openAuthModal() {
+      const modal = document.getElementById('authModal');
+      if (!modal) return;
+      modal.classList.add('open');
+      const sel = document.getElementById('authSelectUser');
+      sel.innerHTML = COACH_USERS.map(u => `<option value="${u.id}">${u.name} (${u.role})</option>`).join('');
+      document.getElementById('authPin').value = '';
+      document.getElementById('authMsg').style.display = 'none';
+
+      document.getElementById('btnCloseAuthModal').onclick = () => modal.classList.remove('open');
+      document.getElementById('authForm').onsubmit = (e) => {
+        e.preventDefault();
+        const selId = sel.value;
+        const pin = document.getElementById('authPin').value.trim();
+        const user = COACH_USERS.find(u => u.id === selId);
+        if (user && user.pin === pin) {
+          sessionStorage.setItem('rcngc_current_user', JSON.stringify(user));
+          sessionStorage.setItem('rcngc_coach_unlocked', '1');
+          modal.classList.remove('open');
+          initCoachAuth();
+        } else {
+          const msg = document.getElementById('authMsg');
+          msg.textContent = 'PIN incorrecto. Revisa las credenciales de entrenador.';
+          msg.style.display = 'block';
+        }
+      };
     }
 
-    function loadCsvData(text, fileName) {
+    // =========================================================================
+    // INGESTA Y PARSEO DE CSV
+    // =========================================================================
+    function parseCsvTimestamp(str) {
+      if (!str) return null;
+      str = str.trim();
+      const num = Number(str);
+      if (!isNaN(num) && num > 1e11) return num; // Timestamp epoch ms
+      if (!isNaN(num) && num > 1e8) return num * 1000; // Timestamp epoch sec
+      
+      const parsed = Date.parse(str.replace(' ', 'T'));
+      if (!isNaN(parsed)) return parsed;
+
+      const m = str.match(/(d{4})[-/](d{1,2})[-/](d{1,2})[ T](d{1,2}):(d{1,2}):(d{1,2})(?:.(d+))?/);
+      if (m) {
+        return new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6], +(m[7] || 0))).getTime();
+      }
+      return null;
+    }
+
+    function loadCsvData(text, fileName, isRestoring = false) {
+      if (typeof text === 'object' && text !== null && text.value) {
+        text = text.value;
+      }
+      if (typeof text !== 'string') {
+        console.error("Tipo de dato CSV inválido", typeof text);
+        return;
+      }
+
       const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
-      if (lines.length < 2) return;
+      if (lines.length < 2) {
+        alert("El archivo CSV no contiene suficientes líneas de datos.");
+        return;
+      }
 
       const header = lines[0].toLowerCase().split(',');
       const idxTime = header.findIndex(h => h.includes('time'));
@@ -1539,68 +1863,87 @@
           lon: parseFloat(cols[idxLon]) || 0,
           sog: parseFloat(cols[idxSog]) || 0,
           cog: parseFloat(cols[idxCog]) || 0,
-          hdg: parseFloat(cols[idxHdg]) || 0,
+          hdg: parseFloat(cols[idxHdg]) || (parseFloat(cols[idxCog]) || 0),
           heel: parseFloat(cols[idxHeel]) || 0,
           trim: parseFloat(cols[idxTrim]) || 0
         });
       }
 
-      if (data.length === 0) return;
+      if (data.length === 0) {
+        alert("No se pudieron extraer marcas temporales válidas del archivo CSV.");
+        return;
+      }
+
       data.sort((a, b) => a.time - b.time);
 
       state.telemetry = data;
-      state.csvFile = { name: fileName, count: data.length };
       state.minCsvTime = data[0].time;
       state.maxCsvTime = data[data.length - 1].time;
+      state.csvFile = { name: fileName, rows: data.length };
 
-      // Calcular estadísticas de resumen
-      const sogs = data.map(d => d.sog);
-      const maxSog = Math.max(...sogs);
-      const avgSog = sogs.reduce((a, b) => a + b, 0) / sogs.length;
-      metricSogMax.textContent = maxSog.toFixed(1);
-      metricSogAvg.textContent = avgSog.toFixed(1);
+      cardCsvUpload.classList.add('loaded');
+      csvDesc.textContent = `${fileName} · ${data.length.toLocaleString('es-ES')} puntos (${new Date(state.minCsvTime).toLocaleTimeString('es-ES')} - ${new Date(state.maxCsvTime).toLocaleTimeString('es-ES')})`;
 
-      // Auto-estimar dirección del viento de la sesión
+      // Calcular viento estimado si aún no se ha modificado
       estimateSessionWind();
 
-      // Actualizar tarjeta UI
-      cardCsvUpload.classList.add('loaded');
-      csvDesc.textContent = `${fileName} · ${data.length.toLocaleString()} puntos (${formatDuration((state.maxCsvTime - state.minCsvTime) / 1000)})`;
-
       checkAndPerformSync();
-      resizeCanvases();
+      drawTrackTimeline();
+      drawMiniMap();
+      drawStripChart();
+      updateTelemetryDisplays(state.currentTime);
+
+      if (!isRestoring) {
+        saveCsvToStorage(text, fileName);
+        saveSessionState();
+      }
+      updateStorageBadges();
     }
 
     function estimateSessionWind() {
-      // Tomamos rumbos activos con velocidad > 2 nudos
-      const activeHdgs = state.telemetry.filter(d => d.sog > 2.0).map(d => d.hdg);
-      if (activeHdgs.length > 50) {
-        // En Canarias predominan rumbos entre 010 y 040 para ceñidas
-        state.twd = 25; // default calibrado Gando
-        twdSlider.value = state.twd;
-        metricTwd.textContent = `${String(state.twd).padStart(3, '0')}°`;
-      }
+      if (state.telemetry.length === 0) return;
+      const speeds = state.telemetry.map(d => d.sog).filter(s => s > 2.0);
+      if (speeds.length < 10) return;
+
+      const bins = new Array(36).fill(0);
+      state.telemetry.forEach(d => {
+        if (d.sog > 2.0) {
+          const bin = Math.floor(((d.cog % 360) + 360) % 360 / 10);
+          bins[bin]++;
+        }
+      });
+      let maxBin = 0;
+      let maxCount = 0;
+      bins.forEach((cnt, idx) => {
+        if (cnt > maxCount) {
+          maxCount = cnt;
+          maxBin = idx;
+        }
+      });
+      // Gran Canaria Alisios por defecto 025°
+      const dominantCog = maxBin * 10;
+      state.twd = 25; // Fijar alisios recomendados
+      twdSlider.value = state.twd;
+      metricTwd.textContent = String(Math.round(state.twd)).padStart(3, '0') + '°';
     }
 
     // =========================================================================
-    // INGESTA DE VÍDEO Y DETECCIÓN AUTOMÁTICA DE MARCA TEMPORAL
+    // INGESTA DE VÍDEO
     // =========================================================================
-    async function loadVideoFile(file) {
+    async function loadVideoFile(file, isRestoring = false) {
+      if (!file) return;
       state.videoFile = file;
-      state.isSimulatedVideo = false;
-      simulatedCanvas.style.display = 'none';
+
+      if (videoPlaceholder) videoPlaceholder.style.display = 'none';
       mainVideo.style.display = 'block';
 
       const url = URL.createObjectURL(file);
       mainVideo.src = url;
       mainVideo.load();
 
-      // 1. Extraer fecha aproximada del vídeo
-      // A) file.lastModified representa normalmente el final de la grabación
-      let candidateTime = file.lastModified;
-
-      // B) Intentar extraer fecha del nombre de archivo (ej: VID_20261107_150230.mp4)
-      const nameMatch = file.name.match(/(\d{4})[_-]?(\d{2})[_-]?(\d{2})[_-T]?(\d{2})[_-]?(\d{2})[_-]?(\d{2})/);
+      // Extraer fecha aproximada del vídeo
+      let candidateTime = file.lastModified || Date.now();
+      const nameMatch = (file.name || '').match(/(d{4})[-_]?(d{2})[-_]?(d{2})[-_T]?(d{2})[-_]?(d{2})[-_]?(d{2})/);
       if (nameMatch) {
         const [, y, m, d, h, min, s] = nameMatch;
         const parsedNameDate = new Date(Date.UTC(+y, +m - 1, +d, +h, +min, +s));
@@ -1608,7 +1951,6 @@
           candidateTime = parsedNameDate.getTime();
         }
       }
-
       state.videoStartTime = candidateTime;
 
       cardVideoUpload.classList.add('loaded');
@@ -1619,522 +1961,413 @@
         playerScrubber.max = mainVideo.duration;
         videoTimeDuration.textContent = formatVideoTime(mainVideo.duration);
         videoDesc.textContent = `${file.name} · ${formatVideoTime(mainVideo.duration)} (${mainVideo.videoWidth}x${mainVideo.videoHeight})`;
-        
-        // Ajustar candidato de inicio restando la duración si viene de lastModified
-        if (state.videoStartTime === file.lastModified) {
-          state.videoStartTime = file.lastModified - (state.videoDuration * 1000);
+
+        // Restaurar posición guardada si existe
+        if (state.savedInitialTime && state.savedInitialTime > 0 && state.savedInitialTime <= mainVideo.duration) {
+          seekVideo(state.savedInitialTime);
+          state.savedInitialTime = 0;
         }
 
         checkAndPerformSync();
-        resizeCanvases();
+        drawTrackTimeline();
+        updateTelemetryDisplays(state.currentTime);
       };
-    }
 
-    // =========================================================================
-    // VÍDEO SIMULADO NÁUTICO (PARA PRUEBAS INMEDIATAS)
-    // =========================================================================
-    let simAnimId = null;
-    function setupSimulatedVideo() {
-      state.isSimulatedVideo = true;
-      state.videoDuration = 180; // 3 minutos de duración de prueba
-      state.videoStartTime = state.minCsvTime || Date.now();
-      
-      mainVideo.style.display = 'none';
-      simulatedCanvas.style.display = 'block';
-      playerScrubber.max = state.videoDuration;
-      videoTimeDuration.textContent = formatVideoTime(state.videoDuration);
-      
-      cardVideoUpload.classList.add('loaded');
-      videoDesc.textContent = `Vídeo Simulado Náutico RCNGC · 03:00 (1080p 60fps)`;
-      
-      checkAndPerformSync();
-      startSimulatedRenderLoop();
-    }
-
-    function startSimulatedRenderLoop() {
-      const ctx = simulatedCanvas.getContext('2d');
-      function render() {
-        if (state.isSimulatedVideo) {
-          const w = simulatedCanvas.width;
-          const h = simulatedCanvas.height;
-          if (w > 0 && h > 0) {
-            // Fondo de mar dinámico
-            const t = state.currentTime;
-            const grad = ctx.createLinearGradient(0, 0, 0, h);
-            grad.addColorStop(0, '#0a2e38');
-            grad.addColorStop(0.5, '#071f26');
-            grad.addColorStop(1, '#030c10');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, w, h);
-
-            // Olas animadas
-            ctx.strokeStyle = 'rgba(0, 240, 255, 0.12)';
-            ctx.lineWidth = 1.5;
-            for (let i = 0; i < 6; i++) {
-              ctx.beginPath();
-              const y = h * (0.35 + i * 0.1);
-              ctx.moveTo(0, y);
-              for (let x = 0; x < w; x += 30) {
-                const dy = Math.sin((x * 0.015) + (t * 2) + i) * 6;
-                ctx.lineTo(x, y + dy);
-              }
-              ctx.stroke();
-            }
-
-            // Casco de Optimist simulado visto desde la zodiac del entrenador
-            const pt = getInterpolatedTelemetry(state.currentTime);
-            const heelRad = (pt.heel || 0) * Math.PI / 180;
-            const cx = w * 0.5;
-            const cy = h * 0.55;
-
-            ctx.save();
-            ctx.translate(cx, cy);
-            ctx.rotate(heelRad);
-
-            // Casco Optimist (forma de caja clásica)
-            ctx.fillStyle = '#ffffff';
-            ctx.strokeStyle = '#22383f';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.roundRect(-80, 20, 160, 45, 6);
-            ctx.fill();
-            ctx.stroke();
-
-            // Banda y número de vela
-            ctx.fillStyle = '#f43f5e';
-            ctx.fillRect(-70, 25, 140, 6);
-            ctx.fillStyle = '#0f1c22';
-            ctx.font = 'bold 12px "IBM Plex Sans"';
-            ctx.textAlign = 'center';
-            ctx.fillText('ESP 3218', 0, 52);
-
-            // Mástil y Vela mayor con percha y botavara
-            ctx.strokeStyle = '#c5a059';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(0, 20);
-            ctx.lineTo(0, -140);
-            ctx.stroke();
-
-            // Botavara y vela Optimist
-            ctx.fillStyle = 'rgba(255,255,255,0.85)';
-            ctx.beginPath();
-            ctx.moveTo(0, -135);
-            ctx.lineTo(65, -110);
-            ctx.lineTo(75, 5);
-            ctx.lineTo(0, 15);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-
-            // Percha cruzada
-            ctx.strokeStyle = '#8b5a2b';
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.moveTo(0, 10);
-            ctx.lineTo(65, -110);
-            ctx.stroke();
-
-            // Timonel colgándose en banda (hiking)
-            ctx.fillStyle = '#0284c7';
-            ctx.beginPath();
-            ctx.arc(-55, 15, 12, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.restore();
-          }
-        }
-        requestAnimationFrame(render);
+      if (!isRestoring) {
+        await saveVideoToStorage(file);
+        saveSessionState();
       }
-      render();
+      updateStorageBadges();
     }
 
     // =========================================================================
-    // MOTOR DE SINCRONIZACIÓN AUTOMÁTICA & MANUAL
+    // SINCRONIZACIÓN TEMPORAL (VÍDEO <-> TELEMETRÍA)
     // =========================================================================
     function checkAndPerformSync() {
-      if (state.telemetry.length === 0) return;
-
-      const csvDuration = (state.maxCsvTime - state.minCsvTime) / 1000;
-      let matched = false;
-
-      if (state.videoStartTime && state.videoStartTime >= state.minCsvTime && state.videoStartTime <= state.maxCsvTime) {
-        // Coincidencia exacta de fecha/hora en la sesión
-        state.syncOffsetSec = (state.videoStartTime - state.minCsvTime) / 1000;
-        state.syncMode = 'auto';
-        matched = true;
-      } else {
-        // Si no hay metadatos o cae fuera (ej. reloj de cámara sin sincronizar):
-        // Colocamos el inicio en un tramo activo de ceñida (por ejemplo a los 5 minutos de sesión)
-        if (state.syncOffsetSec === 0) {
-          state.syncOffsetSec = Math.min(300, Math.max(0, csvDuration - state.videoDuration));
-        }
-        state.syncMode = 'manual';
+      if (!state.videoDuration || state.telemetry.length === 0) {
+        updateSyncUI('idle', 'Esperando que ambos archivos (vídeo y CSV) estén cargados.');
+        return;
       }
 
-      offsetInput.value = state.syncOffsetSec.toFixed(1);
-      updateSyncUI();
+      if (state.syncOffsetSec === 0 && state.syncMode === 'idle') {
+        const videoDurMs = state.videoDuration * 1000;
+        const csvDurMs = state.maxCsvTime - state.minCsvTime;
+
+        if (state.videoStartTime && state.videoStartTime >= state.minCsvTime && state.videoStartTime <= state.maxCsvTime) {
+          state.syncOffsetSec = (state.videoStartTime - state.minCsvTime) / 1000;
+          state.syncMode = 'auto';
+        } else {
+          // Centrar el vídeo en el tramo central o inicio de la sesión
+          state.syncOffsetSec = Math.max(0, (csvDurMs - videoDurMs) / 2000);
+          state.syncMode = 'auto';
+        }
+        offsetInput.value = (state.syncOffsetSec >= 0 ? '+' : '') + state.syncOffsetSec.toFixed(2);
+      }
+
+      updateSyncUI('sync', `Sincronizado: desfase ${(state.syncOffsetSec >= 0 ? '+' : '') + state.syncOffsetSec.toFixed(2)}s`);
       drawTrackTimeline();
-      updateTelemetryDisplays();
+      updateTelemetryDisplays(state.currentTime);
     }
 
-    function updateSyncUI() {
-      if (state.syncMode === 'auto') {
-        syncStatusBadge.className = 'sync-badge auto';
-        syncStatusBadge.textContent = '🟢 Sincronizado Automático';
-        syncDetailsText.textContent = `Coincidencia por fecha de grabación GPS (${new Date(state.minCsvTime + state.syncOffsetSec * 1000).toLocaleTimeString()} UTC).`;
-      } else if (state.syncMode === 'manual') {
-        syncStatusBadge.className = 'sync-badge manual';
-        syncStatusBadge.textContent = '🟡 Ajuste Manual';
-        syncDetailsText.textContent = `Desfase fijado a +${state.syncOffsetSec.toFixed(1)}s respecto al inicio de la sesión.`;
+    function updateSyncUI(status, msg) {
+      if (status === 'sync') {
+        syncStatusBadge.className = 'sync-badge sync';
+        syncStatusBadge.textContent = '⚡ Sincronizado';
       } else {
         syncStatusBadge.className = 'sync-badge idle';
         syncStatusBadge.textContent = '⏳ Esperando archivos';
       }
+      syncDetailsText.textContent = msg;
     }
 
     function applyNudge(deltaSec) {
-      state.syncOffsetSec = Math.max(0, state.syncOffsetSec + deltaSec);
-      offsetInput.value = state.syncOffsetSec.toFixed(1);
+      state.syncOffsetSec += deltaSec;
       state.syncMode = 'manual';
-      updateSyncUI();
+      offsetInput.value = (state.syncOffsetSec >= 0 ? '+' : '') + state.syncOffsetSec.toFixed(2);
+      updateSyncUI('sync', `Desfase manual: ${(state.syncOffsetSec >= 0 ? '+' : '') + state.syncOffsetSec.toFixed(2)}s`);
       drawTrackTimeline();
-      updateTelemetryDisplays();
+      updateTelemetryDisplays(state.currentTime);
+      saveSessionState();
     }
 
     // =========================================================================
-    // INTERPOLACIÓN MATEMÁTICA Y ACTUALIZACIÓN 60 FPS
+    // INTERPOLACIÓN Y CÁLCULO DE TELEMETRÍA EN TIEMPO REAL
     // =========================================================================
     function getInterpolatedTelemetry(videoSec) {
-      if (state.telemetry.length === 0) {
-        return { sog: 0, cog: 0, hdg: 0, heel: 0, trim: 0, lat: 0, lon: 0, time: 0 };
-      }
+      if (state.telemetry.length === 0) return null;
 
-      const targetEpochMs = state.minCsvTime + ((state.syncOffsetSec + videoSec) * 1000);
+      const targetTime = state.minCsvTime + (state.syncOffsetSec + videoSec) * 1000;
 
-      // Búsqueda binaria rápida O(log N)
-      let low = 0, high = state.telemetry.length - 1;
-      if (targetEpochMs <= state.telemetry[0].time) return state.telemetry[0];
-      if (targetEpochMs >= state.telemetry[high].time) return state.telemetry[high];
+      if (targetTime <= state.telemetry[0].time) return { ...state.telemetry[0], isExact: false };
+      if (targetTime >= state.telemetry[state.telemetry.length - 1].time) return { ...state.telemetry[state.telemetry.length - 1], isExact: false };
 
+      let low = 0;
+      let high = state.telemetry.length - 1;
       while (low <= high) {
-        const mid = (low + high) >> 1;
-        if (state.telemetry[mid].time < targetEpochMs) low = mid + 1;
+        const mid = Math.floor((low + high) / 2);
+        if (state.telemetry[mid].time < targetTime) low = mid + 1;
         else high = mid - 1;
       }
 
-      const i0 = Math.max(0, low - 1);
-      const i1 = Math.min(state.telemetry.length - 1, low);
-      if (i0 === i1) return state.telemetry[i0];
+      const p0 = state.telemetry[Math.max(0, low - 1)];
+      const p1 = state.telemetry[Math.min(state.telemetry.length - 1, low)];
 
-      const p0 = state.telemetry[i0];
-      const p1 = state.telemetry[i1];
-      const factor = Math.max(0, Math.min(1, (targetEpochMs - p0.time) / (p1.time - p0.time)));
+      if (p0.time === p1.time) return p0;
 
-      // Interpolación lineal escalar
-      const sog = p0.sog + (p1.sog - p0.sog) * factor;
-      const heel = p0.heel + (p1.heel - p0.heel) * factor;
-      const trim = p0.trim + (p1.trim - p0.trim) * factor;
-      const lat = p0.lat + (p1.lat - p0.lat) * factor;
-      const lon = p0.lon + (p1.lon - p0.lon) * factor;
+      const alpha = (targetTime - p0.time) / (p1.time - p0.time);
 
-      // Interpolación angular más corta para rumbos (evita giros de 359° a 1°)
-      function lerpAngle(a, b, t) {
-        let diff = (b - a) % 360;
-        if (diff < -180) diff += 360;
-        if (diff > 180) diff -= 360;
-        return (a + diff * t + 360) % 360;
-      }
-
-      const cog = lerpAngle(p0.cog, p1.cog, factor);
-      const hdg = lerpAngle(p0.hdg, p1.hdg, factor);
-
-      return { sog, cog, hdg, heel, trim, lat, lon, time: targetEpochMs };
+      return {
+        time: targetTime,
+        lat: p0.lat + (p1.lat - p0.lat) * alpha,
+        lon: p0.lon + (p1.lon - p0.lon) * alpha,
+        sog: p0.sog + (p1.sog - p0.sog) * alpha,
+        cog: lerpAngle(p0.cog, p1.cog, alpha),
+        hdg: lerpAngle(p0.hdg, p1.hdg, alpha),
+        heel: p0.heel + (p1.heel - p0.heel) * alpha,
+        trim: p0.trim + (p1.trim - p0.trim) * alpha,
+        isExact: true
+      };
     }
 
-    function updateTelemetryDisplays() {
-      const pt = getInterpolatedTelemetry(state.currentTime);
-
-      // 1. SOG
-      metricSog.textContent = pt.sog.toFixed(2);
-      hudSog.textContent = pt.sog.toFixed(1);
-
-      // 2. TWA y VMG
-      let twaDiff = ((pt.hdg - state.twd + 180) % 360) - 180;
-      const twa = Math.abs(twaDiff);
-      const isStarboard = (twaDiff < 0);
-      const tackText = isStarboard ? 'ESTRIBOR' : 'BABOR';
-      const tackColor = isStarboard ? '#34d399' : '#f43f5e';
-
-      const vmg = pt.sog * Math.cos(twa * Math.PI / 180);
-      metricVmg.textContent = Math.abs(vmg).toFixed(2);
-      hudVmg.textContent = Math.abs(vmg).toFixed(1);
-
-      // Rumbo de navegación
-      let modeText = 'CEÑIDA';
-      if (twa < 35) modeText = 'PROA AL VIENTO';
-      else if (twa < 60) modeText = 'CEÑIDA';
-      else if (twa < 105) modeText = 'TRAVÉS';
-      else if (twa < 145) modeText = 'LARGO';
-      else modeText = 'POPA';
-
-      metricPointOfSail.textContent = modeText;
-      hudMode.textContent = modeText;
-      vmgSignBadge.textContent = vmg >= 0 ? 'CEÑIDA ↑' : 'POPA ↓';
-      vmgSignBadge.style.color = vmg >= 0 ? '#34d399' : '#00f0ff';
-
-      // Eficiencia teórica VPP (aprox 3.8 - 4.2 kts en ceñida)
-      const targetSog = modeText === 'CEÑIDA' ? 4.1 : 4.8;
-      const eff = Math.min(125, Math.max(0, (pt.sog / targetSog) * 100));
-      metricVmgEff.textContent = `${Math.round(eff)}%`;
-
-      // 3. Escora (Heel)
-      const absHeel = Math.abs(pt.heel);
-      metricHeel.textContent = `${absHeel.toFixed(1)}°`;
-      heelSideLabel.textContent = pt.heel >= 0 ? 'Estribor' : 'Babor';
-      hudHeel.textContent = `${absHeel.toFixed(1)}° ${pt.heel >= 0 ? 'E' : 'B'}`;
-
-      if (absHeel >= 3 && absHeel <= 6) {
-        heelTackBadge.textContent = 'ÓPTIMA';
-        heelTackBadge.style.color = '#34d399';
-      } else if (absHeel < 3) {
-        heelTackBadge.textContent = 'PLANO';
-        heelTackBadge.style.color = '#fbbf24';
-      } else {
-        heelTackBadge.textContent = 'EXCESIVA';
-        heelTackBadge.style.color = '#f43f5e';
-      }
-
-      // 4. Trim
-      metricTrim.textContent = `${Math.abs(pt.trim).toFixed(1)}°`;
-      trimUnitLabel.textContent = pt.trim >= 0 ? 'Proa Arriba' : 'Proa Abajo';
-      hudTrim.textContent = `${pt.trim >= 0 ? '+' : '-'}${Math.abs(pt.trim).toFixed(1)}°`;
-
-      // 5. Rumbos Compás y TWA
-      metricHdg.textContent = `${String(Math.round(pt.hdg)).padStart(3, '0')}°`;
-      metricCog.textContent = `${String(Math.round(pt.cog)).padStart(3, '0')}°`;
-      metricTwa.textContent = `${Math.round(twa)}°`;
-      metricAmura.textContent = tackText;
-      metricAmura.style.color = tackColor;
-
-      hudTwa.textContent = `${String(Math.round(twa)).padStart(3, '0')}°`;
-      hudTack.textContent = isStarboard ? 'ESTR' : 'BAB';
-      hudTack.style.color = tackColor;
-
-      // Hora GPS UTC
-      if (pt.time) {
-        const d = new Date(pt.time);
-        hudUtcTime.textContent = d.toISOString().substring(11, 21) + ' UTC';
-      }
-
-      // Dibujar agujas y representaciones gráficas
-      drawHeelGauge(pt.heel);
-      drawCompass(pt.hdg, pt.cog, state.twd);
-      drawMiniMapBoat(pt);
-      drawStripChartNeedle();
+    function lerpAngle(a, b, t) {
+      let diff = ((b - a + 180) % 360) - 180;
+      if (diff < -180) diff += 360;
+      return ((a + diff * t) % 360 + 360) % 360;
     }
 
     // =========================================================================
-    // DIBUJO DE INSTRUMENTOS (CANVAS)
+    // ACTUALIZACIÓN DE GAUGES E INSTRUMENTOS (60 FPS)
+    // =========================================================================
+    function updateTelemetryDisplays(timeSec) {
+      const sec = (typeof timeSec === 'number') ? timeSec : state.currentTime;
+      const data = getInterpolatedTelemetry(sec);
+
+      if (!data) return;
+
+      // 1. Velocidad (SOG)
+      const sog = data.sog;
+      metricSog.textContent = sog.toFixed(1);
+      hudSog.textContent = sog.toFixed(1);
+
+      // SOG Max y Avg
+      if (state.telemetry.length > 0) {
+        const sogs = state.telemetry.map(d => d.sog);
+        const maxSog = Math.max(...sogs);
+        const avgSog = sogs.reduce((a, b) => a + b, 0) / sogs.length;
+        metricSogMax.textContent = maxSog.toFixed(1) + ' kts';
+        metricSogAvg.textContent = avgSog.toFixed(1) + ' kts';
+      }
+
+      // 2. VMG y TWA
+      const hdg = data.hdg;
+      let twa = ((hdg - state.twd + 180) % 360) - 180;
+      if (twa < -180) twa += 360;
+      const absTwa = Math.abs(twa);
+      const isStarboard = twa >= 0; // Amura de estribor / babor
+
+      const vmg = sog * Math.cos(absTwa * (Math.PI / 180));
+      metricVmg.textContent = (vmg >= 0 ? '+' : '') + vmg.toFixed(1);
+      hudVmg.textContent = (vmg >= 0 ? '+' : '') + vmg.toFixed(1);
+
+      let posName = 'Desconocido';
+      if (absTwa < 55) posName = 'Ceñida';
+      else if (absTwa < 110) posName = 'Descuartelar / Través';
+      else if (absTwa < 155) posName = 'Largo';
+      else posName = 'Empopada';
+      metricPointOfSail.textContent = posName;
+      hudMode.textContent = posName.toUpperCase();
+
+      // 3. Escora / Heel (Target Optimist: 3° - 5°)
+      const heel = data.heel;
+      metricHeel.textContent = Math.abs(heel).toFixed(1) + '°';
+      hudHeel.textContent = Math.abs(heel).toFixed(1) + '°';
+
+      const heelSide = heel >= 0 ? 'Estribor' : 'Babor';
+      heelSideLabel.textContent = Math.abs(heel) < 0.5 ? 'Barco Plano' : 'Escora a ' + heelSide;
+      heelTackBadge.textContent = isStarboard ? 'Amurado a Estribor' : 'Amurado a Babor';
+      heelTackBadge.style.color = isStarboard ? '#10b981' : '#f43f5e';
+
+      drawHeelGauge(heel);
+
+      // 4. Cabeceo / Trim
+      const trim = data.trim;
+      metricTrim.textContent = (trim >= 0 ? '+' : '') + trim.toFixed(1) + '°';
+      hudTrim.textContent = (trim >= 0 ? '+' : '') + trim.toFixed(1) + '°';
+      if (Math.abs(trim) < 0.8) {
+        trimStateBadge.textContent = 'Óptimo';
+        trimStateBadge.style.color = '#10b981';
+      } else if (trim > 0) {
+        trimStateBadge.textContent = 'Apopado';
+        trimStateBadge.style.color = '#f59e0b';
+      } else {
+        trimStateBadge.textContent = 'Aproado';
+        trimStateBadge.style.color = '#00f0ff';
+      }
+
+      // 5. Brújula y Rumbos
+      metricHdg.textContent = String(Math.round(hdg)).padStart(3, '0') + '°';
+      metricCog.textContent = String(Math.round(data.cog)).padStart(3, '0') + '°';
+      metricTwa.textContent = String(Math.round(absTwa)).padStart(3, '0') + '°';
+      hudTwa.textContent = String(Math.round(absTwa)).padStart(3, '0') + '°';
+      hudTack.textContent = isStarboard ? 'ESTR' : 'BAB';
+      hudTack.style.color = isStarboard ? '#34d399' : '#fb7185';
+
+      metricAmura.textContent = isStarboard ? 'Estribor (Verde)' : 'Babor (Rojo)';
+      metricAmura.style.color = isStarboard ? '#10b981' : '#f43f5e';
+
+      drawCompass(hdg, data.cog, state.twd);
+
+      // 6. Mini-mapa y Strip Chart
+      drawMiniMapBoat(data.lat, data.lon, hdg);
+      drawStripChartNeedle(sec);
+
+      // HUD UTC Time
+      hudUtcTime.textContent = new Date(data.time).toLocaleTimeString('es-ES', { timeZone: 'UTC' }) + ' UTC';
+    }
+
+    // =========================================================================
+    // RENDERIZADO DE INSTRUMENTOS (CANVAS 2D)
     // =========================================================================
     function drawStaticGauges() {
       drawHeelGauge(0);
       drawCompass(0, 0, state.twd);
     }
 
-    // 1. Inclinómetro de Escora
     function drawHeelGauge(heelDeg) {
-      const ctx = heelCanvas.getContext('2d');
-      const w = heelCanvas.width;
-      const h = heelCanvas.height;
-      if (!w || !h) return;
+      const c = heelCanvas;
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = c.width;
+      const h = c.height;
 
       ctx.clearRect(0, 0, w, h);
-      const cx = w * 0.5;
-      const cy = h * 0.65;
 
-      // Arco de referencia
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-      ctx.lineWidth = 4;
+      const cx = w / 2;
+      const cy = h / 2 + 10;
+      const r = Math.min(w, h) * 0.42;
+
+      // Arco de fondo
       ctx.beginPath();
-      ctx.arc(cx, cy, 38, Math.PI, 0, false);
+      ctx.arc(cx, cy, r, Math.PI * 0.8, Math.PI * 2.2, false);
+      ctx.lineWidth = 14;
+      ctx.strokeStyle = '#172a33';
       ctx.stroke();
 
-      // Zona óptima verde (3° a 6° a ambos lados)
+      // Zona objetivo Optimist: 3° a 5° a sotavento
+      const zeroAngle = -Math.PI / 2;
+      const degToRad = Math.PI / 180;
+      const tMin = zeroAngle + (3 * degToRad);
+      const tMax = zeroAngle + (5 * degToRad);
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, tMin, tMax, false);
+      ctx.lineWidth = 14;
       ctx.strokeStyle = 'rgba(16, 185, 129, 0.45)';
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 38, -Math.PI / 2 + (3 * Math.PI / 180), -Math.PI / 2 + (6 * Math.PI / 180));
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(cx, cy, 38, -Math.PI / 2 - (6 * Math.PI / 180), -Math.PI / 2 - (3 * Math.PI / 180));
       ctx.stroke();
 
-      // Barco basculante
+      // Línea de referencia horizontal
+      ctx.beginPath();
+      ctx.moveTo(cx - r - 10, cy);
+      ctx.lineTo(cx + r + 10, cy);
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.stroke();
+
+      // Marcador de escora del barco
       ctx.save();
       ctx.translate(cx, cy);
-      ctx.rotate(heelDeg * Math.PI / 180);
+      ctx.rotate(heelDeg * degToRad);
 
-      // Casco
-      ctx.fillStyle = '#ffffff';
+      // Casco de Optimist esquemático
+      ctx.fillStyle = Math.abs(heelDeg) >= 3 && Math.abs(heelDeg) <= 5 ? '#10b981' : (Math.abs(heelDeg) > 8 ? '#f43f5e' : '#00f0ff');
       ctx.beginPath();
-      ctx.moveTo(-28, 8);
-      ctx.lineTo(28, 8);
-      ctx.lineTo(22, 18);
-      ctx.lineTo(-22, 18);
+      ctx.moveTo(-28, 4);
+      ctx.lineTo(28, 4);
+      ctx.lineTo(24, -8);
+      ctx.lineTo(-24, -8);
       ctx.closePath();
       ctx.fill();
 
       // Mástil
-      ctx.strokeStyle = '#00f0ff';
+      ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 2.5;
       ctx.beginPath();
-      ctx.moveTo(0, 8);
-      ctx.lineTo(0, -32);
+      ctx.moveTo(0, -8);
+      ctx.lineTo(0, -r + 8);
       ctx.stroke();
 
       ctx.restore();
-
-      // Marca central de referencia fija
-      ctx.fillStyle = '#f43f5e';
-      ctx.beginPath();
-      ctx.arc(cx, cy - 38, 3, 0, Math.PI * 2);
-      ctx.fill();
     }
 
-    // 2. Rosa Náutica (Compass Dial)
     function drawCompass(hdg, cog, twd) {
-      const ctx = compassCanvas.getContext('2d');
-      const w = compassCanvas.width;
-      const h = compassCanvas.height;
-      if (!w || !h) return;
+      const c = compassCanvas;
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = c.width;
+      const h = c.height;
 
       ctx.clearRect(0, 0, w, h);
-      const cx = w * 0.5;
-      const cy = h * 0.5;
-      const r = Math.min(w, h) * 0.44;
 
-      // Anillo exterior
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-      ctx.lineWidth = 2;
+      const cx = w / 2;
+      const cy = h / 2;
+      const r = Math.min(w, h) * 0.42;
+
+      // Rosa de los vientos circular
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Puntos cardinales N, E, S, W
-      ctx.fillStyle = 'var(--dim)';
-      ctx.font = 'bold 9.5px "IBM Plex Sans"';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('N', cx, cy - r + 8);
-      ctx.fillText('S', cx, cy + r - 8);
-      ctx.fillText('E', cx + r - 8, cy);
-      ctx.fillText('W', cx - r + 8, cy);
-
-      // Flecha de Viento Real (TWD)
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate((twd) * Math.PI / 180);
-      ctx.fillStyle = '#f59e0b';
-      ctx.beginPath();
-      ctx.moveTo(0, -r + 14);
-      ctx.lineTo(5, -r + 2);
-      ctx.lineTo(-5, -r + 2);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-
-      // Aguja de Rumbo de Barco (HDG)
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(hdg * Math.PI / 180);
-
-      // Proa (roja/cyan)
-      ctx.fillStyle = '#00f0ff';
-      ctx.beginPath();
-      ctx.moveTo(0, -r + 16);
-      ctx.lineTo(4, 0);
-      ctx.lineTo(-4, 0);
-      ctx.closePath();
-      ctx.fill();
-
-      // Popa
-      ctx.fillStyle = '#475569';
-      ctx.beginPath();
-      ctx.moveTo(0, r - 16);
-      ctx.lineTo(4, 0);
-      ctx.lineTo(-4, 0);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.restore();
-
-      // Núcleo central
-      ctx.fillStyle = '#0f1c22';
-      ctx.strokeStyle = '#22383f';
       ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.strokeStyle = '#22383f';
       ctx.stroke();
+
+      // Marcas de rumbo
+      for (let i = 0; i < 360; i += 30) {
+        const rad = (i - 90) * (Math.PI / 180);
+        const x1 = cx + Math.cos(rad) * (r - 6);
+        const y1 = cy + Math.sin(rad) * (r - 6);
+        const x2 = cx + Math.cos(rad) * r;
+        const y2 = cy + Math.sin(rad) * r;
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.lineWidth = i % 90 === 0 ? 2 : 1;
+        ctx.strokeStyle = i % 90 === 0 ? '#8fa6a2' : '#22383f';
+        ctx.stroke();
+      }
+
+      // Flecha de viento TWD
+      const twdRad = (twd - 90) * (Math.PI / 180);
+      const wx1 = cx + Math.cos(twdRad) * (r + 12);
+      const wy1 = cy + Math.sin(twdRad) * (r + 12);
+      const wx2 = cx + Math.cos(twdRad) * (r - 12);
+      const wy2 = cy + Math.sin(twdRad) * (r - 12);
+
+      ctx.save();
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(wx1, wy1);
+      ctx.lineTo(wx2, wy2);
+      ctx.stroke();
+      ctx.restore();
+
+      // Flecha de rumbo HDG (proa del barco)
+      const hdgRad = (hdg - 90) * (Math.PI / 180);
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(hdgRad + Math.PI / 2);
+
+      ctx.fillStyle = '#f2600c';
+      ctx.beginPath();
+      ctx.moveTo(0, -r + 4);
+      ctx.lineTo(-8, 12);
+      ctx.lineTo(0, 4);
+      ctx.lineTo(8, 12);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
     }
 
-    // 3. Mini-Línea Temporal de la Sesión Completa
     function drawTrackTimeline() {
-      const ctx = trackTimelineCanvas.getContext('2d');
-      const w = trackTimelineCanvas.width;
-      const h = trackTimelineCanvas.height;
-      if (!w || !h || state.telemetry.length === 0) return;
+      const c = trackTimelineCanvas;
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = c.width;
+      const h = c.height;
 
       ctx.clearRect(0, 0, w, h);
-      const totalSec = (state.maxCsvTime - state.minCsvTime) / 1000;
-      if (totalSec <= 0) return;
 
-      // Dibujar perfil de velocidad
-      ctx.fillStyle = 'rgba(0, 240, 255, 0.2)';
-      ctx.strokeStyle = '#00f0ff';
-      ctx.lineWidth = 1;
+      if (state.telemetry.length < 2) return;
+
+      const durTotal = (state.maxCsvTime - state.minCsvTime) / 1000;
+      if (durTotal <= 0) return;
+
+      // Pintar perfil de velocidad a lo largo de toda la regata
       ctx.beginPath();
       ctx.moveTo(0, h);
-
       const step = Math.max(1, Math.floor(state.telemetry.length / w));
       for (let i = 0; i < state.telemetry.length; i += step) {
         const pt = state.telemetry[i];
-        const x = ((pt.time - state.minCsvTime) / 1000 / totalSec) * w;
-        const y = h - (Math.min(10, pt.sog) / 10) * (h * 0.85);
+        const x = ((pt.time - state.minCsvTime) / 1000 / durTotal) * w;
+        const y = h - (pt.sog / 10) * h;
         ctx.lineTo(x, y);
       }
       ctx.lineTo(w, h);
       ctx.closePath();
+      ctx.fillStyle = 'rgba(0, 240, 255, 0.12)';
       ctx.fill();
 
-      // Posicionar marcador de ventana de vídeo
+      // Ventana del vídeo en la línea temporal
       if (state.videoDuration > 0) {
-        const winLeftPct = (state.syncOffsetSec / totalSec) * 100;
-        const winWidthPct = (state.videoDuration / totalSec) * 100;
+        const vStartFrac = state.syncOffsetSec / durTotal;
+        const vLenFrac = state.videoDuration / durTotal;
+
+        const leftPct = Math.max(0, Math.min(100, vStartFrac * 100));
+        const widthPct = Math.max(0.5, Math.min(100 - leftPct, vLenFrac * 100));
+
         videoWindowMarker.style.display = 'flex';
-        videoWindowMarker.style.left = `${Math.min(98, Math.max(0, winLeftPct))}%`;
-        videoWindowMarker.style.width = `${Math.min(100 - winLeftPct, Math.max(1.5, winWidthPct))}%`;
+        videoWindowMarker.style.left = leftPct + '%';
+        videoWindowMarker.style.width = widthPct + '%';
 
         // Aguja de reproducción actual
-        const needleLeftPct = ((state.syncOffsetSec + state.currentTime) / totalSec) * 100;
+        const curFrac = (state.syncOffsetSec + state.currentTime) / durTotal;
         playbackNeedle.style.display = 'block';
-        playbackNeedle.style.left = `${Math.min(100, Math.max(0, needleLeftPct))}%`;
+        playbackNeedle.style.left = (curFrac * 100) + '%';
       }
     }
 
-    // 4. Mini-Mapa GPS Sincronizado
-    let mapBounds = null;
     function drawMiniMap() {
-      const ctx = minimapCanvas.getContext('2d');
-      const w = minimapCanvas.width;
-      const h = minimapCanvas.height;
-      if (!w || !h || state.telemetry.length === 0) return;
+      const c = minimapCanvas;
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = c.width;
+      const h = c.height;
 
       ctx.clearRect(0, 0, w, h);
 
-      // Calcular límites de lat/lon
-      let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
+      if (state.telemetry.length < 2) return;
+
+      let minLat = Infinity, maxLat = -Infinity, minLon = Infinity, maxLon = -Infinity;
       state.telemetry.forEach(d => {
         if (d.lat < minLat) minLat = d.lat;
         if (d.lat > maxLat) maxLat = d.lat;
@@ -2142,202 +2375,215 @@
         if (d.lon > maxLon) maxLon = d.lon;
       });
 
-      const pad = 0.001;
+      const pad = 0.0005;
       mapBounds = { minLat: minLat - pad, maxLat: maxLat + pad, minLon: minLon - pad, maxLon: maxLon + pad };
 
       function toX(lon) { return ((lon - mapBounds.minLon) / (mapBounds.maxLon - mapBounds.minLon)) * w; }
       function toY(lat) { return h - (((lat - mapBounds.minLat) / (mapBounds.maxLat - mapBounds.minLat)) * h); }
 
-      // Dibujar track completo
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-      ctx.lineWidth = 1.5;
+      // Pintar track completo
       ctx.beginPath();
-      state.telemetry.forEach((pt, idx) => {
+      ctx.strokeStyle = 'rgba(2, 132, 199, 0.4)';
+      ctx.lineWidth = 1.5;
+      state.telemetry.forEach((pt, i) => {
         const x = toX(pt.lon);
         const y = toY(pt.lat);
-        if (idx === 0) ctx.moveTo(x, y);
+        if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       });
       ctx.stroke();
-
-      // Indicador de Viento en esquina del mapa
-      ctx.fillStyle = '#f59e0b';
-      ctx.font = 'bold 10px "IBM Plex Sans"';
-      ctx.fillText(`VIENTO ${state.twd}°`, w - 75, 18);
     }
 
-    function drawMiniMapBoat(pt) {
-      if (!mapBounds) return;
-      const ctx = minimapCanvas.getContext('2d');
-      const w = minimapCanvas.width;
-      const h = minimapCanvas.height;
-      if (!w || !h) return;
+    function drawMiniMapBoat(lat, lon, hdg) {
+      const c = minimapCanvas;
+      if (!c || !mapBounds) return;
+      const ctx = c.getContext('2d');
+      const w = c.width;
+      const h = c.height;
 
-      // Redibujar mapa base
       drawMiniMap();
 
       function toX(lon) { return ((lon - mapBounds.minLon) / (mapBounds.maxLon - mapBounds.minLon)) * w; }
       function toY(lat) { return h - (((lat - mapBounds.minLat) / (mapBounds.maxLat - mapBounds.minLat)) * h); }
 
-      const bx = toX(pt.lon);
-      const by = toY(pt.lat);
+      const bx = toX(lon);
+      const by = toY(lat);
 
-      // Barco en el mapa
       ctx.save();
       ctx.translate(bx, by);
-      ctx.rotate(pt.hdg * Math.PI / 180);
+      ctx.rotate((hdg - 90) * (Math.PI / 180));
 
-      // Casco
       ctx.fillStyle = '#00f0ff';
       ctx.beginPath();
-      ctx.moveTo(0, -9);
-      ctx.lineTo(4, 5);
-      ctx.lineTo(-4, 5);
+      ctx.arc(0, 0, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Flecha proa
+      ctx.fillStyle = '#f2600c';
+      ctx.beginPath();
+      ctx.moveTo(8, 0);
+      ctx.lineTo(-3, -4);
+      ctx.lineTo(-3, 4);
       ctx.closePath();
       ctx.fill();
 
       ctx.restore();
-
-      // Halo pulsante
-      ctx.strokeStyle = 'rgba(0, 240, 255, 0.6)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(bx, by, 7, 0, Math.PI * 2);
-      ctx.stroke();
     }
 
-    // 5. Gráfica Temporal en Vivo (Rolling Strip Chart)
     function drawStripChart() {
-      const ctx = stripChartCanvas.getContext('2d');
-      const w = stripChartCanvas.width;
-      const h = stripChartCanvas.height;
-      if (!w || !h || state.telemetry.length === 0 || state.videoDuration === 0) return;
+      const c = stripChartCanvas;
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = c.width;
+      const h = c.height;
 
       ctx.clearRect(0, 0, w, h);
+
+      if (state.telemetry.length === 0 || state.videoDuration <= 0) return;
+
       const dur = state.videoDuration;
-
-      // Dibujar curvas de SOG y Escora dentro de la ventana de vídeo
-      ctx.strokeStyle = '#00f0ff';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-
       const numSamples = Math.min(300, w);
+
+      // Curva de velocidad (cian)
+      ctx.beginPath();
+      ctx.strokeStyle = '#00f0ff';
+      ctx.lineWidth = 1.8;
       for (let i = 0; i < numSamples; i++) {
         const sec = (i / numSamples) * dur;
-        const pt = getInterpolatedTelemetry(sec);
-        const x = (sec / dur) * w;
-        const y = h - (Math.min(10, pt.sog) / 10) * (h * 0.85);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        const d = getInterpolatedTelemetry(sec);
+        if (d) {
+          const y = h - (d.sog / 10) * (h - 20) - 10;
+          if (i === 0) ctx.moveTo(i * (w / numSamples), y);
+          else ctx.lineTo(i * (w / numSamples), y);
+        }
       }
       ctx.stroke();
 
-      // Curva de Escora (absoluta)
-      ctx.strokeStyle = '#10b981';
-      ctx.lineWidth = 1;
+      // Curva de escora (esmeralda)
       ctx.beginPath();
+      ctx.strokeStyle = 'rgba(16, 185, 129, 0.7)';
+      ctx.lineWidth = 1.2;
       for (let i = 0; i < numSamples; i++) {
         const sec = (i / numSamples) * dur;
-        const pt = getInterpolatedTelemetry(sec);
-        const x = (sec / dur) * w;
-        const y = h - (Math.min(30, Math.abs(pt.heel)) / 30) * (h * 0.85);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+        const d = getInterpolatedTelemetry(sec);
+        if (d) {
+          const y = h / 2 - (d.heel / 20) * (h / 2 - 10);
+          if (i === 0) ctx.moveTo(i * (w / numSamples), y);
+          else ctx.lineTo(i * (w / numSamples), y);
+        }
       }
       ctx.stroke();
     }
 
-    function drawStripChartNeedle() {
-      if (state.videoDuration === 0) return;
-      const ctx = stripChartCanvas.getContext('2d');
-      const w = stripChartCanvas.width;
-      const h = stripChartCanvas.height;
-      if (!w || !h) return;
+    function drawStripChartNeedle(sec) {
+      const c = stripChartCanvas;
+      if (!c || state.videoDuration <= 0) return;
+      const ctx = c.getContext('2d');
+      const w = c.width;
+      const h = c.height;
 
       drawStripChart();
 
-      const x = (state.currentTime / state.videoDuration) * w;
-      ctx.strokeStyle = '#f43f5e';
+      const x = (sec / state.videoDuration) * w;
+      ctx.save();
+      ctx.strokeStyle = '#f2600c';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(x, 0);
       ctx.lineTo(x, h);
       ctx.stroke();
+      ctx.restore();
     }
 
     // =========================================================================
-    // CONTROL DEL REPRODUCTOR & BUCLE DE ANIMACIÓN
+    // BUCLE DE REPRODUCCIÓN (60 FPS)
     // =========================================================================
-    let lastTimeUpdate = 0;
     function playbackLoop() {
-      if (state.isPlaying) {
-        if (!state.isSimulatedVideo) {
-          state.currentTime = mainVideo.currentTime;
-        } else {
-          // Reloj para vídeo simulado
-          const now = performance.now();
-          const dt = (now - lastTimeUpdate) / 1000;
-          lastTimeUpdate = now;
-          state.currentTime += dt * state.playbackRate;
-          if (state.currentTime >= state.videoDuration) {
-            if (state.isLoop) state.currentTime = 0;
-            else { state.currentTime = state.videoDuration; togglePlay(false); }
-          }
-        }
+      if (state.isPlaying && mainVideo && !mainVideo.paused) {
+        state.currentTime = mainVideo.currentTime;
         playerScrubber.value = state.currentTime;
         videoTimeCurrent.textContent = formatVideoTime(state.currentTime);
         updateTelemetryDisplays();
+        throttledSaveCurrentTime();
       }
       requestAnimationFrame(playbackLoop);
     }
-    requestAnimationFrame(playbackLoop);
 
     function togglePlay(forceState) {
-      state.isPlaying = (typeof forceState === 'boolean') ? forceState : !state.isPlaying;
-      if (state.isPlaying) {
-        btnPlayPause.textContent = '⏸ Pausar';
-        btnPlayPause.style.color = '#fff';
-        lastTimeUpdate = performance.now();
-        if (!state.isSimulatedVideo) mainVideo.play();
+      if (!mainVideo || !mainVideo.src) {
+        alert("Por favor, sube un vídeo primero haciendo clic en '📂 Elegir vídeo' o arrastrándolo a la pantalla.");
+        return;
+      }
+      const shouldPlay = (typeof forceState === 'boolean') ? forceState : mainVideo.paused;
+      if (shouldPlay) {
+        mainVideo.play().then(() => {
+          state.isPlaying = true;
+          btnPlayPause.textContent = '⏸ Pausar';
+          btnPlayPause.style.color = '#fff';
+        }).catch(err => console.warn('Error al reproducir vídeo:', err));
       } else {
+        mainVideo.pause();
+        state.isPlaying = false;
         btnPlayPause.textContent = '▶ Reproducir';
         btnPlayPause.style.color = 'var(--cyan)';
-        if (!state.isSimulatedVideo) mainVideo.pause();
+        saveSessionState();
       }
     }
 
     function seekVideo(sec) {
       state.currentTime = Math.max(0, Math.min(state.videoDuration, sec));
-      if (!state.isSimulatedVideo) mainVideo.currentTime = state.currentTime;
+      if (mainVideo && mainVideo.src) {
+        mainVideo.currentTime = state.currentTime;
+      }
       playerScrubber.value = state.currentTime;
       videoTimeCurrent.textContent = formatVideoTime(state.currentTime);
       updateTelemetryDisplays();
+      saveSessionState();
     }
 
     // =========================================================================
-    // EVENT LISTENERS & INTERACCIONES
+    // LISTENERS DE EVENTOS Y SELECTORES
     // =========================================================================
     function initEventListeners() {
-      // Subida de Vídeo
+      // 1. Selector de vídeo
+      function triggerVideoPicker() {
+        inputVideo.value = '';
+        inputVideo.click();
+      }
       cardVideoUpload.addEventListener('click', (e) => {
-        if (e.target !== btnSimulatedVideo) inputVideo.click();
+        if (e.target.closest('#btnPickVideo')) return;
+        triggerVideoPicker();
       });
+      if (btnPickVideo) {
+        btnPickVideo.addEventListener('click', (e) => {
+          e.stopPropagation();
+          triggerVideoPicker();
+        });
+      }
+      if (videoPlaceholder) {
+        videoPlaceholder.addEventListener('click', triggerVideoPicker);
+      }
       inputVideo.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) loadVideoFile(e.target.files[0]);
+        if (e.target.files && e.target.files.length > 0) loadVideoFile(e.target.files[0]);
       });
 
-      // Vídeo Simulado
-      btnSimulatedVideo.addEventListener('click', (e) => {
-        e.stopPropagation();
-        setupSimulatedVideo();
-      });
-
-      // Subida de CSV
+      // 2. Selector de CSV
+      function triggerCsvPicker() {
+        inputCsv.value = '';
+        inputCsv.click();
+      }
       cardCsvUpload.addEventListener('click', (e) => {
-        if (e.target !== btnLoadSampleCsv) inputCsv.click();
+        if (e.target.closest('#btnPickCsv')) return;
+        triggerCsvPicker();
       });
+      if (btnPickCsv) {
+        btnPickCsv.addEventListener('click', (e) => {
+          e.stopPropagation();
+          triggerCsvPicker();
+        });
+      }
       inputCsv.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
+        if (e.target.files && e.target.files.length > 0) {
           const file = e.target.files[0];
           const reader = new FileReader();
           reader.onload = (evt) => loadCsvData(evt.target.result, file.name);
@@ -2345,189 +2591,228 @@
         }
       });
 
-      // Botón Datos de Ejemplo
-      btnLoadSampleCsv.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (window.SAMPLE_CSV_DATA) {
-          loadCsvData(window.SAMPLE_CSV_DATA, "Gando_D1_R1_ESP_-_MARIA_GUINDIN.csv");
-        } else {
-          fetch("Gando_D1_R1_ESP_-_MARIA_GUINDIN.csv")
-            .then(res => res.text())
-            .then(txt => loadCsvData(txt, "Gando_D1_R1_ESP_-_MARIA_GUINDIN.csv"))
-            .catch(() => alert("No se pudo cargar el archivo de ejemplo."));
+      // 3. Botón para vaciar sesión y reiniciar limpio
+      if (btnClearSession) {
+        btnClearSession.addEventListener('click', clearStorageSession);
+      }
+
+      // 4. Drag & Drop en zonas dedicadas
+      function setupDropZone(zoneEl, onFiles) {
+        if (!zoneEl) return;
+        ['dragenter', 'dragover'].forEach(name => {
+          zoneEl.addEventListener(name, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            zoneEl.classList.add('drag-over');
+          });
+        });
+        ['dragleave', 'drop'].forEach(name => {
+          zoneEl.addEventListener(name, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            zoneEl.classList.remove('drag-over');
+          });
+        });
+        zoneEl.addEventListener('drop', (e) => {
+          const files = e.dataTransfer && e.dataTransfer.files;
+          if (files && files.length > 0) onFiles(files);
+        });
+      }
+
+      setupDropZone(cardVideoUpload, (files) => {
+        const videoFile = Array.from(files).find(f => f.type.startsWith('video/') || /\.(mp4|mov|webm|m4v|avi|mkv)$/i.test(f.name));
+        if (videoFile) loadVideoFile(videoFile);
+        else if (files[0]) loadVideoFile(files[0]);
+      });
+
+      setupDropZone(cardCsvUpload, (files) => {
+        const csvFile = Array.from(files).find(f => f.name.endsWith('.csv') || f.name.endsWith('.txt') || f.type.includes('csv'));
+        if (csvFile) {
+          const reader = new FileReader();
+          reader.onload = (evt) => loadCsvData(evt.target.result, csvFile.name);
+          reader.readAsText(csvFile);
+        } else if (files[0]) {
+          const reader = new FileReader();
+          reader.onload = (evt) => loadCsvData(evt.target.result, files[0].name);
+          reader.readAsText(files[0]);
         }
       });
 
-      // Nudges de sincronización
+      const videoStageEl = document.getElementById('videoStage');
+      if (videoStageEl) {
+        setupDropZone(videoStageEl, (files) => {
+          const videoFile = Array.from(files).find(f => f.type.startsWith('video/') || /\.(mp4|mov|webm|m4v|avi|mkv)$/i.test(f.name));
+          if (videoFile) loadVideoFile(videoFile);
+        });
+      }
+
+      // Drop global en la ventana
+      window.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; });
+      window.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const files = e.dataTransfer && e.dataTransfer.files;
+        if (!files || files.length === 0) return;
+        const video = Array.from(files).find(f => f.type.startsWith('video/') || /\.(mp4|mov|webm|m4v|avi|mkv)$/i.test(f.name));
+        const csv = Array.from(files).find(f => f.name.endsWith('.csv') || f.name.endsWith('.txt') || f.type.includes('csv'));
+        if (video) loadVideoFile(video);
+        if (csv) {
+          const reader = new FileReader();
+          reader.onload = (evt) => loadCsvData(evt.target.result, csv.name);
+          reader.readAsText(csv);
+        }
+      });
+
+      // 5. Botones de Sincronía
       document.querySelectorAll('.nudge-btn[data-nudge]').forEach(btn => {
-        btn.addEventListener('click', () => applyNudge(parseFloat(btn.dataset.nudge)));
-      });
-
-      offsetInput.addEventListener('change', () => {
-        state.syncOffsetSec = Math.max(0, parseFloat(offsetInput.value) || 0);
-        state.syncMode = 'manual';
-        updateSyncUI();
-        drawTrackTimeline();
-        updateTelemetryDisplays();
-      });
-
-      btnResetSync.addEventListener('click', () => {
-        state.syncMode = 'auto';
-        checkAndPerformSync();
-      });
-
-      // Clic en la línea temporal de la sesión para posicionar la ventana de vídeo
-      trackTimelineWrap.addEventListener('click', (e) => {
-        const rect = trackTimelineWrap.getBoundingClientRect();
-        const clickPct = (e.clientX - rect.left) / rect.width;
-        const totalSec = (state.maxCsvTime - state.minCsvTime) / 1000;
-        state.syncOffsetSec = Math.max(0, clickPct * totalSec);
-        offsetInput.value = state.syncOffsetSec.toFixed(1);
-        state.syncMode = 'manual';
-        updateSyncUI();
-        drawTrackTimeline();
-        drawStripChart();
-        updateTelemetryDisplays();
-      });
-
-      // Controles del reproductor
-      btnPlayPause.addEventListener('click', () => togglePlay());
-      btnStepBack.addEventListener('click', () => seekVideo(state.currentTime - (1 / state.videoFps)));
-      btnStepFwd.addEventListener('click', () => seekVideo(state.currentTime + (1 / state.videoFps)));
-      
-      btnLoop.addEventListener('click', () => {
-        state.isLoop = !state.isLoop;
-        btnLoop.classList.toggle('active', state.isLoop);
-      });
-
-      document.querySelectorAll('.rate-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          document.querySelectorAll('.rate-btn').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          state.playbackRate = parseFloat(btn.dataset.rate);
-          if (!state.isSimulatedVideo) mainVideo.playbackRate = state.playbackRate;
+          const delta = parseFloat(btn.getAttribute('data-nudge'));
+          applyNudge(delta);
         });
       });
 
-      playerScrubber.addEventListener('input', () => seekVideo(parseFloat(playerScrubber.value)));
-
-      // Toggle HUD
-      btnToggleHud.addEventListener('click', () => {
-        state.showHud = !state.showHud;
-        hudOverlay.style.display = state.showHud ? 'grid' : 'none';
-        btnToggleHud.classList.toggle('active', state.showHud);
+      offsetInput.addEventListener('change', () => {
+        const val = parseFloat(offsetInput.value);
+        if (!isNaN(val)) {
+          state.syncOffsetSec = val;
+          state.syncMode = 'manual';
+          updateSyncUI('sync', `Desfase manual: ${(state.syncOffsetSec >= 0 ? '+' : '') + state.syncOffsetSec.toFixed(2)}s`);
+          drawTrackTimeline();
+          updateTelemetryDisplays(state.currentTime);
+          saveSessionState();
+        }
       });
 
-      // Captura con Telemetría
-      btnCaptureFrame.addEventListener('click', captureFrameWithTelemetry);
+      btnResetSync.addEventListener('click', () => {
+        state.syncMode = 'idle';
+        checkAndPerformSync();
+        saveSessionState();
+      });
 
-      // Slider de Viento TWD
-      twdSlider.addEventListener('input', () => {
-        state.twd = parseInt(twdSlider.value);
-        metricTwd.textContent = `${String(state.twd).padStart(3, '0')}°`;
+      // 6. Controles de Reproducción
+      btnPlayPause.addEventListener('click', () => togglePlay());
+      btnStepBack.addEventListener('click', () => seekVideo(state.currentTime - (1 / state.videoFps)));
+      btnStepFwd.addEventListener('click', () => seekVideo(state.currentTime + (1 / state.videoFps)));
+
+      btnLoop.addEventListener('click', () => {
+        state.isLoop = !state.isLoop;
+        btnLoop.classList.toggle('active', state.isLoop);
+        saveSessionState();
+      });
+
+      btnToggleHud.addEventListener('click', () => {
+        state.showHud = !state.showHud;
+        hudOverlay.style.display = state.showHud ? 'flex' : 'none';
+        btnToggleHud.classList.toggle('active', state.showHud);
+        saveSessionState();
+      });
+
+      playerScrubber.addEventListener('input', (e) => {
+        seekVideo(parseFloat(e.target.value));
+      });
+
+      document.querySelectorAll('.btn-speed').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.btn-speed').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          state.playbackRate = parseFloat(btn.getAttribute('data-speed'));
+          mainVideo.playbackRate = state.playbackRate;
+        });
+      });
+
+      // Eventos de reproducción nativos del vídeo
+      mainVideo.addEventListener('play', () => {
+        state.isPlaying = true;
+        btnPlayPause.textContent = '⏸ Pausar';
+        btnPlayPause.style.color = '#fff';
+      });
+      mainVideo.addEventListener('pause', () => {
+        state.isPlaying = false;
+        btnPlayPause.textContent = '▶ Reproducir';
+        btnPlayPause.style.color = 'var(--cyan)';
+        saveSessionState();
+      });
+      mainVideo.addEventListener('ended', () => {
+        if (state.isLoop) {
+          mainVideo.currentTime = 0;
+          mainVideo.play();
+        } else {
+          state.isPlaying = false;
+          btnPlayPause.textContent = '▶ Reproducir';
+          btnPlayPause.style.color = 'var(--cyan)';
+        }
+      });
+
+      // Slider TWD
+      twdSlider.addEventListener('input', (e) => {
+        state.twd = parseFloat(e.target.value);
+        metricTwd.textContent = String(Math.round(state.twd)).padStart(3, '0') + '°';
         updateTelemetryDisplays();
+        saveSessionState();
       });
 
       btnAutoWind.addEventListener('click', () => {
         estimateSessionWind();
         updateTelemetryDisplays();
+        saveSessionState();
       });
 
-      // Clic en el Mini-Mapa para saltar
-      minimapCanvas.addEventListener('click', (e) => {
-        if (!mapBounds || state.telemetry.length === 0) return;
-        const rect = minimapCanvas.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        const clickY = e.clientY - rect.top;
-        const targetLon = mapBounds.minLon + (clickX / rect.width) * (mapBounds.maxLon - mapBounds.minLon);
-        const targetLat = mapBounds.minLat + (1 - (clickY / rect.height)) * (mapBounds.maxLat - mapBounds.minLat);
+      // Captura de fotograma con telemetría integrada
+      btnCaptureFrame.addEventListener('click', captureFrameWithTelemetry);
 
-        // Encontrar punto más cercano
-        let closestIdx = 0, minDist = Infinity;
-        state.telemetry.forEach((pt, i) => {
-          const d = Math.hypot(pt.lon - targetLon, pt.lat - targetLat);
-          if (d < minDist) { minDist = d; closestIdx = i; }
-        });
-
-        const targetTimeSec = (state.telemetry[closestIdx].time - state.minCsvTime) / 1000;
-        state.syncOffsetSec = Math.max(0, targetTimeSec);
-        offsetInput.value = state.syncOffsetSec.toFixed(1);
-        state.syncMode = 'manual';
-        updateSyncUI();
-        drawTrackTimeline();
-        drawStripChart();
-        updateTelemetryDisplays();
-      });
-
-      // Teclado (Barra espaciadora para Play/Pause, flechas para buscar)
-      window.addEventListener('keydown', (e) => {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
-        if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
-        else if (e.code === 'ArrowLeft') { e.preventDefault(); seekVideo(state.currentTime - 1); }
-        else if (e.code === 'ArrowRight') { e.preventDefault(); seekVideo(state.currentTime + 1); }
-        else if (e.key === ',' || e.key === '<') { seekVideo(state.currentTime - (1 / state.videoFps)); }
-        else if (e.key === '.' || e.key === '>') { seekVideo(state.currentTime + (1 / state.videoFps)); }
+      // Guardar posición de reproducción antes de cerrar o recargar la página (F5)
+      window.addEventListener('beforeunload', () => {
+        try {
+          localStorage.setItem('rcngc_vt_current_time', String(state.currentTime));
+          localStorage.setItem('rcngc_vt_offset', String(state.syncOffsetSec));
+          localStorage.setItem('rcngc_vt_twd', String(state.twd));
+        } catch (_) {}
       });
     }
 
     // =========================================================================
-    // CAPTURA DE FOTOGRAMA CON OVERLAY TELEMÉTRICO
+    // CAPTURA DE FOTOGRAMA CON TELEMETRÍA (ESTILO BROADCAST)
     // =========================================================================
     function captureFrameWithTelemetry() {
-      const capCanvas = document.createElement('canvas');
-      const w = 1280;
-      const h = 720;
-      capCanvas.width = w;
-      capCanvas.height = h;
-      const ctx = capCanvas.getContext('2d');
-
-      // 1. Dibujar fotograma del vídeo o simulación
-      if (state.isSimulatedVideo) {
-        ctx.drawImage(simulatedCanvas, 0, 0, w, h);
-      } else {
-        ctx.drawImage(mainVideo, 0, 0, w, h);
+      if (!mainVideo || !mainVideo.src || mainVideo.readyState < 2) {
+        alert("Carga y reproduce un vídeo primero para poder capturar el fotograma con telemetría.");
+        return;
       }
 
-      // 2. Sobreimprimir badges telemétricas oficiales
-      const pt = getInterpolatedTelemetry(state.currentTime);
-      ctx.fillStyle = 'rgba(10, 19, 21, 0.88)';
-      ctx.fillRect(20, 20, 240, 85);
-      ctx.strokeStyle = '#00f0ff';
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(20, 20, 240, 85);
+      const canvas = document.createElement('canvas');
+      canvas.width = mainVideo.videoWidth || 1920;
+      canvas.height = mainVideo.videoHeight || 1080;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
 
-      ctx.fillStyle = '#00f0ff';
-      ctx.font = 'bold 12px "IBM Plex Sans"';
-      ctx.fillText('VELOCIDAD GPS', 32, 42);
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 36px "Barlow Condensed"';
-      ctx.fillText(`${pt.sog.toFixed(1)} KTS`, 32, 84);
+      // Pintar fotograma de vídeo
+      ctx.drawImage(mainVideo, 0, 0, w, h);
 
-      // Escora & Trim
-      ctx.fillStyle = 'rgba(10, 19, 21, 0.88)';
-      ctx.fillRect(w - 260, 20, 240, 85);
-      ctx.strokeStyle = '#10b981';
-      ctx.strokeRect(w - 260, 20, 240, 85);
+      // Pintar telemetría sobreimpresa
+      const data = getInterpolatedTelemetry(state.currentTime);
+      if (data) {
+        ctx.fillStyle = 'rgba(6, 12, 15, 0.75)';
+        ctx.fillRect(40, h - 160, 520, 110);
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(40, h - 160, 520, 110);
 
-      ctx.fillStyle = '#10b981';
-      ctx.font = 'bold 12px "IBM Plex Sans"';
-      ctx.fillText('ESCORA & CABECEO', w - 248, 42);
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 24px "IBM Plex Mono"';
-      ctx.fillText(`Escora: ${Math.abs(pt.heel).toFixed(1)}°`, w - 248, 70);
-      ctx.fillText(`Trim: ${pt.trim.toFixed(1)}°`, w - 248, 95);
+        ctx.font = 'bold 36px "Barlow Condensed", sans-serif';
+        ctx.fillStyle = '#fff';
+        ctx.fillText(`${data.sog.toFixed(1)} KTS`, 60, h - 100);
 
-      // Pie de foto RCNGC
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-      ctx.fillRect(0, h - 30, w, 30);
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '12px "IBM Plex Sans"';
-      ctx.fillText('Optimist RCNGC · Vídeo & Telemetría en Tiempo Real · Desarrollado por Pablo Quintana Labarta', 20, h - 10);
+        ctx.font = '20px "IBM Plex Sans", sans-serif';
+        ctx.fillStyle = '#8fa6a2';
+        ctx.fillText(`HDG: ${String(Math.round(data.hdg)).padStart(3, '0')}°   ESCORA: ${data.heel.toFixed(1)}°   TRIM: ${data.trim.toFixed(1)}°`, 60, h - 68);
 
-      // Descargar imagen
+        ctx.font = '16px "IBM Plex Mono", monospace';
+        ctx.fillStyle = '#00f0ff';
+        ctx.fillText(`RCNGC · ${new Date(data.time).toISOString()}`, 60, h - 90 + 55);
+      }
+
       const link = document.createElement('a');
-      link.download = `rcngc_telemetria_${Math.round(state.currentTime)}s.png`;
-      link.href = capCanvas.toDataURL('image/png');
+      link.download = `rcngc_frame_${Math.round(state.currentTime)}s.png`;
+      link.href = canvas.toDataURL('image/png');
       link.click();
     }
 
@@ -2535,18 +2820,35 @@
     // UTILIDADES DE FORMATO
     // =========================================================================
     function formatVideoTime(sec) {
-      if (isNaN(sec) || sec < 0) sec = 0;
+      if (isNaN(sec) || sec < 0) return '00:00';
       const m = Math.floor(sec / 60);
       const s = Math.floor(sec % 60);
-      const ms = Math.floor((sec % 1) * 10);
-      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${ms}`;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
 
-    function formatDuration(sec) {
-      if (isNaN(sec) || sec < 0) return '0m';
-      const m = Math.floor(sec / 60);
-      return `${m}m`;
+    // =========================================================================
+    // ARRANQUE DE LA APLICACIÓN
+    // =========================================================================
+    async function initApp() {
+      initCoachAuth();
+      initEventListeners();
+      resizeCanvases();
+      window.addEventListener('resize', resizeCanvases);
+
+      // Iniciar bucle de reproducción continuo a 60 FPS
+      requestAnimationFrame(playbackLoop);
+
+      // Restaurar automáticamente la sesión guardada desde IndexedDB/localStorage
+      await restoreSessionFromStorage();
+      updateStorageBadges();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
     }
   </script>
+
 </body>
 </html>
