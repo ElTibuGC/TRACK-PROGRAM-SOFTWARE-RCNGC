@@ -137,6 +137,28 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.9.8] - Doble Opción de Ingesta CSV: Local y Biblioteca Cloud de Entrenamientos
+* **Doble Opción de Carga de Telemetría**: La tarjeta de CSV ahora ofrece dos vías directas de ingesta:
+  1. **📂 Subir desde PC**: Selección tradicional de archivos `.csv` en local o arrastrar/soltar desde el explorador de Windows.
+  2. **☁️ Biblioteca Entrenamientos (Base de Datos Central)**: Acceso directo a la base de datos Turso SQLite del RCNGC sin necesidad de descargar archivos al ordenador.
+* **Explorador y Selector de Barcos de la Biblioteca**:
+  * Ventana modal interactiva que lista todos los entrenamientos y regatas guardados en la nube del club con fecha, título, viento y número de barcos.
+  * Buscador rápido en tiempo real por fecha (ej: `2026-11-07`), título, nombre del regatista o número de vela.
+  * Selector por barco individual: al desplegar cualquier sesión (ej: *Entrenamiento Optimist Gando Noviembre*), muestra los barcos participantes (*Alba Ponce*, *María Guindín*, *Valentina Suárez*, *Juan Cebriá*, etc.).
+  * Al hacer clic en un barco, descarga y procesa automáticamente su telemetría GPS, calculando velocidades (SOG), rumbos (COG) y escoras, y lo sincroniza de inmediato con el vídeo.
+* **Persistencia Completa de Barcos Cloud**: Los datos del barco seleccionado de la biblioteca se serializan en IndexedDB, por lo que permanecen cargados y listos incluso tras pulsar **F5** o cerrar el navegador.
+
+### [v1.9.7] - Sincronización Inteligente de Vídeos de WhatsApp y Navegación Temporal
+* **Diagnóstico y Tratamiento Especial para Vídeos de WhatsApp**: WhatsApp comprime los vídeos compartidos, elimina los átomos de fecha de grabación original (`mvhd creation = 0`) y los renombra con la fecha y hora de descarga. El sistema ahora detecta automáticamente vídeos provenientes de WhatsApp, omite marcas falsas y sitúa el vídeo de forma inteligente al inicio del tramo activo de navegación en el agua (evitando la zona de rampa a 0 nudos).
+* **Línea Temporal de Sesión Interactiva (Clic & Drag)**: La barra completa de la regata (de hasta 6 horas) ahora es 100% interactiva:
+  * **Clic en cualquier segundo**: Permite hacer clic en cualquier punto de la línea temporal para posicionar la ventana del vídeo en ese instante.
+  * **Arrastre fluido**: El marcador del vídeo (`🎬 VÍDEO`) se puede arrastrar con el ratón a lo largo de toda la regata.
+  * **Marcas horarias y cuadrícula**: Muestra guías verticales horarias (`12:00`, `13:00`, `14:00`, etc.) para identificar de un vistazo las diferentes fases del entrenamiento.
+  * **Tooltip informativo al pasar el ratón**: Muestra la hora real, la velocidad en nudos y el rumbo de la embarcación en cualquier punto de la sesión antes de hacer clic.
+* **Buscador Directo por Hora Real del Día**: Incorporado un selector horario (`🕐 Hora vídeo: [ 14 : 30 : 00 ] [📍 Ir a hora]`) para saltar de inmediato a la hora aproximada en la que el entrenador recuerda haber grabado la maniobra.
+* **Sincronización por Selección en el Mini-Mapa**: Al hacer clic sobre cualquier punto del recorrido en el mini-mapa náutico, el vídeo se sincroniza instantáneamente con ese momento geográfico de la regata.
+* **Saltos Rápidos de Navegación**: Añadidos botones de salto rápido de `±1 min` y `±5 min` para avanzar o retroceder con agilidad en sesiones de larga duración.
+
 ### [v1.9.6] - Persistencia Total en Navegador (IndexedDB) y Flujo de Trabajo Real
 * **Persistencia Total sin Pérdida de Datos (Resistente a F5)**: Integración del motor de persistencia local mediante `IndexedDB` y `localStorage`. Si el usuario pulsa **F5**, recarga la página o cierra la pestaña, el vídeo subido, el archivo CSV de sensores, las 5.400+ lecturas de telemetría, el desfase de sincronización, el rumbo del viento y el punto exacto de reproducción se restauran de forma instantánea y automática.
 * **Flujo 100% Real (Sin Simulaciones)**: Se han eliminado por completo las opciones de vídeo simulado y datos prefabricados para centrar toda la experiencia en archivos reales grabados por entrenadores y regatistas en el agua.
