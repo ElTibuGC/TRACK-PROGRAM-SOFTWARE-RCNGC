@@ -137,6 +137,102 @@ Diseñada para compartir entrenamientos y regatas entre entrenadores y regatista
 
 Aquí se irán anotando todas las novedades, mejoras y correcciones que se hagan en el programa:
 
+### [v1.9.22] - Modo de Visualización 1 vs 1 (Match Race con Telemetría Simultánea)
+* **Modo 1 vs 1 Integrado**:
+  * Nuevo selector de modo en la cabecera de carga: **Modo Individual** vs **⚔️ Modo 1 vs 1**.
+  * Incorporadas dos tarjetas de telemetría independientes:
+    * **Barco 1 (Cian `#00f0ff`)**: ranura principal de datos con campo editable de nombre o número de vela.
+    * **Barco 2 (Ámbar `#fbbf24`)**: segunda ranura con subida dedicada, integración con la Biblioteca en la Nube RCNGC y botón para vaciar/desactivar.
+  * **Carga Dual por Arrastre (Drag & Drop Inteligente)**:
+    * Al arrastrar y soltar dos archivos CSV a la vez en cualquier punto del visor, el programa asigna automáticamente el primero al Barco 1 y el segundo al Barco 2, activando el modo 1 vs 1 sin pasos adicionales.
+* **HUD Dual Sincronizado en Tiempo Real (60 FPS)**:
+  * **Banda Izquierda (Barco 1)**: Velocidad SOG, VMG, ángulo de viento real TWA, amura (ESTR/BAB), modo (Ceñida/Través/Largo/Empopada), escora y trim.
+  * **Banda Derecha (Barco 2)**: Panel simétrico con toda la telemetría del segundo barco identificada con el color ámbar reglamentario.
+  * **Centro (Recuadro Match Race 1 vs 1)**: Comparador instantáneo de rendimiento con cálculo en tiempo real de `Δ VMG`, `Δ SOG` e indicador de liderazgo (`🏆 [Barco] lidera (+X.X kn VMG)` o `⚖️ Igualados`).
+  * Sincronización absoluta por marcas temporales GPS (epoch ms), garantizando correspondencia temporal idéntica entre ambos barcos en cualquier punto del vídeo.
+* **Mini-Mapa Náutico Multitrack**:
+  * Visualización simultánea del track del Barco 1 (cian) y Barco 2 (ámbar).
+  * Marcadores navales duales con orientación de proa (HDG) que se desplazan sincronizados con el reproductor de vídeo.
+* **Exportación y Grabación de Vídeo a 60 FPS con Telemetría Dual**:
+  * El motor de renderizado a 60 FPS adapta el overlay gráfico cuando el modo 1 vs 1 está activo, estampando con máxima nitidez el panel del Barco 1 a la izquierda, el panel del Barco 2 a la derecha, el comparador central Match Race y el reloj GPS sincronizado.
+
+### [v1.9.21] - Motor de Exportación de Vídeo a 60 FPS Pro y Calidad Máxima 1:1
+* **Grabación de Vídeo a 60 FPS Nativos**:
+  * Actualizado el motor de captura de lienzo (`canvas.captureStream(60)`) para generar vídeos de telemetría a **60 fotogramas por segundo**.
+  * Fluidez de movimiento cinematográfica que permite analizar el cabeceo del barco sobre las olas, la respuesta de la orza y las variaciones instantáneas de escora con el doble de precisión temporal.
+* **Eliminación de la Opción Reducida (WhatsApp / 720p) y Enfoque en Máxima Calidad**:
+  * Retirada la opción comprimida a 720p para priorizar la máxima fidelidad visual y resolución.
+  * Incorporadas las opciones Pro con altas tasas de bits:
+    * **1080p Full HD · 60 FPS**: 1920x1080 a 60 FPS con tasa de bits de grado broadcast (15 Mbps).
+    * **Resolución Original Nativa · 60 FPS**: Preserva el 100% de la resolución nativa del archivo subido (1080p, 2K o 4K) sin reescalado ni pérdida con tasa de hasta 24 Mbps.
+  * Detección y dimensionado automático en píxeles pares para compatibilidad total con códecs H.264 / AVC1 y VP9.
+
+### [v1.9.20] - Corrección de Contraste y Superposición en Tarjetas de Vídeo Exportado (SOG, TWA y Escora)
+* **Corrección Crítica de Superposición de Trazados en Canvas (Path Accumulation)**:
+  * Solucionado el problema por el cual los textos y números de las tarjetas de telemetría (especialmente Velocidad SOG y TWA) se oscurecían o quedaban completamente negros en el vídeo descargado.
+  * Se corrigió la acumulación del trazado vectorial en Canvas (`ctx.roundRect`) incorporando llamadas explícitas a `ctx.beginPath()` antes de cada tarjeta, impidiendo que el relleno oscuro semitransparente de una tarjeta se re-pintara encima de los textos ya dibujados de las tarjetas anteriores.
+* **Diseño y Legibilidad Cinematográfica de Alto Contraste**:
+  * **Tarjetas de datos**: Fondo oscuro sólido (`rgba(6, 16, 25, 0.94)`) con borde cian/ámbar/esmeralda luminoso (`1.4px`) y sombra sutil para separar limpiamente la información de las olas, espuma o contraluces marinos.
+  * **Tipografía y números**: Números de gran tamaño en blanco puro (`#ffffff`) con sombra de texto proyectada (`rgba(0,0,0,0.9)`) y fuentes universales de trazo grueso para evitar artefactos de compresión YUV420p en códecs MP4 y WebM.
+  * **Pastilla de Amura (ESTR / BAB)**: Convertida en una pastilla sólida brillante con borde y texto blanco centrado (Verde esmeralda `#059669` para Estribor, Rojo carmesí `#e11d48` para Babor).
+  * **Unidades y etiquetas claras**: Subtítulos de unidades (`KTS`, `VMG: +X.X kts`, `CEÑIDA/EMPOPADA`) en gris plata (`#cbd5e1` / `#94a3b8`) con peso en negrita perfectamente legibles.
+
+### [v1.9.19] - Inclinómetro de Escora Limpio, Simple y de Alta Visibilidad
+* **Simplificación y Máxima Claridad Visual del Casco**:
+  * Eliminados los micro-detalles interiores que sobrecargaban la lectura a pequeña escala (retirados los flotadores inflables circulares, las cinchas, las esquinas punteadas y la botavara diagonal).
+  * Rediseñada la figura con una silueta de casco de Optimist pura, limpia y con alto contraste: **fondo plano**, **pantoques vivos** y costados abiertos.
+  * **Orza blanca de alta visibilidad**: Sobresale limpia y recta hacia el agua, funcionando como un péndulo visual inmediato que delata el ángulo de escora exacto respecto a la línea de flotación.
+  * **Mástil vertical limpio**: Mástil recto sin ramas con puntero superior ámbar que barre el arco graduado superior con sus zonas objetivo en verde esmeralda (3° - 6°).
+  * Corrección aplicada tanto en el instrumento interactivo de la pantalla como en el motor de renderizado de exportación de vídeo.
+
+### [v1.9.18] - Exportación y Descarga de Vídeo con Telemetría Integrada (SOG, TWA, Escora y Reloj)
+* **Motor de Renderizado y Grabación 100% en el Navegador**:
+  * Incorporada la función **`📥 Descargar Vídeo`** accesible tanto desde la barra de controles del reproductor como desde la cabecera de sincronización.
+  * Permite generar un archivo de vídeo nuevo (`.mp4` o `.webm`) que quema de forma permanente y fotograma a fotograma todos los datos del sensor y el GPS sobre la imagen real grabada.
+* **Modal Completo de Configuración de Exportación**:
+  * **Selección de tramo**: Exportar el vídeo completo o definir un tramo personalizado (*Desde* [ `MM:SS` ] *Hasta* [ `MM:SS` ]) con botón de marcado rápido para usar el segundo actual.
+  * **Resolución seleccionable**: **720p HD** (ligero y optimizado para compartir al instante por WhatsApp o móvil) o **1080p Full HD** (máxima nitidez para debriefing o proyector).
+  * **Capas telemétricas configurables**:
+    * `Velocidad SOG & VMG`: Recuadro de nudos en tiempo real y rendimiento al viento.
+    * `TWA & Amuras`: Ángulo de viento real, amura (Estribor / Babor) y modo de navegación (Ceñida, Través, Largo, Empopada).
+    * `Inclinómetro Optimist`: Ángulo de escora, trim de cabeceo y silueta auténtica del barco Optimist basculando en tiempo real con la ola y la racha.
+    * `Reloj GPS Sincronizado`: Hora exacta del día con soporte para hora local y UTC.
+    * `Marca Oficial RCNGC`: Encabezado identificativo del Equipo de Regatas Optimist.
+* **Barra de Progreso y Descarga Automática**:
+  * Renderiza a 30 FPS con barra de porcentaje en vivo, tiempo transcurrido y botón para detener o recortar en cualquier segundo.
+  * Al finalizar, inicia automáticamente la descarga del archivo de vídeo con el nombre de la sesión saneado.
+
+### [v1.9.17] - Modo Pantalla Completa y Barra de Reproducción Estilo YouTube con Atajos y Auto-ocultación
+* **Modo Pantalla Completa Cinemático**:
+  * Incorporado el botón **`⛶ Pantalla completa`** en la barra de controles del reproductor para maximizar el vídeo al 100% de la pantalla o proyector.
+  * Compatible con el estándar Web Fullscreen API, doble clic en el vídeo o pulsando la tecla rápida **`F`**.
+* **Barra Flotante Superpuesta Estilo YouTube**:
+  * En pantalla completa, la barra de reproducción se sitúa como una capa flotante con degradado oscuro inferior semitransparente, sin tapar el vídeo.
+  * **Barra de desplazamiento dinámico (Scrubber)**: Línea de progreso interactiva con efecto de brillo cian (`#00f0ff`) que refleja con exactitud el tramo reproducido y permite saltar a cualquier segundo arrastrando con el ratón.
+  * **Controles completos en pantalla**: Botón Play/Pause con indicador central animado que parpadea al pausar/reanudar, saltos rápidos de **`-5s`** y **`+5s`**, avance fotograma a fotograma (`|◀`, `▶|`), selector de velocidades (**0.25x**, **0.5x**, **1x**, **1.5x**, **2x**), conmutador de modo bucle (`🔁`), herramientas de HUD y reloj GPS sincronizado.
+* **Auto-ocultación Inteligente por Inactividad**:
+  * Durante la reproducción en pantalla completa, si el entrenador no mueve el ratón durante 2,8 segundos, la barra de controles y el cursor se desvanecen suavemente para no interferir en el análisis de la maniobra, y el HUD se ajusta a la base del fotograma.
+  * Al mover el cursor o pausar el vídeo, los controles reaparecen al instante. Al situar el puntero sobre la barra de controles, esta permanece fija.
+* **Atajos de Teclado Profesionales**:
+  * **Espacio** o **`K`**: Reproducir / Pausar.
+  * **`F`**: Entrar / Salir de pantalla completa.
+  * **Flecha izquierda (`←`) / Flecha derecha (`→`)**: Retroceder / Avanzar 5 segundos.
+  * **Coma (`,`) / Punto (`.`)**: Retroceder / Avanzar 1 fotograma (33 ms).
+
+### [v1.9.16] - Rediseño Realista del Casco de Optimist (IOD95) en Inclinómetro y Reubicación de Hora Fuera del Vídeo
+* **Casco de Optimist (IOD95) Fiel y Detallado en el Inclinómetro**:
+  * Sustituido el trapecio esquemático previo por una sección transversal auténtica del casco de un International Optimist Dinghy.
+  * Incorpora la forma reglamentaria de fondo plano con pantoques vivos (*hard chines*), costados abiertos inclinados y bordón perimetral de regala (*gunwale rubrail*).
+  * Incluye la bañera interior detallada con los dos flotadores inflables laterales característicos (*airbags*) con sus correspondientes cinchas de sujeción oscuras, la bancada transversal (*mast thwart*) y la caja de orza.
+  * Añadida la orza (*daggerboard*) sobresaliendo por el fondo del casco hacia el agua, permitiendo una lectura intuitiva y náutica del ángulo de escora respecto al plano del mar.
+  * Aparejo completo de Optimist con mástil vertical sin obenques, botavara/percha diagonal y perol/tope de mástil.
+  * Escala graduada con marcas a -20°, -10°, 0°, +10°, +20° y zonas de escora óptima (3° a 6°).
+* **Eliminación del Texto «Zona óptima Optimist: 3° - 5°»**:
+  * Retirado el texto explicativo de la tarjeta de Escora Dinámica para mantener una interfaz limpia y directa.
+* **Hora GPS / Sensor Fuera del Vídeo**:
+  * Extraído el recuadro de hora que antes se superponía sobre la esquina inferior del vídeo, dejando el fotograma completamente despejado para el análisis visual de la navegación.
+  * Reubicada la hora de telemetría GPS en una pastilla (*pill*) en la barra de controles inferior del reproductor, actualizándose sincronizadamente al milisegundo.
+
 ### [v1.9.15] - Corrección del Botón de Cierre (✕) en Recuadros de Telemetría Fijados
 * **Cierre Inmediato de Tarjetas Fijadas de Telemetría**:
   * Solucionado el problema por el cual el botón de cierre `✕` de los recuadros de barcos fijados en el mapa interactivo no respondía al hacer clic.

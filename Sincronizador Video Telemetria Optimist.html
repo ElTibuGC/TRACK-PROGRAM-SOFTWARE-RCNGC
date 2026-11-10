@@ -669,6 +669,125 @@
     }
     .time-readout strong { color: #fff; }
 
+    /* =========================================================================
+       MODO PANTALLA COMPLETA ESTILO YOUTUBE
+       ========================================================================= */
+    .video-container:fullscreen,
+    .video-container:-webkit-full-screen,
+    .video-container.is-fullscreen {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      border: none !important;
+      border-radius: 0 !important;
+      background: #000 !important;
+      position: fixed !important;
+      inset: 0 !important;
+      z-index: 999999 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .video-container:fullscreen .video-canvas-stage,
+    .video-container:-webkit-full-screen .video-canvas-stage,
+    .video-container.is-fullscreen .video-canvas-stage {
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 100vh !important;
+      max-height: 100vh !important;
+      flex: 1 !important;
+      background: #000 !important;
+    }
+
+    .video-container:fullscreen #mainVideo,
+    .video-container:-webkit-full-screen #mainVideo,
+    .video-container.is-fullscreen #mainVideo {
+      width: 100% !important;
+      height: 100% !important;
+      max-height: 100vh !important;
+      object-fit: contain !important;
+    }
+
+    /* Barra flotante estilo YouTube en pantalla completa */
+    .video-container:fullscreen .player-controls,
+    .video-container:-webkit-full-screen .player-controls,
+    .video-container.is-fullscreen .player-controls {
+      position: absolute !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      z-index: 50 !important;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.94) 0%, rgba(0, 0, 0, 0.72) 65%, transparent 100%) !important;
+      border-top: none !important;
+      padding: 30px 24px 16px 24px !important;
+      gap: 10px !important;
+      transition: opacity 0.28s ease, transform 0.28s ease !important;
+    }
+
+    /* Auto-ocultación por inactividad de ratón (estilo YouTube) */
+    .video-container.user-idle:fullscreen .player-controls,
+    .video-container.user-idle:-webkit-full-screen .player-controls,
+    .video-container.user-idle.is-fullscreen .player-controls {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateY(12px) !important;
+    }
+
+    .video-container.user-idle:fullscreen,
+    .video-container.user-idle:-webkit-full-screen,
+    .video-container.user-idle.is-fullscreen {
+      cursor: none !important;
+    }
+
+    /* HUD en pantalla completa */
+    .video-container:fullscreen .video-hud-overlay,
+    .video-container:-webkit-full-screen .video-hud-overlay,
+    .video-container.is-fullscreen .video-hud-overlay {
+      padding: 20px 24px !important;
+      transition: bottom 0.28s ease !important;
+    }
+
+    .video-container:fullscreen .video-hud-overlay.hud-pos-bottom,
+    .video-container:-webkit-full-screen .video-hud-overlay.hud-pos-bottom,
+    .video-container.is-fullscreen .video-hud-overlay.hud-pos-bottom {
+      bottom: 78px !important;
+    }
+
+    .video-container.user-idle:fullscreen .video-hud-overlay.hud-pos-bottom,
+    .video-container.user-idle:-webkit-full-screen .video-hud-overlay.hud-pos-bottom,
+    .video-container.user-idle.is-fullscreen .video-hud-overlay.hud-pos-bottom {
+      bottom: 18px !important;
+    }
+
+    /* Indicador central animado Play/Pause estilo YouTube */
+    .video-center-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.7);
+      width: 72px;
+      height: 72px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 32px;
+      pointer-events: none;
+      z-index: 35;
+      opacity: 0;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .video-center-indicator.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.15);
+    }
+
     /* DASHBOARD DE TELEMETRÍA LATERAL */
     .telemetry-dashboard {
       display: flex;
@@ -738,7 +857,7 @@
 
     /* INCLINÓMETRO DE ESCORA (HEEL) */
     .heel-visual-wrap {
-      height: 70px;
+      height: 82px;
       position: relative;
       display: flex;
       align-items: center;
@@ -747,7 +866,7 @@
     }
     .heel-canvas {
       width: 100%;
-      height: 70px;
+      height: 82px;
       display: block;
     }
 
@@ -1342,6 +1461,9 @@
       <a href="../analizador-entrenamientos/index.html" onclick="goToAnalizador(event)" class="suite-pill" title="Abrir Analizador de Entrenamientos">
         📊 Analizador Entrenamientos
       </a>
+      <a href="../Calendario e Historico Optimist.html" class="suite-pill" title="Abrir Calendario Deportivo y Big Data">
+        📅 Calendario & Big Data
+      </a>
       <a href="../gps-salidas/index.html" onclick="goToSalidas(event)" target="_blank" class="suite-pill" title="Abrir App Salidas GPS">
         📲 Salidas GPS
       </a>
@@ -1373,8 +1495,20 @@
   <!-- 2. CONTENEDOR PRINCIPAL -->
   <main class="main-wrap">
 
+    <!-- SELECTOR DE MODO: BARCO INDIVIDUAL VS MODO 1 VS 1 -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;background:var(--sub);border:1px solid var(--line);border-radius:10px;padding:8px 14px;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:0.05em">MODO DE ANÁLISIS:</span>
+        <button type="button" class="btn-quick-sample" id="btnModeSingle" style="background:var(--cyan);color:#000;font-weight:800;border:none">⛵ Barco Individual</button>
+        <button type="button" class="btn-quick-sample" id="btnModeVs" style="background:rgba(8,18,24,0.7);color:var(--dim);border:1px solid var(--line);font-weight:700">⚔️ Modo 1 vs 1</button>
+      </div>
+      <div style="font-size:11px;color:var(--dim)" id="modeHelpText">
+        💡 En <strong>Modo 1 vs 1</strong> puedes comparar dos barcos simultáneamente en el mismo vídeo: Barco 1 a la izquierda y Barco 2 a la derecha.
+      </div>
+    </div>
+
     <!-- SECCIÓN INGESTA DE ARCHIVOS -->
-    <section class="ingest-grid">
+    <section class="ingest-grid" id="ingestGrid">
       <!-- Tarjeta Vídeo -->
       <div class="upload-card" id="cardVideoUpload" title="Arrastra un vídeo o haz clic para seleccionarlo">
         <div class="upload-icon" id="videoIcon">📹</div>
@@ -1392,22 +1526,47 @@
         </div>
       </div>
 
-      <!-- Tarjeta Telemetría CSV -->
-      <div class="upload-card" id="cardCsvUpload" title="Arrastra un archivo CSV o haz clic para seleccionarlo">
-        <div class="upload-icon" id="csvIcon">📈</div>
+      <!-- Tarjeta Telemetría CSV 1 (Barco 1 · Izquierda · Cian) -->
+      <div class="upload-card" id="cardCsvUpload" style="border-color:rgba(0,240,255,0.4)" title="Arrastra un archivo CSV o haz clic para seleccionarlo">
+        <div class="upload-icon" id="csvIcon" style="color:#00f0ff">⛵</div>
         <div class="upload-info">
-          <div class="upload-title">
-            <span>Telemetría CSV</span>
-            <span id="csvBadge" style="font-size:9.5px;background:var(--sub);padding:1px 5px;border-radius:4px;color:var(--dim)">SOG, Escora, Trim</span>
+          <div class="upload-title" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span id="titleCsvA">Telemetría Barco 1</span>
+            <input type="text" id="inputBoatNameA" value="Barco 1" style="background:#03080b;border:1px solid rgba(0,240,255,0.4);border-radius:4px;padding:2px 8px;color:#00f0ff;font-size:11px;font-weight:700;width:105px" title="Nombre o vela del Barco 1 (ej. ESP 3140)">
+            <span id="csvBadge" style="font-size:9.5px;background:rgba(0,240,255,0.15);border:1px solid rgba(0,240,255,0.3);padding:1px 5px;border-radius:4px;color:#00f0ff">Izquierda</span>
           </div>
-          <div class="upload-desc" id="csvDesc">Sube un CSV desde tu ordenador o selecciónalo de la biblioteca central</div>
+          <div class="upload-desc" id="csvDesc">Sube el CSV del Barco 1 desde tu ordenador o selecciónalo de la biblioteca</div>
         </div>
         <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-          <button type="button" class="btn-quick-sample btn-primary-action" id="btnPickCsv" title="Elegir archivo CSV de telemetría desde tu ordenador">
-            📂 Subir desde PC
+          <button type="button" class="btn-quick-sample btn-primary-action" id="btnPickCsv" title="Elegir archivo CSV de telemetría para Barco 1">
+            📂 Subir CSV 1
           </button>
-          <button type="button" class="btn-quick-sample btn-library-action" id="btnOpenCloudLibrary" title="Elegir una sesión de entrenamiento y barco de la base de datos central">
-            ☁️ Biblioteca Entrenamientos
+          <button type="button" class="btn-quick-sample btn-library-action" id="btnOpenCloudLibrary" title="Elegir Barco 1 de la biblioteca central">
+            ☁️ Biblioteca
+          </button>
+        </div>
+      </div>
+
+      <!-- Tarjeta Telemetría CSV 2 (Barco 2 · Derecha · Ámbar) - Visible en Modo 1 vs 1 -->
+      <div class="upload-card" id="cardCsvUploadB" style="display:none;border-color:rgba(245,158,11,0.4)" title="Arrastra el CSV del segundo barco o haz clic para seleccionarlo">
+        <div class="upload-icon" id="csvIconB" style="color:#fbbf24">⛵</div>
+        <div class="upload-info">
+          <div class="upload-title" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span>Telemetría Barco 2</span>
+            <input type="text" id="inputBoatNameB" value="Barco 2" style="background:#03080b;border:1px solid rgba(245,158,11,0.4);border-radius:4px;padding:2px 8px;color:#fbbf24;font-size:11px;font-weight:700;width:105px" title="Nombre o vela del Barco 2 (ej. ESP 2890)">
+            <span id="csvBadgeB" style="font-size:9.5px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);padding:1px 5px;border-radius:4px;color:#fbbf24">Derecha</span>
+          </div>
+          <div class="upload-desc" id="csvDescB">Sube el CSV del Barco 2 desde tu ordenador o selecciónalo de la biblioteca</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <button type="button" class="btn-quick-sample btn-primary-action" id="btnPickCsvB" style="background:rgba(245,158,11,0.2);color:#fbbf24;border-color:rgba(245,158,11,0.4)" title="Elegir archivo CSV de telemetría para Barco 2">
+            📂 Subir CSV 2
+          </button>
+          <button type="button" class="btn-quick-sample btn-library-action" id="btnOpenCloudLibraryB" title="Elegir Barco 2 de la biblioteca central">
+            ☁️ Biblioteca
+          </button>
+          <button type="button" class="btn-quick-sample" id="btnClearBoatB" style="color:#f43f5e;border-color:rgba(244,63,94,0.3);display:none" title="Quitar Barco 2">
+            ✕ Quitar
           </button>
         </div>
       </div>
@@ -1416,6 +1575,7 @@
     <!-- Inputs ocultos fuera de las tarjetas -->
     <input type="file" id="inputVideo" accept="video/mp4,video/webm,video/quicktime,video/x-m4v,video/*" style="display:none">
     <input type="file" id="inputCsv" accept=".csv,.txt,text/csv,text/plain" style="display:none">
+    <input type="file" id="inputCsvB" accept=".csv,.txt,text/csv,text/plain" style="display:none">
 
     <!-- BARRA DE CONTROL DE SINCRONIZACIÓN TEMPORAL -->
     <section class="sync-dock">
@@ -1426,6 +1586,9 @@
             Carga un vídeo y un CSV para sincronizar métricas en tiempo real.
           </span>
           <span id="sessionStorageBadge" class="session-badge" style="display:none">💾 Sesión persistente activa</span>
+          <button type="button" class="ctrl-btn" id="btnExportVideoTop" style="display:none;background:rgba(16,185,129,0.18);border:1px solid rgba(16,185,129,0.45);color:#34d399;font-weight:700;padding:2px 9px;font-size:11px" title="Exportar y descargar vídeo con telemetría sobreimpresa">
+            📥 Descargar Vídeo
+          </button>
           <button type="button" class="btn-clear-session" id="btnClearSession" title="Vaciar la sesión guardada y reiniciar limpio" style="display:none">
             🗑️ Nueva sesión
           </button>
@@ -1488,9 +1651,12 @@
     <!-- REPRODUCTOR Y DASHBOARD DE TELEMETRÍA -->
     <div class="viewer-layout">
       <!-- Columna Izquierda: Reproductor de Vídeo + HUD -->
-      <div class="video-container">
+      <div class="video-container" id="videoContainer">
         <div class="video-canvas-stage" id="videoStage">
           <video id="mainVideo" playsinline preload="auto"></video>
+          <div class="video-center-indicator" id="videoCenterIndicator" style="display:none">
+            <span id="centerIndicatorIcon">▶</span>
+          </div>
           <div class="video-placeholder" id="videoPlaceholder" title="Haz clic o arrastra un vídeo aquí">
             <div style="font-size:44px;margin-bottom:8px">🎬</div>
             <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:4px">Esperando vídeo de la sesión</div>
@@ -1507,60 +1673,106 @@
 
             <!-- Fila Inferior (donde se agrupan todos los recuadros compactos) -->
             <div class="hud-row-bottom" id="hudRowBottom">
+              <!-- GRUPO IZQUIERDA: BARCO 1 -->
               <div class="hud-bottom-group-left" id="hudBottomGroupLeft">
-                <!-- Recuadro 1: Velocidad GPS & VMG & Polar -->
-                <div class="hud-box" id="hudBoxSog">
-                  <span style="font-size:9.5px;color:#00f0ff;font-weight:700;letter-spacing:0.06em">VELOCIDAD GPS</span>
-                  <div style="display:flex;align-items:baseline;gap:4px">
-                    <span id="hudSog" style="font-family:var(--f-display);font-size:32px;font-weight:700;line-height:1">0.0</span>
-                    <span style="font-size:11px;color:var(--dim)">KTS</span>
-                  </div>
-                  <div style="font-size:10px;color:var(--dim);display:flex;align-items:center;gap:6px">
-                    <span>VMG: <strong id="hudVmg" style="color:#fff">0.0</strong> kts</span>
-                    <span style="color:rgba(255,255,255,0.25)">|</span>
-                    <span>POLAR: <strong id="hudVpp" style="color:#10b981">--%</strong></span>
-                  </div>
-                </div>
-
-                <!-- Recuadro 2: TWA -->
-                <div class="hud-box" id="hudBoxTwa">
-                  <span style="font-size:9.5px;color:#f59e0b;font-weight:700;letter-spacing:0.06em">TWA</span>
-                  <div style="display:flex;align-items:baseline;gap:4px">
-                    <span id="hudTwa" style="font-family:var(--f-display);font-size:30px;font-weight:700;line-height:1">000°</span>
-                    <span id="hudTack" style="font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(16,185,129,0.2);color:#34d399">ESTR</span>
-                  </div>
-                  <span id="hudMode" style="font-size:10px;color:var(--dim)">CEÑIDA</span>
-                </div>
-
-                <!-- Recuadro 3: Escora & Trim -->
-                <div class="hud-box" id="hudBoxHeel">
-                  <div style="display:flex;align-items:center;gap:10px">
-                    <div>
-                      <span style="font-size:9.5px;color:#10b981;font-weight:700">ESCORA</span>
-                      <div id="hudHeel" style="font-family:var(--f-mono);font-size:16px;font-weight:700">0.0°</div>
+                <div class="hud-boat-label" id="hudBoatLabelA" style="display:none;font-size:10px;font-weight:800;color:#00f0ff;margin-bottom:4px;letter-spacing:0.04em">⛵ BARCO 1: ESP 3140</div>
+                <div style="display:flex;align-items:flex-end;gap:8px">
+                  <!-- Recuadro 1: Velocidad GPS & VMG & Polar -->
+                  <div class="hud-box" id="hudBoxSog">
+                    <span style="font-size:9.5px;color:#00f0ff;font-weight:700;letter-spacing:0.06em">VELOCIDAD GPS</span>
+                    <div style="display:flex;align-items:baseline;gap:4px">
+                      <span id="hudSog" style="font-family:var(--f-display);font-size:32px;font-weight:700;line-height:1">0.0</span>
+                      <span style="font-size:11px;color:var(--dim)">KTS</span>
                     </div>
-                    <div style="width:1px;height:22px;background:rgba(255,255,255,0.15)"></div>
-                    <div>
-                      <span style="font-size:9.5px;color:#38bdf8;font-weight:700">TRIM</span>
-                      <div id="hudTrim" style="font-family:var(--f-mono);font-size:16px;font-weight:700">0.0°</div>
+                    <div style="font-size:10px;color:var(--dim);display:flex;align-items:center;gap:6px">
+                      <span>VMG: <strong id="hudVmg" style="color:#fff">0.0</strong> kts</span>
+                      <span style="color:rgba(255,255,255,0.25)">|</span>
+                      <span>POLAR: <strong id="hudVpp" style="color:#10b981">--%</strong></span>
+                    </div>
+                  </div>
+
+                  <!-- Recuadro 2: TWA -->
+                  <div class="hud-box" id="hudBoxTwa">
+                    <span style="font-size:9.5px;color:#f59e0b;font-weight:700;letter-spacing:0.06em">TWA</span>
+                    <div style="display:flex;align-items:baseline;gap:4px">
+                      <span id="hudTwa" style="font-family:var(--f-display);font-size:30px;font-weight:700;line-height:1">000°</span>
+                      <span id="hudTack" style="font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(16,185,129,0.2);color:#34d399">ESTR</span>
+                    </div>
+                    <span id="hudMode" style="font-size:10px;color:var(--dim)">CEÑIDA</span>
+                  </div>
+
+                  <!-- Recuadro 3: Escora & Trim -->
+                  <div class="hud-box" id="hudBoxHeel">
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div>
+                        <span style="font-size:9.5px;color:#10b981;font-weight:700">ESCORA</span>
+                        <div id="hudHeel" style="font-family:var(--f-mono);font-size:16px;font-weight:700">0.0°</div>
+                      </div>
+                      <div style="width:1px;height:22px;background:rgba(255,255,255,0.15)"></div>
+                      <div>
+                        <span style="font-size:9.5px;color:#38bdf8;font-weight:700">TRIM</span>
+                        <div id="hudTrim" style="font-family:var(--f-mono);font-size:16px;font-weight:700">0.0°</div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Recuadro 4: Hora Telemetría UTC -->
-              <div class="hud-bottom-group-right" id="hudBottomGroupRight">
-                <div class="hud-box" id="hudBoxTime">
-                  <span style="font-size:9.5px;color:var(--dim)">HORA GPS / SENSOR</span>
-                  <span id="hudUtcTime" style="font-family:var(--f-mono);font-size:13px;font-weight:600;color:#00f0ff">--:--:--.-</span>
+              <!-- GRUPO CENTRO: COMPARATIVA MATCH RACE (Solo en Modo 1 vs 1) -->
+              <div class="hud-bottom-group-center" id="hudBottomGroupCenter" style="display:none;flex-direction:column;align-items:center;background:rgba(6,16,25,0.92);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:6px 12px;margin:0 10px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.5)">
+                <span style="font-size:9px;color:#fbbf24;font-weight:800;letter-spacing:0.06em">⚔️ MATCH RACE 1 vs 1</span>
+                <div id="hudVsDeltaVmg" style="font-size:14px;font-weight:800;font-family:var(--f-mono);color:#fff">Δ VMG: 0.0 kts</div>
+                <span id="hudVsLeader" style="font-size:9.5px;font-weight:700;color:#34d399">Empatados</span>
+              </div>
+
+              <!-- GRUPO DERECHA: BARCO 2 (Solo en Modo 1 vs 1) -->
+              <div class="hud-bottom-group-right" id="hudBottomGroupRight" style="display:none;flex-direction:column;align-items:flex-end">
+                <div class="hud-boat-label" id="hudBoatLabelB" style="font-size:10px;font-weight:800;color:#fbbf24;margin-bottom:4px;letter-spacing:0.04em">⛵ BARCO 2: ESP 2890</div>
+                <div style="display:flex;align-items:flex-end;gap:8px">
+                  <!-- Recuadro 1: Velocidad Barco 2 -->
+                  <div class="hud-box" id="hudBoxSogB" style="border-color:rgba(245,158,11,0.4)">
+                    <span style="font-size:9.5px;color:#fbbf24;font-weight:700;letter-spacing:0.06em">VELOCIDAD GPS</span>
+                    <div style="display:flex;align-items:baseline;gap:4px">
+                      <span id="hudSogB" style="font-family:var(--f-display);font-size:32px;font-weight:700;line-height:1">0.0</span>
+                      <span style="font-size:11px;color:var(--dim)">KTS</span>
+                    </div>
+                    <div style="font-size:10px;color:var(--dim);display:flex;align-items:center;gap:6px">
+                      <span>VMG: <strong id="hudVmgB" style="color:#fff">0.0</strong> kts</span>
+                    </div>
+                  </div>
+
+                  <!-- Recuadro 2: TWA Barco 2 -->
+                  <div class="hud-box" id="hudBoxTwaB" style="border-color:rgba(245,158,11,0.4)">
+                    <span style="font-size:9.5px;color:#fbbf24;font-weight:700;letter-spacing:0.06em">TWA</span>
+                    <div style="display:flex;align-items:baseline;gap:4px">
+                      <span id="hudTwaB" style="font-family:var(--f-display);font-size:30px;font-weight:700;line-height:1">000°</span>
+                      <span id="hudTackB" style="font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(16,185,129,0.2);color:#34d399">ESTR</span>
+                    </div>
+                    <span id="hudModeB" style="font-size:10px;color:var(--dim)">CEÑIDA</span>
+                  </div>
+
+                  <!-- Recuadro 3: Escora Barco 2 -->
+                  <div class="hud-box" id="hudBoxHeelB" style="border-color:rgba(245,158,11,0.4)">
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div>
+                        <span style="font-size:9.5px;color:#34d399;font-weight:700">ESCORA</span>
+                        <div id="hudHeelB" style="font-family:var(--f-mono);font-size:16px;font-weight:700">0.0°</div>
+                      </div>
+                      <div style="width:1px;height:22px;background:rgba(255,255,255,0.15)"></div>
+                      <div>
+                        <span style="font-size:9.5px;color:#38bdf8;font-weight:700">TRIM</span>
+                        <div id="hudTrimB" style="font-family:var(--f-mono);font-size:16px;font-weight:700">0.0°</div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Controles del Reproductor -->
-        <div class="player-controls">
+        <!-- Controles del Reproductor (Estilo YouTube) -->
+        <div class="player-controls" id="playerControls">
           <div class="player-scrub-row">
             <span class="time-readout" id="videoTimeCurrent">00:00.0</span>
             <input type="range" class="player-scrubber" id="playerScrubber" min="0" max="100" value="0" step="0.01">
@@ -1570,9 +1782,11 @@
           <div class="player-btn-row">
             <!-- Grupo Play / Pause & Pasos -->
             <div class="btn-player-group">
-              <button type="button" class="ctrl-btn" id="btnStepBack" title="Retroceder 1 fotograma (33ms)">|◀</button>
-              <button type="button" class="ctrl-btn" id="btnPlayPause" style="font-weight:700;color:var(--cyan);padding:4px 14px">▶ Reproducir</button>
-              <button type="button" class="ctrl-btn" id="btnStepFwd" title="Avanzar 1 fotograma (33ms)">▶|</button>
+              <button type="button" class="ctrl-btn" id="btnSkipBack5" title="Retroceder 5 segundos (Flecha izquierda)">-5s</button>
+              <button type="button" class="ctrl-btn" id="btnStepBack" title="Retroceder 1 fotograma / 33ms (,)">|◀</button>
+              <button type="button" class="ctrl-btn" id="btnPlayPause" style="font-weight:700;color:var(--cyan);padding:4px 14px" title="Reproducir / Pausar (Espacio o K)">▶ Reproducir</button>
+              <button type="button" class="ctrl-btn" id="btnStepFwd" title="Avanzar 1 fotograma / 33ms (.)">▶|</button>
+              <button type="button" class="ctrl-btn" id="btnSkipFwd5" title="Avanzar 5 segundos (Flecha derecha)">+5s</button>
               <button type="button" class="ctrl-btn" id="btnLoop" title="Repetir en bucle">🔁 Bucle</button>
             </div>
 
@@ -1583,13 +1797,22 @@
               <button type="button" class="ctrl-btn rate-btn" data-rate="0.5">0.5x</button>
               <button type="button" class="ctrl-btn rate-btn active" data-rate="1">1x</button>
               <button type="button" class="ctrl-btn rate-btn" data-rate="1.5">1.5x</button>
+              <button type="button" class="ctrl-btn rate-btn" data-rate="2">2x</button>
             </div>
 
-            <!-- Herramientas HUD & Captura -->
+            <!-- Herramientas HUD, Captura, Pantalla Completa & Descargar -->
             <div class="btn-player-group">
               <button type="button" class="ctrl-btn" id="btnToggleHud" title="Mostrar/ocultar superposición en el vídeo">📺 HUD</button>
               <button type="button" class="ctrl-btn" id="btnHudPos" title="Cambiar ubicación de los recuadros: Abajo / Esquinas">📌 HUD Abajo</button>
               <button type="button" class="ctrl-btn" id="btnCaptureFrame" title="Capturar imagen actual con telemetría">📸 Captura</button>
+              <button type="button" class="ctrl-btn" id="btnFullscreen" style="font-weight:700;color:var(--cyan)" title="Pantalla completa estilo YouTube (Tecla F o doble clic)">⛶ Pantalla completa</button>
+              <button type="button" class="ctrl-btn" id="btnExportVideo" style="font-weight:700;color:#34d399;border-color:rgba(16,185,129,0.45)" title="Descargar vídeo con telemetría integrada (SOG, TWA, Escora)">📥 Descargar Vídeo</button>
+            </div>
+
+            <!-- Hora GPS / Sensor (fuera del vídeo) -->
+            <div class="btn-player-group" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:3px 9px;background:rgba(8,18,24,0.7);border:1px solid rgba(255,255,255,0.14);border-radius:6px" title="Hora de telemetría GPS sincronizada">
+              <span style="font-size:9.5px;color:var(--dim);font-weight:700;letter-spacing:0.04em">HORA GPS:</span>
+              <span id="hudUtcTime" style="font-family:var(--f-mono);font-size:12px;font-weight:700;color:var(--cyan)">--:--:--</span>
             </div>
           </div>
         </div>
@@ -1643,9 +1866,6 @@
                 <span id="metricHeel">0.0°</span>
                 <span class="metric-unit" id="heelSideLabel"></span>
               </div>
-              <span style="font-size:10.5px;color:var(--dim);text-align:right">
-                Zona óptima Optimist: <strong style="color:#34d399">3° - 5°</strong>
-              </span>
             </div>
             <div class="heel-visual-wrap">
               <canvas class="heel-canvas" id="heelCanvas"></canvas>
@@ -1774,6 +1994,135 @@
 
       <div class="cloud-lib-body" id="cloudLibBody">
         <div style="text-align:center;padding:32px;color:var(--dim)">⏳ Conectando con la base de datos del club...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE EXPORTACIÓN Y DESCARGA DE VÍDEO CON TELEMETRÍA INTEGRADA -->
+  <div class="cloud-lib-modal" id="exportVideoModal" role="dialog" aria-modal="true" style="display:none">
+    <div class="cloud-lib-panel" style="max-width:620px">
+      <div class="cloud-lib-header">
+        <div>
+          <div class="cloud-lib-title">
+            <span>📥 Exportar Vídeo con Telemetría</span>
+            <span style="font-size:10px;background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.45);color:#34d399;padding:1px 6px;border-radius:4px">RCNGC Suite</span>
+          </div>
+          <div class="cloud-lib-subtitle">Descarga un archivo de vídeo con todos los datos telemétricos grabados en el fotograma</div>
+        </div>
+        <button type="button" class="btn-close-modal" id="btnCloseExportModal" title="Cerrar ventana">✕</button>
+      </div>
+
+      <div style="padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:16px">
+        <!-- Rango Temporal -->
+        <div style="background:var(--sub);border:1px solid var(--line);border-radius:10px;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+            <span>⏱️ Tramo a exportar</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink);cursor:pointer">
+              <input type="radio" name="exportRangeRadio" value="full" id="exportRadioFull" checked>
+              <span>Vídeo completo (<strong id="exportFullDurationText">00:00 - 00:00</strong>)</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink);cursor:pointer">
+              <input type="radio" name="exportRangeRadio" value="custom" id="exportRadioCustom">
+              <span>Tramo personalizado:</span>
+            </label>
+            <div id="exportCustomRangeWrap" style="display:flex;align-items:center;gap:10px;margin-left:24px;opacity:0.5;pointer-events:none">
+              <div style="display:flex;align-items:center;gap:6px">
+                <span style="font-size:11px;color:var(--dim)">Desde:</span>
+                <input type="text" id="exportStartInput" value="00:00" style="width:65px;background:#03080b;border:1px solid var(--line);border-radius:5px;padding:4px 6px;color:#fff;font-family:var(--f-mono);font-size:12px;text-align:center">
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span style="font-size:11px;color:var(--dim)">Hasta:</span>
+                <input type="text" id="exportEndInput" value="00:00" style="width:65px;background:#03080b;border:1px solid var(--line);border-radius:5px;padding:4px 6px;color:#fff;font-family:var(--f-mono);font-size:12px;text-align:center">
+              </div>
+              <button type="button" class="ctrl-btn" id="btnExportSetCurrent" style="font-size:10.5px;padding:3px 8px">📍 Usar tiempo actual</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calidad / Resolución (60 FPS Pro) -->
+        <div style="background:var(--sub);border:1px solid var(--line);border-radius:10px;padding:14px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div style="font-size:12px;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px">
+              <span>📺 Calidad de exportación</span>
+              <span style="background:rgba(0,240,255,0.15);color:#00f0ff;border:1px solid rgba(0,240,255,0.3);font-size:10px;font-weight:800;padding:2px 6px;border-radius:4px">60 FPS PRO</span>
+            </div>
+            <span style="font-size:10.5px;color:#34d399;font-weight:600">⚡ Máxima fluidez y nitidez</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <label style="background:rgba(8,18,24,0.7);border:1px solid var(--cyan);border-radius:8px;padding:10px;display:flex;align-items:flex-start;gap:8px;cursor:pointer">
+              <input type="radio" name="exportResRadio" value="1080" id="exportRadio1080" checked>
+              <div>
+                <div style="font-size:12px;font-weight:700;color:#fff">1080p Full HD · 60 FPS</div>
+                <div style="font-size:10px;color:#38bdf8;margin-top:2px">🎯 1920x1080 · Alta tasa de bits (15 Mbps)</div>
+              </div>
+            </label>
+            <label style="background:rgba(8,18,24,0.7);border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;align-items:flex-start;gap:8px;cursor:pointer">
+              <input type="radio" name="exportResRadio" value="original" id="exportRadioOriginal">
+              <div>
+                <div style="font-size:12px;font-weight:700;color:#fff" id="exportOriginalResTitle">Resolución Original · 60 FPS</div>
+                <div style="font-size:10px;color:#34d399;margin-top:2px" id="exportOriginalResDesc">💎 Píxel a píxel nativo (sin reescalado)</div>
+              </div>
+            </label>
+          </div>
+          <div style="margin-top:8px;font-size:10.5px;color:var(--dim);display:flex;align-items:center;gap:5px">
+            <span>💡 Grabación cinematográfica a 60 FPS con máxima tasa de bits para análisis al detalle.</span>
+          </div>
+        </div>
+
+        <!-- Elementos superpuestos -->
+        <div style="background:var(--sub);border:1px solid var(--line);border-radius:10px;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:10px">
+            <span>📊 Elementos superpuestos en el vídeo</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11.5px;color:var(--ink)">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+              <input type="checkbox" id="checkExportSog" checked>
+              <span>Velocidad SOG & VMG</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+              <input type="checkbox" id="checkExportTwa" checked>
+              <span>TWA & Amuras</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+              <input type="checkbox" id="checkExportHeel" checked>
+              <span>Escora con Casco Optimist</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+              <input type="checkbox" id="checkExportTime" checked>
+              <span>Reloj GPS Sincronizado</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;grid-column:1 / -1">
+              <input type="checkbox" id="checkExportWatermark" checked>
+              <span>Marca oficial RCNGC · Equipo de Regatas Optimist</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Progreso de Grabación -->
+        <div id="exportProgressWrap" style="display:none;background:#03080b;border:1px solid var(--cyan);border-radius:10px;padding:14px">
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;margin-bottom:6px">
+            <span id="exportStatusTitle" style="font-weight:700;color:#fff">⏳ Grabando vídeo con telemetría...</span>
+            <span id="exportProgressPct" style="font-family:var(--f-mono);font-weight:700;color:var(--cyan)">0%</span>
+          </div>
+          <div style="width:100%;height:8px;background:var(--sub);border-radius:4px;overflow:hidden;margin-bottom:8px">
+            <div id="exportProgressBar" style="width:0%;height:100%;background:linear-gradient(90deg, #00f0ff, #10b981);transition:width 0.1s linear"></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:10.5px;color:var(--dim)">
+            <span id="exportTimeReadout">00:00 / 00:00</span>
+            <span id="exportFpsNotice">Grabando a 60 FPS · Mantén visible la pestaña</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Botones del Modal -->
+      <div style="padding:14px 20px;border-top:1px solid var(--line);background:#081115;display:flex;align-items:center;justify-content:space-between">
+        <button type="button" class="ctrl-btn" id="btnCancelExportModal">Cerrar</button>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button type="button" class="ctrl-btn" id="btnStopExport" style="display:none;background:#f43f5e;color:#fff;border-color:#f43f5e;font-weight:700">⏹️ Detener y Descargar</button>
+          <button type="button" class="ctrl-btn" id="btnStartExport" style="background:#10b981;color:#fff;border-color:#10b981;font-weight:700;padding:6px 16px">🚀 Iniciar Grabación y Descarga</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2665,6 +3014,14 @@
       telemetry: [], // Array de { time, lat, lon, sog, cog, hdg, heel, trim }
       minCsvTime: 0,
       maxCsvTime: 0,
+
+      // Modo 1 vs 1
+      isVsMode: false,
+      boatNameA: 'Barco 1',
+      boatNameB: 'Barco 2',
+      csvFileB: null,
+      telemetryB: [],
+      cloudTargetSlot: 'A',
       
       syncOffsetSec: 0, // Desfase en segundos entre vídeo t=0 y CSV minTime
       syncMode: 'idle', // 'idle', 'auto', 'manual'
@@ -2741,7 +3098,7 @@
       }
     }
 
-    async function saveCsvToStorage(text, fileName) {
+    async function saveCsvToStorage(text, fileName, storageKey = 'active_csv') {
       if (!text) return;
       try {
         const db = await openDB();
@@ -2752,9 +3109,9 @@
           text: text,
           name: fileName,
           savedAt: Date.now()
-        }, 'active_csv');
+        }, storageKey);
       } catch (err) {
-        console.warn('Error guardando CSV en IndexedDB:', err);
+        console.warn(`Error guardando ${storageKey} en IndexedDB:`, err);
       }
     }
 
@@ -2771,6 +3128,9 @@
         localStorage.setItem('rcngc_vt_loop', state.isLoop ? '1' : '0');
         localStorage.setItem('rcngc_vt_hud', state.showHud ? '1' : '0');
         localStorage.setItem('rcngc_vt_hud_pos', state.hudPos);
+        localStorage.setItem('rcngc_vt_vs_mode', state.isVsMode ? '1' : '0');
+        localStorage.setItem('rcngc_vt_boat_a', state.boatNameA || 'Barco 1');
+        localStorage.setItem('rcngc_vt_boat_b', state.boatNameB || 'Barco 2');
 
         // Guardar copia completa en IndexedDB
         const db = await openDB();
@@ -2786,6 +3146,9 @@
           currentTime: state.currentTime,
           isLoop: state.isLoop,
           showHud: state.showHud,
+          isVsMode: state.isVsMode,
+          boatNameA: state.boatNameA,
+          boatNameB: state.boatNameB,
           updatedAt: Date.now()
         }, 'app_state');
       } catch (err) {
@@ -2850,6 +3213,23 @@
         if (savedHudPos) state.hudPos = savedHudPos;
         applyHudPosition(state.hudPos);
 
+        const savedBoatA = localStorage.getItem('rcngc_vt_boat_a');
+        if (savedBoatA) {
+          state.boatNameA = savedBoatA;
+          const inpA = document.getElementById('inputBoatNameA');
+          if (inpA) inpA.value = savedBoatA;
+        }
+        const savedBoatB = localStorage.getItem('rcngc_vt_boat_b');
+        if (savedBoatB) {
+          state.boatNameB = savedBoatB;
+          const inpB = document.getElementById('inputBoatNameB');
+          if (inpB) inpB.value = savedBoatB;
+        }
+        const savedVs = localStorage.getItem('rcngc_vt_vs_mode');
+        if (savedVs === '1') {
+          state.isVsMode = true;
+        }
+
         // Actualizar controles UI inmediatos
         offsetInput.value = (state.syncOffsetSec >= 0 ? '+' : '') + state.syncOffsetSec.toFixed(2);
         updateWindUiDisplays();
@@ -2861,21 +3241,41 @@
         const db = await openDB();
         if (!db) return;
 
-        // Leer CSV guardado
+        // Leer CSV Barco 1 guardado
         await new Promise((resolve) => {
           try {
             const tx = db.transaction('media', 'readonly');
             const reqCsv = tx.objectStore('media').get('active_csv');
             reqCsv.onsuccess = () => {
               if (reqCsv.result && reqCsv.result.text) {
-                console.log('Restaurando CSV guardado:', reqCsv.result.name);
-                loadCsvData(reqCsv.result.text, reqCsv.result.name, true);
+                console.log('Restaurando CSV Barco 1 guardado:', reqCsv.result.name);
+                loadCsvData(reqCsv.result.text, reqCsv.result.name, true, 'A');
               }
               resolve();
             };
             reqCsv.onerror = () => resolve();
           } catch (_) { resolve(); }
         });
+
+        // Leer CSV Barco 2 guardado (si existe)
+        await new Promise((resolve) => {
+          try {
+            const tx = db.transaction('media', 'readonly');
+            const reqCsvB = tx.objectStore('media').get('active_csv_b');
+            reqCsvB.onsuccess = () => {
+              if (reqCsvB.result && reqCsvB.result.text) {
+                console.log('Restaurando CSV Barco 2 guardado:', reqCsvB.result.name);
+                loadCsvData(reqCsvB.result.text, reqCsvB.result.name, true, 'B');
+              }
+              resolve();
+            };
+            reqCsvB.onerror = () => resolve();
+          } catch (_) { resolve(); }
+        });
+
+        if (state.isVsMode) {
+          setVsMode(true);
+        }
 
         // Leer Vídeo guardado
         await new Promise((resolve) => {
@@ -2948,24 +3348,47 @@
       if (btnClear) {
         btnClear.style.display = hasData ? 'inline-flex' : 'none';
       }
+      const btnExportTop = document.getElementById('btnExportVideoTop');
+      if (btnExportTop) {
+        btnExportTop.style.display = state.videoFile ? 'inline-flex' : 'none';
+      }
     }
 
     // =========================================================================
     // REFERENCIAS AL DOM
     // =========================================================================
+    const videoContainer = document.getElementById('videoContainer');
     const mainVideo = document.getElementById('mainVideo');
+    const videoStage = document.getElementById('videoStage');
     const videoPlaceholder = document.getElementById('videoPlaceholder');
     const hudOverlay = document.getElementById('hudOverlay');
+    const playerControls = document.getElementById('playerControls');
     const playerScrubber = document.getElementById('playerScrubber');
     const videoTimeCurrent = document.getElementById('videoTimeCurrent');
     const videoTimeDuration = document.getElementById('videoTimeDuration');
     const btnPlayPause = document.getElementById('btnPlayPause');
     const btnStepBack = document.getElementById('btnStepBack');
     const btnStepFwd = document.getElementById('btnStepFwd');
+    const btnSkipBack5 = document.getElementById('btnSkipBack5');
+    const btnSkipFwd5 = document.getElementById('btnSkipFwd5');
     const btnLoop = document.getElementById('btnLoop');
     const btnToggleHud = document.getElementById('btnToggleHud');
     const btnHudPos = document.getElementById('btnHudPos');
     const btnCaptureFrame = document.getElementById('btnCaptureFrame');
+    const btnFullscreen = document.getElementById('btnFullscreen');
+    const btnExportVideo = document.getElementById('btnExportVideo');
+    const btnExportVideoTop = document.getElementById('btnExportVideoTop');
+    const exportVideoModal = document.getElementById('exportVideoModal');
+    const btnCloseExportModal = document.getElementById('btnCloseExportModal');
+    const btnCancelExportModal = document.getElementById('btnCancelExportModal');
+    const btnStartExport = document.getElementById('btnStartExport');
+    const btnStopExport = document.getElementById('btnStopExport');
+    const btnExportSetCurrent = document.getElementById('btnExportSetCurrent');
+    const exportRadioFull = document.getElementById('exportRadioFull');
+    const exportRadioCustom = document.getElementById('exportRadioCustom');
+    const exportCustomRangeWrap = document.getElementById('exportCustomRangeWrap');
+    const videoCenterIndicator = document.getElementById('videoCenterIndicator');
+    const centerIndicatorIcon = document.getElementById('centerIndicatorIcon');
     
     const cardVideoUpload = document.getElementById('cardVideoUpload');
     const inputVideo = document.getElementById('inputVideo');
@@ -3047,6 +3470,33 @@
     const hudTrim = document.getElementById('hudTrim');
     const hudUtcTime = document.getElementById('hudUtcTime');
 
+    // Elementos Modo 1 vs 1
+    const btnModeSingle = document.getElementById('btnModeSingle');
+    const btnModeVs = document.getElementById('btnModeVs');
+    const modeHelpText = document.getElementById('modeHelpText');
+    const cardCsvUploadB = document.getElementById('cardCsvUploadB');
+    const inputCsvB = document.getElementById('inputCsvB');
+    const csvDescB = document.getElementById('csvDescB');
+    const btnPickCsvB = document.getElementById('btnPickCsvB');
+    const btnOpenCloudLibraryB = document.getElementById('btnOpenCloudLibraryB');
+    const btnClearBoatB = document.getElementById('btnClearBoatB');
+    const inputBoatNameA = document.getElementById('inputBoatNameA');
+    const inputBoatNameB = document.getElementById('inputBoatNameB');
+
+    const hudBoatLabelA = document.getElementById('hudBoatLabelA');
+    const hudBoatLabelB = document.getElementById('hudBoatLabelB');
+    const hudBottomGroupCenter = document.getElementById('hudBottomGroupCenter');
+    const hudBottomGroupRight = document.getElementById('hudBottomGroupRight');
+    const hudVsDeltaVmg = document.getElementById('hudVsDeltaVmg');
+    const hudVsLeader = document.getElementById('hudVsLeader');
+    const hudSogB = document.getElementById('hudSogB');
+    const hudVmgB = document.getElementById('hudVmgB');
+    const hudTwaB = document.getElementById('hudTwaB');
+    const hudTackB = document.getElementById('hudTackB');
+    const hudModeB = document.getElementById('hudModeB');
+    const hudHeelB = document.getElementById('hudHeelB');
+    const hudTrimB = document.getElementById('hudTrimB');
+
     // =========================================================================
     // FORMATEO DE HORAS (UTC Y HORA LOCAL DEL VÍDEO)
     // =========================================================================
@@ -3061,6 +3511,16 @@
       const localStr = localDate.toLocaleTimeString('es-ES', { timeZone: 'UTC' });
       const sign = tzHours > 0 ? '+' : '';
       return `${localStr} (UTC${sign}${tzHours}) · ${utcStr}`;
+    }
+
+    // =========================================================================
+    // BARRA DE PROGRESO DEL REPRODUCTOR (ESTILO YOUTUBE)
+    // =========================================================================
+    function updateScrubberFill() {
+      if (!playerScrubber) return;
+      const dur = state.videoDuration || 1;
+      const pct = Math.min(100, Math.max(0, (state.currentTime / dur) * 100));
+      playerScrubber.style.background = `linear-gradient(to right, #00f0ff 0%, #00f0ff ${pct}%, rgba(255,255,255,0.2) ${pct}%, rgba(255,255,255,0.2) 100%)`;
     }
 
     // =========================================================================
@@ -3297,7 +3757,66 @@
       return null;
     }
 
-    function loadCsvData(text, fileName, isRestoring = false) {
+    function setVsMode(active) {
+      state.isVsMode = !!active;
+      try {
+        localStorage.setItem('rcngc_vt_vs_mode', state.isVsMode ? '1' : '0');
+      } catch (_) {}
+
+      if (btnModeSingle) {
+        btnModeSingle.classList.toggle('active', !state.isVsMode);
+        btnModeSingle.style.background = !state.isVsMode ? 'rgba(0,240,255,0.18)' : 'rgba(8,18,24,0.7)';
+        btnModeSingle.style.color = !state.isVsMode ? 'var(--cyan)' : 'var(--dim)';
+        btnModeSingle.style.borderColor = !state.isVsMode ? 'rgba(0,240,255,0.5)' : 'var(--line)';
+      }
+      if (btnModeVs) {
+        btnModeVs.classList.toggle('active', state.isVsMode);
+        btnModeVs.style.background = state.isVsMode ? 'rgba(245,158,11,0.22)' : 'rgba(8,18,24,0.7)';
+        btnModeVs.style.color = state.isVsMode ? '#fbbf24' : 'var(--dim)';
+        btnModeVs.style.borderColor = state.isVsMode ? 'rgba(245,158,11,0.6)' : 'var(--line)';
+      }
+      if (modeHelpText) {
+        modeHelpText.textContent = state.isVsMode 
+          ? '⚔️ Modo 1 vs 1: Compara dos barcos en pantalla partida simultánea con telemetría sincronizada.'
+          : 'Modo estándar: análisis y telemetría de un solo barco con vídeo sincronizado.';
+      }
+
+      if (cardCsvUploadB) {
+        cardCsvUploadB.style.display = state.isVsMode ? 'flex' : 'none';
+      }
+      if (hudBottomGroupRight) {
+        hudBottomGroupRight.style.display = state.isVsMode ? 'flex' : 'none';
+      }
+      if (hudBottomGroupCenter) {
+        hudBottomGroupCenter.style.display = state.isVsMode ? 'flex' : 'none';
+      }
+      if (hudBoatLabelA) {
+        hudBoatLabelA.style.display = state.isVsMode ? 'block' : 'none';
+      }
+
+      updateTelemetryDisplays();
+      drawMiniMap();
+      saveSessionState();
+    }
+
+    function clearBoatB() {
+      state.telemetryB = [];
+      state.csvFileB = null;
+      if (cardCsvUploadB) cardCsvUploadB.classList.remove('loaded');
+      if (csvDescB) csvDescB.textContent = 'Ningún archivo de Barco 2 cargado';
+      if (btnClearBoatB) btnClearBoatB.style.display = 'none';
+      openDB().then(db => {
+        if (!db) return;
+        const tx = db.transaction('media', 'readwrite');
+        tx.objectStore('media').delete('active_csv_b');
+      }).catch(() => {});
+      setVsMode(false);
+      updateTelemetryDisplays();
+      drawMiniMap();
+      saveSessionState();
+    }
+
+    function loadCsvData(text, fileName, isRestoring = false, slot = 'A') {
       if (typeof text === 'object' && text !== null && text.value) {
         text = text.value;
       }
@@ -3348,10 +3867,41 @@
 
       data.sort((a, b) => a.time - b.time);
 
+      if (slot === 'B') {
+        state.telemetryB = data;
+        state.csvFileB = { name: fileName, rows: data.length };
+        if (!state.boatNameB || state.boatNameB === 'Barco 2') {
+          const cleanName = fileName.replace(/\.csv$/i, '').replace(/_/g, ' ');
+          state.boatNameB = cleanName;
+        }
+        if (inputBoatNameB) inputBoatNameB.value = state.boatNameB;
+        if (cardCsvUploadB) cardCsvUploadB.classList.add('loaded');
+        if (csvDescB) {
+          const timeSpan = `(${new Date(data[0].time).toLocaleTimeString('es-ES')} - ${new Date(data[data.length - 1].time).toLocaleTimeString('es-ES')})`;
+          csvDescB.textContent = `${fileName} · ${data.length.toLocaleString('es-ES')} puntos ${timeSpan}`;
+        }
+        if (btnClearBoatB) btnClearBoatB.style.display = 'inline-flex';
+        setVsMode(true);
+        if (!isRestoring) {
+          saveCsvToStorage(text, fileName, 'active_csv_b');
+          saveSessionState();
+        }
+        updateTelemetryDisplays(state.currentTime);
+        drawMiniMap();
+        drawTrackTimeline();
+        updateStorageBadges();
+        return;
+      }
+
       state.telemetry = data;
       state.minCsvTime = data[0].time;
       state.maxCsvTime = data[data.length - 1].time;
       state.csvFile = { name: fileName, rows: data.length };
+      if (!state.boatNameA || state.boatNameA === 'Barco 1') {
+        const cleanName = fileName.replace(/\.csv$/i, '').replace(/_/g, ' ');
+        state.boatNameA = cleanName;
+      }
+      if (inputBoatNameA) inputBoatNameA.value = state.boatNameA;
 
       cardCsvUpload.classList.add('loaded');
       csvDesc.textContent = `${fileName} · ${data.length.toLocaleString('es-ES')} puntos (${new Date(state.minCsvTime).toLocaleTimeString('es-ES')} - ${new Date(state.maxCsvTime).toLocaleTimeString('es-ES')})`;
@@ -3366,7 +3916,7 @@
       updateTelemetryDisplays(state.currentTime);
 
       if (!isRestoring) {
-        saveCsvToStorage(text, fileName);
+        saveCsvToStorage(text, fileName, 'active_csv');
         saveSessionState();
       }
       updateStorageBadges();
@@ -3469,6 +4019,7 @@
       mainVideo.onloadedmetadata = () => {
         state.videoDuration = mainVideo.duration;
         playerScrubber.max = mainVideo.duration;
+        updateScrubberFill();
         videoTimeDuration.textContent = formatVideoTime(mainVideo.duration);
         const tagNotice = state.isWhatsApp ? ' [⚠️ WhatsApp: hora original omitida]' : '';
         videoDesc.textContent = `${file.name} · ${formatVideoTime(mainVideo.duration)} (${mainVideo.videoWidth}x${mainVideo.videoHeight})${tagNotice}`;
@@ -3573,39 +4124,21 @@
     // INTERPOLACIÓN Y CÁLCULO DE TELEMETRÍA EN TIEMPO REAL
     // =========================================================================
     
-    function getInterpolatedTelemetryByAbsoluteTime(targetTime) {
-      if (state.telemetry.length === 0) return null;
-      if (targetTime <= state.telemetry[0].time) return state.telemetry[0];
-      if (targetTime >= state.telemetry[state.telemetry.length - 1].time) return state.telemetry[state.telemetry.length - 1];
+    function getInterpolatedTelemetryFromData(telemetryList, targetTime) {
+      if (!telemetryList || telemetryList.length === 0) return null;
+      if (targetTime <= telemetryList[0].time) return { ...telemetryList[0], isExact: false };
+      if (targetTime >= telemetryList[telemetryList.length - 1].time) return { ...telemetryList[telemetryList.length - 1], isExact: false };
 
       let low = 0;
-      let high = state.telemetry.length - 1;
+      let high = telemetryList.length - 1;
       while (low <= high) {
         const mid = Math.floor((low + high) / 2);
-        if (state.telemetry[mid].time < targetTime) low = mid + 1;
-        else high = mid - 1;
-      }
-      return state.telemetry[Math.max(0, low - 1)];
-    }
-
-    function getInterpolatedTelemetry(videoSec) {
-      if (state.telemetry.length === 0) return null;
-
-      const targetTime = state.minCsvTime + (state.syncOffsetSec + videoSec) * 1000;
-
-      if (targetTime <= state.telemetry[0].time) return { ...state.telemetry[0], isExact: false };
-      if (targetTime >= state.telemetry[state.telemetry.length - 1].time) return { ...state.telemetry[state.telemetry.length - 1], isExact: false };
-
-      let low = 0;
-      let high = state.telemetry.length - 1;
-      while (low <= high) {
-        const mid = Math.floor((low + high) / 2);
-        if (state.telemetry[mid].time < targetTime) low = mid + 1;
+        if (telemetryList[mid].time < targetTime) low = mid + 1;
         else high = mid - 1;
       }
 
-      const p0 = state.telemetry[Math.max(0, low - 1)];
-      const p1 = state.telemetry[Math.min(state.telemetry.length - 1, low)];
+      const p0 = telemetryList[Math.max(0, low - 1)];
+      const p1 = telemetryList[Math.min(telemetryList.length - 1, low)];
 
       if (p0.time === p1.time) return p0;
 
@@ -3624,6 +4157,23 @@
       };
     }
 
+    function getInterpolatedTelemetryByAbsoluteTime(targetTime) {
+      if (state.telemetry.length === 0) return null;
+      return getInterpolatedTelemetryFromData(state.telemetry, targetTime);
+    }
+
+    function getInterpolatedTelemetry(videoSec) {
+      if (state.telemetry.length === 0) return null;
+      const targetTime = state.minCsvTime + (state.syncOffsetSec + videoSec) * 1000;
+      return getInterpolatedTelemetryFromData(state.telemetry, targetTime);
+    }
+
+    function getInterpolatedTelemetryB(videoSec) {
+      if (!state.telemetryB || state.telemetryB.length === 0) return null;
+      const targetTime = state.minCsvTime + (state.syncOffsetSec + videoSec) * 1000;
+      return getInterpolatedTelemetryFromData(state.telemetryB, targetTime);
+    }
+
     function lerpAngle(a, b, t) {
       let diff = ((b - a + 180) % 360) - 180;
       if (diff < -180) diff += 360;
@@ -3638,6 +4188,11 @@
       const data = getInterpolatedTelemetry(sec);
 
       if (!data) return;
+
+      // Actualizar etiqueta Barco 1
+      if (hudBoatLabelA) {
+        hudBoatLabelA.textContent = (state.boatNameA || 'BARCO 1').toUpperCase();
+      }
 
       // 1. Velocidad (SOG)
       const sog = data.sog;
@@ -3746,8 +4301,64 @@
 
       drawCompass(hdg, data.cog, state.twd);
 
-      // 6. Mini-mapa y Strip Chart
-      drawMiniMapBoat(data.lat, data.lon, hdg);
+      // 6. Telemetría Barco 2 y Match Race 1 vs 1
+      let dataB = null;
+      if (state.isVsMode && state.telemetryB && state.telemetryB.length > 0) {
+        dataB = getInterpolatedTelemetryB(sec);
+        if (dataB) {
+          const sogB = dataB.sog;
+          const hdgB = dataB.hdg;
+          let twaB = ((hdgB - state.twd + 180) % 360) - 180;
+          if (twaB < -180) twaB += 360;
+          const absTwaB = Math.abs(twaB);
+          const isStarboardB = twaB <= 0;
+          const vmgB = sogB * Math.cos(absTwaB * (Math.PI / 180));
+
+          if (hudSogB) hudSogB.textContent = sogB.toFixed(1);
+          if (hudVmgB) hudVmgB.textContent = (vmgB >= 0 ? '+' : '') + vmgB.toFixed(1);
+          if (hudTwaB) hudTwaB.textContent = String(Math.round(absTwaB)).padStart(3, '0') + '°';
+          if (hudTackB) {
+            hudTackB.textContent = isStarboardB ? 'ESTR' : 'BAB';
+            hudTackB.style.color = isStarboardB ? '#34d399' : '#fb7185';
+          }
+          if (hudModeB) {
+            let posB = 'CEÑIDA';
+            if (absTwaB > 135) posB = 'EMPOPADA';
+            else if (absTwaB > 105) posB = 'LARGO';
+            else if (absTwaB > 65) posB = 'TRAVÉS';
+            hudModeB.textContent = posB;
+          }
+          if (hudHeelB) hudHeelB.textContent = Math.abs(dataB.heel).toFixed(1) + '°';
+          if (hudTrimB) hudTrimB.textContent = (dataB.trim >= 0 ? '+' : '') + dataB.trim.toFixed(1) + '°';
+          if (hudBoatLabelB) hudBoatLabelB.textContent = (state.boatNameB || 'BARCO 2').toUpperCase();
+
+          // Comparador Match Race (Δ VMG y Liderazgo)
+          const diffVmg = vmg - vmgB;
+          if (hudVsDeltaVmg) {
+            hudVsDeltaVmg.textContent = (diffVmg >= 0 ? '+' : '') + diffVmg.toFixed(1) + ' kts';
+            hudVsDeltaVmg.style.color = diffVmg > 0.05 ? '#00f0ff' : (diffVmg < -0.05 ? '#fbbf24' : '#cbd5e1');
+          }
+          if (hudVsLeader) {
+            if (Math.abs(diffVmg) < 0.1) {
+              hudVsLeader.textContent = '⚖️ Igualados';
+              hudVsLeader.style.color = '#94a3b8';
+            } else if (diffVmg > 0) {
+              hudVsLeader.textContent = `🏆 ${state.boatNameA || 'Barco 1'} lidera (+${diffVmg.toFixed(1)} kn VMG)`;
+              hudVsLeader.style.color = '#00f0ff';
+            } else {
+              hudVsLeader.textContent = `🏆 ${state.boatNameB || 'Barco 2'} lidera (+${Math.abs(diffVmg).toFixed(1)} kn VMG)`;
+              hudVsLeader.style.color = '#fbbf24';
+            }
+          }
+        }
+      }
+
+      // 7. Mini-mapa y Strip Chart (1 o 2 barcos)
+      if (dataB) {
+        drawMiniMapBoat(data.lat, data.lon, hdg, dataB.lat, dataB.lon, dataB.hdg);
+      } else {
+        drawMiniMapBoat(data.lat, data.lon, hdg);
+      }
       drawStripChartNeedle(sec);
 
       // HUD Time (Muestra Hora Local y UTC)
@@ -3772,58 +4383,129 @@
       ctx.clearRect(0, 0, w, h);
 
       const cx = w / 2;
-      const cy = h / 2 + 10;
-      const r = Math.min(w, h) * 0.42;
+      const cy = h * 0.54;
+      const s = Math.max(0.75, Math.min(w / 280, h / 75));
 
-      // Arco de fondo
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, Math.PI * 0.8, Math.PI * 2.2, false);
-      ctx.lineWidth = 14;
-      ctx.strokeStyle = '#172a33';
-      ctx.stroke();
-
-      // Zona objetivo Optimist: 3° a 5° a sotavento
-      const zeroAngle = -Math.PI / 2;
       const degToRad = Math.PI / 180;
-      const tMin = zeroAngle + (3 * degToRad);
-      const tMax = zeroAngle + (5 * degToRad);
+      const zeroAngle = -Math.PI / 2;
 
+      // 1. Dial de grados de escora (Arco superior)
+      const dialR = 38 * s;
+      ctx.save();
+
+      // Arco base
       ctx.beginPath();
-      ctx.arc(cx, cy, r, tMin, tMax, false);
-      ctx.lineWidth = 14;
-      ctx.strokeStyle = 'rgba(16, 185, 129, 0.45)';
+      ctx.arc(cx, cy, dialR, zeroAngle - (28 * degToRad), zeroAngle + (28 * degToRad), false);
+      ctx.lineWidth = 8 * s;
+      ctx.strokeStyle = '#11222b';
       ctx.stroke();
 
-      // Línea de referencia horizontal
+      // Arcos de zona óptima (3° a 6° a ambos lados)
       ctx.beginPath();
-      ctx.moveTo(cx - r - 10, cy);
-      ctx.lineTo(cx + r + 10, cy);
-      ctx.lineWidth = 1.5;
-      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.arc(cx, cy, dialR, zeroAngle - (6 * degToRad), zeroAngle - (3 * degToRad), false);
+      ctx.lineWidth = 8 * s;
+      ctx.strokeStyle = 'rgba(16, 185, 129, 0.55)';
       ctx.stroke();
 
-      // Marcador de escora del barco
+      ctx.beginPath();
+      ctx.arc(cx, cy, dialR, zeroAngle + (3 * degToRad), zeroAngle + (6 * degToRad), false);
+      ctx.lineWidth = 8 * s;
+      ctx.strokeStyle = 'rgba(16, 185, 129, 0.55)';
+      ctx.stroke();
+
+      // Marcas de graduación (-20°, -10°, 0°, +10°, +20°)
+      [-20, -10, 0, 10, 20].forEach(deg => {
+        const rad = zeroAngle + (deg * degToRad);
+        const isZero = deg === 0;
+        const innerR = dialR - (isZero ? 9 * s : 5 * s);
+        const outerR = dialR + (isZero ? 8 * s : 5 * s);
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(rad) * innerR, cy + Math.sin(rad) * innerR);
+        ctx.lineTo(cx + Math.cos(rad) * outerR, cy + Math.sin(rad) * outerR);
+        ctx.lineWidth = isZero ? 2.5 * s : 1.4 * s;
+        ctx.strokeStyle = isZero ? '#00f0ff' : 'rgba(255,255,255,0.35)';
+        ctx.stroke();
+      });
+
+      // Línea de horizonte de flotación (superficie del agua)
+      ctx.beginPath();
+      ctx.moveTo(cx - (65 * s), cy);
+      ctx.lineTo(cx + (65 * s), cy);
+      ctx.lineWidth = 1.5 * s;
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.3)';
+      ctx.stroke();
+      ctx.restore();
+
+      // 2. Barco Optimist limpio y muy visual rotado según escora
       ctx.save();
       ctx.translate(cx, cy);
       ctx.rotate(heelDeg * degToRad);
 
-      // Casco de Optimist esquemático
-      ctx.fillStyle = Math.abs(heelDeg) >= 3 && Math.abs(heelDeg) <= 5 ? '#10b981' : (Math.abs(heelDeg) > 8 ? '#f43f5e' : '#00f0ff');
+      const topW = 32 * s;       // Manga en regala
+      const botW = 22 * s;       // Manga en fondo plano
+      const topY = -7 * s;       // Altura de regala
+      const botY = 7 * s;        // Fondo plano
+
+      // A) Orza del Optimist (Daggerboard) saliendo por el fondo
+      ctx.save();
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.6)';
+      ctx.lineWidth = 1 * s;
+      const boardW = 4.5 * s;
+      const boardH = 22 * s;
       ctx.beginPath();
-      ctx.moveTo(-28, 4);
-      ctx.lineTo(28, 4);
-      ctx.lineTo(24, -8);
-      ctx.lineTo(-24, -8);
+      ctx.rect(-boardW / 2, botY, boardW, boardH);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+
+      // B) Casco de Optimist limpio (Fondo plano y pantoques vivos)
+      const absHeel = Math.abs(heelDeg);
+      let hullColor = '#00f0ff';
+      let hullStroke = '#ffffff';
+      if (absHeel >= 2.5 && absHeel <= 6.0) {
+        hullColor = '#10b981';
+        hullStroke = '#34d399';
+      } else if (absHeel > 8.0) {
+        hullColor = '#f43f5e';
+        hullStroke = '#fb7185';
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(-topW, topY);
+      ctx.lineTo(topW, topY);
+      ctx.lineTo(botW, botY);
+      ctx.lineTo(-botW, botY);
       ctx.closePath();
+      ctx.fillStyle = hullColor;
+      ctx.fill();
+      ctx.lineWidth = 2 * s;
+      ctx.strokeStyle = hullStroke;
+      ctx.stroke();
+
+      // Bañera interior limpia sin micro-detalles
+      ctx.beginPath();
+      ctx.moveTo(-topW + 3 * s, topY + 2 * s);
+      ctx.lineTo(topW - 3 * s, topY + 2 * s);
+      ctx.lineTo(botW - 3 * s, botY - 2 * s);
+      ctx.lineTo(-botW + 3 * s, botY - 2 * s);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(4, 14, 20, 0.7)';
       ctx.fill();
 
-      // Mástil
+      // C) Mástil limpio vertical (sin ramas ni botavara)
       ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 2.8 * s;
       ctx.beginPath();
-      ctx.moveTo(0, -8);
-      ctx.lineTo(0, -r + 8);
+      ctx.moveTo(0, topY + 2 * s);
+      ctx.lineTo(0, -dialR + 4 * s);
       ctx.stroke();
+
+      // Puntero / Tope de mástil
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(0, -dialR + 4 * s, 2.5 * s, 0, Math.PI * 2);
+      ctx.fill();
 
       ctx.restore();
     }
@@ -4006,7 +4688,7 @@
 
       ctx.clearRect(0, 0, w, h);
 
-      if (state.telemetry.length < 2) return;
+      if (state.telemetry.length < 2 && (!state.telemetryB || state.telemetryB.length < 2)) return;
 
       let minLat = Infinity, maxLat = -Infinity, minLon = Infinity, maxLon = -Infinity;
       state.telemetry.forEach(d => {
@@ -4016,26 +4698,51 @@
         if (d.lon > maxLon) maxLon = d.lon;
       });
 
+      if (state.isVsMode && state.telemetryB && state.telemetryB.length > 0) {
+        state.telemetryB.forEach(d => {
+          if (d.lat < minLat) minLat = d.lat;
+          if (d.lat > maxLat) maxLat = d.lat;
+          if (d.lon < minLon) minLon = d.lon;
+          if (d.lon > maxLon) maxLon = d.lon;
+        });
+      }
+
       const pad = 0.0005;
       mapBounds = { minLat: minLat - pad, maxLat: maxLat + pad, minLon: minLon - pad, maxLon: maxLon + pad };
 
       function toX(lon) { return ((lon - mapBounds.minLon) / (mapBounds.maxLon - mapBounds.minLon)) * w; }
       function toY(lat) { return h - (((lat - mapBounds.minLat) / (mapBounds.maxLat - mapBounds.minLat)) * h); }
 
-      // Pintar track completo
-      ctx.beginPath();
-      ctx.strokeStyle = 'rgba(2, 132, 199, 0.4)';
-      ctx.lineWidth = 1.5;
-      state.telemetry.forEach((pt, i) => {
-        const x = toX(pt.lon);
-        const y = toY(pt.lat);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      });
-      ctx.stroke();
+      // Pintar track Barco 1 (Cian / Azul)
+      if (state.telemetry.length >= 2) {
+        ctx.beginPath();
+        ctx.strokeStyle = state.isVsMode ? 'rgba(0, 240, 255, 0.45)' : 'rgba(2, 132, 199, 0.4)';
+        ctx.lineWidth = 1.5;
+        state.telemetry.forEach((pt, i) => {
+          const x = toX(pt.lon);
+          const y = toY(pt.lat);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+
+      // Pintar track Barco 2 (Ámbar) si está en Modo 1 vs 1
+      if (state.isVsMode && state.telemetryB && state.telemetryB.length >= 2) {
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(251, 191, 36, 0.45)';
+        ctx.lineWidth = 1.5;
+        state.telemetryB.forEach((pt, i) => {
+          const x = toX(pt.lon);
+          const y = toY(pt.lat);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
     }
 
-    function drawMiniMapBoat(lat, lon, hdg) {
+    function drawMiniMapBoat(lat, lon, hdg, latB, lonB, hdgB) {
       const c = minimapCanvas;
       if (!c || !mapBounds) return;
       const ctx = c.getContext('2d');
@@ -4047,28 +4754,57 @@
       function toX(lon) { return ((lon - mapBounds.minLon) / (mapBounds.maxLon - mapBounds.minLon)) * w; }
       function toY(lat) { return h - (((lat - mapBounds.minLat) / (mapBounds.maxLat - mapBounds.minLat)) * h); }
 
-      const bx = toX(lon);
-      const by = toY(lat);
+      // Barco 1 (Cian)
+      if (lat != null && lon != null) {
+        const bx = toX(lon);
+        const by = toY(lat);
 
-      ctx.save();
-      ctx.translate(bx, by);
-      ctx.rotate((hdg - 90) * (Math.PI / 180));
+        ctx.save();
+        ctx.translate(bx, by);
+        ctx.rotate(((hdg || 0) - 90) * (Math.PI / 180));
 
-      ctx.fillStyle = '#00f0ff';
-      ctx.beginPath();
-      ctx.arc(0, 0, 5, 0, Math.PI * 2);
-      ctx.fill();
+        ctx.fillStyle = '#00f0ff';
+        ctx.beginPath();
+        ctx.arc(0, 0, 5, 0, Math.PI * 2);
+        ctx.fill();
 
-      // Flecha proa
-      ctx.fillStyle = '#f2600c';
-      ctx.beginPath();
-      ctx.moveTo(8, 0);
-      ctx.lineTo(-3, -4);
-      ctx.lineTo(-3, 4);
-      ctx.closePath();
-      ctx.fill();
+        // Flecha proa
+        ctx.fillStyle = '#f2600c';
+        ctx.beginPath();
+        ctx.moveTo(8, 0);
+        ctx.lineTo(-3, -4);
+        ctx.lineTo(-3, 4);
+        ctx.closePath();
+        ctx.fill();
 
-      ctx.restore();
+        ctx.restore();
+      }
+
+      // Barco 2 (Ámbar) en Modo 1 vs 1
+      if (state.isVsMode && latB != null && lonB != null) {
+        const bxB = toX(lonB);
+        const byB = toY(latB);
+
+        ctx.save();
+        ctx.translate(bxB, byB);
+        ctx.rotate(((hdgB || 0) - 90) * (Math.PI / 180));
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.beginPath();
+        ctx.arc(0, 0, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Flecha proa
+        ctx.fillStyle = '#f2600c';
+        ctx.beginPath();
+        ctx.moveTo(8, 0);
+        ctx.lineTo(-3, -4);
+        ctx.lineTo(-3, 4);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
+      }
     }
 
     function drawStripChart() {
@@ -4144,6 +4880,7 @@
         state.currentTime = mainVideo.currentTime;
         playerScrubber.value = state.currentTime;
         videoTimeCurrent.textContent = formatVideoTime(state.currentTime);
+        updateScrubberFill();
         updateTelemetryDisplays();
         throttledSaveCurrentTime();
       }
@@ -4161,12 +4898,16 @@
           state.isPlaying = true;
           btnPlayPause.textContent = '⏸ Pausar';
           btnPlayPause.style.color = '#fff';
+          resetUserIdle();
         }).catch(err => console.warn('Error al reproducir vídeo:', err));
       } else {
         mainVideo.pause();
         state.isPlaying = false;
         btnPlayPause.textContent = '▶ Reproducir';
         btnPlayPause.style.color = 'var(--cyan)';
+        clearTimeout(idleTimer);
+        const container = document.getElementById('videoContainer') || videoContainer;
+        if (container) container.classList.remove('user-idle');
         saveSessionState();
       }
     }
@@ -4178,8 +4919,888 @@
       }
       playerScrubber.value = state.currentTime;
       videoTimeCurrent.textContent = formatVideoTime(state.currentTime);
+      updateScrubberFill();
       updateTelemetryDisplays();
       saveSessionState();
+    }
+
+    // =========================================================================
+    // MODO PANTALLA COMPLETA ESTILO YOUTUBE Y CONTROLES OVERLAY
+    // =========================================================================
+    function toggleFullscreen() {
+      const container = document.getElementById('videoContainer') || videoContainer;
+      if (!container) return;
+
+      const fsElem = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+      if (!fsElem) {
+        if (container.requestFullscreen) {
+          container.requestFullscreen().catch(err => console.warn('Fullscreen error:', err));
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen();
+        } else if (container.msRequestFullscreen) {
+          container.msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(err => console.warn('Exit fullscreen error:', err));
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      }
+    }
+
+    function onFullscreenChange() {
+      const container = document.getElementById('videoContainer') || videoContainer;
+      const btn = document.getElementById('btnFullscreen') || btnFullscreen;
+      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+      if (container) {
+        container.classList.toggle('is-fullscreen', isFs);
+        if (!isFs) {
+          container.classList.remove('user-idle');
+        }
+      }
+      if (btn) {
+        btn.innerHTML = isFs ? '🗗 Salir' : '⛶ Pantalla completa';
+        btn.title = isFs ? 'Salir de pantalla completa (Esc o Tecla F)' : 'Pantalla completa estilo YouTube (Tecla F o doble clic)';
+      }
+      setTimeout(resizeCanvases, 100);
+    }
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+
+    let idleTimer = null;
+    function resetUserIdle() {
+      const container = document.getElementById('videoContainer') || videoContainer;
+      if (!container) return;
+      container.classList.remove('user-idle');
+      clearTimeout(idleTimer);
+
+      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+      if (isFs && state.isPlaying) {
+        idleTimer = setTimeout(() => {
+          if (state.isPlaying) {
+            container.classList.add('user-idle');
+          }
+        }, 2800);
+      }
+    }
+
+    function flashCenterIndicator(icon) {
+      const indicator = document.getElementById('videoCenterIndicator');
+      const iconEl = document.getElementById('centerIndicatorIcon');
+      if (!indicator || !iconEl) return;
+      iconEl.textContent = icon;
+      indicator.style.display = 'flex';
+      void indicator.offsetWidth;
+      indicator.classList.add('show');
+      clearTimeout(indicator._timer);
+      indicator._timer = setTimeout(() => {
+        indicator.classList.remove('show');
+        setTimeout(() => {
+          if (!indicator.classList.contains('show')) {
+            indicator.style.display = 'none';
+          }
+        }, 250);
+      }, 450);
+    }
+
+    // =========================================================================
+    // EXPORTACIÓN Y DESCARGA DE VÍDEO CON TELEMETRÍA SOBREIMPRESA
+    // =========================================================================
+    let exportRecorder = null;
+    let exportChunks = [];
+    let isExporting = false;
+    let exportAnimId = null;
+    let exportOrigTime = 0;
+    let exportOrigMuted = false;
+
+    function parseTimeToSec(str) {
+      if (!str) return 0;
+      const parts = str.trim().split(':');
+      if (parts.length === 2) {
+        return (parseFloat(parts[0]) || 0) * 60 + (parseFloat(parts[1]) || 0);
+      }
+      return parseFloat(str) || 0;
+    }
+
+    function openExportModal() {
+      if (!mainVideo || !mainVideo.src) {
+        alert("Por favor, sube un vídeo primero para poder exportarlo con telemetría.");
+        return;
+      }
+      const modal = document.getElementById('exportVideoModal');
+      if (!modal) return;
+
+      const dur = state.videoDuration || 0;
+      const fullDurEl = document.getElementById('exportFullDurationText');
+      if (fullDurEl) fullDurEl.textContent = `00:00 - ${formatVideoTime(dur)}`;
+
+      const startInp = document.getElementById('exportStartInput');
+      const endInp = document.getElementById('exportEndInput');
+      if (startInp) startInp.value = '00:00';
+      if (endInp) endInp.value = formatVideoTime(dur);
+
+      const radFull = document.getElementById('exportRadioFull');
+      if (radFull) radFull.checked = true;
+      const rangeWrap = document.getElementById('exportCustomRangeWrap');
+      if (rangeWrap) {
+        rangeWrap.style.opacity = '0.5';
+        rangeWrap.style.pointerEvents = 'none';
+      }
+
+      const origW = mainVideo.videoWidth;
+      const origH = mainVideo.videoHeight;
+      const origTitle = document.getElementById('exportOriginalResTitle');
+      const origDesc = document.getElementById('exportOriginalResDesc');
+      if (origW && origH) {
+        if (origTitle) origTitle.textContent = `Original (${origW}x${origH}) · 60 FPS`;
+        const tag = origW >= 3840 ? '4K Ultra HD' : (origW >= 2560 ? '2K QHD' : (origW >= 1920 ? '1080p Full HD' : `${origW}p`));
+        if (origDesc) origDesc.textContent = `💎 100% nativo del archivo (${tag}) · 60 FPS`;
+      }
+
+      const progressWrap = document.getElementById('exportProgressWrap');
+      if (progressWrap) progressWrap.style.display = 'none';
+
+      const btnStart = document.getElementById('btnStartExport');
+      const btnStop = document.getElementById('btnStopExport');
+      if (btnStart) {
+        btnStart.style.display = 'inline-flex';
+        btnStart.textContent = '🚀 Iniciar Grabación y Descarga';
+      }
+      if (btnStop) btnStop.style.display = 'none';
+
+      modal.style.display = 'flex';
+      modal.classList.add('open');
+    }
+
+    function closeExportModal() {
+      if (isExporting) {
+        if (!confirm("Hay una grabación en curso. ¿Deseas cancelarla?")) return;
+        stopExportRecording(true);
+      }
+      const modal = document.getElementById('exportVideoModal');
+      if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('open');
+      }
+    }
+
+    function onExportRangeChange() {
+      const isCustom = exportRadioCustom && exportRadioCustom.checked;
+      if (exportCustomRangeWrap) {
+        exportCustomRangeWrap.style.opacity = isCustom ? '1' : '0.5';
+        exportCustomRangeWrap.style.pointerEvents = isCustom ? 'auto' : 'none';
+      }
+    }
+
+    function drawOverlayOnExportCanvas(ctx, w, h, timeSec, opts = {}) {
+      const s = w / 1280;
+      const data = getInterpolatedTelemetry(timeSec);
+      if (!data) return;
+
+      const twd = state.twd || 0;
+      const isVs = state.isVsMode && state.telemetryB && state.telemetryB.length > 0;
+      const dataB = isVs ? getInterpolatedTelemetryB(timeSec) : null;
+
+      // Helper para dibujar tarjetas con fondo oscuro de alto contraste y borde luminoso
+      function drawCardBg(bx, by, bw, bh, rad = 8 * s, strokeColor = 'rgba(0, 240, 255, 0.45)') {
+        ctx.save();
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, rad);
+        else ctx.rect(bx, by, bw, bh);
+        ctx.fillStyle = 'rgba(6, 16, 25, 0.94)';
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+        ctx.shadowBlur = 8 * s;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 2 * s;
+        ctx.fill();
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = Math.max(1, 1.4 * s);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      function drawHullGraphic(cx, cy, gs, heelVal, isStbd, hullColor = '#00f0ff') {
+        const visualAngle = (isStbd ? -1 : 1) * Math.abs(heelVal || 0);
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(visualAngle * Math.PI / 180);
+
+        // Orza blanca
+        ctx.beginPath();
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-2 * gs, 5 * gs, 4 * gs, 15 * gs);
+
+        // Casco
+        ctx.fillStyle = hullColor;
+        ctx.beginPath();
+        ctx.moveTo(-20 * gs, -6 * gs);
+        ctx.lineTo(20 * gs, -6 * gs);
+        ctx.lineTo(14 * gs, 5 * gs);
+        ctx.lineTo(-14 * gs, 5 * gs);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.4 * gs;
+        ctx.stroke();
+
+        // Bañera interior
+        ctx.fillStyle = 'rgba(4, 14, 20, 0.75)';
+        ctx.beginPath();
+        ctx.rect(-14 * gs, -4 * gs, 28 * gs, 7 * gs);
+        ctx.fill();
+
+        // Mástil
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2 * gs;
+        ctx.beginPath();
+        ctx.moveTo(0, -4 * gs);
+        ctx.lineTo(0, -22 * gs);
+        ctx.stroke();
+
+        // Puntero tope mástil
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(0, -22 * gs, 2.5 * gs, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      // Si está en Modo 1 vs 1 y ambos barcos tienen datos:
+      if (isVs && dataB) {
+        const hdgA = data.hdg != null ? data.hdg : data.cog;
+        let rawTwaA = ((hdgA - twd + 540) % 360) - 180;
+        const isStarboardA = rawTwaA <= 0;
+        const absTwaA = Math.abs(rawTwaA);
+        const sogA = data.sog || 0;
+        const vmgA = sogA * Math.cos(absTwaA * Math.PI / 180);
+
+        const hdgB = dataB.hdg != null ? dataB.hdg : dataB.cog;
+        let rawTwaB = ((hdgB - twd + 540) % 360) - 180;
+        const isStarboardB = rawTwaB <= 0;
+        const absTwaB = Math.abs(rawTwaB);
+        const sogB = dataB.sog || 0;
+        const vmgB = sogB * Math.cos(absTwaB * Math.PI / 180);
+
+        const diffVmg = vmgA - vmgB;
+        const diffSog = sogA - sogB;
+
+        const by = h - (86 * s);
+        const byHeader = by - (28 * s);
+
+        // --- BARCO 1 (Izquierda - Cian) ---
+        // Header Barco 1
+        drawCardBg(20 * s, byHeader, 240 * s, 22 * s, 4 * s, 'rgba(0, 240, 255, 0.6)');
+        ctx.save();
+        ctx.fillStyle = '#00f0ff';
+        ctx.font = `bold ${Math.round(11 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText(`⛵ BARCO 1: ${(state.boatNameA || 'BARCO 1').toUpperCase()}`, 30 * s, byHeader + (15 * s));
+        ctx.restore();
+
+        // 1A. SOG & VMG Barco 1
+        drawCardBg(20 * s, by, 135 * s, 68 * s, 6 * s, 'rgba(0, 240, 255, 0.45)');
+        ctx.save();
+        ctx.fillStyle = '#00f0ff';
+        ctx.font = `bold ${Math.round(10 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText('VELOCIDAD GPS', 30 * s, by + (16 * s));
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${Math.round(25 * s)}px "Barlow Condensed", sans-serif`;
+        const sogStrA = sogA.toFixed(1);
+        ctx.fillText(sogStrA, 30 * s, by + (42 * s));
+        const sogWidthA = ctx.measureText(sogStrA).width;
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = `bold ${Math.round(10.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText('KTS', 32 * s + sogWidthA, by + (42 * s));
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = `bold ${Math.round(9.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText(`VMG: ${(vmgA >= 0 ? '+' : '') + vmgA.toFixed(1)} kn`, 30 * s, by + (58 * s));
+        ctx.restore();
+
+        // 2A. TWA & Amura Barco 1
+        drawCardBg(160 * s, by, 120 * s, 68 * s, 6 * s, 'rgba(245, 158, 11, 0.45)');
+        ctx.save();
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = `bold ${Math.round(10 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText('TWA', 170 * s, by + (16 * s));
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${Math.round(25 * s)}px "Barlow Condensed", sans-serif`;
+        ctx.fillText(String(Math.round(absTwaA)).padStart(3, '0') + '°', 170 * s, by + (42 * s));
+        // Badge ESTR / BAB
+        const badgeXA = 226 * s, badgeYA = by + (28 * s), badgeWA = 46 * s, badgeHA = 16 * s;
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') ctx.roundRect(badgeXA, badgeYA, badgeWA, badgeHA, 3 * s);
+        else ctx.rect(badgeXA, badgeYA, badgeWA, badgeHA);
+        ctx.fillStyle = isStarboardA ? '#059669' : '#e11d48';
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${Math.round(9.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(isStarboardA ? 'ESTR' : 'BAB', badgeXA + (badgeWA / 2), badgeYA + (badgeHA / 2) + (0.5 * s));
+        ctx.restore();
+        // Mode
+        let modeStrA = 'CEÑIDA';
+        if (absTwaA > 135) modeStrA = 'EMPOPADA';
+        else if (absTwaA > 105) modeStrA = 'LARGO';
+        else if (absTwaA > 65) modeStrA = 'TRAVÉS';
+        ctx.save();
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = `bold ${Math.round(9.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText(modeStrA, 170 * s, by + (58 * s));
+        ctx.restore();
+
+        // 3A. Escora / Trim Barco 1
+        drawCardBg(285 * s, by, 155 * s, 68 * s, 6 * s, 'rgba(16, 185, 129, 0.45)');
+        ctx.save();
+        ctx.fillStyle = '#34d399';
+        ctx.font = `bold ${Math.round(9.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText('ESCORA', 295 * s, by + (16 * s));
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${Math.round(15 * s)}px "IBM Plex Mono", monospace`;
+        ctx.fillText(`${Math.abs(data.heel).toFixed(1)}°`, 295 * s, by + (34 * s));
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = `bold ${Math.round(9.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText('TRIM', 295 * s, by + (48 * s));
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${Math.round(13 * s)}px "IBM Plex Mono", monospace`;
+        ctx.fillText(`${(data.trim >= 0 ? '+' : '') + data.trim.toFixed(1)}°`, 295 * s, by + (62 * s));
+        ctx.restore();
+        drawHullGraphic(395 * s, by + (36 * s), s * 0.65, data.heel, isStarboardA, '#00f0ff');
+
+        // --- RECUADRO CENTRAL (Match Race 1 vs 1) ---
+        const cw = 250 * s;
+        const cx = (w - cw) / 2;
+        drawCardBg(cx, by, cw, 68 * s, 6 * s, 'rgba(251, 191, 36, 0.55)');
+        ctx.save();
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = `bold ${Math.round(10.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText('⚔️ MATCH RACE 1 vs 1', cx + (cw / 2), by + (16 * s));
+        // Δ VMG y Δ SOG
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${Math.round(11 * s)}px "IBM Plex Mono", monospace`;
+        const deltaColor = diffVmg > 0.05 ? '#00f0ff' : (diffVmg < -0.05 ? '#fbbf24' : '#cbd5e1');
+        ctx.fillText(`Δ VMG: ${(diffVmg >= 0 ? '+' : '') + diffVmg.toFixed(1)} kn  |  Δ SOG: ${(diffSog >= 0 ? '+' : '') + diffSog.toFixed(1)} kn`, cx + (cw / 2), by + (36 * s));
+        // Leader
+        ctx.font = `bold ${Math.round(11 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        if (Math.abs(diffVmg) < 0.1) {
+          ctx.fillStyle = '#94a3b8';
+          ctx.fillText('⚖️ Velocidades Igualadas', cx + (cw / 2), by + (56 * s));
+        } else if (diffVmg > 0) {
+          ctx.fillStyle = '#00f0ff';
+          ctx.fillText(`🏆 ${state.boatNameA || 'Barco 1'} (+${diffVmg.toFixed(1)} kn VMG)`, cx + (cw / 2), by + (56 * s));
+        } else {
+          ctx.fillStyle = '#fbbf24';
+          ctx.fillText(`🏆 ${state.boatNameB || 'Barco 2'} (+${Math.abs(diffVmg).toFixed(1)} kn VMG)`, cx + (cw / 2), by + (56 * s));
+        }
+        ctx.restore();
+
+        // --- BARCO 2 (Derecha - Ámbar) ---
+        // Header Barco 2
+        drawCardBg(w - (260 * s), byHeader, 240 * s, 22 * s, 4 * s, 'rgba(251, 191, 36, 0.6)');
+        ctx.save();
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = `bold ${Math.round(11 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText(`⛵ BARCO 2: ${(state.boatNameB || 'BARCO 2').toUpperCase()}`, w - (250 * s), byHeader + (15 * s));
+        ctx.restore();
+
+        // 1B. Escora / Trim Barco 2
+        const bxHeelB = w - (440 * s);
+        drawCardBg(bxHeelB, by, 155 * s, 68 * s, 6 * s, 'rgba(251, 191, 36, 0.45)');
+        ctx.save();
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = `bold ${Math.round(9.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText('ESCORA', bxHeelB + (10 * s), by + (16 * s));
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${Math.round(15 * s)}px "IBM Plex Mono", monospace`;
+        ctx.fillText(`${Math.abs(dataB.heel).toFixed(1)}°`, bxHeelB + (10 * s), by + (34 * s));
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = `bold ${Math.round(9.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText('TRIM', bxHeelB + (10 * s), by + (48 * s));
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${Math.round(13 * s)}px "IBM Plex Mono", monospace`;
+        ctx.fillText(`${(dataB.trim >= 0 ? '+' : '') + dataB.trim.toFixed(1)}°`, bxHeelB + (10 * s), by + (62 * s));
+        ctx.restore();
+        drawHullGraphic(bxHeelB + (110 * s), by + (36 * s), s * 0.65, dataB.heel, isStarboardB, '#fbbf24');
+
+        // 2B. TWA & Amura Barco 2
+        const bxTwaB = w - (280 * s);
+        drawCardBg(bxTwaB, by, 120 * s, 68 * s, 6 * s, 'rgba(245, 158, 11, 0.45)');
+        ctx.save();
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = `bold ${Math.round(10 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText('TWA', bxTwaB + (10 * s), by + (16 * s));
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${Math.round(25 * s)}px "Barlow Condensed", sans-serif`;
+        ctx.fillText(String(Math.round(absTwaB)).padStart(3, '0') + '°', bxTwaB + (10 * s), by + (42 * s));
+        // Badge ESTR / BAB
+        const badgeXB = bxTwaB + (66 * s), badgeYB = by + (28 * s), badgeWB = 46 * s, badgeHB = 16 * s;
+        ctx.beginPath();
+        if (typeof ctx.roundRect === 'function') ctx.roundRect(badgeXB, badgeYB, badgeWB, badgeHB, 3 * s);
+        else ctx.rect(badgeXB, badgeYB, badgeWB, badgeHB);
+        ctx.fillStyle = isStarboardB ? '#059669' : '#e11d48';
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${Math.round(9.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(isStarboardB ? 'ESTR' : 'BAB', badgeXB + (badgeWB / 2), badgeYB + (badgeHB / 2) + (0.5 * s));
+        ctx.restore();
+        // Mode
+        let modeStrB = 'CEÑIDA';
+        if (absTwaB > 135) modeStrB = 'EMPOPADA';
+        else if (absTwaB > 105) modeStrB = 'LARGO';
+        else if (absTwaB > 65) modeStrB = 'TRAVÉS';
+        ctx.save();
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = `bold ${Math.round(9.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText(modeStrB, bxTwaB + (10 * s), by + (58 * s));
+        ctx.restore();
+
+        // 3B. SOG & VMG Barco 2
+        const bxSogB = w - (155 * s);
+        drawCardBg(bxSogB, by, 135 * s, 68 * s, 6 * s, 'rgba(251, 191, 36, 0.45)');
+        ctx.save();
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = `bold ${Math.round(10 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText('VELOCIDAD GPS', bxSogB + (10 * s), by + (16 * s));
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${Math.round(25 * s)}px "Barlow Condensed", sans-serif`;
+        const sogStrB = sogB.toFixed(1);
+        ctx.fillText(sogStrB, bxSogB + (10 * s), by + (42 * s));
+        const sogWidthB = ctx.measureText(sogStrB).width;
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = `bold ${Math.round(10.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText('KTS', bxSogB + (12 * s) + sogWidthB, by + (42 * s));
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = `bold ${Math.round(9.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+        ctx.fillText(`VMG: ${(vmgB >= 0 ? '+' : '') + vmgB.toFixed(1)} kn`, bxSogB + (10 * s), by + (58 * s));
+        ctx.restore();
+
+      } else {
+        // --- MODO ESTÁNDAR (UN BARCO) ---
+        const hdg = data.hdg != null ? data.hdg : data.cog;
+        let rawTwa = ((hdg - twd + 540) % 360) - 180;
+        const isStarboard = rawTwa <= 0;
+        const absTwa = Math.abs(rawTwa);
+
+        // 1. Recuadro Velocidad SOG & VMG
+        if (opts.checkSog !== false) {
+          const bx = 24 * s;
+          const by = h - (98 * s);
+          const bw = 165 * s;
+          const bh = 76 * s;
+
+          drawCardBg(bx, by, bw, bh, 8 * s, 'rgba(0, 240, 255, 0.45)');
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+          ctx.shadowBlur = 4 * s;
+          ctx.shadowOffsetX = 1 * s;
+          ctx.shadowOffsetY = 1 * s;
+
+          // Título
+          ctx.fillStyle = '#00f0ff';
+          ctx.font = `bold ${Math.round(11 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif`;
+          ctx.fillText('VELOCIDAD GPS', bx + (12 * s), by + (18 * s));
+
+          // Valor Velocidad (SOG)
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `bold ${Math.round(29 * s)}px "Barlow Condensed", "Arial Narrow", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+          const sogStr = (typeof data.sog === 'number' && !isNaN(data.sog)) ? data.sog.toFixed(1) : '0.0';
+          ctx.fillText(sogStr, bx + (12 * s), by + (48 * s));
+
+          // Unidad KTS
+          const sogWidth = ctx.measureText(sogStr).width;
+          ctx.fillStyle = '#cbd5e1';
+          ctx.font = `bold ${Math.round(12 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+          ctx.fillText('KTS', bx + (14 * s) + sogWidth, by + (48 * s));
+
+          // VMG
+          const vmgVal = ((typeof data.sog === 'number' ? data.sog : 0) * Math.cos(absTwa * Math.PI / 180));
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = `bold ${Math.round(10.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+          ctx.fillText(`VMG: ${(vmgVal >= 0 ? '+' : '') + vmgVal.toFixed(1)} kts`, bx + (12 * s), by + (67 * s));
+          ctx.restore();
+        }
+
+        // 2. Recuadro TWA & Amura
+        if (opts.checkTwa !== false) {
+          const bx = (24 + 175) * s;
+          const by = h - (98 * s);
+          const bw = 145 * s;
+          const bh = 76 * s;
+
+          drawCardBg(bx, by, bw, bh, 8 * s, 'rgba(245, 158, 11, 0.45)');
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+          ctx.shadowBlur = 4 * s;
+          ctx.shadowOffsetX = 1 * s;
+          ctx.shadowOffsetY = 1 * s;
+
+          // Título TWA
+          ctx.fillStyle = '#fbbf24';
+          ctx.font = `bold ${Math.round(11 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif`;
+          ctx.fillText('TWA', bx + (12 * s), by + (18 * s));
+
+          // Valor Ángulo de Viento
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `bold ${Math.round(29 * s)}px "Barlow Condensed", "Arial Narrow", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+          const twaStr = String(Math.abs(Math.round(absTwa))).padStart(3, '0') + '°';
+          ctx.fillText(twaStr, bx + (12 * s), by + (48 * s));
+          ctx.restore();
+
+          // Pastilla Amura (ESTR / BAB) con fondo vibrante de alto contraste
+          ctx.save();
+          const badgeX = bx + (78 * s);
+          const badgeY = by + (32 * s);
+          const badgeW = 55 * s;
+          const badgeH = 19 * s;
+
+          ctx.beginPath();
+          if (typeof ctx.roundRect === 'function') ctx.roundRect(badgeX, badgeY, badgeW, badgeH, 4 * s);
+          else ctx.rect(badgeX, badgeY, badgeW, badgeH);
+          ctx.fillStyle = isStarboard ? '#059669' : '#e11d48';
+          ctx.fill();
+          ctx.strokeStyle = isStarboard ? '#34d399' : '#fb7185';
+          ctx.lineWidth = Math.max(1, 1.2 * s);
+          ctx.stroke();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `bold ${Math.round(11 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(isStarboard ? 'ESTR' : 'BAB', badgeX + (badgeW / 2), badgeY + (badgeH / 2) + (1 * s));
+          ctx.restore();
+
+          // Modo de navegación (Ceñida / Través / Largo / Empopada)
+          ctx.save();
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+          ctx.shadowBlur = 4 * s;
+          let modeStr = 'CEÑIDA';
+          if (absTwa > 135) modeStr = 'EMPOPADA';
+          else if (absTwa > 105) modeStr = 'LARGO';
+          else if (absTwa > 65) modeStr = 'TRAVÉS';
+
+          ctx.fillStyle = '#cbd5e1';
+          ctx.font = `bold ${Math.round(10.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+          ctx.fillText(modeStr, bx + (12 * s), by + (67 * s));
+          ctx.restore();
+        }
+
+        // 3. Recuadro Escora con Casco Optimist
+        if (opts.checkHeel !== false) {
+          const bx = (24 + 175 + 155) * s;
+          const by = h - (98 * s);
+          const bw = 185 * s;
+          const bh = 76 * s;
+
+          drawCardBg(bx, by, bw, bh, 8 * s, 'rgba(16, 185, 129, 0.45)');
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+          ctx.shadowBlur = 4 * s;
+          ctx.shadowOffsetX = 1 * s;
+          ctx.shadowOffsetY = 1 * s;
+
+          // ESCORA
+          ctx.fillStyle = '#34d399';
+          ctx.font = `bold ${Math.round(11 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif`;
+          ctx.fillText('ESCORA', bx + (12 * s), by + (18 * s));
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `bold ${Math.round(17 * s)}px "IBM Plex Mono", "Consolas", monospace`;
+          const heelVal = (typeof data.heel === 'number' && !isNaN(data.heel)) ? Math.abs(data.heel).toFixed(1) : '0.0';
+          ctx.fillText(`${heelVal}°`, bx + (12 * s), by + (38 * s));
+
+          // TRIM
+          ctx.fillStyle = '#38bdf8';
+          ctx.font = `bold ${Math.round(11 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif`;
+          ctx.fillText('TRIM', bx + (12 * s), by + (53 * s));
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `bold ${Math.round(15 * s)}px "IBM Plex Mono", "Consolas", monospace`;
+          const trimVal = (typeof data.trim === 'number' && !isNaN(data.trim)) ? data.trim : 0;
+          ctx.fillText(`${(trimVal >= 0 ? '+' : '') + trimVal.toFixed(1)}°`, bx + (12 * s), by + (69 * s));
+          ctx.restore();
+
+          // Gráfico Casco Optimist
+          const gcx = bx + (130 * s);
+          const gcy = by + (42 * s);
+          const gs = s * 0.72;
+          drawHullGraphic(gcx, gcy, gs, data.heel, isStarboard, '#00f0ff');
+        }
+      }
+
+      // 4. Reloj GPS Sincronizado (Arriba a la derecha)
+      if (opts.checkTime !== false) {
+        const bw = 220 * s;
+        const bh = 34 * s;
+        const bx = w - bw - (24 * s);
+        const by = 20 * s;
+
+        drawCardBg(bx, by, bw, bh, 6 * s, 'rgba(0, 240, 255, 0.45)');
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+        ctx.shadowBlur = 4 * s;
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = `bold ${Math.round(10 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif`;
+        ctx.fillText('HORA GPS:', bx + (12 * s), by + (22 * s));
+
+        const timeStr = formatTimeWithTz(data.time, state.videoTimezoneHours);
+        ctx.fillStyle = '#00f0ff';
+        ctx.font = `bold ${Math.round(13 * s)}px "IBM Plex Mono", "Consolas", monospace`;
+        ctx.fillText(timeStr, bx + (76 * s), by + (22 * s));
+        ctx.restore();
+      }
+
+      // 5. Marca Oficial RCNGC (Arriba a la izquierda)
+      if (opts.checkWatermark !== false) {
+        const bw = 250 * s;
+        const bh = 36 * s;
+        const bx = 24 * s;
+        const by = 20 * s;
+
+        drawCardBg(bx, by, bw, bh, 6 * s, 'rgba(255, 255, 255, 0.25)');
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+        ctx.shadowBlur = 4 * s;
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${Math.round(11.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif`;
+        ctx.fillText('⛵ RCNGC · EQUIPO DE REGATAS', bx + (12 * s), by + (16 * s));
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = `bold ${Math.round(9.5 * s)}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif`;
+        ctx.fillText('OPTIMIST · VÍDEO & TELEMETRÍA', bx + (12 * s), by + (29 * s));
+        ctx.restore();
+      }
+    }
+
+    async function startExportRecording() {
+      if (!mainVideo || !mainVideo.src) return;
+
+      const isCustom = document.getElementById('exportRadioCustom').checked;
+      let startSec = 0;
+      let endSec = state.videoDuration || 0;
+
+      if (isCustom) {
+        startSec = parseTimeToSec(document.getElementById('exportStartInput').value);
+        endSec = parseTimeToSec(document.getElementById('exportEndInput').value);
+        if (endSec <= startSec) {
+          alert("El tiempo final debe ser mayor que el tiempo inicial.");
+          return;
+        }
+      }
+
+      endSec = Math.min(state.videoDuration || endSec, endSec);
+
+      const resRadio = document.querySelector('input[name="exportResRadio"]:checked');
+      const resVal = resRadio ? resRadio.value : '1080';
+      const origW = mainVideo.videoWidth || 1920;
+      const origH = mainVideo.videoHeight || 1080;
+      const aspect = (origW && origH) ? (origW / origH) : (16 / 9);
+
+      let targetWidth = 1920;
+      let targetHeight = 1080;
+
+      if (resVal === 'original' && origW && origH) {
+        targetWidth = origW;
+        targetHeight = origH;
+      } else {
+        targetHeight = 1080;
+        targetWidth = Math.round(targetHeight * aspect);
+      }
+
+      // Asegurar dimensiones pares para códecs de compresión H.264/AVC1 y VP9
+      targetWidth += (targetWidth % 2);
+      targetHeight += (targetHeight % 2);
+
+      const exportOptions = {
+        checkSog: document.getElementById('checkExportSog').checked,
+        checkTwa: document.getElementById('checkExportTwa').checked,
+        checkHeel: document.getElementById('checkExportHeel').checked,
+        checkTime: document.getElementById('checkExportTime').checked,
+        checkWatermark: document.getElementById('checkExportWatermark').checked
+      };
+
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      const ctx = canvas.getContext('2d');
+
+      let stream;
+      try {
+        stream = canvas.captureStream(60);
+      } catch (err) {
+        alert("Tu navegador no soporta captureStream: " + err.message);
+        return;
+      }
+
+      try {
+        const vStream = mainVideo.captureStream ? mainVideo.captureStream() : (mainVideo.mozCaptureStream ? mainVideo.mozCaptureStream() : null);
+        if (vStream) {
+          const aTracks = vStream.getAudioTracks();
+          if (aTracks.length > 0) stream.addTrack(aTracks[0]);
+        }
+      } catch (_) {}
+
+      let mimeType = 'video/webm';
+      let fileExt = 'webm';
+      if (typeof MediaRecorder !== 'undefined') {
+        if (MediaRecorder.isTypeSupported('video/mp4;codecs=avc1,mp4a.40.2')) {
+          mimeType = 'video/mp4;codecs=avc1,mp4a.40.2';
+          fileExt = 'mp4';
+        } else if (MediaRecorder.isTypeSupported('video/mp4')) {
+          mimeType = 'video/mp4';
+          fileExt = 'mp4';
+        } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) {
+          mimeType = 'video/webm;codecs=vp9,opus';
+          fileExt = 'webm';
+        } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) {
+          mimeType = 'video/webm;codecs=vp8,opus';
+          fileExt = 'webm';
+        }
+      }
+
+      exportChunks = [];
+      const isUltraHd = targetWidth >= 2560 || targetHeight >= 1440;
+      const bitRate = isUltraHd ? 24000000 : 15000000; // 15 Mbps para 1080p60, 24 Mbps para 2K/4K a 60 FPS
+
+      try {
+        exportRecorder = new MediaRecorder(stream, {
+          mimeType,
+          videoBitsPerSecond: bitRate
+        });
+      } catch (e) {
+        console.warn("Error con bitrate alto a 60 FPS, probando fallback:", e);
+        try {
+          exportRecorder = new MediaRecorder(stream, { mimeType });
+        } catch (e2) {
+          alert("Error al iniciar MediaRecorder: " + e2.message);
+          return;
+        }
+      }
+
+      exportRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) exportChunks.push(e.data);
+      };
+
+      exportRecorder.onstop = () => {
+        finishExportAndDownload(mimeType, fileExt);
+      };
+
+      document.getElementById('exportProgressWrap').style.display = 'block';
+      document.getElementById('btnStartExport').style.display = 'none';
+      document.getElementById('btnStopExport').style.display = 'inline-flex';
+      document.getElementById('exportStatusTitle').textContent = '⏳ Grabando vídeo con telemetría...';
+
+      exportOrigTime = mainVideo.currentTime;
+      exportOrigMuted = mainVideo.muted;
+      mainVideo.muted = true;
+
+      isExporting = true;
+      exportRecorder.start(100);
+
+      mainVideo.currentTime = startSec;
+      await new Promise(r => {
+        const onSeeked = () => { mainVideo.removeEventListener('seeked', onSeeked); r(); };
+        mainVideo.addEventListener('seeked', onSeeked);
+      });
+
+      try {
+        await mainVideo.play();
+      } catch (err) {
+        console.warn('Play error during export:', err);
+      }
+
+      const progressBar = document.getElementById('exportProgressBar');
+      const progressPct = document.getElementById('exportProgressPct');
+      const timeReadout = document.getElementById('exportTimeReadout');
+
+      function renderFrame() {
+        if (!isExporting) return;
+
+        if (mainVideo.currentTime >= endSec || mainVideo.ended) {
+          stopExportRecording(false);
+          return;
+        }
+
+        ctx.drawImage(mainVideo, 0, 0, targetWidth, targetHeight);
+        drawOverlayOnExportCanvas(ctx, targetWidth, targetHeight, mainVideo.currentTime, exportOptions);
+
+        const cur = mainVideo.currentTime;
+        const total = endSec - startSec;
+        const pct = Math.min(100, Math.max(0, ((cur - startSec) / (total || 1)) * 100));
+
+        if (progressBar) progressBar.style.width = pct.toFixed(1) + '%';
+        if (progressPct) progressPct.textContent = pct.toFixed(0) + '%';
+        if (timeReadout) timeReadout.textContent = `${formatVideoTime(cur)} / ${formatVideoTime(endSec)}`;
+
+        exportAnimId = requestAnimationFrame(renderFrame);
+      }
+
+      exportAnimId = requestAnimationFrame(renderFrame);
+    }
+
+    function stopExportRecording(cancelled = false) {
+      if (!isExporting) return;
+      isExporting = false;
+      cancelAnimationFrame(exportAnimId);
+
+      if (mainVideo) {
+        mainVideo.pause();
+        mainVideo.muted = exportOrigMuted;
+        mainVideo.currentTime = exportOrigTime;
+      }
+
+      if (exportRecorder && exportRecorder.state !== 'inactive') {
+        if (cancelled) {
+          exportRecorder.onstop = null;
+          exportRecorder.stop();
+          document.getElementById('exportProgressWrap').style.display = 'none';
+          document.getElementById('btnStartExport').style.display = 'inline-flex';
+          document.getElementById('btnStopExport').style.display = 'none';
+        } else {
+          exportRecorder.stop();
+        }
+      }
+    }
+
+    function finishExportAndDownload(mimeType, fileExt) {
+      document.getElementById('exportStatusTitle').textContent = '✅ ¡Vídeo generado con éxito!';
+      document.getElementById('btnStopExport').style.display = 'none';
+      document.getElementById('btnStartExport').style.display = 'inline-flex';
+      document.getElementById('btnStartExport').textContent = '🔄 Exportar otro tramo';
+
+      const blob = new Blob(exportChunks, { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const baseName = (state.videoFile && state.videoFile.name) ? state.videoFile.name.replace(/\.[^/.]+$/, '') : 'sesion_rcngc';
+      const cleanName = baseName.replace(/[^a-zA-Z0-9_-]/g, '_');
+
+      const a = document.createElement('a');
+      a.download = `${cleanName}_telemetria.${fileExt}`;
+      a.href = url;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 2000);
     }
 
     // =========================================================================
@@ -4373,31 +5994,48 @@
       }
 
       telemetry.sort((a, b) => a.time - b.time);
-
-      state.telemetry = telemetry;
-      state.minCsvTime = telemetry[0].time;
-      state.maxCsvTime = telemetry[telemetry.length - 1].time;
-
       const boatTitle = boatKey.replace(/\.csv$/i, '').replace(/_/g, ' ');
-      state.csvFile = { name: boatTitle, rows: telemetry.length, source: 'cloud' };
+      const slot = state.cloudTargetSlot || 'A';
 
-      // 2. Actualizar tarjeta CSV
-      cardCsvUpload.classList.add('loaded');
-      const timeSpanStr = `${new Date(state.minCsvTime).toLocaleTimeString('es-ES')} - ${new Date(state.maxCsvTime).toLocaleTimeString('es-ES')}`;
-      csvDesc.textContent = `☁️ ${boatTitle} · ${telemetry.length.toLocaleString('es-ES')} puntos (${timeSpanStr})`;
-      
-      const badge = document.getElementById('csvBadge');
-      if (badge) {
-        badge.textContent = '☁️ Nube RCNGC';
-        badge.style.color = '#38bdf8';
-        badge.style.background = 'rgba(2,132,199,0.2)';
+      if (slot === 'B') {
+        state.telemetryB = telemetry;
+        state.csvFileB = { name: boatTitle, rows: telemetry.length, source: 'cloud' };
+        state.boatNameB = boatTitle;
+        if (inputBoatNameB) inputBoatNameB.value = boatTitle;
+        if (cardCsvUploadB) cardCsvUploadB.classList.add('loaded');
+        const timeSpanStr = `(${new Date(telemetry[0].time).toLocaleTimeString('es-ES')} - ${new Date(telemetry[telemetry.length - 1].time).toLocaleTimeString('es-ES')})`;
+        if (csvDescB) csvDescB.textContent = `☁️ ${boatTitle} · ${telemetry.length.toLocaleString('es-ES')} puntos ${timeSpanStr}`;
+        if (btnClearBoatB) btnClearBoatB.style.display = 'inline-flex';
+        setVsMode(true);
+
+        const csvString = serializeTelemetryToCsv(telemetry);
+        await saveCsvToStorage(csvString, boatTitle, 'active_csv_b');
+        saveSessionState();
+        updateStorageBadges();
+      } else {
+        state.telemetry = telemetry;
+        state.minCsvTime = telemetry[0].time;
+        state.maxCsvTime = telemetry[telemetry.length - 1].time;
+        state.csvFile = { name: boatTitle, rows: telemetry.length, source: 'cloud' };
+        state.boatNameA = boatTitle;
+        if (inputBoatNameA) inputBoatNameA.value = boatTitle;
+
+        cardCsvUpload.classList.add('loaded');
+        const timeSpanStr = `${new Date(state.minCsvTime).toLocaleTimeString('es-ES')} - ${new Date(state.maxCsvTime).toLocaleTimeString('es-ES')}`;
+        csvDesc.textContent = `☁️ ${boatTitle} · ${telemetry.length.toLocaleString('es-ES')} puntos (${timeSpanStr})`;
+        
+        const badge = document.getElementById('csvBadge');
+        if (badge) {
+          badge.textContent = '☁️ Nube RCNGC';
+          badge.style.color = '#38bdf8';
+          badge.style.background = 'rgba(2,132,199,0.2)';
+        }
+
+        const csvString = serializeTelemetryToCsv(telemetry);
+        await saveCsvToStorage(csvString, boatTitle, 'active_csv');
+        saveSessionState();
+        updateStorageBadges();
       }
-
-      // 3. Serializar y guardar en IndexedDB para persistencia (F5)
-      const csvString = serializeTelemetryToCsv(telemetry);
-      await saveCsvToStorage(csvString, boatTitle);
-      saveSessionState();
-      updateStorageBadges();
 
       // 4. Extraer viento oficial de la sesión si está registrado en la base de datos de entrenamientos
       const sessionRow = cloudSessionsList.find(s => String(s.id) === String(sessionId));
@@ -4455,10 +6093,42 @@
 
     function initEventListeners() {
 
+      // Selector de Modo (Individual vs 1 vs 1)
+      if (btnModeSingle) {
+        btnModeSingle.addEventListener('click', () => setVsMode(false));
+      }
+      if (btnModeVs) {
+        btnModeVs.addEventListener('click', () => setVsMode(true));
+      }
+
+      // Nombres de barcos editables en vivo
+      if (inputBoatNameA) {
+        inputBoatNameA.addEventListener('input', (e) => {
+          state.boatNameA = e.target.value.trim() || 'Barco 1';
+          saveSessionState();
+          updateTelemetryDisplays();
+        });
+      }
+      if (inputBoatNameB) {
+        inputBoatNameB.addEventListener('input', (e) => {
+          state.boatNameB = e.target.value.trim() || 'Barco 2';
+          saveSessionState();
+          updateTelemetryDisplays();
+        });
+      }
+
       // Modal de Biblioteca de Entrenamientos
       if (btnOpenCloudLibrary) {
         btnOpenCloudLibrary.addEventListener('click', (e) => {
           e.stopPropagation();
+          state.cloudTargetSlot = 'A';
+          openCloudLibraryModal();
+        });
+      }
+      if (btnOpenCloudLibraryB) {
+        btnOpenCloudLibraryB.addEventListener('click', (e) => {
+          e.stopPropagation();
+          state.cloudTargetSlot = 'B';
           openCloudLibraryModal();
         });
       }
@@ -4504,13 +6174,13 @@
         if (e.target.files && e.target.files.length > 0) loadVideoFile(e.target.files[0]);
       });
 
-      // 2. Selector de CSV
+      // 2. Selector de CSV Barco 1
       function triggerCsvPicker() {
         inputCsv.value = '';
         inputCsv.click();
       }
       cardCsvUpload.addEventListener('click', (e) => {
-        if (e.target.closest('#btnPickCsv')) return;
+        if (e.target.closest('#btnPickCsv, #btnOpenCloudLibrary, input')) return;
         triggerCsvPicker();
       });
       if (btnPickCsv) {
@@ -4523,10 +6193,46 @@
         if (e.target.files && e.target.files.length > 0) {
           const file = e.target.files[0];
           const reader = new FileReader();
-          reader.onload = (evt) => loadCsvData(evt.target.result, file.name);
+          reader.onload = (evt) => loadCsvData(evt.target.result, file.name, false, 'A');
           reader.readAsText(file);
         }
       });
+
+      // Selector de CSV Barco 2 (Modo 1 vs 1)
+      function triggerCsvPickerB() {
+        if (inputCsvB) {
+          inputCsvB.value = '';
+          inputCsvB.click();
+        }
+      }
+      if (cardCsvUploadB) {
+        cardCsvUploadB.addEventListener('click', (e) => {
+          if (e.target.closest('#btnPickCsvB, #btnClearBoatB, #btnOpenCloudLibraryB, input')) return;
+          triggerCsvPickerB();
+        });
+      }
+      if (btnPickCsvB) {
+        btnPickCsvB.addEventListener('click', (e) => {
+          e.stopPropagation();
+          triggerCsvPickerB();
+        });
+      }
+      if (inputCsvB) {
+        inputCsvB.addEventListener('change', (e) => {
+          if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (evt) => loadCsvData(evt.target.result, file.name, false, 'B');
+            reader.readAsText(file);
+          }
+        });
+      }
+      if (btnClearBoatB) {
+        btnClearBoatB.addEventListener('click', (e) => {
+          e.stopPropagation();
+          clearBoatB();
+        });
+      }
 
       // 3. Botón para vaciar sesión y reiniciar limpio
       if (btnClearSession) {
@@ -4563,17 +6269,36 @@
       });
 
       setupDropZone(cardCsvUpload, (files) => {
-        const csvFile = Array.from(files).find(f => f.name.endsWith('.csv') || f.name.endsWith('.txt') || f.type.includes('csv'));
-        if (csvFile) {
+        const csvFiles = Array.from(files).filter(f => f.name.endsWith('.csv') || f.name.endsWith('.txt') || f.type.includes('csv'));
+        if (csvFiles.length >= 2) {
+          const readerA = new FileReader();
+          readerA.onload = (evtA) => {
+            loadCsvData(evtA.target.result, csvFiles[0].name, false, 'A');
+            const readerB = new FileReader();
+            readerB.onload = (evtB) => {
+              loadCsvData(evtB.target.result, csvFiles[1].name, false, 'B');
+              setVsMode(true);
+            };
+            readerB.readAsText(csvFiles[1]);
+          };
+          readerA.readAsText(csvFiles[0]);
+        } else if (csvFiles.length === 1) {
           const reader = new FileReader();
-          reader.onload = (evt) => loadCsvData(evt.target.result, csvFile.name);
-          reader.readAsText(csvFile);
-        } else if (files[0]) {
-          const reader = new FileReader();
-          reader.onload = (evt) => loadCsvData(evt.target.result, files[0].name);
-          reader.readAsText(files[0]);
+          reader.onload = (evt) => loadCsvData(evt.target.result, csvFiles[0].name, false, 'A');
+          reader.readAsText(csvFiles[0]);
         }
       });
+
+      if (cardCsvUploadB) {
+        setupDropZone(cardCsvUploadB, (files) => {
+          const csvFile = Array.from(files).find(f => f.name.endsWith('.csv') || f.name.endsWith('.txt') || f.type.includes('csv'));
+          if (csvFile) {
+            const reader = new FileReader();
+            reader.onload = (evt) => loadCsvData(evt.target.result, csvFile.name, false, 'B');
+            reader.readAsText(csvFile);
+          }
+        });
+      }
 
       const videoStageEl = document.getElementById('videoStage');
       if (videoStageEl) {
@@ -4583,19 +6308,31 @@
         });
       }
 
-      // Drop global en la ventana
+      // Drop global en la ventana (admite soltar 1 vídeo y 1 o 2 CSVs simultáneamente)
       window.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; });
       window.addEventListener('drop', (e) => {
         e.preventDefault();
         const files = e.dataTransfer && e.dataTransfer.files;
         if (!files || files.length === 0) return;
         const video = Array.from(files).find(f => f.type.startsWith('video/') || /\.(mp4|mov|webm|m4v|avi|mkv)$/i.test(f.name));
-        const csv = Array.from(files).find(f => f.name.endsWith('.csv') || f.name.endsWith('.txt') || f.type.includes('csv'));
+        const csvFiles = Array.from(files).filter(f => f.name.endsWith('.csv') || f.name.endsWith('.txt') || f.type.includes('csv'));
         if (video) loadVideoFile(video);
-        if (csv) {
+        if (csvFiles.length >= 2) {
+          const readerA = new FileReader();
+          readerA.onload = (evtA) => {
+            loadCsvData(evtA.target.result, csvFiles[0].name, false, 'A');
+            const readerB = new FileReader();
+            readerB.onload = (evtB) => {
+              loadCsvData(evtB.target.result, csvFiles[1].name, false, 'B');
+              setVsMode(true);
+            };
+            readerB.readAsText(csvFiles[1]);
+          };
+          readerA.readAsText(csvFiles[0]);
+        } else if (csvFiles.length === 1) {
           const reader = new FileReader();
-          reader.onload = (evt) => loadCsvData(evt.target.result, csv.name);
-          reader.readAsText(csv);
+          reader.onload = (evt) => loadCsvData(evt.target.result, csvFiles[0].name, false, 'A');
+          reader.readAsText(csvFiles[0]);
         }
       });
 
@@ -4801,10 +6538,31 @@
         saveSessionState();
       });
 
-      // 6. Controles de Reproducción
-      btnPlayPause.addEventListener('click', () => togglePlay());
-      btnStepBack.addEventListener('click', () => seekVideo(state.currentTime - (1 / state.videoFps)));
-      btnStepFwd.addEventListener('click', () => seekVideo(state.currentTime + (1 / state.videoFps)));
+      // 6. Controles de Reproducción y Pantalla Completa (Estilo YouTube)
+      btnPlayPause.addEventListener('click', () => {
+        togglePlay();
+        flashCenterIndicator(state.isPlaying ? '▶' : '⏸');
+      });
+      btnStepBack.addEventListener('click', () => {
+        seekVideo(state.currentTime - (1 / state.videoFps));
+        resetUserIdle();
+      });
+      btnStepFwd.addEventListener('click', () => {
+        seekVideo(state.currentTime + (1 / state.videoFps));
+        resetUserIdle();
+      });
+      if (btnSkipBack5) {
+        btnSkipBack5.addEventListener('click', () => {
+          seekVideo(state.currentTime - 5);
+          resetUserIdle();
+        });
+      }
+      if (btnSkipFwd5) {
+        btnSkipFwd5.addEventListener('click', () => {
+          seekVideo(state.currentTime + 5);
+          resetUserIdle();
+        });
+      }
 
       btnLoop.addEventListener('click', () => {
         state.isLoop = !state.isLoop;
@@ -4826,17 +6584,129 @@
         });
       }
 
+      if (btnFullscreen) {
+        btnFullscreen.addEventListener('click', () => toggleFullscreen());
+      }
+
+      // Eventos de Exportación y Descarga de Vídeo con Telemetría
+      if (btnExportVideo) {
+        btnExportVideo.addEventListener('click', openExportModal);
+      }
+      if (btnExportVideoTop) {
+        btnExportVideoTop.addEventListener('click', openExportModal);
+      }
+      if (btnCloseExportModal) {
+        btnCloseExportModal.addEventListener('click', closeExportModal);
+      }
+      if (btnCancelExportModal) {
+        btnCancelExportModal.addEventListener('click', closeExportModal);
+      }
+      if (exportRadioFull) {
+        exportRadioFull.addEventListener('change', onExportRangeChange);
+      }
+      if (exportRadioCustom) {
+        exportRadioCustom.addEventListener('change', onExportRangeChange);
+      }
+      if (btnExportSetCurrent) {
+        btnExportSetCurrent.addEventListener('click', () => {
+          const startInp = document.getElementById('exportStartInput');
+          if (startInp) startInp.value = formatVideoTime(state.currentTime);
+        });
+      }
+      if (btnStartExport) {
+        btnStartExport.addEventListener('click', startExportRecording);
+      }
+      if (btnStopExport) {
+        btnStopExport.addEventListener('click', () => stopExportRecording(false));
+      }
+      if (exportVideoModal) {
+        exportVideoModal.addEventListener('click', (e) => {
+          if (e.target === exportVideoModal) closeExportModal();
+        });
+      }
+
       playerScrubber.addEventListener('input', (e) => {
         seekVideo(parseFloat(e.target.value));
+        resetUserIdle();
       });
 
-      document.querySelectorAll('.btn-speed').forEach(btn => {
+      // Selector de velocidad de reproducción (0.25x a 2x)
+      document.querySelectorAll('.rate-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          document.querySelectorAll('.btn-speed').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.rate-btn').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-          state.playbackRate = parseFloat(btn.getAttribute('data-speed'));
-          mainVideo.playbackRate = state.playbackRate;
+          const rate = parseFloat(btn.getAttribute('data-rate'));
+          state.playbackRate = rate;
+          if (mainVideo) mainVideo.playbackRate = rate;
+          resetUserIdle();
         });
+      });
+
+      // Clic y doble clic interactivo en el vídeo estilo YouTube
+      let stageClickTimer = null;
+      if (videoStage) {
+        videoStage.addEventListener('click', (e) => {
+          if (e.target.closest('button, input, a, select, .hud-box')) return;
+          if (stageClickTimer) {
+            clearTimeout(stageClickTimer);
+            stageClickTimer = null;
+            toggleFullscreen();
+          } else {
+            stageClickTimer = setTimeout(() => {
+              stageClickTimer = null;
+              togglePlay();
+              flashCenterIndicator(state.isPlaying ? '▶' : '⏸');
+              resetUserIdle();
+            }, 240);
+          }
+        });
+      }
+
+      // Auto-ocultación de la barra de controles en pantalla completa tras inactividad
+      if (videoContainer) {
+        videoContainer.addEventListener('mousemove', resetUserIdle);
+        videoContainer.addEventListener('mousedown', resetUserIdle);
+        videoContainer.addEventListener('touchstart', resetUserIdle, { passive: true });
+      }
+      if (playerControls) {
+        playerControls.addEventListener('mouseenter', () => {
+          clearTimeout(idleTimer);
+          if (videoContainer) videoContainer.classList.remove('user-idle');
+        });
+      }
+
+      // Atajos de teclado estilo YouTube
+      window.addEventListener('keydown', (e) => {
+        const tag = (e.target.tagName || '').toLowerCase();
+        if (tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable) {
+          return;
+        }
+
+        if (e.code === 'Space' || e.key === ' ' || e.key === 'k' || e.key === 'K') {
+          e.preventDefault();
+          togglePlay();
+          flashCenterIndicator(state.isPlaying ? '▶' : '⏸');
+          resetUserIdle();
+        } else if (e.key === 'f' || e.key === 'F') {
+          e.preventDefault();
+          toggleFullscreen();
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          seekVideo(state.currentTime - 5);
+          resetUserIdle();
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          seekVideo(state.currentTime + 5);
+          resetUserIdle();
+        } else if (e.key === ',' || e.key === '<') {
+          e.preventDefault();
+          seekVideo(state.currentTime - (1 / state.videoFps));
+          resetUserIdle();
+        } else if (e.key === '.' || e.key === '>') {
+          e.preventDefault();
+          seekVideo(state.currentTime + (1 / state.videoFps));
+          resetUserIdle();
+        }
       });
 
       // Eventos de reproducción nativos del vídeo
@@ -4844,11 +6714,15 @@
         state.isPlaying = true;
         btnPlayPause.textContent = '⏸ Pausar';
         btnPlayPause.style.color = '#fff';
+        resetUserIdle();
       });
       mainVideo.addEventListener('pause', () => {
         state.isPlaying = false;
         btnPlayPause.textContent = '▶ Reproducir';
         btnPlayPause.style.color = 'var(--cyan)';
+        clearTimeout(idleTimer);
+        const container = document.getElementById('videoContainer') || videoContainer;
+        if (container) container.classList.remove('user-idle');
         saveSessionState();
       });
       mainVideo.addEventListener('ended', () => {
@@ -4859,6 +6733,9 @@
           state.isPlaying = false;
           btnPlayPause.textContent = '▶ Reproducir';
           btnPlayPause.style.color = 'var(--cyan)';
+          clearTimeout(idleTimer);
+          const container = document.getElementById('videoContainer') || videoContainer;
+          if (container) container.classList.remove('user-idle');
         }
       });
 

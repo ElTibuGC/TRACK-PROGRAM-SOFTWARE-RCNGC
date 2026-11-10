@@ -13909,7 +13909,9 @@ const btnHomeOpenCloudModal = document.getElementById('btnHomeOpenCloudModal');
 if(btnHomeOpenCloudModal) btnHomeOpenCloudModal.addEventListener('click', () => openCloudModal('list'));
 
 const btnHomeBigData = document.getElementById('btnHomeBigData');
-if(btnHomeBigData) btnHomeBigData.addEventListener('click', () => openCloudModal('stats'));
+if(btnHomeBigData) btnHomeBigData.addEventListener('click', () => {
+  window.location.href = 'Calendario e Historico Optimist.html?tab=bigdata';
+});
 
 const btnRefreshHomeRecent = document.getElementById('btnRefreshHomeRecent');
 if(btnRefreshHomeRecent) btnRefreshHomeRecent.addEventListener('click', () => {
@@ -14357,7 +14359,7 @@ if(btnDropdownEditProfile) btnDropdownEditProfile.addEventListener('click', () =
 const btnDropdownCalendar = document.getElementById('btnDropdownCalendar');
 if(btnDropdownCalendar) btnDropdownCalendar.addEventListener('click', () => {
   closeUserDropdown();
-  openCalendarModal();
+  window.location.href = 'Calendario e Historico Optimist.html';
 });
 
 const btnDropdownChangePin = document.getElementById('btnDropdownChangePin');
